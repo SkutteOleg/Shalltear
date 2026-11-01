@@ -134,4 +134,10 @@ jobs:
         run: |
           $files = git ls-files 'Source/*.h' 'Source/*.hpp' 'Source/*.inl' 'Source/*.cpp' 'Samples/*.h' 'Samples/*.cpp' |
             Where-Object { $_ -notmatch '/ThirdParty/|\.generated\.|/stb_image\.h$' }
-          External/Prebuilt/llvm-mingw/bin/clang-format.exe --dry-run -Werror $files
+          $tmp = [System.IO.Path]::GetTempFileName()
+          try {
+            [System.IO.File]::WriteAllLines($tmp, $files)
+            External/Prebuilt/llvm-mingw/bin/clang-format.exe --dry-run -Werror --files=$tmp
+          } finally {
+            Remove-Item $tmp -ErrorAction SilentlyContinue
+          }
