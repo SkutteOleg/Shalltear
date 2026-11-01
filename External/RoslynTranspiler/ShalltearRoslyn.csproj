@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RollForward>LatestMajor</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <OutputPath>../../External/Prebuilt/roslyn/bin/</OutputPath>
+    <GenerateDependencyFile>true</GenerateDependencyFile>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+  </ItemGroup>
+
+  <Target Name="StageBundledDotnetRuntime" AfterTargets="Build" Condition="'$(NetCoreRoot)' != '' and !Exists('$(OutputPath)dotnet/host/fxr')">
+    <ItemGroup>
+      <BundledHostFxrFiles Include="$(NetCoreRoot)host/fxr/**/*" />
+      <BundledSharedFrameworkFiles Include="$(NetCoreRoot)shared/Microsoft.NETCore.App/**/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BundledHostFxrFiles)" DestinationFolder="$(OutputPath)dotnet/host/fxr/%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(BundledSharedFrameworkFiles)" DestinationFolder="$(OutputPath)dotnet/shared/Microsoft.NETCore.App/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

@@ -4,6 +4,7 @@
 
 import argparse
 import hashlib
+import os
 import shutil
 import subprocess
 import sys
@@ -48,6 +49,10 @@ MINGW_GPL2_SHA256 = "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b
 VULKANRT_VERSION = "1.4.321.0"
 VULKANRT_URL = f"https://sdk.lunarg.com/sdk/download/{VULKANRT_VERSION}/windows/vulkan-runtime-components.zip"
 VULKANRT_SHA256 = "f8ba79303face4b72a2f302f1a46e8c918995b54fbf24c0c9fc6c3d3ef525dca"
+
+DOTNET_VERSION = "9.0.320"
+DOTNET_URL = f"https://builds.dotnet.microsoft.com/dotnet/Sdk/{DOTNET_VERSION}/dotnet-sdk-{DOTNET_VERSION}-win-x64.zip"
+DOTNET_SHA256 = "92dca51e2447d67f14859c87eeeddb8ec58441c43c08e2786cf5a1c52578e863"
 
 
 def download_verified(url: str, expected_sha256: str, dest: Path) -> None:
@@ -273,6 +278,98 @@ def fetch_ninja() -> None:
     print(f"ninja -> {target}")
 
 
+def _dotnet_sdk_wanted(relative: str) -> bool:
+    if relative in ("dotnet.exe", "LICENSE.txt", "ThirdPartyNotices.txt"):
+        return True
+    return relative.startswith((
+        "host/fxr/",
+        "shared/Microsoft.NETCore.App/",
+        "packs/Microsoft.NETCore.App.Ref/",
+        "packs/Microsoft.NETCore.App.Host.win-x64/",
+        "sdk/",
+    ))
+
+
+def fetch_dotnet() -> Path:
+    target = PREBUILT_DIR / "dotnet"
+    exe = target / "dotnet.exe"
+    if is_current(target, DOTNET_VERSION) and exe.exists():
+        print(f"dotnet {DOTNET_VERSION} already fetched. Skipping")
+        return exe
+    print(f"fetching dotnet {DOTNET_VERSION} (portable win-x64)")
+    with tempfile.TemporaryDirectory() as tmp:
+        archive = Path(tmp) / "dotnet.zip"
+        download_verified(DOTNET_URL, DOTNET_SHA256, archive)
+        if target.exists():
+            shutil.rmtree(target)
+        target.mkdir(parents=True)
+        with zipfile.ZipFile(archive) as zf:
+            for info in zf.infolist():
+                if info.is_dir() or not _dotnet_sdk_wanted(info.filename):
+                    continue
+                out = target / info.filename
+                out.parent.mkdir(parents=True, exist_ok=True)
+                out.write_bytes(zf.read(info))
+    if not exe.exists():
+        raise RuntimeError("dotnet.exe not found in the .NET SDK archive. Layout changed?")
+    if not (target / "LICENSE.txt").exists():
+        raise RuntimeError("LICENSE.txt not found in the .NET SDK archive. Layout changed?")
+    write_marker(target, DOTNET_VERSION)
+    print(f"dotnet -> {target}")
+    return exe
+
+
+def stage_dotnet_runtime_slice(dotnet_dir: Path, roslyn_bin_dir: Path) -> None:
+    runtime_dst = roslyn_bin_dir / "dotnet"
+    if runtime_dst.exists():
+        shutil.rmtree(runtime_dst)
+    for subdir in ("host/fxr", "shared/Microsoft.NETCore.App"):
+        src = dotnet_dir / subdir
+        if not src.is_dir():
+            raise RuntimeError(f"{src} is absent in {dotnet_dir}")
+        shutil.copytree(src, runtime_dst / subdir)
+    for notice in ("LICENSE.txt", "ThirdPartyNotices.txt"):
+        src_file = dotnet_dir / notice
+        if src_file.is_file():
+            shutil.copy2(src_file, runtime_dst / notice)
+
+
+def build_roslyn() -> None:
+    dotnet = fetch_dotnet()
+    roslyn_src = ROOT_DIR / "External" / "RoslynTranspiler"
+    csproj = roslyn_src / "ShalltearRoslyn.csproj"
+    if not csproj.exists():
+        return
+    hasher = hashlib.sha256()
+    hasher.update(DOTNET_VERSION.encode("utf-8"))
+    for path in sorted(roslyn_src.glob("*")):
+        if path.is_file():
+            hasher.update(path.read_bytes())
+    roslyn_version = hasher.hexdigest()[:16]
+    target = PREBUILT_DIR / "roslyn"
+    dll_path = target / "bin" / "ShalltearRoslyn.dll"
+    runtime_slice = target / "bin" / "dotnet" / "host" / "fxr"
+    if is_current(target, roslyn_version) and dll_path.exists() and runtime_slice.is_dir():
+        print(f"roslyn {roslyn_version} already built. Skipping")
+        return
+    print(f"building ShalltearRoslyn ({roslyn_version})")
+    dotnet_dir = dotnet.parent.resolve()
+    env = os.environ.copy()
+    env["DOTNET_ROOT"] = str(dotnet_dir)
+    env["DOTNET_CLI_HOME"] = str(dotnet_dir / ".home")
+    env["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "1"
+    env["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
+    env["DOTNET_NOLOGO"] = "1"
+    subprocess.run(
+        [str(dotnet), "build", str(csproj), "-c", "Release", "--nologo"],
+        env=env,
+        check=True,
+    )
+    stage_dotnet_runtime_slice(dotnet_dir, target / "bin")
+    write_marker(target, roslyn_version)
+    print(f"roslyn -> {target / 'bin'}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lavapipe", action="store_true", help="also fetch the CI software Vulkan driver + loader")
@@ -283,6 +380,7 @@ def main() -> int:
     PREBUILT_DIR.mkdir(parents=True, exist_ok=True)
     if not args.skip_dxc:
         fetch_dxc()
+        build_roslyn()
     if args.lavapipe:
         fetch_lavapipe()
         fetch_vulkan_runtime()

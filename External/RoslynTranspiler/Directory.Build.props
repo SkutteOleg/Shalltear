@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>../../External/Prebuilt/roslyn/obj/</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>../../External/Prebuilt/roslyn/obj/</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+</Project>

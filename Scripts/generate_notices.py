@@ -448,6 +448,23 @@ COMPONENTS: tuple[Component, ...] = (
 		),
 	),
 	Component(
+		name="Microsoft.CodeAnalysis.CSharp / .NET Runtime (Roslyn)",
+		scope="editor",
+		license="MIT",
+		where="C# to C++20 transpilation at script compile time. Bundled in "
+			  "Roslyn/ and runtime-loaded by the editor only (never shipped "
+			  "in a built game)",
+		version=lambda: capture(
+			"External/RoslynTranspiler/ShalltearRoslyn.csproj",
+			r'Include="Microsoft\.CodeAnalysis\.CSharp"\s+Version="([^"]+)"',
+		)[0] + " / .NET " + read("External/Prebuilt/dotnet/.fetched").strip(),
+		text=lambda: "\n\n".join((
+			read("External/RoslynTranspiler/LICENSE-Roslyn.txt"),
+			"==== .NET Runtime (bundled in Roslyn/dotnet) ====\n\n"
+			+ read("External/Prebuilt/dotnet/LICENSE.txt"),
+		)),
+	),
+	Component(
 		name="Clang, LLD and the LLVM toolchain (bundled in Toolchain/LLVM)",
 		scope="editor",
 		license="Apache License 2.0 with LLVM Exceptions",

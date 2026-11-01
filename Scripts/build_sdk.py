@@ -357,6 +357,10 @@ def finish_sdk():
 	if not os.path.exists(dxc_dll):
 		print("Warning: dxcompiler.dll prebuilt missing (run Scripts/fetch_prebuilt.py)")
 
+	roslyn_dll = os.path.join(ROOT_DIR, 'External', 'Prebuilt', 'roslyn', 'bin', 'ShalltearRoslyn.dll')
+	if not os.path.exists(roslyn_dll):
+		print("Warning: ShalltearRoslyn.dll prebuilt missing (run Scripts/fetch_prebuilt.py)")
+
 	print(f"SDK successfully packaged to: {SDK_DIR}")
 	print("  consume it with:  find_package(Shalltear 0.0.0 REQUIRED)")
 	print(f"  pointing at:      -DShalltear_ROOT={SDK_DIR}")

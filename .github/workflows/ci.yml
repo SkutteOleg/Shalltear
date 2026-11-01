@@ -61,7 +61,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: External/Prebuilt
-          key: prebuilt-${{ hashFiles('Scripts/fetch_prebuilt.py') }}
+          key: prebuilt-${{ hashFiles('Scripts/fetch_prebuilt.py', 'External/RoslynTranspiler/**') }}
 
       - name: Fetch prebuilt binaries
         run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain
