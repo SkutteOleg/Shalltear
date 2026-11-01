@@ -20,6 +20,7 @@ namespace Shalltear {
 
 		static bool StartsWith(std::string_view s, std::string_view prefix);
 		static bool EndsWith(std::string_view s, std::string_view suffix);
+		static bool Contains(std::string_view s, std::string_view sub);
 
 		static str ToLower(std::string_view s);
 		static str ToUpper(std::string_view s);

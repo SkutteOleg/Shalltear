@@ -36,6 +36,14 @@ namespace Shalltear {
 		u32 contactCount = 0;
 
 		PhysicsContactPoint contacts[MAX_CONTACTS];
+
+		[[nodiscard]] const PhysicsContactPoint& GetContact(u32 index) const noexcept {
+			return contacts[index < MAX_CONTACTS ? index : 0];
+		}
+
+		[[nodiscard]] const PhysicsContactPoint& GetContact(i32 index) const noexcept {
+			return contacts[(index >= 0 && static_cast<u32>(index) < MAX_CONTACTS) ? static_cast<u32>(index) : 0];
+		}
 	};
 
 	class PhysicsListener {

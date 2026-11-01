@@ -96,6 +96,99 @@ namespace Shalltear::Math {
 		return std::sqrt(v);
 	}
 
+	[[nodiscard]] inline f32 Sin(f32 radians) noexcept {
+		return std::sin(radians);
+	}
+
+	[[nodiscard]] inline f32 Cos(f32 radians) noexcept {
+		return std::cos(radians);
+	}
+
+	[[nodiscard]] inline f32 Tan(f32 radians) noexcept {
+		return std::tan(radians);
+	}
+
+	[[nodiscard]] inline f32 Asin(f32 v) noexcept {
+		return std::asin(Clamp(v, -1.0f, 1.0f));
+	}
+
+	[[nodiscard]] inline f32 Acos(f32 v) noexcept {
+		return std::acos(Clamp(v, -1.0f, 1.0f));
+	}
+
+	[[nodiscard]] inline f32 Atan(f32 v) noexcept {
+		return std::atan(v);
+	}
+
+	[[nodiscard]] inline f32 Atan2(f32 y, f32 x) noexcept {
+		return std::atan2(y, x);
+	}
+
+	[[nodiscard]] inline f32 Pow(f32 x, f32 y) noexcept {
+		return std::pow(x, y);
+	}
+
+	[[nodiscard]] inline f32 Exp(f32 power) noexcept {
+		return std::exp(power);
+	}
+
+	[[nodiscard]] inline f32 Log(f32 v) noexcept {
+		return std::log(v);
+	}
+
+	[[nodiscard]] inline f32 Log10(f32 v) noexcept {
+		return std::log10(v);
+	}
+
+	[[nodiscard]] inline f32 Floor(f32 v) noexcept {
+		return std::floor(v);
+	}
+
+	[[nodiscard]] inline f32 Ceil(f32 v) noexcept {
+		return std::ceil(v);
+	}
+
+	[[nodiscard]] inline f32 Round(f32 v) noexcept {
+		return std::round(v);
+	}
+
+	[[nodiscard]] inline i32 FloorToInt(f32 v) noexcept {
+		return static_cast<i32>(std::floor(v));
+	}
+
+	[[nodiscard]] inline i32 CeilToInt(f32 v) noexcept {
+		return static_cast<i32>(std::ceil(v));
+	}
+
+	[[nodiscard]] inline i32 RoundToInt(f32 v) noexcept {
+		return static_cast<i32>(std::round(v));
+	}
+
+	[[nodiscard]] inline f32 PingPong(f32 v, f32 length) noexcept {
+		f32 t = Repeat(v, length * 2.0f);
+		return length - Abs(t - length);
+	}
+
+	[[nodiscard]] inline f32 DeltaAngle(f32 current, f32 target) noexcept {
+		f32 delta = Repeat(target - current, 360.0f);
+		if (delta > 180.0f) {
+			delta -= 360.0f;
+		}
+		return delta;
+	}
+
+	[[nodiscard]] inline f32 LerpAngle(f32 a, f32 b, f32 t) noexcept {
+		return a + DeltaAngle(a, b) * Clamp01(t);
+	}
+
+	[[nodiscard]] inline f32 MoveTowardsAngle(f32 current, f32 target, f32 maxDelta) noexcept {
+		f32 deltaAngle = DeltaAngle(current, target);
+		if (-maxDelta < deltaAngle && deltaAngle < maxDelta) {
+			return target;
+		}
+		return MoveTowards(current, current + deltaAngle, maxDelta);
+	}
+
 	[[nodiscard]] constexpr f32 InverseSafe(f32 v, f32 epsilon = EPSILON) noexcept {
 		return Abs(v) > epsilon ? 1.0f / v : 0.0f;
 	}

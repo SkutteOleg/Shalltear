@@ -80,6 +80,10 @@ namespace Shalltear {
 		return s.ends_with(suffix);
 	}
 
+	bool StringUtil::Contains(std::string_view s, std::string_view sub) {
+		return s.find(sub) != std::string_view::npos;
+	}
+
 	str StringUtil::ToLower(std::string_view s) {
 		str result(s);
 		std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) {
