@@ -1,0 +1,115 @@
+name: Release (Windows)
+
+on:
+  push:
+    branches:
+      - csharp-scripting
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag name (defaults to dev-<short-sha>)'
+        required: false
+        type: string
+      prerelease:
+        description: 'Mark release as pre-release'
+        required: false
+        default: true
+        type: boolean
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  package-windows:
+    name: Build & Release Windows SDK
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache prebuilt binaries
+        uses: actions/cache@v4
+        with:
+          path: External/Prebuilt
+          key: prebuilt-release-${{ hashFiles('Scripts/fetch_prebuilt.py', 'External/RoslynTranspiler/**') }}
+
+      - name: Fetch prebuilt binaries
+        run: python Scripts/fetch_prebuilt.py --toolchain
+
+      - name: Put the toolchain on PATH
+        shell: pwsh
+        run: |
+          echo "$(Resolve-Path External/Prebuilt/llvm-mingw/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/cmake/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/ninja)" >> $env:GITHUB_PATH
+
+      - name: Verify third-party notices and staging rules
+        shell: pwsh
+        run: |
+          python Scripts/generate_notices.py --check
+          Push-Location Scripts
+          python staging_test.py
+          Pop-Location
+
+      - name: Build and archive Windows SDK
+        run: python Scripts/build_sdk.py
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_PRERELEASE: ${{ inputs.prerelease }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          $zip = Get-ChildItem -Path Dist -Filter "Shalltear-dev-*-windows-x64.zip" | Select-Object -First 1
+          if (-not $zip) {
+            throw "Expected SDK archive in Dist/ was not produced by Scripts/build_sdk.py"
+          }
+
+          $hash = (Get-FileHash -Path $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $shaFile = "$($zip.FullName).sha256"
+          Set-Content -Path $shaFile -Value "$hash  $($zip.Name)" -NoNewline
+
+          $shortSha = (git rev-parse --short=12 HEAD).Trim()
+          if (-not [string]::IsNullOrWhiteSpace($env:INPUT_TAG)) {
+            $tag = $env:INPUT_TAG.Trim()
+          } elseif ($env:REF_TYPE -eq "tag") {
+            $tag = $env:REF_NAME
+          } else {
+            $tag = "dev-$shortSha"
+          }
+
+          $title = "Shalltear Windows x64 ($tag)"
+          $notes = @(
+            "Automated Windows x64 SDK & Editor build from branch ``$env:REF_NAME`` (commit ``$shortSha``).",
+            "",
+            "### SHA-256",
+            "``````",
+            "$hash  $($zip.Name)",
+            "``````"
+          ) -join "`n"
+
+          $isPrerelease = ($env:INPUT_PRERELEASE -ne "false")
+
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $zip.FullName $shaFile --clobber
+            gh release edit $tag --title $title --notes $notes
+          } else {
+            $createArgs = @("release", "create", $tag, $zip.FullName, $shaFile, "--target", $env:GITHUB_SHA, "--title", $title, "--notes", $notes)
+            if ($isPrerelease) {
+              $createArgs += "--prerelease"
+            }
+            gh @createArgs
+          }
