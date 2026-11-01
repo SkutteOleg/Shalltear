@@ -984,3 +984,131 @@ TEST_F(CSharpCompileIntegrationTest, AssetsDirectoryCSharpScriptWithoutHandlesCo
 
 	EXPECT_NEAR(Quat::Angle(Quat::Identity(), owner.Get()->GetLocalRotation()), 30.0f, 0.5f);
 }
+
+TEST(CSharpTranspilerUnitTest, TranspilesDllImportAndIntPtrAndRejectsInvalidExtern) {
+	const char* validSource = R"(using Shalltear;
+using System;
+using System.Runtime.InteropServices;
+
+public class NativePluginBridge : Behavior
+{
+	[DllImport("custom_plugin.dll", EntryPoint = "ProcessBuffer", CallingConvention = CallingConvention.Cdecl)]
+	private static extern IntPtr NativeProcess(string label, ref int count, List<float> values, IntPtr ctx);
+
+	[DllImport("__Internal", EntryPoint = "EngineInternalHook")]
+	private static extern int CallInternalHook(int code);
+
+	private IntPtr _nativeCtx = IntPtr.Zero;
+
+	protected override void OnUpdate(float dt)
+	{
+		if (_nativeCtx == IntPtr.Zero)
+		{
+			int c = 4;
+			List<float> buf = new List<float>();
+			_nativeCtx = NativeProcess("hello", ref c, buf, IntPtr.Zero);
+			int status = CallInternalHook(c);
+		}
+	}
+}
+)";
+
+	CSharpTranspiler::TranspileFileResult res;
+	ASSERT_TRUE(CSharpTranspiler::TranspileSource("Source/NativePluginBridge.cs", validSource, res))
+		<< (res.diagnostics.empty() ? "" : res.diagnostics[0].message);
+	EXPECT_NE(res.headerContent.find("void* _nativeCtx = nullptr;"), str::npos) << res.headerContent;
+	EXPECT_EQ(res.headerContent.find("SLT_REFLECT_FIELD(_nativeCtx"), str::npos) << res.headerContent;
+	EXPECT_NE(res.headerContent.find("static void* NativeProcess(::Shalltear::str label, ::Shalltear::i32& count, ::Shalltear::Vector<::Shalltear::f32>& values, void* ctx);"), str::npos)
+		<< res.headerContent;
+	EXPECT_NE(res.sourceContent.find("LoadLibraryA(\"custom_plugin.dll\")"), str::npos) << res.sourceContent;
+	EXPECT_NE(res.sourceContent.find("GetProcAddress(_slt_mod, \"ProcessBuffer\")"), str::npos) << res.sourceContent;
+	EXPECT_NE(res.sourceContent.find("return _slt_fn(label.c_str(), &count, values.data(), ctx);"), str::npos) << res.sourceContent;
+	EXPECT_NE(res.sourceContent.find("extern \"C\" ::Shalltear::i32 EngineInternalHook(::Shalltear::i32);"), str::npos) << res.sourceContent;
+	EXPECT_NE(res.sourceContent.find("return EngineInternalHook(code);"), str::npos) << res.sourceContent;
+
+	const char* invalidExternSource = R"(using Shalltear;
+
+public class BadExternScript : Behavior
+{
+	private static extern int MissingDllImport(int x);
+}
+)";
+	CSharpTranspiler::TranspileFileResult invalidRes;
+	EXPECT_FALSE(CSharpTranspiler::TranspileSource("Source/BadExternScript.cs", invalidExternSource, invalidRes));
+	ASSERT_FALSE(invalidRes.diagnostics.empty());
+	EXPECT_NE(invalidRes.diagnostics[0].message.find("DllImport"), str::npos) << invalidRes.diagnostics[0].message;
+}
+
+TEST_F(CSharpCompileIntegrationTest, DllImportNativeCallCompilesAndExecutesAtRuntime) {
+	Config projectFile;
+	projectFile.SetString("Project", "name", "CSharpDllImportProbe");
+	ASSERT_TRUE(projectFile.Save(Path(Root() + "/Project.ini")));
+
+	ScriptProjectOps::ScaffoldOptions options;
+	options.moduleName = "CSharpDllImportProbe";
+	options.sdkRoot = _sdkRoot;
+	options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
+	ScriptProjectOps::ScaffoldResult scaffolded;
+	ASSERT_TRUE(ScriptProjectOps::ScaffoldScriptProject(Root(), options, scaffolded));
+
+	WriteFile("Source/NativeBridgeProbe.cs", R"(using Shalltear;
+using System;
+using System.Runtime.InteropServices;
+
+public class NativeBridgeProbe : Behavior
+{
+	[DllImport("msvcrt.dll", EntryPoint = "abs", CallingConvention = CallingConvention.Cdecl)]
+	private static extern int NativeAbs(int value);
+
+	[DllImport("msvcrt.dll", EntryPoint = "strlen", CallingConvention = CallingConvention.Cdecl)]
+	private static extern ulong NativeStrLen(string text);
+
+	public int computedAbs = 0;
+	public int computedLen = 0;
+	private IntPtr _handle = IntPtr.Zero;
+
+	protected override void OnUpdate(float dt)
+	{
+		if (_handle == IntPtr.Zero)
+		{
+			computedAbs = NativeAbs(-123);
+			computedLen = (int)NativeStrLen("ShalltearInterop");
+		}
+	}
+}
+)");
+
+	CompileService service;
+	service.RefreshToolchain();
+	ASSERT_TRUE(RunCompile(service));
+
+	str binary = ScriptProjectOps::GetModuleBinaryPath(Root(), _config);
+	ModuleHandle module = ModuleSystem::Load(Path(binary));
+	ASSERT_TRUE(ModuleSystem::IsLoaded(module));
+
+	const TypeInfo* probeType = TypeRegistry::FindType(StringHash("NativeBridgeProbe"));
+	ASSERT_NE(probeType, nullptr);
+
+	Handle<Scene> scene = SceneSystem::CreateScene("DllImportScene");
+	Handle<SceneObject> owner = SceneSystem::CreateObject("DllImportActor", scene);
+	Handle<Component> component = owner.Get()->AddComponent(probeType);
+	ASSERT_TRUE(component.IsValid());
+
+	FrameTime clock;
+	clock.deltaTime = 0.016f;
+	clock.unscaledDeltaTime = 0.016f;
+	{
+		Time::FrameScope scope{clock};
+		SceneSystem::UpdateAll();
+	}
+
+	Variant absVal;
+	ASSERT_TRUE(GetField(component.Get(), probeType, StringHash("computedAbs"), &absVal));
+	ASSERT_NE(absVal.TryGet<i32>(), nullptr);
+	EXPECT_EQ(*absVal.TryGet<i32>(), 123);
+
+	Variant lenVal;
+	ASSERT_TRUE(GetField(component.Get(), probeType, StringHash("computedLen"), &lenVal));
+	ASSERT_NE(lenVal.TryGet<i32>(), nullptr);
+	EXPECT_EQ(*lenVal.TryGet<i32>(), 16);
+}
