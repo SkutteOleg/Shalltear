@@ -119,4 +119,9 @@ namespace Shalltear::ScriptProjectOps {
 													const str& className,
 													ScaffoldResult& out);
 
+	SHALLTEAR_EDITOR_API bool CreateCSharpComponentSource(const str& projectPath,
+														  const str& folderRelativeToSource,
+														  const str& className,
+														  ScaffoldResult& out);
+
 } // namespace Shalltear::ScriptProjectOps

@@ -14,7 +14,7 @@ It's in active development. No releases yet, things may (!) change and break.
 ## Features
 
 - Editor with a scene view/hierarchy/inspector/asset browser/console/profiler/etc.
-- C++ scripting with hot reload + play mode
+- C++ and C# scripting with hot reload + play mode
 - Vulkan 1.3 renderer with HLSL shaders, post-processing + node-based shader editor
 - GPU particle effects (also built from nodes)
 - 3D physics, skeletal animation, audio
@@ -28,7 +28,7 @@ It's in active development. No releases yet, things may (!) change and break.
 - A GPU with Vulkan 1.3 drivers
 - [Git](https://git-scm.com/download/win)
 - [Python 3](https://www.python.org/downloads/) (tick _**Add python.exe to PATH**_ in the installer)
-- ~6 GB of free disk space
+- ~7 GB of free disk space
 
 Visual Studio is not required. The engine builds with Clang only + automatically downloads a copy of Clang/CMake/Ninja.
 
@@ -58,6 +58,10 @@ Build.bat run
 | `Build.bat sdk` | Packages the SDK into `ShalltearSDK\` (Release, shared/static) |
 | `Build.bat shell` | Opens a command prompt with the pinned toolchain on `PATH` |
 | `Build.bat clean` | Deletes `build\` |
+
+## C# Scripting
+
+Components can be written in C++ (`.h`/`.cpp`), C# (`.cs`), or both (`Scripts -> New C# Component` in the editor). Roslyn (`ShalltearRoslyn.dll`) transpiles `.cs` files to C++20 (`.generated.h`/`.generated.cpp`) before Clang compiles the module, so there is no dotnet runtime or GC in a built game. Open `<ProjectName>.csproj` in Rider, VS Code, or Visual Studio for autocomplete against the generated `Shalltear.Stubs.cs`.
 
 ## VS Code
 

@@ -1,0 +1,30 @@
+using Shalltear;
+
+// starter C# component: transpiled to C++20 on compile + player builds.
+// public fields appear in the Inspector, saved with the scene, and keep their
+// values across hot reloads. Add one -> save the file -> switch back to the editor
+public class {{CLASS_NAME}} : Behavior
+{
+	[Range(0.0f, 360.0f)]
+	[Tooltip("Rotation speed in degrees per second")]
+	public float degreesPerSecond = 60.0f;
+
+	// store a Handle<SceneObject>, resolve when needed in OnUpdate
+	public Handle<SceneObject> target;
+
+	protected override void OnEnable()
+	{
+		Log.Info("{{MODULE_NAME}}", "{{CLASS_NAME}} enabled");
+	}
+
+	protected override void OnUpdate()
+	{
+		SceneObject objectToRotate = target.Get();
+		if (objectToRotate == null)
+		{
+			objectToRotate = GetOwner().Get();
+		}
+		Quat step = Quat.AngleAxis(degreesPerSecond * Time.DeltaTime, Vec3.Up());
+		objectToRotate.SetLocalRotation((objectToRotate.GetLocalRotation() * step).Normalized());
+	}
+}

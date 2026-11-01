@@ -3067,6 +3067,15 @@ namespace Shalltear {
 					contextPtr->ClosePopup(card);
 					ScriptFlows::OpenCreateComponentPopup(*contextPtr);
 				};
+
+				UI::ElementHandle createCs = context.CreateElement();
+				context.AddClass(createCs, StringHash("slt-tree-row"));
+				context.AppendChild(card, createCs);
+				context.SetText(createCs, font, FieldFont(), TextDim(), "New C# Component...");
+				context.Events(createCs).onClick = [contextPtr, card]() {
+					contextPtr->ClosePopup(card);
+					ScriptFlows::OpenCreateCSharpComponentPopup(*contextPtr);
+				};
 			}
 		}
 

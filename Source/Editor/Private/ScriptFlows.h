@@ -8,6 +8,8 @@ namespace Shalltear::ScriptFlows {
 
 	void OpenCreateComponentPopup(UI::Context& context);
 
+	void OpenCreateCSharpComponentPopup(UI::Context& context);
+
 	void OpenToolchainPopup(UI::Context& context);
 
 } // namespace Shalltear::ScriptFlows

@@ -1576,6 +1576,7 @@ TEST_F(ScriptedProjectFixture, ScaffoldedProjectIsRecognizedByScriptingSurfaces)
 
 	EXPECT_FALSE(ContainsText(texts, "no C++ module"));
 	EXPECT_TRUE(ContainsText(texts, "New C++ Component..."));
+	EXPECT_TRUE(ContainsText(texts, "New C# Component..."));
 
 	UnmountTempProject();
 }

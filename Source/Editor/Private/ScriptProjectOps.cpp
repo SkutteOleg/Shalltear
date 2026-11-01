@@ -2,6 +2,7 @@
 
 #include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/CppToolchain.h"
+#include "Shalltear/Editor/CSharpTranspiler.h"
 
 #include "GameModuleHost.h"
 
@@ -305,14 +306,18 @@ namespace Shalltear::ScriptProjectOps {
 
 		const std::unordered_set<std::string_view>& CppKeywords() {
 			static const std::unordered_set<std::string_view> keywords = {
-				"alignas", "alignof", "and", "asm", "auto", "bool", "break", "case", "catch", "char",
-				"class", "concept", "const", "consteval", "constexpr", "continue", "decltype", "default",
-				"delete", "do", "double", "else", "enum", "explicit", "export", "extern", "false", "float",
-				"for", "friend", "goto", "if", "inline", "int", "long", "mutable", "namespace", "new",
-				"noexcept", "not", "nullptr", "operator", "or", "private", "protected", "public",
-				"register", "requires", "return", "short", "signed", "sizeof", "static", "struct",
-				"switch", "template", "this", "throw", "true", "try", "typedef", "typeid", "typename",
-				"union", "unsigned", "using", "virtual", "void", "volatile", "wchar_t", "while", "xor"};
+				"abstract", "alignas", "alignof", "and", "as", "asm", "auto", "base", "bool", "break",
+				"byte", "case", "catch", "char", "checked", "class", "concept", "const", "consteval",
+				"constexpr", "continue", "decimal", "decltype", "default", "delegate", "delete", "do",
+				"double", "else", "enum", "event", "explicit", "export", "extern", "false", "finally",
+				"fixed", "float", "for", "foreach", "friend", "goto", "if", "implicit", "in", "inline",
+				"int", "interface", "internal", "is", "lock", "long", "mutable", "namespace", "new",
+				"noexcept", "not", "null", "nullptr", "object", "operator", "or", "out", "override",
+				"params", "private", "protected", "public", "readonly", "ref", "register", "requires",
+				"return", "sbyte", "sealed", "short", "signed", "sizeof", "stackalloc", "static",
+				"string", "struct", "switch", "template", "this", "throw", "true", "try", "typedef",
+				"typeid", "typename", "typeof", "uint", "ulong", "unchecked", "union", "unsafe",
+				"unsigned", "ushort", "using", "virtual", "void", "volatile", "wchar_t", "while", "xor"};
 			return keywords;
 		}
 
@@ -484,6 +489,9 @@ namespace Shalltear::ScriptProjectOps {
 			if (fs::last_write_time(it->path(), entryEc) > verifiedAt && !entryEc) {
 				return stale(std::format("'{}' changed since the last compile", it->path().generic_string()));
 			}
+		}
+		if (CSharpTranspiler::IsGeneratedOutputOutOfDate(projectPath, outReason)) {
+			return true;
 		}
 		return false;
 	}
@@ -679,6 +687,9 @@ namespace Shalltear::ScriptProjectOps {
 			}
 			SLT_LOG_INFO("Editor", "regenerated {} of {} project file(s): {}", written, written + current, names);
 		}
+		if (CSharpTranspiler::HasCSharpSources(projectPath)) {
+			CSharpTranspiler::EnsureCSharpProjectFiles(projectPath);
+		}
 		std::error_code orphanEc;
 		str orphaned = Join(projectPath, RETIRED_COMPILE_DIRECTORY);
 		if (fs::is_directory(fs::path(orphaned), orphanEc)) {
@@ -823,10 +834,12 @@ namespace Shalltear::ScriptProjectOps {
 		}
 		str headerRelative = relativeDirectory + "/" + className + ".h";
 		str sourceRelative = relativeDirectory + "/" + className + ".cpp";
+		str scriptRelative = relativeDirectory + "/" + className + ".cs";
 
 		std::error_code ec;
 		if (fs::exists(fs::path(Join(projectPath, headerRelative)), ec) ||
-			fs::exists(fs::path(Join(projectPath, sourceRelative)), ec)) {
+			fs::exists(fs::path(Join(projectPath, sourceRelative)), ec) ||
+			fs::exists(fs::path(Join(projectPath, scriptRelative)), ec)) {
 			SLT_LOG_WARN("Editor", "CreateComponentSource: '{}' already exists in {}", className, relativeDirectory);
 			return false;
 		}
@@ -842,6 +855,52 @@ namespace Shalltear::ScriptProjectOps {
 		}
 		return WriteIfAbsent(projectPath, headerRelative, header, out) &&
 			   WriteIfAbsent(projectPath, sourceRelative, source, out);
+	}
+
+	bool CreateCSharpComponentSource(const str& projectPath,
+									 const str& folderRelativeToSource,
+									 const str& className,
+									 ScaffoldResult& out) {
+		if (!IsValidClassName(className)) {
+			SLT_LOG_WARN("Editor", "CreateCSharpComponentSource: '{}' isn't a valid C# class name", className);
+			return false;
+		}
+		if (folderRelativeToSource.find("..") != str::npos ||
+			folderRelativeToSource.starts_with("/") ||
+			folderRelativeToSource.find(':') != str::npos) {
+			SLT_LOG_WARN("Editor", "CreateCSharpComponentSource: folder '{}' escapes Source/", folderRelativeToSource);
+			return false;
+		}
+
+		str relativeDirectory = str(SOURCE_DIRECTORY);
+		if (!folderRelativeToSource.empty()) {
+			relativeDirectory += "/" + folderRelativeToSource;
+		}
+		str headerRelative = relativeDirectory + "/" + className + ".h";
+		str sourceRelative = relativeDirectory + "/" + className + ".cpp";
+		str scriptRelative = relativeDirectory + "/" + className + ".cs";
+
+		std::error_code ec;
+		if (fs::exists(fs::path(Join(projectPath, headerRelative)), ec) ||
+			fs::exists(fs::path(Join(projectPath, sourceRelative)), ec) ||
+			fs::exists(fs::path(Join(projectPath, scriptRelative)), ec)) {
+			SLT_LOG_WARN("Editor", "CreateCSharpComponentSource: '{}' already exists in {}", className, relativeDirectory);
+			return false;
+		}
+
+		ScaffoldOptions options;
+		Vector<TemplateToken> tokens = BuildTokens(projectPath, ReadScriptSettings(projectPath).moduleName, options);
+		tokens.push_back({"CLASS_NAME", className});
+
+		str script;
+		if (!RenderTemplate("Component.cs", tokens, script)) {
+			return false;
+		}
+		if (!WriteIfAbsent(projectPath, scriptRelative, script, out)) {
+			return false;
+		}
+		CSharpTranspiler::EnsureCSharpProjectFiles(projectPath);
+		return true;
 	}
 
 } // namespace Shalltear::ScriptProjectOps

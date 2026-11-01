@@ -182,6 +182,9 @@ namespace Shalltear {
 			items.push_back({"New C++ Component...", "", true, false, [contextPtr]() {
 								 ScriptFlows::OpenCreateComponentPopup(*contextPtr);
 							 }});
+			items.push_back({"New C# Component...", "", true, false, [contextPtr]() {
+								 ScriptFlows::OpenCreateCSharpComponentPopup(*contextPtr);
+							 }});
 			items.push_back({"Compile", ChordLabel(Shortcut::CompileModule), !busy, true, [moduleHost]() {
 								 if (moduleHost) {
 									 moduleHost->RequestCompile();

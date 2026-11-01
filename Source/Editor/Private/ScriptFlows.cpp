@@ -201,4 +201,40 @@ namespace Shalltear::ScriptFlows {
 		context.SetFocus(nameField);
 	}
 
+	void OpenCreateCSharpComponentPopup(UI::Context& context) {
+		GameModuleHost* moduleHost = GameModuleHost::GetActive();
+		str projectPath = ProjectOps::GetMountedProjectPath();
+
+		UI::ElementHandle card = BeginShellPopupCard(context);
+		AddShellPopupLine(context, card, "New C# Component", 14.0f, TextNormal());
+		AddShellPopupLine(context, card, ScriptProjectOps::GetSourceDirectory(projectPath), 11.0f, TextDim());
+
+		UI::ElementHandle nameField = AddShellPopupField(context, card, "Class name", "CharacterController");
+		UI::ElementHandle folderField = AddShellPopupField(context, card, "Folder (inside Source/, optional)", "");
+
+		UI::Context* contextPtr = &context;
+		UI::ElementHandle buttons = AddShellButtonRow(context, card);
+		AddShellPopupButton(context, buttons, card, "Cancel", {});
+		AddShellPopupButton(context, buttons, card, "Create", [contextPtr, nameField, folderField, projectPath, moduleHost]() {
+			str className = contextPtr->GetTextString(nameField);
+			str folder = contextPtr->GetTextString(folderField);
+			ScriptProjectOps::ScaffoldResult result;
+			if (!ScriptProjectOps::CreateCSharpComponentSource(projectPath, folder, className, result)) {
+				SLT_LOG_ERROR("Editor", "couldn't create C# component '{}' (invalid name, or the file already exists)", className);
+				return;
+			}
+			for (const str& written : result.written) {
+				SLT_LOG_INFO("Editor", "wrote {}", written);
+			}
+			if (!result.written.empty()) {
+				ScriptProjectOps::OpenInExternalEditor(projectPath, moduleHost ? moduleHost->GetExternalEditorCommand() : str{},
+													   projectPath + "/" + result.written[0], 1, 1);
+			}
+			if (moduleHost) {
+				moduleHost->RequestCompile();
+			} }, true);
+		context.OpenPopup(card, {}, DIALOG_FLAGS);
+		context.SetFocus(nameField);
+	}
+
 } // namespace Shalltear::ScriptFlows
