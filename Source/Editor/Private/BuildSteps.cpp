@@ -11,6 +11,7 @@
 
 #include "Shalltear/Editor/CookOps.h"
 #include "Shalltear/Editor/CppToolchain.h"
+#include "Shalltear/Editor/CSharpTranspiler.h"
 #include "Shalltear/Editor/PackageOps.h"
 #include "Shalltear/Editor/ProjectOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
@@ -286,6 +287,22 @@ namespace Shalltear {
 			options.sdkRoot = context.sdkRoot;
 			options.probeVersions = false;
 			CppToolchain::ToolchainInfo toolchain = CppToolchain::Discover(options);
+
+			std::error_code csGenEc;
+			if (CSharpTranspiler::HasCSharpSources(context.projectRoot) ||
+				fs::is_directory(fs::path(CSharpTranspiler::GetGeneratedDirectory(context.projectRoot)), csGenEc)) {
+				CSharpTranspiler::TranspileProjectResult transpileResult;
+				if (!CSharpTranspiler::TranspileProject(context.projectRoot, transpileResult)) {
+					for (const CompilerDiagnostic& diag : transpileResult.diagnostics) {
+						BuildIssueSeverity sev = diag.severity == CompilerDiagnosticSeverity::Error
+													 ? BuildIssueSeverity::Error
+													 : BuildIssueSeverity::Warning;
+						context.AddIssue(sev, "csharp",
+										 std::format("{}:{}:{}: {}", diag.file, diag.line, diag.column, diag.message));
+					}
+					return BuildStepStatus::Failed;
+				}
+			}
 
 			str sourceDirectory = context.projectRoot;
 			if (!ScriptProjectOps::HasScriptProject(context.projectRoot) &&

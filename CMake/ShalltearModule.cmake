@@ -73,6 +73,22 @@ endfunction()
 function(shalltear_add_module MODULE_NAME)
 	cmake_parse_arguments(SLT_MODULE "EDITOR" "OUTPUT_DIRECTORY" "SOURCES" ${ARGN})
 
+	if(SHALLTEAR_PROJECT_ROOT)
+		set(projectRoot "${SHALLTEAR_PROJECT_ROOT}")
+	else()
+		set(projectRoot "${CMAKE_CURRENT_SOURCE_DIR}")
+	endif()
+
+	if(SLT_MODULE_SOURCES)
+		list(FILTER SLT_MODULE_SOURCES EXCLUDE REGEX "\\.[cC][sS]$")
+	endif()
+	file(GLOB_RECURSE sltGeneratedCSharpSources CONFIGURE_DEPENDS
+		"${projectRoot}/Library/Generated/CSharp/*.generated.cpp"
+		"${projectRoot}/Library/Generated/CSharp/*.generated.h")
+	if(sltGeneratedCSharpSources)
+		list(APPEND SLT_MODULE_SOURCES ${sltGeneratedCSharpSources})
+	endif()
+
 	if(NOT SLT_MODULE_SOURCES)
 		message(FATAL_ERROR "shalltear_add_module(${MODULE_NAME}): SOURCES is required and must not be empty.")
 	endif()
@@ -88,6 +104,11 @@ function(shalltear_add_module MODULE_NAME)
 
 	add_library(${MODULE_NAME} SHARED ${SLT_MODULE_SOURCES})
 	target_link_libraries(${MODULE_NAME} PRIVATE Shalltear::Core)
+	if(sltGeneratedCSharpSources)
+		target_include_directories(${MODULE_NAME} PRIVATE
+			"${projectRoot}/Library/Generated/CSharp"
+			"${projectRoot}/Source")
+	endif()
 	set_target_properties(${MODULE_NAME} PROPERTIES
 		CXX_STANDARD 20
 		CXX_STANDARD_REQUIRED ON

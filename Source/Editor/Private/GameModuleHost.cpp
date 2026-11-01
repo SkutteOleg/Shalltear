@@ -34,7 +34,7 @@ namespace Shalltear {
 			if (lower == "cmakelists.txt") {
 				return true;
 			}
-			for (const char* extension : {".h", ".hpp", ".inl", ".cpp", ".cc", ".cxx"}) {
+			for (const char* extension : {".h", ".hpp", ".inl", ".cpp", ".cc", ".cxx", ".cs"}) {
 				if (lower.ends_with(extension)) {
 					return true;
 				}

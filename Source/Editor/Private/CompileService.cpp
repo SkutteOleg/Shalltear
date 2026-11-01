@@ -8,6 +8,7 @@
 
 #include "Shalltear/Editor/EditorConsole.h"
 #include "Shalltear/Editor/EditorEvents.h"
+#include "Shalltear/Editor/CSharpTranspiler.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include "ChildProcess.h"
@@ -361,14 +362,37 @@ namespace Shalltear {
 			return true;
 		}
 
+		_projectPath = request.projectPath;
+		_configName = str(ScriptProjectOps::GetActiveConfigName());
+		_recompileRequested = request.recompile;
+		_errorCount = 0;
+		_warningCount = 0;
+		_diagnostics.clear();
+		_startTicks = Time::GetTicks();
+
+		std::error_code genEc;
+		if (CSharpTranspiler::HasCSharpSources(_projectPath) ||
+			fs::is_directory(fs::path(CSharpTranspiler::GetGeneratedDirectory(_projectPath)), genEc)) {
+			CSharpTranspiler::TranspileProjectResult transpileResult;
+			bool transpileOk = CSharpTranspiler::TranspileProject(_projectPath, transpileResult);
+			for (const CompilerDiagnostic& diag : transpileResult.diagnostics) {
+				_impl->sink.Publish(diag);
+			}
+			if (!transpileOk) {
+				if (_errorCount == 0) {
+					_errorCount = 1;
+				}
+				_lastDurationSeconds = static_cast<f64>(Time::GetTicks() - _startTicks) /
+									   static_cast<f64>(Time::GetTicksPerSecond());
+				SLT_LOG_ERROR("Editor", "C# transpilation FAILED ({} error(s), {} warning(s)) -> loaded module unchanged",
+							  _errorCount, _warningCount);
+				PublishState(CompileState::Failed);
+				return false;
+			}
+		}
+
 		str custom = ScriptProjectOps::ReadScriptSettings(request.projectPath).compileCommand;
 		if (!custom.empty()) {
-			_projectPath = request.projectPath;
-			_configName = str(ScriptProjectOps::GetActiveConfigName());
-			_errorCount = 0;
-			_warningCount = 0;
-			_diagnostics.clear();
-			_startTicks = Time::GetTicks();
 			if (!_impl->process.Start(custom, _projectPath)) {
 				_errorCount = 1;
 				PublishState(CompileState::Failed);
@@ -389,14 +413,6 @@ namespace Shalltear {
 			PublishState(CompileState::Failed);
 			return false;
 		}
-
-		_projectPath = request.projectPath;
-		_configName = str(ScriptProjectOps::GetActiveConfigName());
-		_recompileRequested = request.recompile;
-		_errorCount = 0;
-		_warningCount = 0;
-		_diagnostics.clear();
-		_startTicks = Time::GetTicks();
 
 		str staleReason;
 		if (_recompileRequested) {

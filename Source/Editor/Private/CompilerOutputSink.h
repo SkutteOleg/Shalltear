@@ -21,9 +21,10 @@ namespace Shalltear {
 
 		void CountError();
 
+		void Publish(const CompilerDiagnostic& diagnostic);
+
 		void ReportUnparsedFailure(std::string_view what, i32 exitCode);
 	private:
-		void Publish(const CompilerDiagnostic& diagnostic);
 		void PublishOpen();
 
 		const char* _category;
