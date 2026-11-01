@@ -335,6 +335,14 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/External/Prebuilt/dxc/bin/x64/dxcompiler.dll)
         DESTINATION ${SHALLTEAR_INSTALL_BIN})
 endif()
 
+if(EXISTS ${CMAKE_SOURCE_DIR}/External/Prebuilt/roslyn/bin/ShalltearRoslyn.dll)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/External/Prebuilt/roslyn/bin/
+        DESTINATION ${SHALLTEAR_INSTALL_BIN}/Roslyn)
+    install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Roslyn/Shalltear.EngineStubs.json
+        DESTINATION ${SHALLTEAR_INSTALL_BIN}/Roslyn
+        OPTIONAL)
+endif()
+
 if(SHALLTEAR_CXX_RUNTIME_DLLS)
     install(FILES ${SHALLTEAR_CXX_RUNTIME_DLLS} DESTINATION ${SHALLTEAR_INSTALL_BIN})
 endif()
