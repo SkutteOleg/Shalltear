@@ -1495,7 +1495,7 @@ internal static class RoslynCompilerEngine
             {
                 ctorCand = ctorCand.Substring(0, ctorCloseParen + 1).Trim();
             }
-            Match ctorMatch = Regex.Match(ctorCand, $@"^(?:constexpr\s+|explicit\s+|inline\s+)*{Regex.Escape(typeName)}\s*\((.*)\)$");
+            Match ctorMatch = Regex.Match(ctorCand, $@"^(?:constexpr\s+|explicit\s+|inline\s+)*{Regex.Escape(typeName)}\s*\(([\s\S]*)\)$");
             if (ctorMatch.Success)
             {
                 string rawParams = ctorMatch.Groups[1].Value.Trim();
@@ -1689,7 +1689,29 @@ internal static class RoslynCompilerEngine
 
     private static string StripConstructorInitializerList(string methodHeader)
     {
-        int closeParen = methodHeader.LastIndexOf(')');
+        int openParen = methodHeader.IndexOf('(');
+        if (openParen < 0)
+        {
+            return methodHeader;
+        }
+        int depth = 0;
+        int closeParen = -1;
+        for (int i = openParen; i < methodHeader.Length; ++i)
+        {
+            if (methodHeader[i] == '(')
+            {
+                ++depth;
+            }
+            else if (methodHeader[i] == ')')
+            {
+                --depth;
+                if (depth == 0)
+                {
+                    closeParen = i;
+                    break;
+                }
+            }
+        }
         if (closeParen < 0)
         {
             return methodHeader;
@@ -1779,7 +1801,7 @@ internal static class RoslynCompilerEngine
             clean = clean.Substring(0, closeParen + 1).Trim();
         }
 
-        Match m = Regex.Match(clean, @"^([A-Za-z0-9_:<>&*,\s]+?)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)$");
+        Match m = Regex.Match(clean, @"^([A-Za-z0-9_:<>&*,\s]+?)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([\s\S]*)\)$");
         if (!m.Success)
         {
             return;
@@ -2031,12 +2053,12 @@ internal static class RoslynCompilerEngine
                 rawName = $"arg{idx}";
             }
 
-            if (rawName.Contains('['))
+            if (p.Contains('(') || p.Contains(')') || rawName.Contains('[') || !Regex.IsMatch(rawName, @"^[A-Za-z_][A-Za-z0-9_]*$"))
             {
                 return false;
             }
 
-            if (!TryMapCppTypeToCSharp(rawType, out string mappedType, out bool isNonConstRef))
+            if (!TryMapCppTypeToCSharp(rawType, out string mappedType, out bool isNonConstRef) || mappedType == "void")
             {
                 return false;
             }
@@ -3746,7 +3768,7 @@ internal static class RoslynCompilerEngine
         {
             string propType = MapTypeName(prop.RawType, index, pointerForObjectType: true, wrapObjectInHandle: false);
             string staticPrefix = prop.IsStatic ? "static " : "";
-            string constSuffix = IsComputedGetterConst(prop) ? " const" : "";
+            string constSuffix = IsComputedGetterConst(prop, computedProps) ? " const" : "";
             if (prop.ExpressionGetter != null || prop.GetAccessor != null)
             {
                 header.Append($"\t{staticPrefix}{propType} Get{prop.Name}(){constSuffix};\n");
@@ -3802,7 +3824,7 @@ internal static class RoslynCompilerEngine
         foreach (ComputedPropertyInfo prop in computedProps)
         {
             string propType = MapTypeName(prop.RawType, index, pointerForObjectType: true, wrapObjectInHandle: false);
-            string constSuffix = IsComputedGetterConst(prop) ? " const" : "";
+            string constSuffix = IsComputedGetterConst(prop, computedProps) ? " const" : "";
             if (prop.ExpressionGetter != null)
             {
                 PopulateScopeLocals(fields, null, prop.ExpressionGetter, semanticModel, index, out var ptrLocals, out var contLocals, out var strLocals);
@@ -3932,22 +3954,31 @@ internal static class RoslynCompilerEngine
         }
     }
 
-    private static bool IsComputedGetterConst(ComputedPropertyInfo prop)
+    private static bool IsComputedGetterConst(ComputedPropertyInfo prop, List<ComputedPropertyInfo> allComputedProps)
     {
         if (prop.IsStatic)
         {
             return false;
         }
-        if (prop.GetAccessor?.Body != null)
+        SyntaxNode? getterNode = (SyntaxNode?)prop.GetAccessor?.Body ?? (SyntaxNode?)prop.GetAccessor?.ExpressionBody ?? prop.ExpressionGetter;
+        if (getterNode != null)
         {
-            if (prop.GetAccessor.Body.DescendantNodes().OfType<AssignmentExpressionSyntax>().Any())
+            if (getterNode.DescendantNodes().OfType<AssignmentExpressionSyntax>().Any())
             {
                 return false;
             }
-            foreach (InvocationExpressionSyntax inv in prop.GetAccessor.Body.DescendantNodes().OfType<InvocationExpressionSyntax>())
+            foreach (InvocationExpressionSyntax inv in getterNode.DescendantNodes().OfType<InvocationExpressionSyntax>())
             {
                 if (inv.Expression is IdentifierNameSyntax ||
                     (inv.Expression is MemberAccessExpressionSyntax ma && ma.Expression is ThisExpressionSyntax))
+                {
+                    return false;
+                }
+            }
+            foreach (IdentifierNameSyntax id in getterNode.DescendantNodes().OfType<IdentifierNameSyntax>())
+            {
+                string idName = id.Identifier.ValueText;
+                if (idName != prop.Name && allComputedProps.Any(p => p.Name == idName))
                 {
                     return false;
                 }
