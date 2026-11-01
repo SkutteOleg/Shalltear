@@ -271,6 +271,21 @@ namespace Shalltear {
 			return Handle<Component>(static_cast<Component*>(raw));
 		}
 
+		StringHash PayloadScriptComponent(const UI::DragPayload& payload) {
+			if (payload.type == "BrowserFile"_hash && payload.data.Is<str>()) {
+				return AssetBrowserOps::ResolveScriptComponentType(payload.data.As<str>());
+			}
+			if (payload.type == "Asset"_hash && payload.data.Is<AssetDragData>()) {
+				Path path = AssetDatabase::LookupPath(payload.data.As<AssetDragData>().guid);
+				std::string_view virtualPath = path.ToString();
+				constexpr std::string_view PREFIX = "project://";
+				if (virtualPath.starts_with(PREFIX)) {
+					return AssetBrowserOps::ResolveScriptComponentType(virtualPath.substr(PREFIX.size()));
+				}
+			}
+			return {};
+		}
+
 	} // anonymous namespace
 
 	u64 HierarchyPanel::ComputeStructureVersion() const {
@@ -1116,6 +1131,9 @@ namespace Shalltear {
 				return EditorSceneOps::ClassifyComponentDrop(PayloadComponent(payload), objectHandle) ==
 					   EditorSceneOps::ComponentDropKind::Move;
 			}
+			if (StringHash scriptType = PayloadScriptComponent(payload); scriptType.GetValue() != 0) {
+				return host != nullptr && !host->IsPendingDestroy();
+			}
 			if (payload.type == "SceneFolder"_hash) {
 				Handle<Scene> dragScene;
 				u64 dragged = 0;
@@ -1143,6 +1161,12 @@ namespace Shalltear {
 			if (payload.type == "Component"_hash) {
 				EditorSceneOps::DropComponentOn(PayloadComponent(payload), objectHandle,
 												EditorSceneOps::COMPONENT_INDEX_END);
+				return;
+			}
+			if (StringHash scriptType = PayloadScriptComponent(payload); scriptType.GetValue() != 0) {
+				if (host && !host->IsPendingDestroy()) {
+					UndoSystem::Push(MakeUnique<AddComponentCommand>(objectHandle, scriptType));
+				}
 				return;
 			}
 			if (payload.type == "SceneFolder"_hash) {

@@ -84,6 +84,7 @@ namespace Shalltear {
 		CompileService* _compileService = nullptr;
 		std::optional<FileWatcher> _binaryWatcher;
 		std::optional<FileWatcher> _sourceWatcher;
+		std::optional<FileWatcher> _assetsWatcher;
 
 		std::mutex _pendingMutex;
 		bool _pendingReload = false;

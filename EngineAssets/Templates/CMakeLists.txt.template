@@ -6,7 +6,7 @@ project({{MODULE_NAME}} CXX)
 # editor passes Shalltear_ROOT, elsewhere set SHALLTEAR_SDK
 find_package(Shalltear REQUIRED)
 
-file(GLOB_RECURSE {{MODULE_UPPER}}_SOURCES CONFIGURE_DEPENDS "Source/*.cpp" "Source/*.h" "Source/*.cs")
+file(GLOB_RECURSE {{MODULE_UPPER}}_SOURCES CONFIGURE_DEPENDS "Source/*.cpp" "Source/*.h" "Source/*.cs" "Assets/*.cs")
 
 # add frequently included headers with target_precompile_headers
 shalltear_add_module({{MODULE_NAME}} SOURCES ${{{MODULE_UPPER}}_SOURCES})

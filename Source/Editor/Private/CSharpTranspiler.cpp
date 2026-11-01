@@ -383,23 +383,29 @@ namespace Shalltear::CSharpTranspiler {
 
 		str moduleName = ScriptProjectOps::GetModuleName(projectPath);
 		fs::path csprojPath = fs::path(projectPath) / (moduleName + ".csproj");
+		str csprojContent =
+			"<Project Sdk=\"Microsoft.NET.Sdk\">\n"
+			"  <PropertyGroup>\n"
+			"    <TargetFramework>net9.0</TargetFramework>\n"
+			"    <ImplicitUsings>enable</ImplicitUsings>\n"
+			"    <Nullable>disable</Nullable>\n"
+			"    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>\n"
+			"    <BaseIntermediateOutputPath>Library/Compile/CSharpIde/obj/</BaseIntermediateOutputPath>\n"
+			"    <OutputPath>Library/Compile/CSharpIde/bin/</OutputPath>\n"
+			"  </PropertyGroup>\n"
+			"  <ItemGroup>\n"
+			"    <Compile Include=\"Source/**/*.cs\" />\n"
+			"    <Compile Include=\"Assets/**/*.cs\" />\n"
+			"    <Compile Include=\"Library/Generated/CSharpStubs/Shalltear.Stubs.cs\" />\n"
+			"  </ItemGroup>\n"
+			"</Project>\n";
 		if (!fs::is_regular_file(csprojPath, ec)) {
-			str csprojContent =
-				"<Project Sdk=\"Microsoft.NET.Sdk\">\n"
-				"  <PropertyGroup>\n"
-				"    <TargetFramework>net9.0</TargetFramework>\n"
-				"    <ImplicitUsings>enable</ImplicitUsings>\n"
-				"    <Nullable>disable</Nullable>\n"
-				"    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>\n"
-				"    <BaseIntermediateOutputPath>Library/Compile/CSharpIde/obj/</BaseIntermediateOutputPath>\n"
-				"    <OutputPath>Library/Compile/CSharpIde/bin/</OutputPath>\n"
-				"  </PropertyGroup>\n"
-				"  <ItemGroup>\n"
-				"    <Compile Include=\"Source/**/*.cs\" />\n"
-				"    <Compile Include=\"Library/Generated/CSharpStubs/Shalltear.Stubs.cs\" />\n"
-				"  </ItemGroup>\n"
-				"</Project>\n";
 			FileSystem::WriteTextFile(Path(csprojPath.generic_string()), csprojContent);
+		} else {
+			str existing = FileSystem::ReadTextFile(Path(csprojPath.generic_string()), MemTag::Editor);
+			if (existing.find("Assets/**/*.cs") == str::npos) {
+				FileSystem::WriteTextFile(Path(csprojPath.generic_string()), csprojContent);
+			}
 		}
 		return true;
 	}
@@ -411,53 +417,85 @@ namespace Shalltear::CSharpTranspiler {
 		return projectPath + "/" + GENERATED_RELATIVE_DIR;
 	}
 
-	bool HasCSharpSources(const str& projectPath) {
-		if (projectPath.empty()) {
-			return false;
-		}
-		std::error_code ec;
-		fs::path sourceDir(ScriptProjectOps::GetSourceDirectory(projectPath));
-		if (!fs::is_directory(sourceDir, ec)) {
-			return false;
-		}
-		for (fs::recursive_directory_iterator it(sourceDir, fs::directory_options::skip_permission_denied, ec), end;
-			 it != end && !ec; it.increment(ec)) {
-			if (it->is_regular_file(ec) &&
-				StringUtil::ToLower(it->path().extension().generic_string()) == ".cs") {
-				return true;
+	namespace {
+
+		struct DiscoveredCsFile {
+			fs::path fullPath;
+			fs::path relativeToGenRoot;
+		};
+
+		void CollectProjectCSharpFiles(const str& projectPath, Vector<DiscoveredCsFile>& out) {
+			out.clear();
+			if (projectPath.empty()) {
+				return;
+			}
+			std::error_code ec;
+			fs::path projectRoot(projectPath);
+			fs::path sourceDir(ScriptProjectOps::GetSourceDirectory(projectPath));
+			if (fs::is_directory(sourceDir, ec)) {
+				Vector<fs::path> found{GetMemoryResource(MemTag::Editor)};
+				for (fs::recursive_directory_iterator it(sourceDir, fs::directory_options::skip_permission_denied, ec), end;
+					 it != end && !ec; it.increment(ec)) {
+					if (it->is_regular_file(ec) &&
+						StringUtil::ToLower(it->path().extension().generic_string()) == ".cs") {
+						found.push_back(it->path());
+					}
+				}
+				std::sort(found.begin(), found.end());
+				for (const fs::path& p : found) {
+					out.push_back({p, fs::relative(p, sourceDir, ec)});
+				}
+			}
+
+			fs::path assetsDir = projectRoot / "Assets";
+			if (fs::is_directory(assetsDir, ec)) {
+				Vector<fs::path> found{GetMemoryResource(MemTag::Editor)};
+				for (fs::recursive_directory_iterator it(assetsDir, fs::directory_options::skip_permission_denied, ec), end;
+					 it != end && !ec; it.increment(ec)) {
+					if (it->is_regular_file(ec) &&
+						StringUtil::ToLower(it->path().extension().generic_string()) == ".cs") {
+						found.push_back(it->path());
+					}
+				}
+				std::sort(found.begin(), found.end());
+				for (const fs::path& p : found) {
+					out.push_back({p, fs::relative(p, projectRoot, ec)});
+				}
 			}
 		}
-		return false;
+
+	} // anonymous namespace
+
+	bool HasCSharpSources(const str& projectPath) {
+		Vector<DiscoveredCsFile> csFiles{GetMemoryResource(MemTag::Editor)};
+		CollectProjectCSharpFiles(projectPath, csFiles);
+		return !csFiles.empty();
 	}
 
 	bool IsGeneratedOutputOutOfDate(const str& projectPath, str* outReason) {
-		if (!HasCSharpSources(projectPath)) {
+		Vector<DiscoveredCsFile> csFiles{GetMemoryResource(MemTag::Editor)};
+		CollectProjectCSharpFiles(projectPath, csFiles);
+		if (csFiles.empty()) {
 			return false;
 		}
 		std::error_code ec;
-		fs::path sourceDir(ScriptProjectOps::GetSourceDirectory(projectPath));
 		fs::path genDir(GetGeneratedDirectory(projectPath));
-		for (fs::recursive_directory_iterator it(sourceDir, fs::directory_options::skip_permission_denied, ec), end;
-			 it != end && !ec; it.increment(ec)) {
-			if (!it->is_regular_file(ec) ||
-				StringUtil::ToLower(it->path().extension().generic_string()) != ".cs") {
-				continue;
-			}
-			fs::path rel = fs::relative(it->path(), sourceDir, ec);
+		for (const DiscoveredCsFile& item : csFiles) {
+			const fs::path& rel = item.relativeToGenRoot;
 			fs::path genCpp = genDir / rel.parent_path() / (rel.stem().generic_string() + ".generated.cpp");
 			fs::path genH = genDir / rel.parent_path() / (rel.stem().generic_string() + ".generated.h");
 			if (!fs::is_regular_file(genCpp, ec) || !fs::is_regular_file(genH, ec)) {
 				if (outReason) {
-					*outReason = std::format("'{}' has not been transpiled yet", it->path().generic_string());
+					*outReason = std::format("'{}' has not been transpiled yet", item.fullPath.generic_string());
 				}
 				return true;
 			}
 			std::error_code timeEc;
-			auto csTime = fs::last_write_time(it->path(), timeEc);
+			auto csTime = fs::last_write_time(item.fullPath, timeEc);
 			auto cppTime = fs::last_write_time(genCpp, timeEc);
 			if (!timeEc && csTime > cppTime) {
 				if (outReason) {
-					*outReason = std::format("'{}' is newer than its transpiled C++ output", it->path().generic_string());
+					*outReason = std::format("'{}' is newer than its transpiled C++ output", item.fullPath.generic_string());
 				}
 				return true;
 			}
@@ -538,17 +576,8 @@ namespace Shalltear::CSharpTranspiler {
 		fs::path sourceDir(ScriptProjectOps::GetSourceDirectory(projectPath));
 		fs::path genDir(GetGeneratedDirectory(projectPath));
 
-		Vector<fs::path> csFiles{GetMemoryResource(MemTag::Editor)};
-		if (fs::is_directory(sourceDir, ec)) {
-			for (fs::recursive_directory_iterator it(sourceDir, fs::directory_options::skip_permission_denied, ec), end;
-				 it != end && !ec; it.increment(ec)) {
-				if (it->is_regular_file(ec) &&
-					StringUtil::ToLower(it->path().extension().generic_string()) == ".cs") {
-					csFiles.push_back(it->path());
-				}
-			}
-		}
-		std::sort(csFiles.begin(), csFiles.end());
+		Vector<DiscoveredCsFile> csFiles{GetMemoryResource(MemTag::Editor)};
+		CollectProjectCSharpFiles(projectPath, csFiles);
 		out.sourceFileCount = static_cast<u32>(csFiles.size());
 
 		std::unordered_set<str> expectedGeneratedFiles;

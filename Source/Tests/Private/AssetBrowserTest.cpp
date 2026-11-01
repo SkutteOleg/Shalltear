@@ -1619,6 +1619,8 @@ TEST(AssetBrowserOpenPolicyTest, OnlyShaderSourceOpensExternally) {
 	EXPECT_TRUE(AssetBrowserOps::OpensInExternalEditor(".hlsl"));
 	EXPECT_TRUE(AssetBrowserOps::OpensInExternalEditor(".hlsli"));
 	EXPECT_TRUE(AssetBrowserOps::OpensInExternalEditor(".HLSL"));
+	EXPECT_TRUE(AssetBrowserOps::OpensInExternalEditor(".cs"));
+	EXPECT_TRUE(AssetBrowserOps::OpensInExternalEditor(".CS"));
 
 	EXPECT_FALSE(AssetBrowserOps::OpensInExternalEditor(".scene"));
 	EXPECT_FALSE(AssetBrowserOps::OpensInExternalEditor(".prefab"));
@@ -1821,6 +1823,25 @@ TEST_P(AssetBrowserGestureTest, UnimportedFilesSelectNoAsset) {
 
 	EXPECT_TRUE(RowIsSelected(build.context, other));
 	EXPECT_FALSE(EditorSelection::HasAssetSelection());
+}
+
+TEST_P(AssetBrowserGestureTest, CSharpFilesSelectAssetGuid) {
+	FileSystem::WriteTextFile(Path("project://Assets/Spinner.cs"), "using Shalltear;\n");
+	AssetDatabase::ScanProjectDirectory();
+	Guid expected = AssetDatabase::LookupGuid(Path("project://Assets/Spinner.cs"));
+	ASSERT_TRUE(expected.IsValid());
+
+	Handle<EditorPanel> panel = OpenBrowser();
+	PanelBuild build{BrowserContextDesc()};
+	BuildAndSettle(*panel.Get(), build);
+
+	UI::ElementHandle row = FindFileRow(build.context, build.root, "Spinner.cs");
+	ASSERT_TRUE(build.context.IsAlive(row));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, row));
+
+	EXPECT_TRUE(RowIsSelected(build.context, row));
+	EXPECT_TRUE(EditorSelection::HasAssetSelection());
+	EXPECT_EQ(EditorSelection::GetSelectedAsset(), expected);
 }
 
 TEST_P(AssetBrowserGestureTest, BrowsersShareSelection) {

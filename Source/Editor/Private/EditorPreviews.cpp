@@ -7,6 +7,7 @@
 #include "Shalltear/Core/Containers.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/StringUtil.h"
 
 #include "Shalltear/Core/Math.h"
 #include "Shalltear/Core/Math/HalfFloat.h"
@@ -209,6 +210,10 @@ namespace Shalltear {
 	}
 
 	EditorPreviews::TypeBadge EditorPreviews::BadgeForFileName(std::string_view fileName) {
+		str extension = StringUtil::ToLower(Path(str(fileName)).GetExtension());
+		if (extension == ".cs") {
+			return {EditorIcons::Glyph::AssetShader, EditorTheme::GetColor(ColorToken::AssetShader)};
+		}
 		const StringHash type = EditorPreviewsInternal::AssetTypeForFileName(fileName);
 		if (type == StringHash{}) {
 			return {{}, EditorTheme::GetColor(ColorToken::TextDim)};

@@ -176,22 +176,35 @@ namespace Shalltear {
 		if (_projectPath.empty() || !_compileService) {
 			return;
 		}
-		str sourceDirectory = ScriptProjectOps::GetSourceDirectory(_projectPath);
 		std::error_code ec;
-		if (!std::filesystem::is_directory(std::filesystem::path(sourceDirectory), ec)) {
-			return;
+		str sourceDirectory = ScriptProjectOps::GetSourceDirectory(_projectPath);
+		if (!_sourceWatcher && std::filesystem::is_directory(std::filesystem::path(sourceDirectory), ec)) {
+			_sourceWatcher.emplace(Path(sourceDirectory), [this](const Path& changed, FileAction action) {
+				if (action == FileAction::Removed) {
+					return;
+				}
+				if (!IsCompileTriggeringFile(changed.GetFilename())) {
+					return;
+				}
+				std::lock_guard lock(_pendingMutex);
+				_pendingCompile = true;
+				_lastSourceChangeTicks = Time::GetTicks();
+			});
 		}
-		_sourceWatcher.emplace(Path(sourceDirectory), [this](const Path& changed, FileAction action) {
-			if (action == FileAction::Removed) {
-				return;
-			}
-			if (!IsCompileTriggeringFile(changed.GetFilename())) {
-				return;
-			}
-			std::lock_guard lock(_pendingMutex);
-			_pendingCompile = true;
-			_lastSourceChangeTicks = Time::GetTicks();
-		});
+		str assetsDirectory = _projectPath + "/Assets";
+		if (!_assetsWatcher && std::filesystem::is_directory(std::filesystem::path(assetsDirectory), ec)) {
+			_assetsWatcher.emplace(Path(assetsDirectory), [this](const Path& changed, FileAction action) {
+				if (action == FileAction::Removed) {
+					return;
+				}
+				if (!StringUtil::ToLower(changed.GetFilename()).ends_with(".cs")) {
+					return;
+				}
+				std::lock_guard lock(_pendingMutex);
+				_pendingCompile = true;
+				_lastSourceChangeTicks = Time::GetTicks();
+			});
+		}
 	}
 
 	void GameModuleHost::Terminate() {
@@ -202,6 +215,7 @@ namespace Shalltear {
 
 		_binaryWatcher.reset();
 		_sourceWatcher.reset();
+		_assetsWatcher.reset();
 		// never kill a running compile (it owns the CMake tree)
 		_compileService = nullptr;
 		_loadedPackages.clear();

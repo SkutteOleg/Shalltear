@@ -9,8 +9,7 @@ public class {{CLASS_NAME}} : Behavior
 	[Tooltip("Rotation speed in degrees per second")]
 	public float degreesPerSecond = 60.0f;
 
-	// store a Handle<SceneObject>, resolve when needed in OnUpdate
-	public Handle<SceneObject> target;
+	public SceneObject target;
 
 	protected override void OnEnable()
 	{
@@ -19,11 +18,7 @@ public class {{CLASS_NAME}} : Behavior
 
 	protected override void OnUpdate()
 	{
-		SceneObject objectToRotate = target.Get();
-		if (objectToRotate == null)
-		{
-			objectToRotate = GetOwner().Get();
-		}
+		SceneObject objectToRotate = target ?? GetOwner();
 		Quat step = Quat.AngleAxis(degreesPerSecond * Time.DeltaTime, Vec3.Up());
 		objectToRotate.SetLocalRotation((objectToRotate.GetLocalRotation() * step).Normalized());
 	}

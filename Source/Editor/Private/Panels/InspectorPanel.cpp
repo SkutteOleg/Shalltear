@@ -13,6 +13,7 @@
 #include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/Scene/UnresolvedComponent.h"
 #include "Shalltear/Core/Serialization/TextSerializer.h"
+#include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/UI/UISystem.h"
 
 #include "Shalltear/Editor/EditorIcons.h"
@@ -157,6 +158,42 @@ namespace Shalltear {
 			}
 			const Vector<u64>& objects = payload.data.As<SceneObjectDragData>().objects;
 			return objects.empty() ? nullptr : ObjectRegistry::Resolve(objects.front());
+		}
+
+		Object* DraggedObjectForType(const UI::DragPayload& payload, const TypeInfo* pointeeType) {
+			Object* dragged = DraggedObject(payload);
+			if (!dragged || !pointeeType) {
+				return nullptr;
+			}
+			if (TypeRegistry::IsDerivedFrom(dragged->GetType(), pointeeType)) {
+				return dragged;
+			}
+			if (TypeRegistry::IsDerivedFrom(pointeeType, Component::GetReflectType()) &&
+				TypeRegistry::IsDerivedFrom(dragged->GetType(), SceneObject::GetReflectType())) {
+				auto* sceneObject = static_cast<SceneObject*>(dragged);
+				for (u32 i = 0; i < sceneObject->GetComponentCount(); ++i) {
+					Component* comp = sceneObject->GetComponentAt(i).Get();
+					if (comp && TypeRegistry::IsDerivedFrom(comp->GetType(), pointeeType)) {
+						return comp;
+					}
+				}
+			}
+			return nullptr;
+		}
+
+		StringHash PayloadScriptComponent(const UI::DragPayload& payload) {
+			if (payload.type == "BrowserFile"_hash && payload.data.Is<str>()) {
+				return AssetBrowserOps::ResolveScriptComponentType(payload.data.As<str>());
+			}
+			if (payload.type == "Asset"_hash && payload.data.Is<AssetDragData>()) {
+				Path path = AssetDatabase::LookupPath(payload.data.As<AssetDragData>().guid);
+				std::string_view virtualPath = path.ToString();
+				constexpr std::string_view PREFIX = "project://";
+				if (virtualPath.starts_with(PREFIX)) {
+					return AssetBrowserOps::ResolveScriptComponentType(virtualPath.substr(PREFIX.size()));
+				}
+			}
+			return {};
 		}
 
 		Variant NumericVariant(const TypeInfo* fieldType, f64 value) {
@@ -802,7 +839,19 @@ namespace Shalltear {
 		mix(EditorSelection::GetSelectedAsset().low);
 		mix(EditorSelection::GetSelectedAsset().high);
 		if (const Guid shown = ShownAsset(); shown.IsValid()) {
-			mix(StringHash(AssetDatabase::LookupPath(shown).ToString()).GetValue());
+			Path path = AssetDatabase::LookupPath(shown);
+			mix(StringHash(path.ToString()).GetValue());
+			if (StringUtil::ToLower(path.GetExtension()) == ".cs") {
+				std::string_view virtualPath = path.ToString();
+				constexpr std::string_view PREFIX = "project://";
+				if (virtualPath.starts_with(PREFIX)) {
+					StringHash compType = AssetBrowserOps::ResolveScriptComponentType(virtualPath.substr(PREFIX.size()));
+					mix(compType.GetValue());
+					if (const TypeInfo* info = TypeRegistry::FindType(compType)) {
+						mix(info->moduleEpoch);
+					}
+				}
+			}
 		}
 		mix(_drawnPreviewRoot.IsValid() ? _drawnPreviewRoot.GetInstanceId() : 0);
 
@@ -971,14 +1020,23 @@ namespace Shalltear {
 
 		Handle<SceneObject> dropTarget = ResolveDropTarget();
 		context.Events(_viewport).onDragOver = [dropTarget](const UI::DragPayload& payload) {
-			return EditorSceneOps::ClassifyComponentDrop(PayloadComponent(payload), dropTarget) ==
-				   EditorSceneOps::ComponentDropKind::Move;
+			if (EditorSceneOps::ClassifyComponentDrop(PayloadComponent(payload), dropTarget) ==
+				EditorSceneOps::ComponentDropKind::Move) {
+				return true;
+			}
+			SceneObject* target = dropTarget.Get();
+			return target != nullptr && !target->IsPendingDestroy() && PayloadScriptComponent(payload).GetValue() != 0;
 		};
 		context.Events(_viewport).onDrop = [dropTarget](const UI::DragPayload& payload, Vec2) {
 			Handle<Component> dragged = PayloadComponent(payload);
 			if (EditorSceneOps::ClassifyComponentDrop(dragged, dropTarget) ==
 				EditorSceneOps::ComponentDropKind::Move) {
 				EditorSceneOps::DropComponentOn(dragged, dropTarget, EditorSceneOps::COMPONENT_INDEX_END);
+				return;
+			}
+			StringHash scriptType = PayloadScriptComponent(payload);
+			if (SceneObject* target = dropTarget.Get(); target && !target->IsPendingDestroy() && scriptType.GetValue() != 0) {
+				UndoSystem::Push(MakeUnique<AddComponentCommand>(dropTarget, scriptType));
 			}
 		};
 
@@ -1288,11 +1346,14 @@ namespace Shalltear {
 	void InspectorPanel::BuildComponentInsertStrip(UI::Context& context, Handle<SceneObject> owner, u32 index) {
 		EditorInsertStripDesc desc;
 		desc.onDragOver = [owner, index](const UI::DragPayload& payload) {
+			SceneObject* resolved = owner.Get();
+			if (resolved && !resolved->IsPendingDestroy() && PayloadScriptComponent(payload).GetValue() != 0) {
+				return true;
+			}
 			Handle<Component> dragged = PayloadComponent(payload);
 			if (EditorSceneOps::ClassifyComponentDrop(dragged, owner) == EditorSceneOps::ComponentDropKind::None) {
 				return false;
 			}
-			SceneObject* resolved = owner.Get();
 			if (resolved && dragged.IsValid()) {
 				for (u32 i = 0; i < resolved->GetComponentCount(); ++i) {
 					if (resolved->GetComponentAt(i) == dragged) {
@@ -1303,6 +1364,19 @@ namespace Shalltear {
 			return true;
 		};
 		desc.onDrop = [owner, index](const UI::DragPayload& payload, Vec2) {
+			StringHash scriptType = PayloadScriptComponent(payload);
+			if (SceneObject* resolved = owner.Get(); resolved && !resolved->IsPendingDestroy() && scriptType.GetValue() != 0) {
+				UndoSystem::BeginGroup("Add Component");
+				auto add = MakeUnique<AddComponentCommand>(owner, scriptType);
+				AddComponentCommand* addRaw = add.get();
+				UndoSystem::Push(std::move(add));
+				Handle<Component> created = addRaw->GetCreated();
+				if (created.IsValid() && index != EditorSceneOps::COMPONENT_INDEX_END) {
+					UndoSystem::Push(MakeUnique<SetComponentIndexCommand>(created, index));
+				}
+				UndoSystem::EndGroup();
+				return;
+			}
 			EditorSceneOps::DropComponentOn(PayloadComponent(payload), owner, index);
 		};
 		_gaps.PendStrip(std::move(desc));
@@ -1907,8 +1981,7 @@ namespace Shalltear {
 				return payload.data.Is<AssetDragData>() &&
 					   AssetPayloadFits(payload.data.As<AssetDragData>(), pointeeType);
 			}
-			Object* dragged = DraggedObject(payload);
-			return dragged && pointeeType && TypeRegistry::IsDerivedFrom(dragged->GetType(), pointeeType);
+			return DraggedObjectForType(payload, pointeeType) != nullptr;
 		};
 		field.onDrop = [slot, pointeeName, label, onAssigned](const UI::DragPayload& payload, Vec2) {
 			const TypeInfo* pointeeType = TypeRegistry::FindType(pointeeName);
@@ -1927,8 +2000,8 @@ namespace Shalltear {
 				}
 				assign = asset->GetInstanceId();
 			} else {
-				Object* dragged = DraggedObject(payload);
-				if (!dragged || !TypeRegistry::IsDerivedFrom(dragged->GetType(), pointeeType)) {
+				Object* dragged = DraggedObjectForType(payload, pointeeType);
+				if (!dragged) {
 					return;
 				}
 				assign = dragged->GetInstanceId();
@@ -2647,6 +2720,65 @@ namespace Shalltear {
 		line("Guid", std::format("{:016x}{:016x}", guid.high, guid.low));
 
 		str extension = Path(path.GetFilename()).GetExtension();
+		if (StringUtil::ToLower(extension) == ".cs") {
+			line("Type", "C# Script");
+			line("Extension", extension);
+			std::string_view virtualPath = path.ToString();
+			constexpr std::string_view PREFIX = "project://";
+			if (virtualPath.starts_with(PREFIX)) {
+				StringHash compType = AssetBrowserOps::ResolveScriptComponentType(virtualPath.substr(PREFIX.size()));
+				if (const TypeInfo* info = TypeRegistry::FindType(compType)) {
+					line("Component", TypeLabel(info));
+				}
+			}
+			Path physicalPath = FileSystem::Resolve(path);
+			if (!physicalPath.ToString().empty() && FileSystem::Exists(physicalPath)) {
+				UI::ElementHandle actions = MakeRow(context, _viewport, "");
+				UI::Widgets::ButtonDesc openBtn;
+				openBtn.label = "Open";
+				openBtn.font = font;
+				openBtn.fontSizePx = FieldFont();
+				openBtn.onClick = [physicalPath]() {
+					AssetBrowserOps::OpenInExternalEditor(physicalPath, 1);
+				};
+				UI::Widgets::Button(context, actions, openBtn);
+
+				str sourceText = FileSystem::ReadTextFile(physicalPath, MemTag::Editor);
+				if (!sourceText.empty()) {
+					str displaySource;
+					displaySource.reserve(sourceText.size());
+					for (char c : sourceText) {
+						if (c == '\r') {
+							continue;
+						}
+						if (c == '\t') {
+							displaySource += "    ";
+						} else {
+							displaySource.push_back(c);
+						}
+					}
+					UI::ElementHandle card = context.CreateElement();
+					context.AppendChild(_viewport, card);
+					UI::Style cardStyle;
+					cardStyle.flexDirection = UI::FlexDirection::Column;
+					cardStyle.width = UI::Length::Percent(1.0f);
+					cardStyle.margin = {0.0f, 4.0f, 0.0f, 0.0f};
+					context.SetStyle(card, cardStyle);
+					context.AddClass(card, EditorTheme::Class::SectionCard);
+					AddInspectorHeader(context, card, "Source", TextStrong());
+
+					UI::ElementHandle sourceBlock = context.CreateElement();
+					context.AppendChild(card, sourceBlock);
+					UI::Style sourceStyle;
+					sourceStyle.padding = {8.0f, 6.0f, 8.0f, 6.0f};
+					sourceStyle.width = UI::Length::Percent(1.0f);
+					context.SetStyle(sourceBlock, sourceStyle);
+					context.SetHoverable(sourceBlock, false);
+					context.SetText(sourceBlock, font, FieldFont(), TextDim(), displaySource);
+				}
+			}
+			return;
+		}
 		IAssetImporter* importer = extension.empty() ? nullptr : AssetImporterRegistry::FindByExtension(extension);
 		if (!importer) {
 			line("Type", "(no importer for '" + extension + "')");

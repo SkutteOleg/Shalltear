@@ -117,6 +117,11 @@ namespace Shalltear::AssetBrowserOps {
 	SHALLTEAR_EDITOR_API Guid CreateAsset(const Path& virtualDir, StringHash assetTypeId, const str& desiredName = {},
 										  str* outRelPath = nullptr, u32 templateIndex = 0);
 
+	SHALLTEAR_EDITOR_API bool CreateCSharpScript(const Path& virtualDir, const str& className,
+												 str* outRelPath = nullptr);
+
+	SHALLTEAR_EDITOR_API StringHash ResolveScriptComponentType(std::string_view relPath);
+
 	struct CreateMenuEntry {
 		str label;
 		StringHash typeId;

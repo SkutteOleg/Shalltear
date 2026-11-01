@@ -14,11 +14,13 @@
 #include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/StringUtil.h"
 
+#include "Shalltear/Editor/CSharpTranspiler.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/ProjectOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include "GameModuleHost.h"
+#include "PackageHost.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -303,6 +305,27 @@ namespace Shalltear::AssetBrowserOps {
 					SLT_LOG_WARN("Editor", "RenameEntry: sidecar move failed ({}). Guid will regenerate", metaEc.message());
 				}
 			}
+
+			if (StringUtil::ToLower(source.extension().generic_string()) == ".cs" &&
+				StringUtil::ToLower(target.extension().generic_string()) == ".cs") {
+				str oldStem = source.stem().generic_string();
+				str newStem = target.stem().generic_string();
+				if (oldStem != newStem &&
+					ScriptProjectOps::IsValidClassName(oldStem) &&
+					ScriptProjectOps::IsValidClassName(newStem)) {
+					Path targetPhysical(target.generic_string());
+					str content = FileSystem::ReadTextFile(targetPhysical, MemTag::Editor);
+					str oldDecl = "class " + oldStem;
+					str newDecl = "class " + newStem;
+					if (!content.empty() && content.find(oldDecl) != str::npos) {
+						content = StringUtil::Replace(content, oldDecl, newDecl);
+						FileSystem::WriteTextFile(targetPhysical, content);
+					}
+				}
+				if (GameModuleHost* moduleHost = GameModuleHost::GetActive()) {
+					moduleHost->RequestCompile();
+				}
+			}
 		}
 
 		AssetDatabase::RebuildDatabase();
@@ -554,6 +577,112 @@ namespace Shalltear::AssetBrowserOps {
 		return guid;
 	}
 
+	bool CreateCSharpScript(const Path& virtualDir, const str& className, str* outRelPath) {
+		if (!ScriptProjectOps::IsValidClassName(className)) {
+			SLT_LOG_WARN("Editor", "CreateCSharpScript: '{}' isn't a valid C# class name", className);
+			return false;
+		}
+		Path resolvedDir = ResolvePhysical(virtualDir);
+		fs::path projectRoot = ResolveProjectRoot();
+		if (resolvedDir.ToString().empty() || projectRoot.empty()) {
+			return false;
+		}
+
+		str fileName = className + ".cs";
+		fs::path targetFile = fs::path(resolvedDir.ToString()) / fileName;
+		std::error_code ec;
+		if (fs::exists(targetFile, ec)) {
+			SLT_LOG_WARN("Editor", "CreateCSharpScript: '{}' already exists", targetFile.generic_string());
+			return false;
+		}
+
+		str projectPath = projectRoot.generic_string();
+		str moduleName = ScriptProjectOps::GetModuleName(projectPath);
+		Vector<ScriptProjectOps::TemplateToken> tokens{GetMemoryResource(MemTag::Editor)};
+		tokens.push_back({"MODULE_NAME", moduleName});
+		tokens.push_back({"CLASS_NAME", className});
+
+		str scriptContent;
+		if (!ScriptProjectOps::RenderTemplate("Component.cs", tokens, scriptContent)) {
+			return false;
+		}
+
+		fs::create_directories(targetFile.parent_path(), ec);
+		if (!FileSystem::WriteTextFile(Path(targetFile.generic_string()), scriptContent)) {
+			SLT_LOG_WARN("Editor", "CreateCSharpScript: couldn't write '{}'", targetFile.generic_string());
+			return false;
+		}
+
+		AssetDatabase::ScanProjectDirectory();
+		CSharpTranspiler::EnsureCSharpProjectFiles(projectPath);
+		if (GameModuleHost* moduleHost = GameModuleHost::GetActive()) {
+			if (!ScriptProjectOps::HasScriptProject(projectPath)) {
+				ScriptProjectOps::ScaffoldOptions options;
+				options.moduleName = moduleName;
+				options.sdkRoot = ScriptProjectOps::GetSDKRoot();
+				options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
+				if (const PackageHost* packages = PackageHost::GetActive()) {
+					options.enabledPackages = packages->GetGamePackageNames();
+				}
+				ScriptProjectOps::ScaffoldResult scaffolded;
+				if (ScriptProjectOps::ScaffoldScriptProject(projectPath, options, scaffolded)) {
+					moduleHost->RearmScriptProject();
+				}
+			}
+			moduleHost->RequestCompile();
+		}
+		if (outRelPath) {
+			*outRelPath = RelativeOf(JoinVirtual(virtualDir, fileName));
+		}
+		return true;
+	}
+
+	StringHash ResolveScriptComponentType(std::string_view relPath) {
+		Path path{str(relPath)};
+		if (StringUtil::ToLower(path.GetExtension()) != ".cs") {
+			return {};
+		}
+		auto isCreatableComponent = [](const TypeInfo* type) {
+			return type && (type->flags & TypeFlagComponent) != 0 &&
+				   (type->flags & TypeFlagAbstract) == 0 && type->createFn != nullptr;
+		};
+		str stem = RenameStem(path.GetFilename());
+		if (!stem.empty()) {
+			const TypeInfo* byStem = TypeRegistry::FindType(StringHash(stem));
+			if (isCreatableComponent(byStem)) {
+				return byStem->name;
+			}
+		}
+		Path physical = ResolvePhysical(Path(VirtualPathOf(str(relPath))));
+		if (!physical.ToString().empty()) {
+			str content = FileSystem::ReadTextFile(physical, MemTag::Editor);
+			constexpr std::string_view CLASS_TOKEN = "class ";
+			size_t pos = 0;
+			while ((pos = content.find(CLASS_TOKEN, pos)) != str::npos) {
+				if (pos > 0 && (std::isalnum(static_cast<unsigned char>(content[pos - 1])) || content[pos - 1] == '_')) {
+					pos += CLASS_TOKEN.size();
+					continue;
+				}
+				pos += CLASS_TOKEN.size();
+				while (pos < content.size() && (content[pos] == ' ' || content[pos] == '\t')) {
+					++pos;
+				}
+				size_t start = pos;
+				while (pos < content.size() && (std::isalnum(static_cast<unsigned char>(content[pos])) || content[pos] == '_')) {
+					++pos;
+				}
+				if (pos > start) {
+					std::string_view candidate(content.data() + start, pos - start);
+					const TypeInfo* byClass = TypeRegistry::FindType(StringHash(candidate));
+					if (isCreatableComponent(byClass)) {
+						return byClass->name;
+					}
+				}
+			}
+		}
+		return {};
+	}
+
 	Guid CreatePrefabFromObject(Handle<SceneObject> root, const Path& virtualDir, str* outRelPath) {
 		SceneObject* resolved = root.Get();
 		if (!resolved) {
@@ -789,7 +918,7 @@ namespace Shalltear::AssetBrowserOps {
 		for (char c : extension) {
 			lowered.push_back(ToLowerAscii(c));
 		}
-		return lowered == ".hlsl" || lowered == ".hlsli";
+		return lowered == ".hlsl" || lowered == ".hlsli" || lowered == ".cs";
 	}
 
 	bool OpenInExternalEditor(const Path& physicalPath, u32 line) {

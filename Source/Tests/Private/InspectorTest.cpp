@@ -6473,3 +6473,74 @@ TEST_F(InspectorDefaultSkyFixture, EnvironmentResetRestoresSky) {
 	EXPECT_EQ(environment->GetSkyMode(), SkyMode::Gradient);
 	EXPECT_FALSE(environment->GetSkyMaterial().IsValid());
 }
+
+TEST_F(InspectorDefaultSkyFixture, DroppingCSharpScriptAssetOntoInspectorAttachesComponent) {
+	std::filesystem::create_directories(_projectRoot / "Assets" / "Scripts");
+	ASSERT_TRUE(FileSystem::WriteTextFile(
+		Path("project://Assets/Scripts/InspTestComponent.cs"),
+		"using Shalltear;\nnamespace Game {\n\tpublic class InspTestComponent : Component {}\n}\n"));
+	AssetDatabase::ScanProjectDirectory();
+	Guid scriptGuid = AssetDatabase::LookupGuid(Path("project://Assets/Scripts/InspTestComponent.cs"));
+	ASSERT_TRUE(scriptGuid.IsValid());
+
+	Handle<SceneObject> object = SceneSystem::CreateObject("Subject", _scene);
+	EditorSelection::Select(Handle<Object>(object.Get()));
+	Handle<EditorPanel> panel = OpenInspector();
+	MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {500, 900};
+	UI::Context context(desc, &fonts);
+	UI::ElementHandle root = context.CreateElement();
+	context.AppendChild(context.GetRoot(), root);
+	UI::Style rootStyle = context.GetStyle(root);
+	rootStyle.width = UI::Length::Percent(1.0f);
+	rootStyle.height = UI::Length::Percent(1.0f);
+	context.SetStyle(root, rootStyle);
+	panel.Get()->BuildContent(context, root);
+	context.Update();
+
+	AssetDragData dragData;
+	dragData.guid = scriptGuid;
+	dragData.assetTypeHash = 0;
+	UI::DragPayload payload;
+	payload.type = "Asset"_hash;
+	payload.data = Variant(dragData);
+	payload.display = "InspTestComponent.cs";
+
+	Vec2 dropPoint{250.0f, 600.0f};
+	EXPECT_TRUE(context.UpdateDragTarget(payload, dropPoint).IsValid());
+	EXPECT_TRUE(context.DeliverDrop(payload, dropPoint));
+	EXPECT_TRUE(object->GetComponent<InspTestComponent>().IsValid());
+}
+
+TEST_F(InspectorDefaultSkyFixture, SelectingCSharpScriptShowsScriptInspectorAndSource) {
+	std::filesystem::create_directories(_projectRoot / "Assets" / "Scripts");
+	ASSERT_TRUE(FileSystem::WriteTextFile(
+		Path("project://Assets/Scripts/InspTestComponent.cs"),
+		"using Shalltear;\nnamespace Game {\n\tpublic class InspTestComponent : Component {}\n}\n"));
+	AssetDatabase::ScanProjectDirectory();
+	Guid scriptGuid = AssetDatabase::LookupGuid(Path("project://Assets/Scripts/InspTestComponent.cs"));
+	ASSERT_TRUE(scriptGuid.IsValid());
+
+	Vector<Guid> selected{GetMemoryResource(MemTag::Editor)};
+	selected.push_back(scriptGuid);
+	EditorSelection::SelectAssets(selected);
+
+	Handle<EditorPanel> panel = OpenInspector();
+	MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {500, 900};
+	UI::Context context(desc, &fonts);
+	UI::ElementHandle root = context.CreateElement();
+	context.AppendChild(context.GetRoot(), root);
+	UI::Style rootStyle = context.GetStyle(root);
+	rootStyle.width = UI::Length::Percent(1.0f);
+	rootStyle.height = UI::Length::Percent(1.0f);
+	context.SetStyle(root, rootStyle);
+	panel.Get()->BuildContent(context, root);
+	context.Update();
+
+	EXPECT_TRUE(context.IsAlive(FindElementByText(context, root, "C# Script")));
+	EXPECT_TRUE(context.IsAlive(FindElementByText(context, root, "Source")));
+	EXPECT_TRUE(context.IsAlive(FindElementByTextContaining(context, root, "public class InspTestComponent")));
+}

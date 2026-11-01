@@ -6,9 +6,12 @@
 #include "Shalltear/Core/Scene.h"
 #include "Shalltear/Core/StringUtil.h"
 
+#include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/CppToolchain.h"
 #include "Shalltear/Editor/CSharpTranspiler.h"
+#include "Shalltear/Editor/EditorIcons.h"
+#include "Shalltear/Editor/EditorPreviews.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include <atomic>
@@ -920,6 +923,55 @@ TEST_F(CSharpCompileIntegrationTest, StarterCSharpTemplateCompilesAndRotatesOwne
 	Handle<Scene> scene = SceneSystem::CreateScene("TurretScene");
 	Handle<SceneObject> owner = SceneSystem::CreateObject("Turret", scene);
 	Handle<Component> component = owner.Get()->AddComponent(turretType);
+	ASSERT_TRUE(component.IsValid());
+
+	FrameTime clock;
+	clock.deltaTime = 0.5f;
+	clock.unscaledDeltaTime = 0.5f;
+	{
+		Time::FrameScope scope{clock};
+		SceneSystem::UpdateAll();
+	}
+
+	EXPECT_NEAR(Quat::Angle(Quat::Identity(), owner.Get()->GetLocalRotation()), 30.0f, 0.5f);
+}
+
+TEST_F(CSharpCompileIntegrationTest, AssetsDirectoryCSharpScriptWithoutHandlesCompilesAndExecutes) {
+	Config projectFile;
+	projectFile.SetString("Project", "name", "CSharpAssetsProbe");
+	ASSERT_TRUE(projectFile.Save(Path(Root() + "/Project.ini")));
+
+	ScriptProjectOps::ScaffoldOptions options;
+	options.moduleName = "CSharpAssetsProbe";
+	options.sdkRoot = _sdkRoot;
+	options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
+	ScriptProjectOps::ScaffoldResult scaffolded;
+	ASSERT_TRUE(ScriptProjectOps::ScaffoldScriptProject(Root(), options, scaffolded));
+
+	std::filesystem::create_directories(_root / "Assets" / "Scripts");
+	str createdRelPath;
+	ASSERT_TRUE(AssetBrowserOps::CreateCSharpScript(Path("project://Assets/Scripts"), "NewCSharpScript", &createdRelPath));
+	EXPECT_EQ(createdRelPath, "Assets/Scripts/NewCSharpScript.cs");
+	ASSERT_TRUE(AssetBrowserOps::RenameEntry(Path("project://Assets/Scripts/NewCSharpScript.cs"), "AssetSpinner.cs"));
+	EXPECT_TRUE(std::filesystem::exists(_root / "Assets" / "Scripts" / "AssetSpinner.cs"));
+	EXPECT_TRUE(CSharpTranspiler::HasCSharpSources(Root()));
+	EXPECT_EQ(EditorPreviews::BadgeForFileName("AssetSpinner.cs").icon.glyph, EditorIcons::Glyph::AssetShader.glyph);
+
+	CompileService service;
+	service.RefreshToolchain();
+	ASSERT_TRUE(RunCompile(service));
+
+	str binary = ScriptProjectOps::GetModuleBinaryPath(Root(), _config);
+	ModuleHandle module = ModuleSystem::Load(Path(binary));
+	ASSERT_TRUE(ModuleSystem::IsLoaded(module));
+
+	const TypeInfo* spinnerType = TypeRegistry::FindType(StringHash("AssetSpinner"));
+	ASSERT_NE(spinnerType, nullptr);
+	EXPECT_EQ(AssetBrowserOps::ResolveScriptComponentType("Assets/Scripts/AssetSpinner.cs"), StringHash("AssetSpinner"));
+
+	Handle<Scene> scene = SceneSystem::CreateScene("AssetSpinnerScene");
+	Handle<SceneObject> owner = SceneSystem::CreateObject("AssetSpinnerActor", scene);
+	Handle<Component> component = owner.Get()->AddComponent(spinnerType);
 	ASSERT_TRUE(component.IsValid());
 
 	FrameTime clock;

@@ -6,6 +6,7 @@
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Input.h"
+#include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/Scene/Scene.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/UI/RenderList.h"
@@ -75,12 +76,13 @@ namespace Shalltear {
 		_bodyRefresh = {};
 
 		Path path = guid.IsValid() ? AssetDatabase::LookupPath(guid) : Path();
-		if (!guid.IsValid()) {
+		if (!guid.IsValid() || StringUtil::ToLower(path.GetExtension()) == ".cs") {
 			UI::Style hidden = context.GetStyle(_root);
 			hidden.display = UI::Display::None;
 			context.SetStyle(_root, hidden);
 			_fileName.clear();
 			_type = {};
+			_guid = {};
 			return;
 		}
 		_fileName = path.ToString().empty() ? str("Preview") : path.GetFilename();

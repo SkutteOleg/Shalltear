@@ -490,6 +490,20 @@ namespace Shalltear::ScriptProjectOps {
 				return stale(std::format("'{}' changed since the last compile", it->path().generic_string()));
 			}
 		}
+		fs::path assets(Join(projectPath, "Assets"));
+		if (fs::is_directory(assets, ec)) {
+			for (fs::recursive_directory_iterator it(assets, fs::directory_options::skip_permission_denied, ec), end;
+				 it != end && !ec; it.increment(ec)) {
+				if (!it->is_regular_file(ec) ||
+					StringUtil::ToLower(it->path().extension().generic_string()) != ".cs") {
+					continue;
+				}
+				std::error_code entryEc;
+				if (fs::last_write_time(it->path(), entryEc) > verifiedAt && !entryEc) {
+					return stale(std::format("'{}' changed since the last compile", it->path().generic_string()));
+				}
+			}
+		}
 		if (CSharpTranspiler::IsGeneratedOutputOutOfDate(projectPath, outReason)) {
 			return true;
 		}

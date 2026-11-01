@@ -11,6 +11,7 @@
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Scene/Scene.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
+#include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/Time.h"
 
 #include "Shalltear/Editor/EditorAssetWatch.h"
@@ -212,7 +213,12 @@ namespace Shalltear {
 		}
 
 		bool StartOne(const Guid& guid) {
-			const StringHash type = EditorPreviewsInternal::AssetTypeForFileName(AssetDatabase::LookupPath(guid).ToString());
+			const Path path = AssetDatabase::LookupPath(guid);
+			if (StringUtil::ToLower(path.GetExtension()) == ".cs") {
+				RecordDeclined(guid);
+				return false;
+			}
+			const StringHash type = EditorPreviewsInternal::AssetTypeForFileName(path.ToString());
 			if (type != StringHash{} && !EditorPreviewsInternal::HasProducer(type)) {
 				RecordDeclined(guid);
 				return false;

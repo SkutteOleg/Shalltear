@@ -8,6 +8,7 @@
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene/SceneObject.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
+#include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/UI/UISystem.h"
 #include "Shalltear/Core/Window/WindowEvents.h"
 #include "Shalltear/Core/Window/WindowSystem.h"
@@ -26,6 +27,7 @@
 #include "Shalltear/Editor/PanelManager.h"
 #include "Shalltear/Editor/UIBuilderOps.h"
 
+#include "../GameModuleHost.h"
 #include "../SceneFileFlows.h"
 #include "PanelHeader.h"
 
@@ -282,6 +284,15 @@ namespace Shalltear {
 		_folderList.SetSelection(_selectedFolders);
 	}
 
+	namespace {
+
+		bool IsSelectableBrowserPath(const Path& virtualPath) {
+			return AssetDatabase::IsAssetPath(virtualPath) ||
+				   StringUtil::ToLower(virtualPath.GetExtension()) == ".cs";
+		}
+
+	} // anonymous namespace
+
 	void AssetBrowserPanel::PushAssetSelection() {
 		Vector<Guid> guids{GetMemoryResource(MemTag::Editor)};
 		guids.reserve(_selectedFiles.size());
@@ -295,7 +306,7 @@ namespace Shalltear {
 			Guid guid = row->guid;
 			if (!guid.IsValid()) {
 				Path virtualPath{VirtualPathOf(row->relPath)};
-				if (!AssetDatabase::IsAssetPath(virtualPath)) {
+				if (!IsSelectableBrowserPath(virtualPath)) {
 					continue;
 				}
 				guid = AssetDatabase::LookupGuid(virtualPath);
@@ -603,6 +614,10 @@ namespace Shalltear {
 			}
 			return ParentPath(sourcePath.substr(PREFIX.size())) != folderRelPath;
 		}
+		if (payload.type == "BrowserFile"_hash && payload.data.Is<str>()) {
+			const str& relPath = payload.data.As<str>();
+			return !relPath.empty() && ParentPath(relPath) != folderRelPath;
+		}
 		Vector<Handle<SceneObject>> dragged{GetMemoryResource(MemTag::Editor)};
 		DraggedSceneObjects(payload, dragged);
 		return !dragged.empty() && std::all_of(dragged.begin(), dragged.end(), [](Handle<SceneObject> object) {
@@ -636,6 +651,15 @@ namespace Shalltear {
 				return;
 			}
 			CreatePrefabsFrom(dragged, folderRelPath);
+			return;
+		}
+		if (payload.type == "BrowserFile"_hash && payload.data.Is<str>()) {
+			const str& oldRelPath = payload.data.As<str>();
+			if (!AssetBrowserOps::MoveEntry(Path(VirtualPathOf(oldRelPath)), folder)) {
+				return;
+			}
+			RemapViewState(oldRelPath, folderRelPath + "/" + Path(oldRelPath).GetFilename());
+			Rescan();
 			return;
 		}
 		Path source = AssetDatabase::LookupPath(payload.data.As<AssetDragData>().guid);
@@ -792,7 +816,7 @@ namespace Shalltear {
 			Guid rowGuid = entry.guid;
 			if (!rowGuid.IsValid()) {
 				Path virtualPath{VirtualPathOf(entry.relPath)};
-				if (AssetDatabase::IsAssetPath(virtualPath)) {
+				if (IsSelectableBrowserPath(virtualPath)) {
 					rowGuid = AssetDatabase::LookupGuid(virtualPath);
 				}
 			}
@@ -1055,6 +1079,13 @@ namespace Shalltear {
 				guid = AssetDatabase::LookupGuid(virtualPath);
 			}
 			if (!guid.IsValid()) {
+				if (entry.kind == AssetBrowserOps::EntryKind::File && !entry.relPath.empty()) {
+					UI::DragPayload payload;
+					payload.type = "BrowserFile"_hash;
+					payload.data = Variant(entry.relPath);
+					payload.display = entry.name;
+					UISystem::BeginDragPayload(payload);
+				}
 				return;
 			}
 			if (type.GetValue() == 0) {
@@ -1767,6 +1798,27 @@ namespace Shalltear {
 		create.label = "Create";
 		create.separatorBefore = true;
 		Vector<UI::Widgets::MenuItem> children{GetMemoryResource(MemTag::Editor)};
+
+		UI::Widgets::MenuItem csScript;
+		csScript.label = "C# Script";
+		csScript.onSelect = [this, contextPtr]() {
+			SceneFileFlows::OpenTextInputPopup(*contextPtr, "New C# Script", "NewScript", [this](const str& className) {
+				str relPath;
+				if (!AssetBrowserOps::CreateCSharpScript(SelectedFolderVirtual(), className, &relPath)) {
+					return;
+				}
+				Rescan();
+				SelectOnlyFile(relPath);
+				Path physical = FileSystem::Resolve(Path("project://" + relPath));
+				AssetBrowserOps::OpenInExternalEditor(physical, 1);
+				if (GameModuleHost* moduleHost = GameModuleHost::GetActive()) {
+					moduleHost->RearmScriptProject();
+					moduleHost->RequestCompile();
+				}
+			});
+		};
+		children.push_back(std::move(csScript));
+
 		Vector<AssetBrowserOps::CreateMenuEntry> entries{GetMemoryResource(MemTag::Editor)};
 		AssetBrowserOps::GetCreateMenuEntries(entries);
 		for (const AssetBrowserOps::CreateMenuEntry& entry : entries) {

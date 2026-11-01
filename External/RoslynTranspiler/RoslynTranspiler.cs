@@ -394,19 +394,32 @@ internal static class RoslynCompilerEngine
     {
         var projectDto = new ProjectTranspileDto();
         string sourceDir = Path.Combine(projectPath, "Source");
+        string assetsDir = Path.Combine(projectPath, "Assets");
         List<CppDiscoveredType> cppTypes = ScanCppHeadersInDirectory(sourceDir, isEngineRoot: false);
         string combinedStubs = BuildCombinedStubsText(cppTypes);
         projectDto.GeneratedStubsContent = combinedStubs;
 
-        if (!Directory.Exists(sourceDir))
+        var discoveredCsFiles = new List<(string FullPath, string RelativePath)>();
+        if (Directory.Exists(sourceDir))
         {
-            projectDto.Succeeded = true;
-            return projectDto;
+            string[] sourceCsFiles = Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories);
+            Array.Sort(sourceCsFiles, StringComparer.Ordinal);
+            foreach (string csFile in sourceCsFiles)
+            {
+                discoveredCsFiles.Add((NormalizeSlashes(csFile), NormalizeSlashes(Path.GetRelativePath(sourceDir, csFile))));
+            }
+        }
+        if (Directory.Exists(assetsDir))
+        {
+            string[] assetCsFiles = Directory.GetFiles(assetsDir, "*.cs", SearchOption.AllDirectories);
+            Array.Sort(assetCsFiles, StringComparer.Ordinal);
+            foreach (string csFile in assetCsFiles)
+            {
+                discoveredCsFiles.Add((NormalizeSlashes(csFile), NormalizeSlashes(Path.GetRelativePath(projectPath, csFile))));
+            }
         }
 
-        string[] csFiles = Directory.GetFiles(sourceDir, "*.cs", SearchOption.AllDirectories);
-        Array.Sort(csFiles, StringComparer.Ordinal);
-        if (csFiles.Length == 0)
+        if (discoveredCsFiles.Count == 0)
         {
             projectDto.Succeeded = true;
             return projectDto;
@@ -418,13 +431,11 @@ internal static class RoslynCompilerEngine
             ? defaultStubsTree
             : CSharpSyntaxTree.ParseText(combinedStubs, parseOptions, path: "Shalltear.Stubs.cs");
 
-        var userTrees = new List<(SyntaxTree Tree, string FullPath, string RelativePath)>(csFiles.Length);
+        var userTrees = new List<(SyntaxTree Tree, string FullPath, string RelativePath)>(discoveredCsFiles.Count);
 
-        foreach (string csFile in csFiles)
+        foreach (var (fullGeneric, relGeneric) in discoveredCsFiles)
         {
-            string fullGeneric = NormalizeSlashes(csFile);
-            string relGeneric = NormalizeSlashes(Path.GetRelativePath(sourceDir, csFile));
-            string code = File.ReadAllText(csFile, Encoding.UTF8);
+            string code = File.ReadAllText(fullGeneric, Encoding.UTF8);
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code, parseOptions, path: fullGeneric);
             if (!CollectSyntaxDiagnostics(tree, projectDto.Diagnostics))
             {
@@ -735,6 +746,18 @@ internal static class RoslynCompilerEngine
                                 IsProtectedVirtual = true
                             });
                         }
+                        else if (pm.Params.Contains("Collider ", StringComparison.Ordinal))
+                        {
+                            string wrappedParams = pm.Params.Replace("Collider ", "Handle<Collider> ");
+                            behaviorType.Methods.Add(new CppDiscoveredMethod
+                            {
+                                ReturnType = pm.ReturnType,
+                                Name = pm.Name,
+                                Params = wrappedParams,
+                                DedupKey = $"{pm.Name}(Handle<Collider>)",
+                                IsProtectedVirtual = true
+                            });
+                        }
                     }
                 }
                 if (discoveredByName.ContainsKey("Component"))
@@ -745,6 +768,14 @@ internal static class RoslynCompilerEngine
                         Name = "GetComponent",
                         Params = "",
                         DedupKey = "GetComponent<T>()",
+                        IsGenericComponentMethod = true
+                    });
+                    behaviorType.Methods.Add(new CppDiscoveredMethod
+                    {
+                        ReturnType = "T",
+                        Name = "AddComponent",
+                        Params = "",
+                        DedupKey = "AddComponent<T>()",
                         IsGenericComponentMethod = true
                     });
                 }
@@ -816,6 +847,11 @@ internal static class RoslynCompilerEngine
                 sb.AppendLine("        public ulong GetInstanceId() => 0;");
                 sb.AppendLine("        public void Reset() { }");
                 sb.AppendLine("        public static implicit operator Handle<T>(T obj) => default;");
+                sb.AppendLine("        public static implicit operator T(Handle<T> handle) => default!;");
+                sb.AppendLine("    }");
+                sb.AppendLine("    public static class ShalltearObjectExtensions");
+                sb.AppendLine("    {");
+                sb.AppendLine("        public static T Get<T>(this T obj) where T : Object => obj;");
                 sb.AppendLine("    }");
             }
 
@@ -1527,7 +1563,7 @@ internal static class RoslynCompilerEngine
                     @"^template\s*<\s*typename\s+T\s*>\s*(?:static\s+)?(Handle<T>|T\*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)");
                 if (tmplMethod.Success)
                 {
-                    string ret = tmplMethod.Groups[1].Value == "T*" ? "T" : "Handle<T>";
+                    string ret = "T";
                     string mName = tmplMethod.Groups[2].Value;
                     string rawParams = tmplMethod.Groups[3].Value.Trim();
                     if (TryMapCppParamsToCSharp(rawParams, out string csParams, out string keyParams, out _))
@@ -1955,12 +1991,12 @@ internal static class RoslynCompilerEngine
             return false;
         }
 
-        // Handle<T>
+        // Handle<T> -> unwrapped T in C#
         Match handleMatch = Regex.Match(t, @"^(?:::)?(?:Shalltear::)?Handle<\s*([A-Za-z0-9_:]+)\s*>$");
         if (handleMatch.Success)
         {
             string inner = StripCppNamespace(handleMatch.Groups[1].Value.Trim());
-            csType = $"Handle<{inner}>";
+            csType = inner;
             return true;
         }
 
@@ -2281,6 +2317,11 @@ internal static class RoslynCompilerEngine
             : "";
         sb.AppendLine($"{indent}public class {t.Name}{baseClause}");
         sb.AppendLine($"{indent}{{");
+        if (t.Name == "Object")
+        {
+            sb.AppendLine($"{indent}    public bool IsValid() => false;");
+            sb.AppendLine($"{indent}    public void Reset() {{ }}");
+        }
         foreach (var (fType, fName) in t.Fields)
         {
             if (IsTypeResolvableInStubs(fType, knownTypes))
@@ -4634,6 +4675,37 @@ internal static class RoslynCompilerEngine
                         spanOverrides[new SyntaxSpanKey(inv.SpanStart, inv.Span.End)] = $"(({recv}).ends_with({subArg}))";
                     }
                 }
+                else if (inv.ArgumentList.Arguments.Count == 0 &&
+                         methodName is "Get" or "IsValid" or "Reset" or "GetInstanceId" &&
+                         IsSymbolObjectPointer(recvType, index))
+                {
+                    bool isHandleBacked = IsExpressionHandleBackedInCpp(ma.Expression, semanticModel, index);
+                    if (!isHandleBacked)
+                    {
+                        string recv = LowerTokensInNodeWithOverrides(sourcePath, ma.Expression, semanticModel, index, enclosingClassName, pointerLocals, containerLocals, stringLocals, spanOverrides, false);
+                        if (methodName == "Get")
+                        {
+                            spanOverrides[new SyntaxSpanKey(inv.SpanStart, inv.Span.End)] = recv;
+                        }
+                        else if (methodName == "IsValid")
+                        {
+                            spanOverrides[new SyntaxSpanKey(inv.SpanStart, inv.Span.End)] = $"(({recv}) != nullptr)";
+                        }
+                        else if (methodName == "Reset")
+                        {
+                            spanOverrides[new SyntaxSpanKey(inv.SpanStart, inv.Span.End)] = $"({recv} = nullptr)";
+                        }
+                        else if (methodName == "GetInstanceId")
+                        {
+                            spanOverrides[new SyntaxSpanKey(inv.SpanStart, inv.Span.End)] = $"(({recv}) != nullptr ? ({recv})->GetInstanceId() : 0ull)";
+                        }
+                    }
+                    else if (methodName == "Reset")
+                    {
+                        string recv = LowerTokensInNodeWithOverrides(sourcePath, ma.Expression, semanticModel, index, enclosingClassName, pointerLocals, containerLocals, stringLocals, spanOverrides, false);
+                        spanOverrides[new SyntaxSpanKey(inv.SpanStart, inv.Span.End)] = $"({recv} = nullptr)";
+                    }
+                }
             }
         }
 
@@ -4860,7 +4932,8 @@ internal static class RoslynCompilerEngine
                     }
                     else
                     {
-                        mappedVarType = MapTypeName(rawTypeStr, index, pointerForObjectType: true, wrapObjectInHandle: false);
+                        bool isObjElem = IsRawTypeObjectReference(rawTypeStr, index);
+                        mappedVarType = MapTypeName(rawTypeStr, index, pointerForObjectType: !isObjElem, wrapObjectInHandle: isObjElem);
                         if (isContainerVar)
                         {
                             mappedVarType += "&";
@@ -4990,23 +5063,24 @@ internal static class RoslynCompilerEngine
                 continue;
             }
 
-            // GetComponent<T>() -> (GetOwner().Get() ? GetOwner().Get()->GetComponent<MappedT>().Get() : nullptr)
-            if (tok.ValueText == "GetComponent" &&
+            // GetComponent<T>() / AddComponent<T>() -> (GetOwner().Get() ? GetOwner().Get()->GetComponent<MappedT>().Get() : nullptr)
+            if ((tok.ValueText == "GetComponent" || tok.ValueText == "AddComponent") &&
                 i + 5 < n && toks[i + 1].IsKind(SyntaxKind.LessThanToken) &&
                 toks[i + 2].IsKind(SyntaxKind.IdentifierToken) &&
                 toks[i + 3].IsKind(SyntaxKind.GreaterThanToken) &&
                 toks[i + 4].IsKind(SyntaxKind.OpenParenToken) &&
                 toks[i + 5].IsKind(SyntaxKind.CloseParenToken))
             {
+                string compFn = tok.ValueText;
                 string mappedArg = MapTypeName(toks[i + 2].ValueText, index, pointerForObjectType: false, wrapObjectInHandle: false);
                 bool afterDot = i > 0 && toks[i - 1].IsKind(SyntaxKind.DotToken);
                 if (afterDot)
                 {
-                    outSb.Append($"GetComponent<{mappedArg}>().Get()");
+                    outSb.Append($"{compFn}<{mappedArg}>().Get()");
                 }
                 else
                 {
-                    outSb.Append($"(GetOwner().Get() ? GetOwner().Get()->GetComponent<{mappedArg}>().Get() : nullptr)");
+                    outSb.Append($"(GetOwner().Get() ? GetOwner().Get()->{compFn}<{mappedArg}>().Get() : nullptr)");
                 }
                 if (i + 9 < n &&
                     toks[i + 6].IsKind(SyntaxKind.DotToken) &&
@@ -5145,6 +5219,10 @@ internal static class RoslynCompilerEngine
                     else
                     {
                         outSb.Append($"this->{rhs}");
+                        if (ShouldAppendGetToHandleIdentifier(toks[i + 2], semanticModel, index))
+                        {
+                            outSb.Append(".Get()");
+                        }
                     }
                     i += 3;
                     continue;
@@ -5236,6 +5314,10 @@ internal static class RoslynCompilerEngine
                 else
                 {
                     outSb.Append(tok.ValueText);
+                    if (ShouldAppendGetToHandleIdentifier(tok, semanticModel, index))
+                    {
+                        outSb.Append(".Get()");
+                    }
                 }
 
                 if (i + 1 < n && (toks[i + 1].IsKind(SyntaxKind.IdentifierToken) ||
@@ -5297,10 +5379,222 @@ internal static class RoslynCompilerEngine
             }
 
             outSb.Append(tok.Text);
+            if (tok.IsKind(SyntaxKind.CloseParenToken) &&
+                tok.Parent is ArgumentListSyntax argList &&
+                argList.CloseParenToken == tok &&
+                argList.Parent is InvocationExpressionSyntax invExpr &&
+                ShouldAppendGetToHandleInvocation(invExpr, semanticModel, index))
+            {
+                outSb.Append(".Get()");
+            }
+            else if (tok.IsKind(SyntaxKind.CloseBracketToken) &&
+                     tok.Parent is BracketedArgumentListSyntax brList &&
+                     brList.CloseBracketToken == tok &&
+                     brList.Parent is ElementAccessExpressionSyntax elemAccess &&
+                     ShouldAppendGetToHandleElementAccess(elemAccess, semanticModel, index))
+            {
+                outSb.Append(".Get()");
+            }
             ++i;
         }
 
         return outSb.ToString();
+    }
+
+    private static bool IsValueContextRequiringPointer(SyntaxNode exprNode)
+    {
+        SyntaxNode topExpr = exprNode;
+        if (topExpr.Parent is MemberBindingExpressionSyntax mb &&
+            mb.Name == topExpr &&
+            mb.Parent is ConditionalAccessExpressionSyntax caParent)
+        {
+            topExpr = caParent;
+        }
+        while (topExpr.Parent is ParenthesizedExpressionSyntax p)
+        {
+            topExpr = p;
+        }
+
+        SyntaxNode? parent = topExpr.Parent;
+        if (parent is MemberAccessExpressionSyntax parentMa && parentMa.Expression == topExpr)
+        {
+            return false;
+        }
+        if (parent is ConditionalAccessExpressionSyntax parentCa && parentCa.Expression == topExpr)
+        {
+            return false;
+        }
+        if (parent is AssignmentExpressionSyntax parentAssign && parentAssign.Left == topExpr)
+        {
+            return false;
+        }
+        if (parent is ArgumentSyntax parentArg && !parentArg.RefKindKeyword.IsKind(SyntaxKind.None))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private static bool IsExpressionHandleBackedInCpp(
+        ExpressionSyntax expr,
+        SemanticModel semanticModel,
+        ProjectTypeIndex index)
+    {
+        while (expr is ParenthesizedExpressionSyntax p)
+        {
+            expr = p.Expression;
+        }
+
+        ITypeSymbol? typeSym = semanticModel.GetTypeInfo(expr).Type;
+        if (typeSym?.Name == "Handle")
+        {
+            return true;
+        }
+        if (!IsSymbolObjectPointer(typeSym, index))
+        {
+            return false;
+        }
+
+        if (expr is ElementAccessExpressionSyntax)
+        {
+            return true;
+        }
+
+        if (expr is InvocationExpressionSyntax inv)
+        {
+            if (semanticModel.GetSymbolInfo(inv).Symbol is IMethodSymbol methodSym &&
+                methodSym.MethodKind == MethodKind.Ordinary &&
+                methodSym.Name is not ("Get" or "GetComponent" or "AddComponent" or "Resolve" or "LoadAssetByGuid" or "FindLoadedByGuid") &&
+                methodSym.ContainingType != null &&
+                !index.UserObjectTypes.Contains(methodSym.ContainingType.Name) &&
+                !index.UserValueStructs.Contains(methodSym.ContainingType.Name))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        ISymbol? sym = semanticModel.GetSymbolInfo(expr).Symbol;
+        return IsSymbolHandleBackedVariable(sym, index);
+    }
+
+    private static bool IsSymbolHandleBackedVariable(ISymbol? sym, ProjectTypeIndex index)
+    {
+        if (sym is IFieldSymbol)
+        {
+            return true;
+        }
+        if (sym is IPropertySymbol propSym)
+        {
+            if (propSym.ContainingType != null &&
+                index.TypeToComputedProperties.TryGetValue(propSym.ContainingType.Name, out var compSet) &&
+                compSet.Contains(propSym.Name))
+            {
+                return false;
+            }
+            return true;
+        }
+        if (sym is IParameterSymbol paramSym)
+        {
+            if (paramSym.ContainingSymbol is IMethodSymbol enclosingMethod &&
+                PhysicsCallbackMethodNames.Contains(enclosingMethod.Name) &&
+                paramSym.Type.Name.EndsWith("Collider", StringComparison.Ordinal))
+            {
+                return true;
+            }
+            return false;
+        }
+        if (sym is ILocalSymbol localSym)
+        {
+            SyntaxNode? declNode = localSym.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+            if (declNode is ForEachStatementSyntax)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static bool ShouldAppendGetToHandleIdentifier(
+        SyntaxToken tok,
+        SemanticModel semanticModel,
+        ProjectTypeIndex index)
+    {
+        if (tok.SyntaxTree != semanticModel.SyntaxTree || tok.Parent is not IdentifierNameSyntax idNode)
+        {
+            return false;
+        }
+
+        ExpressionSyntax exprNode = idNode;
+        if (idNode.Parent is MemberAccessExpressionSyntax ma && ma.Name == idNode)
+        {
+            exprNode = ma;
+        }
+
+        ITypeSymbol? typeSym = semanticModel.GetTypeInfo(idNode).Type;
+        if (!IsSymbolObjectPointer(typeSym, index) || typeSym?.Name == "Handle")
+        {
+            return false;
+        }
+
+        ISymbol? sym = semanticModel.GetSymbolInfo(idNode).Symbol;
+        if (!IsSymbolHandleBackedVariable(sym, index))
+        {
+            return false;
+        }
+
+        return IsValueContextRequiringPointer(exprNode);
+    }
+
+    private static bool ShouldAppendGetToHandleInvocation(
+        InvocationExpressionSyntax inv,
+        SemanticModel semanticModel,
+        ProjectTypeIndex index)
+    {
+        if (inv.SyntaxTree != semanticModel.SyntaxTree)
+        {
+            return false;
+        }
+        if (semanticModel.GetSymbolInfo(inv).Symbol is not IMethodSymbol methodSym)
+        {
+            return false;
+        }
+        if (methodSym.MethodKind != MethodKind.Ordinary)
+        {
+            return false;
+        }
+        if (methodSym.Name is "Get" or "GetComponent" or "AddComponent" or "Resolve" or "LoadAssetByGuid" or "FindLoadedByGuid")
+        {
+            return false;
+        }
+        if (methodSym.ContainingType == null ||
+            index.UserObjectTypes.Contains(methodSym.ContainingType.Name) ||
+            index.UserValueStructs.Contains(methodSym.ContainingType.Name))
+        {
+            return false;
+        }
+        if (!IsSymbolObjectPointer(methodSym.ReturnType, index) || methodSym.ReturnType.Name == "Handle")
+        {
+            return false;
+        }
+        return IsValueContextRequiringPointer(inv);
+    }
+
+    private static bool ShouldAppendGetToHandleElementAccess(
+        ElementAccessExpressionSyntax elemAccess,
+        SemanticModel semanticModel,
+        ProjectTypeIndex index)
+    {
+        if (elemAccess.SyntaxTree != semanticModel.SyntaxTree)
+        {
+            return false;
+        }
+        ITypeSymbol? typeSym = semanticModel.GetTypeInfo(elemAccess).Type;
+        if (!IsSymbolObjectPointer(typeSym, index) || typeSym?.Name == "Handle")
+        {
+            return false;
+        }
+        return IsValueContextRequiringPointer(elemAccess);
     }
 
     private readonly record struct SyntaxSpanKey(int Start, int End);
