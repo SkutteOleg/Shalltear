@@ -279,6 +279,11 @@ internal static class RoslynCompilerEngine
 
     private static readonly HashSet<string> EngineTypeNames = new(StringComparer.Ordinal);
     private static readonly HashSet<string> ObjectDerivedEngineTypes = new(StringComparer.Ordinal);
+    private static readonly HashSet<string> UiNamespaceTypes = new(StringComparer.Ordinal);
+    private static readonly HashSet<string> RawPointerEngineTypes = new(StringComparer.Ordinal)
+    {
+        "Context"
+    };
     private static readonly HashSet<string> StaticScopeIdentifiers = new(StringComparer.Ordinal);
     private static readonly HashSet<string> LifecycleMethodNames = new(StringComparer.Ordinal);
     private static readonly HashSet<string> PhysicsCallbackMethodNames = new(StringComparer.Ordinal);
@@ -347,6 +352,7 @@ internal static class RoslynCompilerEngine
         public string BaseName { get; set; } = "";
         public string HeaderRelPath { get; init; } = "";
         public string UmbrellaHeader { get; init; } = "";
+        public bool IsUiNamespace { get; set; }
         public List<(string Type, string Name)> Fields { get; } = new();
         public List<(string Type, string Name, string Value)> Constants { get; } = new();
         public List<CppDiscoveredMethod> Methods { get; } = new();
@@ -504,6 +510,7 @@ internal static class RoslynCompilerEngine
         public string StubsText { get; set; } = "";
         public List<string> EngineTypeNames { get; set; } = new();
         public List<string> ObjectDerivedEngineTypes { get; set; } = new();
+        public List<string> UiNamespaceTypes { get; set; } = new();
         public List<string> StaticScopeIdentifiers { get; set; } = new();
         public List<string> LifecycleMethodNames { get; set; } = new();
         public List<string> PhysicsCallbackMethodNames { get; set; } = new();
@@ -529,6 +536,7 @@ internal static class RoslynCompilerEngine
                 StubsText = stubsText,
                 EngineTypeNames = EngineTypeNames.OrderBy(s => s, StringComparer.Ordinal).ToList(),
                 ObjectDerivedEngineTypes = ObjectDerivedEngineTypes.OrderBy(s => s, StringComparer.Ordinal).ToList(),
+                UiNamespaceTypes = UiNamespaceTypes.OrderBy(s => s, StringComparer.Ordinal).ToList(),
                 StaticScopeIdentifiers = StaticScopeIdentifiers.OrderBy(s => s, StringComparer.Ordinal).ToList(),
                 LifecycleMethodNames = LifecycleMethodNames.OrderBy(s => s, StringComparer.Ordinal).ToList(),
                 PhysicsCallbackMethodNames = PhysicsCallbackMethodNames.OrderBy(s => s, StringComparer.Ordinal).ToList(),
@@ -582,7 +590,7 @@ internal static class RoslynCompilerEngine
             {
                 string json = File.ReadAllText(path, Encoding.UTF8);
                 EngineStubsCacheDto? dto = JsonSerializer.Deserialize<EngineStubsCacheDto>(json);
-                if (dto == null || string.IsNullOrEmpty(dto.StubsText) || dto.EngineTypeNames.Count == 0)
+                if (dto == null || string.IsNullOrEmpty(dto.StubsText) || dto.EngineTypeNames.Count == 0 || dto.UiNamespaceTypes.Count == 0)
                 {
                     continue;
                 }
@@ -597,6 +605,12 @@ internal static class RoslynCompilerEngine
                 foreach (string s in dto.ObjectDerivedEngineTypes)
                 {
                     ObjectDerivedEngineTypes.Add(s);
+                }
+
+                UiNamespaceTypes.Clear();
+                foreach (string s in dto.UiNamespaceTypes)
+                {
+                    UiNamespaceTypes.Add(s);
                 }
 
                 StaticScopeIdentifiers.Clear();
@@ -708,7 +722,7 @@ internal static class RoslynCompilerEngine
             // Classify non-Object classes: static-only classes become static_class, non-Object value classes become struct
             foreach (CppDiscoveredType t in discoveredOrder)
             {
-                if (t.Kind == "class" && !ObjectDerivedEngineTypes.Contains(t.Name))
+                if (t.Kind == "class" && !ObjectDerivedEngineTypes.Contains(t.Name) && !RawPointerEngineTypes.Contains(t.Name))
                 {
                     bool allStatic = t.Fields.Count == 0 &&
                                      t.Methods.Count > 0 &&
@@ -810,6 +824,7 @@ internal static class RoslynCompilerEngine
 
             // Register discovered types in lookup tables
             EngineTypeNames.Clear();
+            UiNamespaceTypes.Clear();
             StaticScopeIdentifiers.Clear();
             TypeToModuleUmbrellaHeader.Clear();
 
@@ -824,6 +839,10 @@ internal static class RoslynCompilerEngine
             {
                 knownTypeSet.Add(t.Name);
                 EngineTypeNames.Add(t.Name);
+                if (t.IsUiNamespace)
+                {
+                    UiNamespaceTypes.Add(t.Name);
+                }
                 if (!string.IsNullOrEmpty(t.UmbrellaHeader))
                 {
                     TypeToModuleUmbrellaHeader[t.Name] = t.UmbrellaHeader;
@@ -1008,6 +1027,10 @@ internal static class RoslynCompilerEngine
 
     private static void MergeDiscoveredType(CppDiscoveredType target, CppDiscoveredType incoming)
     {
+        if (incoming.IsUiNamespace)
+        {
+            target.IsUiNamespace = true;
+        }
         if (string.IsNullOrEmpty(target.BaseName) && !string.IsNullOrEmpty(incoming.BaseName))
         {
             target.BaseName = incoming.BaseName;
@@ -1236,6 +1259,7 @@ internal static class RoslynCompilerEngine
         }
 
         // 3. Discover top-level `enum class` declarations
+        int uiNamespacePos = isEngineRoot ? clean.IndexOf("namespace Shalltear::UI", StringComparison.Ordinal) : -1;
         foreach (Match ec in Regex.Matches(clean, @"enum\s+class\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*[A-Za-z0-9_:]+)?\s*\{([^}]*)\}"))
         {
             string enumName = ec.Groups[1].Value;
@@ -1248,7 +1272,8 @@ internal static class RoslynCompilerEngine
                 Name = enumName,
                 Kind = "enum",
                 UmbrellaHeader = umbrella,
-                HeaderRelPath = relHeader
+                HeaderRelPath = relHeader,
+                IsUiNamespace = uiNamespacePos >= 0 && ec.Index > uiNamespacePos
             };
             foreach (string rawItem in ec.Groups[2].Value.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
@@ -1333,7 +1358,8 @@ internal static class RoslynCompilerEngine
                 Kind = kind,
                 BaseName = baseName,
                 UmbrellaHeader = umbrella,
-                HeaderRelPath = relHeader
+                HeaderRelPath = relHeader,
+                IsUiNamespace = uiNamespacePos >= 0 && tm.Index > uiNamespacePos
             };
 
             ParseClassOrStructBody(body, typeName, kind == "struct", isEngineRoot, discovered);
@@ -2018,7 +2044,13 @@ internal static class RoslynCompilerEngine
         t = Regex.Replace(t, @"\bconst\b", "").Trim().TrimEnd('&').Trim();
         if (hasPtr)
         {
-            return false;
+            string ptrCandidate = StripCppNamespace(t.TrimEnd('*').Trim());
+            if (!RawPointerEngineTypes.Contains(ptrCandidate))
+            {
+                return false;
+            }
+            csType = ptrCandidate;
+            return true;
         }
 
         // Handle<T> -> unwrapped T in C#
@@ -3714,7 +3746,8 @@ internal static class RoslynCompilerEngine
                 {
                     continue;
                 }
-                if (MapTypeName(field.RawType, index, pointerForObjectType: false, wrapObjectInHandle: true) == "void*")
+                if (MapTypeName(field.RawType, index, pointerForObjectType: false, wrapObjectInHandle: true) == "void*" ||
+                    RawPointerEngineTypes.Contains(field.RawType))
                 {
                     continue;
                 }
@@ -3882,7 +3915,8 @@ internal static class RoslynCompilerEngine
                 {
                     continue;
                 }
-                if (MapTypeName(field.RawType, index, pointerForObjectType: false, wrapObjectInHandle: true) == "void*")
+                if (MapTypeName(field.RawType, index, pointerForObjectType: false, wrapObjectInHandle: true) == "void*" ||
+                    RawPointerEngineTypes.Contains(field.RawType))
                 {
                     continue;
                 }
@@ -4528,7 +4562,7 @@ internal static class RoslynCompilerEngine
         {
             return true;
         }
-        return ObjectDerivedEngineTypes.Contains(clean) || index.UserObjectTypes.Contains(clean);
+        return ObjectDerivedEngineTypes.Contains(clean) || RawPointerEngineTypes.Contains(clean) || index.UserObjectTypes.Contains(clean);
     }
 
     private static string GetUnwrappedObjectTypeName(ITypeSymbol? symbol)
@@ -4565,7 +4599,7 @@ internal static class RoslynCompilerEngine
             {
                 continue;
             }
-            if (ObjectDerivedEngineTypes.Contains(cur.Name) || index.UserObjectTypes.Contains(cur.Name))
+            if (ObjectDerivedEngineTypes.Contains(cur.Name) || RawPointerEngineTypes.Contains(cur.Name) || index.UserObjectTypes.Contains(cur.Name))
             {
                 return true;
             }
@@ -5594,7 +5628,8 @@ internal static class RoslynCompilerEngine
 
                 if (StaticScopeIdentifiers.Contains(lhs))
                 {
-                    outSb.Append($"::Shalltear::{lhs}::{rhs}");
+                    string nsPrefix = UiNamespaceTypes.Contains(lhs) ? "::Shalltear::UI::" : "::Shalltear::";
+                    outSb.Append($"{nsPrefix}{lhs}::{rhs}");
                     i += 3;
                     continue;
                 }
@@ -5718,7 +5753,8 @@ internal static class RoslynCompilerEngine
                          !IsTokenLocalOrMemberSymbol(tok, semanticModel) &&
                          (i == 0 || !toks[i - 1].IsKind(SyntaxKind.DotToken)))
                 {
-                    outSb.Append($"::Shalltear::{tok.ValueText}");
+                    string nsPrefix = UiNamespaceTypes.Contains(tok.ValueText) ? "::Shalltear::UI::" : "::Shalltear::";
+                    outSb.Append($"{nsPrefix}{tok.ValueText}");
                 }
                 else
                 {
@@ -5855,6 +5891,10 @@ internal static class RoslynCompilerEngine
         }
 
         ITypeSymbol? typeSym = semanticModel.GetTypeInfo(expr).Type;
+        if (typeSym != null && RawPointerEngineTypes.Contains(typeSym.Name))
+        {
+            return false;
+        }
         if (typeSym?.Name == "Handle")
         {
             return true;
@@ -5889,6 +5929,18 @@ internal static class RoslynCompilerEngine
 
     private static bool IsSymbolHandleBackedVariable(ISymbol? sym, ProjectTypeIndex index)
     {
+        ITypeSymbol? symType = sym switch
+        {
+            IFieldSymbol f => f.Type,
+            IPropertySymbol p => p.Type,
+            IParameterSymbol pa => pa.Type,
+            ILocalSymbol l => l.Type,
+            _ => null
+        };
+        if (symType != null && RawPointerEngineTypes.Contains(symType.Name))
+        {
+            return false;
+        }
         if (sym is IFieldSymbol)
         {
             return true;
@@ -5982,7 +6034,9 @@ internal static class RoslynCompilerEngine
         {
             return false;
         }
-        if (!IsSymbolObjectPointer(methodSym.ReturnType, index) || methodSym.ReturnType.Name == "Handle")
+        if (!IsSymbolObjectPointer(methodSym.ReturnType, index) ||
+            methodSym.ReturnType.Name == "Handle" ||
+            RawPointerEngineTypes.Contains(methodSym.ReturnType.Name))
         {
             return false;
         }
@@ -6218,12 +6272,15 @@ internal static class RoslynCompilerEngine
             return prim + (explicitPointer ? "*" : "");
         }
 
+        bool isRawPtrEngineType = RawPointerEngineTypes.Contains(trimmed);
         bool isObjectType = ObjectDerivedEngineTypes.Contains(trimmed) || index.UserObjectTypes.Contains(trimmed);
-        string mapped = EngineTypeNames.Contains(trimmed)
-            ? $"::Shalltear::{trimmed}"
-            : trimmed.Replace(".", "::");
+        string mapped = UiNamespaceTypes.Contains(trimmed)
+            ? $"::Shalltear::UI::{trimmed}"
+            : EngineTypeNames.Contains(trimmed)
+                ? $"::Shalltear::{trimmed}"
+                : trimmed.Replace(".", "::");
 
-        if (explicitPointer || (pointerForObjectType && isObjectType))
+        if (explicitPointer || (isRawPtrEngineType && (pointerForObjectType || wrapObjectInHandle)) || (pointerForObjectType && isObjectType))
         {
             mapped += "*";
         }
@@ -6267,7 +6324,10 @@ internal static class RoslynCompilerEngine
             {
                 return "";
             }
-            return "::Shalltear::" + afterNew;
+            int paren = afterNew.IndexOf('(');
+            string ctorType = (paren > 0 ? afterNew.Substring(0, paren) : afterNew).Trim();
+            string nsPrefix = UiNamespaceTypes.Contains(ctorType) ? "::Shalltear::UI::" : "::Shalltear::";
+            return nsPrefix + afterNew;
         }
         int dot = text.IndexOf('.');
         if (dot > 0)
@@ -6276,7 +6336,8 @@ internal static class RoslynCompilerEngine
             string tail = text.Substring(dot + 1).Trim();
             if (StaticScopeIdentifiers.Contains(head))
             {
-                return $"::Shalltear::{head}::{tail}";
+                string nsPrefix = UiNamespaceTypes.Contains(head) ? "::Shalltear::UI::" : "::Shalltear::";
+                return $"{nsPrefix}{head}::{tail}";
             }
             if (index.UserEnumNames.Contains(head))
             {
