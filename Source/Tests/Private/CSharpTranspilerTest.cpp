@@ -1037,6 +1037,45 @@ public class BadExternScript : Behavior
 	EXPECT_FALSE(CSharpTranspiler::TranspileSource("Source/BadExternScript.cs", invalidExternSource, invalidRes));
 	ASSERT_FALSE(invalidRes.diagnostics.empty());
 	EXPECT_NE(invalidRes.diagnostics[0].message.find("DllImport"), str::npos) << invalidRes.diagnostics[0].message;
+
+	const char* staticClassSource = R"(using Shalltear;
+using System.Runtime.InteropServices;
+
+public static class HardwareKeyState
+{
+	private const int VK_LSHIFT = 0xA0;
+
+	[DllImport("user32.dll")]
+	private static extern short GetAsyncKeyState(int vKey);
+
+	public static bool IsLeftShiftDown()
+	{
+		return (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0;
+	}
+}
+
+public class ShiftChecker : Behavior
+{
+	public SceneObject Target;
+	public SceneObject ActiveTarget => Target != null ? Target : default;
+
+	protected override void OnUpdate(float dt)
+	{
+		if (HardwareKeyState.IsLeftShiftDown() && GetComponent<BoxCollider>().IsValid())
+		{
+			GetOwner().SetActive(true);
+		}
+	}
+}
+)";
+	CSharpTranspiler::TranspileFileResult staticRes;
+	ASSERT_TRUE(CSharpTranspiler::TranspileSource("Assets/Scripts/HardwareKeyState.cs", staticClassSource, staticRes))
+		<< (staticRes.diagnostics.empty() ? "" : staticRes.diagnostics[0].message);
+	EXPECT_NE(staticRes.headerContent.find("class HardwareKeyState {"), str::npos) << staticRes.headerContent;
+	EXPECT_EQ(staticRes.sourceContent.find("SLT_REGISTER_TYPE(HardwareKeyState)"), str::npos) << staticRes.sourceContent;
+	EXPECT_NE(staticRes.sourceContent.find("HardwareKeyState::IsLeftShiftDown()"), str::npos) << staticRes.sourceContent;
+	EXPECT_NE(staticRes.sourceContent.find("Target.Get() != nullptr ? Target.Get() : nullptr"), str::npos) << staticRes.sourceContent;
+	EXPECT_NE(staticRes.sourceContent.find("GetComponent<::Shalltear::BoxCollider>().Get() : nullptr)) != nullptr"), str::npos) << staticRes.sourceContent;
 }
 
 TEST_F(CSharpCompileIntegrationTest, DllImportNativeCallCompilesAndExecutesAtRuntime) {

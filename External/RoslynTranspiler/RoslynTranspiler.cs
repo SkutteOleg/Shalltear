@@ -352,6 +352,7 @@ internal static class RoslynCompilerEngine
     internal sealed class ProjectTypeIndex
     {
         public HashSet<string> UserObjectTypes { get; } = new(StringComparer.Ordinal);
+        public HashSet<string> UserStaticClasses { get; } = new(StringComparer.Ordinal);
         public HashSet<string> UserValueStructs { get; } = new(StringComparer.Ordinal);
         public HashSet<string> UserEnumNames { get; } = new(StringComparer.Ordinal);
         public Dictionary<string, string> TypeToGeneratedHeader { get; } = new(StringComparer.Ordinal);
@@ -2499,7 +2500,14 @@ internal static class RoslynCompilerEngine
                 }
                 else if (typeDecl is ClassDeclarationSyntax classDecl)
                 {
-                    index.UserObjectTypes.Add(typeName);
+                    if (classDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword)))
+                    {
+                        index.UserStaticClasses.Add(typeName);
+                    }
+                    else
+                    {
+                        index.UserObjectTypes.Add(typeName);
+                    }
                     List<ComputedPropertyInfo> computedProps = ExtractComputedProperties(classDecl);
                     if (computedProps.Count > 0)
                     {
@@ -3308,6 +3316,7 @@ internal static class RoslynCompilerEngine
             ObjectDerivedEngineTypes.Contains(shortRaw) ||
             StaticScopeIdentifiers.Contains(shortRaw) ||
             index.UserObjectTypes.Contains(shortRaw) ||
+            index.UserStaticClasses.Contains(shortRaw) ||
             index.UserValueStructs.Contains(shortRaw) ||
             index.UserEnumNames.Contains(shortRaw))
         {
@@ -3319,6 +3328,7 @@ internal static class RoslynCompilerEngine
         {
             string unqual = shortRaw.Substring(lastDot + 1);
             if (index.UserObjectTypes.Contains(unqual) ||
+                index.UserStaticClasses.Contains(unqual) ||
                 index.UserValueStructs.Contains(unqual) ||
                 index.UserEnumNames.Contains(unqual))
             {
@@ -3375,6 +3385,7 @@ internal static class RoslynCompilerEngine
                 bool isBaseType = idNode.Ancestors().Any(a => a is BaseListSyntax);
                 bool isCppOrValueOrEnum = index.UserValueStructs.Contains(name) ||
                                           index.UserEnumNames.Contains(name) ||
+                                          index.UserStaticClasses.Contains(name) ||
                                           index.CppTypes.Any(c => c.Name == name);
                 if (isBaseType || isPublicReflectedFieldOrProp || isCppOrValueOrEnum)
                 {
@@ -3732,136 +3743,144 @@ internal static class RoslynCompilerEngine
         FileTranspileDto outDto)
     {
         string className = classDecl.Identifier.ValueText;
-        if (classDecl.BaseList == null || classDecl.BaseList.Types.Count == 0)
-        {
-            AddNodeError(
-                sourcePath,
-                classDecl.Identifier.Parent ?? classDecl,
-                $"C# class '{className}' has no engine base type. Inherit from Behavior or DataAsset, or declare 'struct {className}' for a value type",
-                outDto.Diagnostics);
-            return false;
-        }
-        string baseRaw = NormalizeTypeSyntaxText(classDecl.BaseList.Types[0].Type);
-        if (baseRaw.StartsWith("Shalltear.", StringComparison.Ordinal))
-        {
-            baseRaw = baseRaw.Substring(10);
-        }
-
-        if (baseRaw == "SceneObject")
-        {
-            FileLinePositionSpan span = classDecl.Identifier.GetLocation().GetLineSpan();
-            int line = span.StartLinePosition.Line + 1;
-            int col = span.StartLinePosition.Character + 1;
-            string msg = $"C# class '{className}' cannot inherit from SceneObject. Inherit from Behavior or Component";
-            outDto.Diagnostics.Add(new DiagnosticDto
-            {
-                Severity = "error",
-                File = sourcePath,
-                Line = line,
-                Column = col,
-                Message = msg,
-                Raw = $"{sourcePath}:{line}:{col}: error: {msg}"
-            });
-            return false;
-        }
-
-        if (!ObjectDerivedEngineTypes.Contains(baseRaw) && !index.UserObjectTypes.Contains(baseRaw))
-        {
-            AddNodeError(
-                sourcePath,
-                classDecl.BaseList.Types[0],
-                $"C# class '{className}' must inherit from Behavior, Component, or DataAsset (got '{baseRaw}')",
-                outDto.Diagnostics);
-            return false;
-        }
-
-        bool isDataAsset = baseRaw == "DataAsset" || baseRaw == "Asset";
-        string cppBase = MapTypeName(baseRaw, index, pointerForObjectType: false, wrapObjectInHandle: false);
-
+        bool isStaticClass = classDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
         List<MethodDeclarationSyntax> methods = classDecl.Members.OfType<MethodDeclarationSyntax>().ToList();
-        bool hasPhysicsCallbacks = methods.Any(m => PhysicsCallbackMethodNames.Contains(m.Identifier.ValueText));
-
-        header.Append($"class {className} : public {cppBase}");
-        if (hasPhysicsCallbacks && !isDataAsset)
-        {
-            header.Append(", public ::Shalltear::PhysicsListener");
-        }
-        header.Append(" {\n");
-        header.Append("public:\n");
-        header.Append($"\tusing Super = {cppBase};\n");
-
-        if (isDataAsset)
-        {
-            header.Append($"\tSLT_REFLECT_CLASS({className})\n");
-            header.Append($"\tSLT_REFLECT_PARENT({cppBase})\n");
-            List<string>? menuArgs = FindAttributeArguments(classDecl.AttributeLists, "CreateAssetMenu");
-            if (menuArgs != null && menuArgs.Count >= 2)
-            {
-                header.Append($"\tSLT_CREATE_ASSET_MENU({menuArgs[0]}, {menuArgs[1]})\n");
-            }
-            else
-            {
-                header.Append("\tSLT_REFLECT_CREATABLE()\n");
-            }
-        }
-        else
-        {
-            header.Append($"\tSLT_REFLECT_COMPONENT({className}, {cppBase})\n");
-        }
-
-        List<string>? settingsCat = FindAttributeArguments(classDecl.AttributeLists, "SettingsCategory");
-        if (settingsCat != null && settingsCat.Count >= 1)
-        {
-            header.Append($"\tSLT_SETTINGS_CATEGORY({settingsCat[0]})\n");
-        }
-
         List<ExtractedMemberField> fields = ExtractFieldsAndAutoProperties(classDecl);
         List<ComputedPropertyInfo> computedProps = ExtractComputedProperties(classDecl);
 
-        foreach (ExtractedMemberField field in fields)
+        if (isStaticClass)
         {
-            if (field.IsStatic || field.IsConst)
+            header.Append($"class {className} {{\n");
+            header.Append("public:\n");
+        }
+        else
+        {
+            if (classDecl.BaseList == null || classDecl.BaseList.Types.Count == 0)
             {
-                continue;
+                AddNodeError(
+                    sourcePath,
+                    classDecl.Identifier.Parent ?? classDecl,
+                    $"C# class '{className}' has no engine base type. Inherit from Behavior or DataAsset, or declare 'struct {className}' for a value type",
+                    outDto.Diagnostics);
+                return false;
             }
-            if (!field.IsPublic)
+            string baseRaw = NormalizeTypeSyntaxText(classDecl.BaseList.Types[0].Type);
+            if (baseRaw.StartsWith("Shalltear.", StringComparison.Ordinal))
             {
-                continue;
+                baseRaw = baseRaw.Substring(10);
             }
-            if (MapTypeName(field.RawType, index, pointerForObjectType: false, wrapObjectInHandle: true) == "void*")
+
+            if (baseRaw == "SceneObject")
             {
-                continue;
+                FileLinePositionSpan span = classDecl.Identifier.GetLocation().GetLineSpan();
+                int line = span.StartLinePosition.Line + 1;
+                int col = span.StartLinePosition.Character + 1;
+                string msg = $"C# class '{className}' cannot inherit from SceneObject. Inherit from Behavior or Component";
+                outDto.Diagnostics.Add(new DiagnosticDto
+                {
+                    Severity = "error",
+                    File = sourcePath,
+                    Line = line,
+                    Column = col,
+                    Message = msg,
+                    Raw = $"{sourcePath}:{line}:{col}: error: {msg}"
+                });
+                return false;
             }
-            string attrList = BuildFieldAttributesMacroList(field.AttributeLists);
-            if (IsContainerTypeSpelling(field.RawType, out _))
+
+            if (!ObjectDerivedEngineTypes.Contains(baseRaw) && !index.UserObjectTypes.Contains(baseRaw))
             {
-                header.Append($"\tSLT_REFLECT_ARRAY({field.Name}{attrList})\n");
+                AddNodeError(
+                    sourcePath,
+                    classDecl.BaseList.Types[0],
+                    $"C# class '{className}' must inherit from Behavior, Component, or DataAsset (got '{baseRaw}')",
+                    outDto.Diagnostics);
+                return false;
             }
-            else if (HasAttribute(field.AttributeLists, "SubobjectArray"))
+
+            bool isDataAsset = baseRaw == "DataAsset" || baseRaw == "Asset";
+            string cppBase = MapTypeName(baseRaw, index, pointerForObjectType: false, wrapObjectInHandle: false);
+            bool hasPhysicsCallbacks = methods.Any(m => PhysicsCallbackMethodNames.Contains(m.Identifier.ValueText));
+
+            header.Append($"class {className} : public {cppBase}");
+            if (hasPhysicsCallbacks && !isDataAsset)
             {
-                header.Append($"\tSLT_REFLECT_SUBOBJECT_ARRAY({field.Name}{attrList})\n");
+                header.Append(", public ::Shalltear::PhysicsListener");
             }
-            else if (index.UserValueStructs.Contains(field.RawType) || HasAttribute(field.AttributeLists, "Subobject"))
+            header.Append(" {\n");
+            header.Append("public:\n");
+            header.Append($"\tusing Super = {cppBase};\n");
+
+            if (isDataAsset)
             {
-                header.Append($"\tSLT_REFLECT_SUBOBJECT({field.Name}{attrList})\n");
+                header.Append($"\tSLT_REFLECT_CLASS({className})\n");
+                header.Append($"\tSLT_REFLECT_PARENT({cppBase})\n");
+                List<string>? menuArgs = FindAttributeArguments(classDecl.AttributeLists, "CreateAssetMenu");
+                if (menuArgs != null && menuArgs.Count >= 2)
+                {
+                    header.Append($"\tSLT_CREATE_ASSET_MENU({menuArgs[0]}, {menuArgs[1]})\n");
+                }
+                else
+                {
+                    header.Append("\tSLT_REFLECT_CREATABLE()\n");
+                }
             }
             else
             {
-                header.Append($"\tSLT_REFLECT_FIELD({field.Name}{attrList})\n");
+                header.Append($"\tSLT_REFLECT_COMPONENT({className}, {cppBase})\n");
             }
-        }
 
-        foreach (MethodDeclarationSyntax method in methods)
-        {
-            if (HasAttribute(method.AttributeLists, "Callable") ||
-                HasAttribute(method.AttributeLists, "ReflectMethod"))
+            List<string>? settingsCat = FindAttributeArguments(classDecl.AttributeLists, "SettingsCategory");
+            if (settingsCat != null && settingsCat.Count >= 1)
             {
-                header.Append($"\tSLT_REFLECT_METHOD({method.Identifier.ValueText})\n");
+                header.Append($"\tSLT_SETTINGS_CATEGORY({settingsCat[0]})\n");
             }
-        }
 
-        header.Append("\tSLT_END_REFLECT()\n\n");
-        outDto.ReflectedTypes.Add(className);
+            foreach (ExtractedMemberField field in fields)
+            {
+                if (field.IsStatic || field.IsConst)
+                {
+                    continue;
+                }
+                if (!field.IsPublic)
+                {
+                    continue;
+                }
+                if (MapTypeName(field.RawType, index, pointerForObjectType: false, wrapObjectInHandle: true) == "void*")
+                {
+                    continue;
+                }
+                string attrList = BuildFieldAttributesMacroList(field.AttributeLists);
+                if (IsContainerTypeSpelling(field.RawType, out _))
+                {
+                    header.Append($"\tSLT_REFLECT_ARRAY({field.Name}{attrList})\n");
+                }
+                else if (HasAttribute(field.AttributeLists, "SubobjectArray"))
+                {
+                    header.Append($"\tSLT_REFLECT_SUBOBJECT_ARRAY({field.Name}{attrList})\n");
+                }
+                else if (index.UserValueStructs.Contains(field.RawType) || HasAttribute(field.AttributeLists, "Subobject"))
+                {
+                    header.Append($"\tSLT_REFLECT_SUBOBJECT({field.Name}{attrList})\n");
+                }
+                else
+                {
+                    header.Append($"\tSLT_REFLECT_FIELD({field.Name}{attrList})\n");
+                }
+            }
+
+            foreach (MethodDeclarationSyntax method in methods)
+            {
+                if (HasAttribute(method.AttributeLists, "Callable") ||
+                    HasAttribute(method.AttributeLists, "ReflectMethod"))
+                {
+                    header.Append($"\tSLT_REFLECT_METHOD({method.Identifier.ValueText})\n");
+                }
+            }
+
+            header.Append("\tSLT_END_REFLECT()\n\n");
+            outDto.ReflectedTypes.Add(className);
+        }
 
         foreach (ExtractedMemberField field in fields)
         {
@@ -4047,9 +4066,12 @@ internal static class RoslynCompilerEngine
         {
             header.Append($"}} // namespace {cppNs}\n\n");
             cpp.Append($"}} // namespace {cppNs}\n\n");
-            cpp.Append($"SLT_REGISTER_TYPE({cppNs}::{className})\n\n");
+            if (!isStaticClass)
+            {
+                cpp.Append($"SLT_REGISTER_TYPE({cppNs}::{className})\n\n");
+            }
         }
-        else
+        else if (!isStaticClass)
         {
             cpp.Append($"SLT_REGISTER_TYPE({className})\n\n");
         }
@@ -4473,6 +4495,19 @@ internal static class RoslynCompilerEngine
         return ObjectDerivedEngineTypes.Contains(clean) || index.UserObjectTypes.Contains(clean);
     }
 
+    private static string GetUnwrappedObjectTypeName(ITypeSymbol? symbol)
+    {
+        if (symbol == null)
+        {
+            return "";
+        }
+        if (symbol is INamedTypeSymbol named && named.Name == "Handle" && named.TypeArguments.Length == 1)
+        {
+            return named.TypeArguments[0].Name;
+        }
+        return symbol.Name;
+    }
+
     private static bool IsSymbolObjectPointer(ITypeSymbol? symbol, ProjectTypeIndex index)
     {
         if (symbol == null)
@@ -4879,14 +4914,32 @@ internal static class RoslynCompilerEngine
         // 8. Pre-lower `default(T)` and `default` literal expressions
         foreach (DefaultExpressionSyntax defExpr in node.DescendantNodesAndSelf().OfType<DefaultExpressionSyntax>())
         {
-            string mappedDef = MapTypeName(NormalizeTypeSyntaxText(defExpr.Type), index, pointerForObjectType: true, wrapObjectInHandle: false);
-            spanOverrides[new SyntaxSpanKey(defExpr.SpanStart, defExpr.Span.End)] = $"{mappedDef}{{}}";
+            string rawDefType = NormalizeTypeSyntaxText(defExpr.Type);
+            string mappedDef = MapTypeName(rawDefType, index, pointerForObjectType: true, wrapObjectInHandle: false);
+            spanOverrides[new SyntaxSpanKey(defExpr.SpanStart, defExpr.Span.End)] =
+                (mappedDef.EndsWith("*", StringComparison.Ordinal) || IsRawTypeObjectReference(rawDefType, index))
+                    ? "nullptr"
+                    : $"{mappedDef}{{}}";
         }
         foreach (LiteralExpressionSyntax litExpr in node.DescendantNodesAndSelf().OfType<LiteralExpressionSyntax>())
         {
             if (litExpr.IsKind(SyntaxKind.DefaultLiteralExpression))
             {
-                spanOverrides[new SyntaxSpanKey(litExpr.SpanStart, litExpr.Span.End)] = "{}";
+                ITypeSymbol? targetType = semanticModel.GetTypeInfo(litExpr).ConvertedType;
+                if (IsSymbolObjectPointer(targetType, index))
+                {
+                    spanOverrides[new SyntaxSpanKey(litExpr.SpanStart, litExpr.Span.End)] = "nullptr";
+                }
+                else if (litExpr.Parent is ConditionalExpressionSyntax &&
+                         targetType != null &&
+                         targetType.TypeKind != TypeKind.Error)
+                {
+                    spanOverrides[new SyntaxSpanKey(litExpr.SpanStart, litExpr.Span.End)] = $"{MapTypeSymbolToCpp(targetType, index)}{{}}";
+                }
+                else
+                {
+                    spanOverrides[new SyntaxSpanKey(litExpr.SpanStart, litExpr.Span.End)] = "{}";
+                }
             }
         }
 
@@ -4956,7 +5009,7 @@ internal static class RoslynCompilerEngine
                 }
                 else if (inv.ArgumentList.Arguments.Count == 0 &&
                          methodName is "Get" or "IsValid" or "Reset" or "GetInstanceId" &&
-                         IsSymbolObjectPointer(recvType, index))
+                         (IsSymbolObjectPointer(recvType, index) || InitializerLooksLikeObjectPointer(ma.Expression)))
                 {
                     bool isHandleBacked = IsExpressionHandleBackedInCpp(ma.Expression, semanticModel, index);
                     if (!isHandleBacked)
@@ -5024,15 +5077,27 @@ internal static class RoslynCompilerEngine
             }
             else if (assign.Left is MemberAccessExpressionSyntax maLeft)
             {
-                ITypeSymbol? recvType = semanticModel.GetTypeInfo(maLeft.Expression).Type;
                 string propName = maLeft.Name.Identifier.ValueText;
-                if (recvType != null &&
-                    index.TypeToComputedProperties.TryGetValue(recvType.Name, out var targetProps) &&
+                SymbolInfo leftSymInfo = semanticModel.GetSymbolInfo(maLeft.Expression);
+                if (leftSymInfo.Symbol is ITypeSymbol staticLeftType &&
+                    index.TypeToComputedProperties.TryGetValue(staticLeftType.Name, out var staticTargetProps) &&
+                    staticTargetProps.Contains(propName))
+                {
+                    string recv = LowerTokensInNodeWithOverrides(sourcePath, maLeft.Expression, semanticModel, index, enclosingClassName, pointerLocals, containerLocals, stringLocals, spanOverrides, false);
+                    string rhs = LowerTokensInNodeWithOverrides(sourcePath, assign.Right, semanticModel, index, enclosingClassName, pointerLocals, containerLocals, stringLocals, spanOverrides, false);
+                    spanOverrides[new SyntaxSpanKey(assign.SpanStart, assign.Span.End)] = $"{recv}::Set{propName}({rhs})";
+                    continue;
+                }
+
+                ITypeSymbol? recvType = semanticModel.GetTypeInfo(maLeft.Expression).Type;
+                string recvTypeName = GetUnwrappedObjectTypeName(recvType);
+                if (!string.IsNullOrEmpty(recvTypeName) &&
+                    index.TypeToComputedProperties.TryGetValue(recvTypeName, out var targetProps) &&
                     targetProps.Contains(propName))
                 {
                     string recv = LowerTokensInNodeWithOverrides(sourcePath, maLeft.Expression, semanticModel, index, enclosingClassName, pointerLocals, containerLocals, stringLocals, spanOverrides, false);
                     string rhs = LowerTokensInNodeWithOverrides(sourcePath, assign.Right, semanticModel, index, enclosingClassName, pointerLocals, containerLocals, stringLocals, spanOverrides, false);
-                    string op = IsSymbolObjectPointer(recvType, index) ? "->" : ".";
+                    string op = (IsSymbolObjectPointer(recvType, index) || InitializerLooksLikeObjectPointer(maLeft.Expression)) ? "->" : ".";
                     spanOverrides[new SyntaxSpanKey(assign.SpanStart, assign.Span.End)] = $"{recv}{op}Set{propName}({rhs})";
                 }
             }
@@ -5453,16 +5518,25 @@ internal static class RoslynCompilerEngine
                 SymbolInfo exprSymbolInfo = semanticModel.GetSymbolInfo(dotParent.Expression);
                 if (exprSymbolInfo.Symbol is ITypeSymbol staticTypeSym)
                 {
+                    if (index.TypeToComputedProperties.TryGetValue(staticTypeSym.Name, out var staticComputedSet) &&
+                        staticComputedSet.Contains(memberName))
+                    {
+                        outSb.Append($"::Get{memberName}()");
+                        i += 2;
+                        continue;
+                    }
                     outSb.Append("::");
                     ++i;
                     continue;
                 }
 
                 ITypeSymbol? recvType = semanticModel.GetTypeInfo(dotParent.Expression).Type;
-                if (IsSymbolObjectPointer(recvType, index) && !HandleIntrinsicMembers.Contains(memberName))
+                if ((IsSymbolObjectPointer(recvType, index) || InitializerLooksLikeObjectPointer(dotParent.Expression)) &&
+                    !HandleIntrinsicMembers.Contains(memberName))
                 {
-                    if (recvType != null &&
-                        index.TypeToComputedProperties.TryGetValue(recvType.Name, out var computedSet) &&
+                    string recvTypeName = GetUnwrappedObjectTypeName(recvType);
+                    if (!string.IsNullOrEmpty(recvTypeName) &&
+                        index.TypeToComputedProperties.TryGetValue(recvTypeName, out var computedSet) &&
                         computedSet.Contains(memberName))
                     {
                         outSb.Append($"->Get{memberName}()");
@@ -5488,9 +5562,17 @@ internal static class RoslynCompilerEngine
                     i += 3;
                     continue;
                 }
-                if (index.UserEnumNames.Contains(lhs))
+                if (index.UserEnumNames.Contains(lhs) || index.UserStaticClasses.Contains(lhs))
                 {
-                    outSb.Append($"{lhs}::{rhs}");
+                    if (index.TypeToComputedProperties.TryGetValue(lhs, out var staticClassProps) &&
+                        staticClassProps.Contains(rhs))
+                    {
+                        outSb.Append($"{lhs}::Get{rhs}()");
+                    }
+                    else
+                    {
+                        outSb.Append($"{lhs}::{rhs}");
+                    }
                     i += 3;
                     continue;
                 }
@@ -5520,8 +5602,9 @@ internal static class RoslynCompilerEngine
                 if (pointerLocals.Contains(lhs) && !HandleIntrinsicMembers.Contains(rhs))
                 {
                     ITypeSymbol? lhsType = tok.Parent != null ? semanticModel.GetTypeInfo(tok.Parent).Type : null;
-                    if (lhsType != null &&
-                        index.TypeToComputedProperties.TryGetValue(lhsType.Name, out var targetProps) &&
+                    string lhsTypeName = GetUnwrappedObjectTypeName(lhsType);
+                    if (!string.IsNullOrEmpty(lhsTypeName) &&
+                        index.TypeToComputedProperties.TryGetValue(lhsTypeName, out var targetProps) &&
                         targetProps.Contains(rhs))
                     {
                         outSb.Append($"{lhs}->Get{rhs}()");
