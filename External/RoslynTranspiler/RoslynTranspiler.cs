@@ -313,6 +313,20 @@ internal static class RoslynCompilerEngine
         "Add", "Clear", "Count", "RemoveAt", "RemoveAll", "Exists"
     };
 
+    private static readonly HashSet<string> HookGuardedLifecycleMethods = new(StringComparer.Ordinal)
+    {
+        "OnAttach", "OnDetach", "OnEnable", "OnDisable", "OnDestroy"
+    };
+
+    private static readonly HashSet<string> StructuralMutationMethods = new(StringComparer.Ordinal)
+    {
+        "SetActive", "SetEnabled", "AddComponent", "SetParent", "SetSiblingIndex", "SetComponentIndex",
+        "CreateObject", "LoadScene", "LoadSceneByGuid", "LoadSceneAsync", "SaveScene",
+        "SaveSceneToMemory", "LoadSceneFromMemory", "Instantiate", "InstantiateDetached",
+        "SavePrefab", "SavePrefabVariant", "ApplyInstanceOverridesToBase", "ApplyDetachedToPrefab",
+        "RevertInstanceOverrides"
+    };
+
     internal sealed class CppDiscoveredMethod
     {
         public string ReturnType { get; init; } = "void";
@@ -2841,6 +2855,28 @@ internal static class RoslynCompilerEngine
                         sourcePath,
                         inv,
                         $"LINQ method '{methodName}' requires managed GC iterator/collection allocations and is not supported in transpiled C# scripts. Use 'foreach', 'List.RemoveAll', or 'List.Exists' instead",
+                        outDiagnostics);
+                    ok = false;
+                }
+            }
+
+            MethodDeclarationSyntax? enclosingMethod = inv.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+            if (enclosingMethod != null && HookGuardedLifecycleMethods.Contains(enclosingMethod.Identifier.ValueText))
+            {
+                string? calledName = inv.Expression switch
+                {
+                    MemberAccessExpressionSyntax maCall => maCall.Name.Identifier.ValueText,
+                    MemberBindingExpressionSyntax mbCall => mbCall.Name.Identifier.ValueText,
+                    IdentifierNameSyntax idCall => idCall.Identifier.ValueText,
+                    GenericNameSyntax genCall => genCall.Identifier.ValueText,
+                    _ => null
+                };
+                if (calledName != null && StructuralMutationMethods.Contains(calledName))
+                {
+                    AddNodeError(
+                        sourcePath,
+                        inv,
+                        $"Cannot call '{calledName}' inside lifecycle hook '{enclosingMethod.Identifier.ValueText}()' (scene structural and activation mutations are forbidden while lifecycle hooks are dispatching). Defer this call to 'OnUpdate(float dt)' using a boolean flag instead",
                         outDiagnostics);
                     ok = false;
                 }

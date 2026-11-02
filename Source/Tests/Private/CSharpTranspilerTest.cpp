@@ -1038,6 +1038,24 @@ public class BadExternScript : Behavior
 	ASSERT_FALSE(invalidRes.diagnostics.empty());
 	EXPECT_NE(invalidRes.diagnostics[0].message.find("DllImport"), str::npos) << invalidRes.diagnostics[0].message;
 
+	const char* invalidLifecycleMutationSource = R"(using Shalltear;
+
+public class BadLifecycleMutation : Behavior
+{
+	public SceneObject target;
+
+	protected override void OnEnable()
+	{
+		target.SetActive(false);
+	}
+}
+)";
+	CSharpTranspiler::TranspileFileResult invalidHookRes;
+	EXPECT_FALSE(CSharpTranspiler::TranspileSource("Source/BadLifecycleMutation.cs", invalidLifecycleMutationSource, invalidHookRes));
+	ASSERT_FALSE(invalidHookRes.diagnostics.empty());
+	EXPECT_NE(invalidHookRes.diagnostics[0].message.find("Cannot call 'SetActive' inside lifecycle hook 'OnEnable()'"), str::npos)
+		<< invalidHookRes.diagnostics[0].message;
+
 	const char* staticClassSource = R"(using Shalltear;
 using System.Runtime.InteropServices;
 
