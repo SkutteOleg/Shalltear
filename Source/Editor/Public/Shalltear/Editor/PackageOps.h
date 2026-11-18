@@ -34,6 +34,7 @@ namespace Shalltear {
 			str description;
 			PackageKind kind = PackageKind::Package;
 			bool required = false;
+			bool scaffold = true;
 			std::optional<FrameStage> stage;
 			Vector<PackageDependency> dependencies;
 			Path directory;
@@ -87,6 +88,8 @@ namespace Shalltear {
 		SHALLTEAR_EDITOR_API bool UpgradeStoredSet(std::span<const PackageManifest> catalogue);
 
 		SHALLTEAR_EDITOR_API u32 ScaffoldEnabledSet(const Path& projectDocument);
+
+		SHALLTEAR_EDITOR_API u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const PackageManifest> catalogue);
 
 		struct PackageRow {
 			str name;

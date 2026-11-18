@@ -1,0 +1,25 @@
+<Project>
+	<PropertyGroup>
+		<ShalltearPin>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)../DotNetPin.json'))</ShalltearPin>
+		<ShalltearSDKVersion>$([System.Text.RegularExpressions.Regex]::Match($(ShalltearPin), '"sdkVersion": "([^"]+)"').Groups[1].Value)</ShalltearSDKVersion>
+		<ShalltearTargetFramework>$([System.Text.RegularExpressions.Regex]::Match($(ShalltearPin), '"targetFramework": "([^"]+)"').Groups[1].Value)</ShalltearTargetFramework>
+		<ShalltearRuntimeVersion>$([System.Text.RegularExpressions.Regex]::Match($(ShalltearPin), '"runtimeVersion": "([^"]+)"').Groups[1].Value)</ShalltearRuntimeVersion>
+		<ShalltearRoslynVersion>4.8.0</ShalltearRoslynVersion>
+		<ShalltearRepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../../'))</ShalltearRepoRoot>
+
+		<ShalltearManagedRoot Condition="'$(ShalltearManagedRoot)' == ''">$(ShalltearRepoRoot)build/CSharp/IDE/</ShalltearManagedRoot>
+		<ShalltearManagedOutput Condition="'$(ShalltearManagedOutput)' == ''">$(ShalltearManagedRoot)bin/</ShalltearManagedOutput>
+		<BaseIntermediateOutputPath>$(ShalltearManagedRoot)obj/$(ShalltearSDKVersion)/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+		<OutDir>$(ShalltearManagedOutput)</OutDir>
+		<RestorePackagesPath>$(ShalltearRepoRoot)External/Prebuilt/nuget/</RestorePackagesPath>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+		<DebugType>embedded</DebugType>
+		<EnableSourceLink>false</EnableSourceLink>
+		<EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+		<PathMap>$(ShalltearRepoRoot)=./,$([System.IO.Path]::GetFullPath('$(ShalltearManagedRoot)'))=./</PathMap>
+	</PropertyGroup>
+</Project>

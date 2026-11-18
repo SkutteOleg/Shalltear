@@ -2,6 +2,7 @@
 	"initialisms": [
 		"AABB",
 		"ACES",
+		"AOT",
 		"API",
 		"BC",
 		"BGR",
@@ -9,8 +10,10 @@
 		"BIO",
 		"BRDF",
 		"CC",
+		"CLR",
 		"CPU",
 		"CRC",
+		"CRT",
 		"DLL",
 		"DPI",
 		"EV",
@@ -24,6 +27,7 @@
 		"HSV",
 		"HTTP",
 		"IBL",
+		"IDE",
 		"IEEE",
 		"IP",
 		"JPEG",
@@ -82,7 +86,9 @@
 		"npm",
 		"sRGB",
 		"BC6H",
-		"I3DL2"
+		"I3DL2",
+		"CSharp",
+		"SHA512"
 	],
 	"generatedNames": [
 		"*_Test",

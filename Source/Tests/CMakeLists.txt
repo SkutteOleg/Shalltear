@@ -19,6 +19,9 @@ include(GoogleTest)
 
 file(GLOB_RECURSE TEST_SOURCES "Private/*.cpp" "Private/*.h")
 shalltear_select_platform_sources(TEST_SOURCES)
+if(NOT TARGET CSharp)
+    list(FILTER TEST_SOURCES EXCLUDE REGEX "/CSharp[^/]*$")
+endif()
 
 add_executable(ShalltearTests ${TEST_SOURCES})
 
@@ -121,6 +124,14 @@ endif()
 if(TARGET Network)
     target_link_libraries(ShalltearTests PRIVATE Network)
     target_include_directories(ShalltearTests PRIVATE ${CMAKE_SOURCE_DIR}/Source/Network/Private)
+endif()
+
+if(TARGET CSharp)
+    if(SHALLTEAR_BUILD_SHARED)
+        add_dependencies(ShalltearTests CSharp)
+    else()
+        target_link_libraries(ShalltearTests PRIVATE CSharp)
+    endif()
 endif()
 
 if(TARGET ShalltearSampleModule)

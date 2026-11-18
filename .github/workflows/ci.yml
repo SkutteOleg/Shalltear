@@ -61,10 +61,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: External/Prebuilt
-          key: prebuilt-${{ hashFiles('Scripts/fetch_prebuilt.py') }}
+          key: prebuilt-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Source/CSharp/DotNetPin.json') }}
 
       - name: Fetch prebuilt binaries
-        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain
+        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet
 
       # fetched binaru goes first because runner's clang++ targets MSVC
       - name: Put the toolchain on PATH

@@ -1,0 +1,8 @@
+{
+	"name": "dev.shalltear.csharp",
+	"version": "1.0.0",
+	"displayName": "C# Scripting",
+	"description": "Gameplay scripts in C# (hot reload in the editor, native code in built games).",
+	"kind": "engine",
+	"scaffold": false
+}

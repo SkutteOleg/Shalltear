@@ -157,6 +157,7 @@ def build_engine(is_shared):
 		f"-DSHALLTEAR_BUILD_SHARED={'ON' if is_shared else 'OFF'}",
 		"-DSHALLTEAR_BUILD_TESTS=OFF",
 		"-DSHALLTEAR_BUILD_BENCHMARKS=OFF",
+		"-DSHALLTEAR_CSHARP=OFF",
 		"-DCMAKE_BUILD_TYPE=Release"
 	]
 	run_cmd(cmake_cmd, cwd=build_path)

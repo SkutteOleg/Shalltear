@@ -4,11 +4,13 @@ import hashlib
 import io
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+import toolchain
 import update_dotnet_pin
 
 SDK_URL = "https://builds.dotnet.microsoft.com/dotnet/Sdk/"
@@ -190,6 +192,66 @@ class PinFileTest(unittest.TestCase):
 			"microsoft.dotnet.ilcompiler/10.0.15": hashlib.sha512(b"targets").hexdigest(),
 			"runtime.win-x64.microsoft.dotnet.ilcompiler/10.0.15": hashlib.sha512(b"compiler").hexdigest(),
 		})
+
+
+class RestoreTest(unittest.TestCase):
+
+	def setUp(self):
+		self.root = Path(tempfile.mkdtemp())
+		self.addCleanup(shutil.rmtree, self.root, True)
+		self.pin = update_dotnet_pin.build_pin(RELEASES)
+		self.dotnet = self.root / "dotnet" / "10.0.404" / ("dotnet" + toolchain.EXE)
+		self.commands = []
+		self.projects = []
+		self.saved = (toolchain.PREBUILT_DIR, subprocess.run)
+		toolchain.PREBUILT_DIR = self.root
+		subprocess.run = self.record
+
+	def tearDown(self):
+		toolchain.PREBUILT_DIR, subprocess.run = self.saved
+
+	def record(self, command, check, env):
+		self.commands.append((command, env))
+		if "--packages" in command:
+			self.projects.append(Path(command[2]).read_text(encoding="utf-8"))
+			package = Path(command[command.index("--packages") + 1]) / "some.package" / "1.2.3"
+			package.mkdir(parents=True, exist_ok=True)
+			(package / "some.package.1.2.3.nupkg").write_bytes(b"archive")
+
+	def restore(self):
+		with contextlib.redirect_stdout(io.StringIO()):
+			return update_dotnet_pin.restore_packs(self.pin)
+
+	def test_restore_needs_fetched_sdk(self):
+		with self.assertRaisesRegex(RuntimeError, "fetch_prebuilt.py --dotnet"):
+			self.restore()
+		self.assertEqual(self.commands, [])
+
+	def test_restore_names_one_target_per_run(self):
+		self.dotnet.parent.mkdir(parents=True)
+		self.dotnet.write_bytes(b"")
+		self.assertEqual(self.restore(), {"some.package/1.2.3": hashlib.sha512(b"archive").hexdigest()})
+
+		players = [command for command, _ in self.commands if "--packages" in command]
+		self.assertEqual([[part for part in command if part.startswith("-p:")] for command in players],
+						 [["-p:RuntimeIdentifier=linux-x64"], ["-p:RuntimeIdentifier=win-x64"]])
+		self.assertTrue(all("-r" not in command for command in players))
+		other = "linux-x64" if toolchain.HOST_IS_WINDOWS else "win-x64"
+		for project in self.projects:
+			self.assertEqual(project.count("<PackageDownload "), 1)
+			self.assertIn(f'"runtime.{other}.Microsoft.DotNet.ILCompiler" Version="[10.0.15]"', project)
+		for _, env in self.commands:
+			self.assertEqual(env["DOTNET_ROOT"], str(self.dotnet.parent))
+			self.assertEqual(env["DOTNET_CLI_TELEMETRY_OPTOUT"], "1")
+
+	def test_restore_rewrites_managed_lock_files(self):
+		self.dotnet.parent.mkdir(parents=True)
+		self.dotnet.write_bytes(b"")
+		self.restore()
+		command, _ = self.commands[-1]
+		self.assertEqual(command[:3], [str(self.dotnet), "restore", str(update_dotnet_pin.MANAGED_SOLUTION)])
+		self.assertIn("--force-evaluate", command)
+		self.assertNotIn("--packages", command)
 
 
 if __name__ == "__main__":

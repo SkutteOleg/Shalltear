@@ -16,6 +16,7 @@ import toolchain
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PIN_PATH = ROOT_DIR / "Source" / "CSharp" / "DotNetPin.json"
+MANAGED_SOLUTION = ROOT_DIR / "Source" / "CSharp" / "Managed" / "Shalltear.Managed.slnx"
 
 METADATA_URL = "https://builds.dotnet.microsoft.com/dotnet/release-metadata/{channel}/releases.json"
 PACKAGE_SOURCE = "https://api.nuget.org/v3/index.json"
@@ -139,6 +140,9 @@ def restore_packs(pin):
 			print(f"  restoring player packages for {rid}")
 			subprocess.run([str(dotnet), "restore", str(project), f"-p:RuntimeIdentifier={rid}", "--packages", str(packages),
 							"-v", "quiet"], check=True, env=env)
+		print(f"  locking {MANAGED_SOLUTION.name} packages")
+		subprocess.run([str(dotnet), "restore", str(MANAGED_SOLUTION), "--force-evaluate", "-v", "quiet",
+						f"-p:ShalltearManagedRoot={(work / 'managed').as_posix()}/"], check=True, env=env)
 		return hash_packages(packages)
 
 
@@ -154,7 +158,8 @@ def main():
 	parser.add_argument("sdk_version", nargs="?", help="SDK ver in that channel (latest if omitted)")
 	parser.add_argument("--from-json", type=Path, help="read releases.json from this file")
 	parser.add_argument("--packs", action="store_true",
-						help="hash packages fetched by a player restore. Needs fetch_prebuilt.py --dotnet")
+						help="hash packages fetched by a player restore + rewrite the engine's C# lock files. "
+							 "Needs fetch_prebuilt.py --dotnet")
 	args = parser.parse_args()
 
 	previous = json.loads(PIN_PATH.read_text(encoding="utf-8")) if PIN_PATH.exists() else None

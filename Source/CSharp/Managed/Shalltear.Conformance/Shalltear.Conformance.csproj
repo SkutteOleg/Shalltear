@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<RootNamespace>Shalltear.Conformance</RootNamespace>
+		<IsAotCompatible>true</IsAotCompatible>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="../Shalltear.Runtime/Shalltear.Runtime.csproj" Private="false" />
+		<ProjectReference Include="../Shalltear.Generators/Shalltear.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+</Project>

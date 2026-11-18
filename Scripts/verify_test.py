@@ -122,5 +122,39 @@ class FlavorTest(unittest.TestCase):
 						 (True, True))
 
 
+class CSharpGateTest(unittest.TestCase):
+
+	def setUp(self):
+		self.root = Path(tempfile.mkdtemp())
+		self.said = []
+
+	def tree(self, name, cache):
+		tree = self.root / name
+		tree.mkdir()
+		(tree / "CMakeCache.txt").write_text(cache, encoding="utf-8")
+		return tree
+
+	def test_tree_without_csharp_fails_run(self):
+		built = self.tree("build-static-release", "SHALLTEAR_CSHARP_ENABLED:INTERNAL=ON\n")
+		off = self.tree("build", "SHALLTEAR_CSHARP:STRING=AUTO\nSHALLTEAR_CSHARP_ENABLED:INTERNAL=OFF\n")
+		self.assertFalse(verify.csharp_gate((built, off), False, self.said.append))
+		self.assertEqual(len(self.said), 1)
+		self.assertTrue(self.said[0].startswith("build built without C#"))
+		self.assertIn("fetch_prebuilt.py --dotnet", self.said[0])
+
+	def test_flag_accepts_and_names_tree(self):
+		built = self.tree("build-static-release", "SHALLTEAR_CSHARP_ENABLED:INTERNAL=ON\n")
+		stale = self.tree("build", "CMAKE_BUILD_TYPE:STRING=Debug\n")
+		self.assertTrue(verify.csharp_gate((built, stale), True, self.said.append))
+		self.assertEqual(self.said, ["  --without-csharp: no C# cases from build"])
+
+	def test_trees_with_csharp_pass_unmentioned(self):
+		trees = (self.tree("build-static-release", "SHALLTEAR_CSHARP_ENABLED:INTERNAL=ON\n"),
+				 self.tree("build", "SHALLTEAR_CSHARP_ENABLED:INTERNAL=ON\n"))
+		self.assertTrue(verify.csharp_gate(trees, False, self.said.append))
+		self.assertTrue(verify.csharp_gate(trees, True, self.said.append))
+		self.assertEqual(self.said, [])
+
+
 if __name__ == "__main__":
 	unittest.main()

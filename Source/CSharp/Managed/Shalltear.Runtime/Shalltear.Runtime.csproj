@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<RuntimeFrameworkVersion>$(ShalltearRuntimeVersion)</RuntimeFrameworkVersion>
+		<RollForward>Disable</RollForward>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<RootNamespace>Shalltear</RootNamespace>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+		<IsAotCompatible>true</IsAotCompatible>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+</Project>

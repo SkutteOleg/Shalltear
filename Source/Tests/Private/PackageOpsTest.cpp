@@ -234,6 +234,19 @@ TEST(PackageManifestTest, OnlyToolMayBeRequired) {
 	EXPECT_NE(error.find("'required' must be true or false"), str::npos) << error;
 }
 
+TEST(PackageManifestTest, ScaffoldMustBeTrueOrFalse) {
+	PackageOps::PackageManifest manifest;
+	str error;
+	ASSERT_TRUE(PackageOps::ParseManifest(R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})", manifest, error)) << error;
+	EXPECT_TRUE(manifest.scaffold);
+	ASSERT_TRUE(PackageOps::ParseManifest(R"({"name":"com.acme.scripting","version":"1.0.0","kind":"engine","scaffold":false})", manifest, error)) << error;
+	EXPECT_FALSE(manifest.scaffold);
+
+	error.clear();
+	EXPECT_FALSE(PackageOps::ParseManifest(R"({"name":"com.acme.scripting","version":"1.0.0","kind":"engine","scaffold":"no"})", manifest, error));
+	EXPECT_NE(error.find("'scaffold' must be true or false"), str::npos) << error;
+}
+
 TEST_F(PackageDiskFixture, DiscoveryReadsManifestsOnly) {
 	WritePackage("physics", R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})");
 	WritePackage("animation", R"({"name":"com.acme.animation","version":"1.0.0","kind":"engine"})");
@@ -625,7 +638,8 @@ TEST_F(PackageDiskFixture, ScaffoldingWritesBuiltInFeatures) {
 	ASSERT_FALSE(catalogue.empty());
 
 	auto switchable = [](const PackageOps::PackageManifest& manifest) {
-		return manifest.kind == PackageOps::PackageKind::Engine || (manifest.kind == PackageOps::PackageKind::Tool && !manifest.required);
+		return manifest.scaffold &&
+			   (manifest.kind == PackageOps::PackageKind::Engine || (manifest.kind == PackageOps::PackageKind::Tool && !manifest.required));
 	};
 	u32 features = 0;
 	u32 optionalTools = 0;
@@ -664,6 +678,26 @@ TEST_F(PackageDiskFixture, ScaffoldingKeepsWhatTheDocumentAlreadyHeld) {
 	Config reread;
 	ASSERT_TRUE(reread.Load(document));
 	EXPECT_EQ(reread.GetI64("Graphics", "qualityLevel", -1), 2);
+}
+
+TEST_F(PackageDiskFixture, ScaffoldSkipsPackageThatOptsOut) {
+	WritePackage("physics", R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})");
+	WritePackage("scripting", R"({"name":"com.acme.scripting","version":"1.0.0","kind":"engine","scaffold":false})");
+	WritePackage("shaders", R"({"name":"com.acme.shaders","version":"1.0.0","kind":"tool","scaffold":false})");
+	WritePackage("effects", R"({"name":"com.acme.effects","version":"1.0.0","kind":"tool"})");
+
+	Path roots[] = {Root()};
+	Vector<PackageOps::PackageManifest> catalogue;
+	Vector<str> diagnostics;
+	PackageOps::DiscoverPackages(roots, catalogue, diagnostics);
+	ASSERT_EQ(catalogue.size(), 4u) << Join(diagnostics);
+
+	const Path document{(_root / "ProjectSettings.ini").generic_string()};
+	EXPECT_EQ(PackageOps::ScaffoldEnabledSet(document, catalogue), 2u);
+
+	Config reread;
+	ASSERT_TRUE(reread.Load(document));
+	EXPECT_EQ(reread.GetString("Packages", "enabled"), "com.acme.effects;com.acme.physics");
 }
 
 TEST(PackagePlayerLinkTest, BinaryNameIsDirectoryName) {

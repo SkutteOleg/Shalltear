@@ -248,6 +248,15 @@ namespace Shalltear {
 				parsed.required = required.AsBool();
 			}
 
+			if (root.HasKey("scaffold")) {
+				const JSONValue& scaffold = root["scaffold"];
+				if (!scaffold.IsBool()) {
+					error = "'scaffold' must be true or false";
+					return false;
+				}
+				parsed.scaffold = scaffold.AsBool();
+			}
+
 			if (root.HasKey("displayName")) {
 				parsed.displayName = str{root["displayName"].AsString()};
 			}
@@ -618,17 +627,20 @@ namespace Shalltear {
 		}
 
 		u32 ScaffoldEnabledSet(const Path& projectDocument) {
+			Vector<PackageManifest> catalogue;
+			Vector<str> diagnostics;
+			LoadBuiltInCatalogue(catalogue, diagnostics);
+			return ScaffoldEnabledSet(projectDocument, catalogue);
+		}
+
+		u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const PackageManifest> catalogue) {
 			if (projectDocument.ToString().empty()) {
 				return 0;
 			}
 
-			Vector<PackageManifest> catalogue;
-			Vector<str> diagnostics;
-			LoadBuiltInCatalogue(catalogue, diagnostics);
-
 			Vector<str> names;
 			for (const PackageManifest& manifest : catalogue) {
-				if (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest)) {
+				if (manifest.scaffold && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
 					names.push_back(manifest.name);
 				}
 			}

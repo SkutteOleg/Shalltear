@@ -245,13 +245,13 @@ TEST_F(ProjectHubFixture, NewProjectEnablesBuiltIns) {
 		const bool enabled = PackageOps::IsEnabled(resolution, manifest.name);
 		switch (manifest.kind) {
 		case PackageOps::PackageKind::Engine:
-			EXPECT_TRUE(enabled);
+			EXPECT_EQ(enabled, manifest.scaffold) << manifest.name;
 			break;
 		case PackageOps::PackageKind::Package:
 			EXPECT_FALSE(enabled);
 			break;
 		case PackageOps::PackageKind::Tool:
-			EXPECT_TRUE(enabled);
+			EXPECT_EQ(enabled, manifest.required || manifest.scaffold) << manifest.name;
 			break;
 		default:
 			break;

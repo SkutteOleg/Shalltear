@@ -52,6 +52,17 @@ def pick(trees, shared, release):
 	return None
 
 
+def csharp_gate(trees, allowed, say):
+	without = [tree.name for tree in trees
+			   if (rebuild_all.cache_value(tree, "SHALLTEAR_CSHARP_ENABLED") or "").upper() != "ON"]
+	if without and not allowed:
+		say(f"{', '.join(without)} built without C#. Run python Scripts/fetch_prebuilt.py --dotnet (or pass --without-csharp)")
+		return False
+	if without:
+		say(f"  --without-csharp: no C# cases from {', '.join(without)}")
+	return True
+
+
 def parse_listing(text):
 	names = []
 	suite = None
@@ -227,6 +238,9 @@ def verify(args, out, say):
 				say(f"FAILED to build {tree.name}")
 				return 1
 
+	if not csharp_gate((primary, secondary), args.without_csharp, say):
+		return 1
+
 	lists = {}
 	for tree in (primary, secondary):
 		names = list_tests(tree)
@@ -268,6 +282,8 @@ def main():
 									 formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("--no-build", action="store_true",
 						help="run the binaries as they are (only when both were built at HEAD)")
+	parser.add_argument("--without-csharp", action="store_true",
+						help="accept trees built without the C# package")
 	parser.add_argument("--out", type=Path, default=Path(tempfile.gettempdir()) / "shalltear-verify",
 						help="where the logs, lists and summary.txt go")
 	parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
