@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <mutex>
+#include <span>
 #include <string_view>
 #include <thread>
 
@@ -16,6 +17,11 @@ namespace Shalltear {
 
 	SHALLTEAR_EDITOR_API bool StartDetachedProcess(const str& commandLine, const str& workingDirectory);
 
+	struct ChildVariable {
+		str name;
+		str value;
+	};
+
 	class SHALLTEAR_EDITOR_API ChildProcess {
 	public:
 		ChildProcess() = default;
@@ -24,7 +30,8 @@ namespace Shalltear {
 		ChildProcess(const ChildProcess&) = delete;
 		ChildProcess& operator=(const ChildProcess&) = delete;
 
-		bool Start(const str& commandLine, const str& workingDirectory);
+		// used over contributed/inherited variables
+		bool Start(const str& commandLine, const str& workingDirectory, std::span<const ChildVariable> variables = {});
 
 		bool IsRunning() const { return _running; }
 

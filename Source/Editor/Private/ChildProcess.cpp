@@ -105,13 +105,22 @@ namespace Shalltear {
 		Detach();
 	}
 
-	bool ChildProcess::Start(const str& commandLine, const str& workingDirectory) {
+	bool ChildProcess::Start(const str& commandLine, const str& workingDirectory, std::span<const ChildVariable> variables) {
 		if (_running) {
 			return false;
 		}
 
 		Vector<EditorPlatform::SpawnOptions::Variable> environment{GetMemoryResource(MemTag::Editor)};
 		EditorPlatform::CollectChildEnvironment(environment);
+		for (const ChildVariable& variable : variables) {
+			const auto same = std::find_if(environment.begin(), environment.end(),
+										   [&variable](const EditorPlatform::SpawnOptions::Variable& set) { return set.name == variable.name; });
+			if (same != environment.end()) {
+				same->value = variable.value;
+			} else {
+				environment.push_back({variable.name, variable.value});
+			}
+		}
 		EditorPlatform::SpawnOptions options;
 		options.workingDirectory = workingDirectory;
 		options.captureOutput = true;

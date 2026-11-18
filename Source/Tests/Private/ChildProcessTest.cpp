@@ -11,6 +11,7 @@
 #include <chrono>
 #include <filesystem>
 #include <initializer_list>
+#include <span>
 #include <thread>
 
 using namespace Shalltear;
@@ -27,14 +28,14 @@ namespace {
 			ChildEnvironment::UnregisterOwnedBy(&_secondOwner);
 		}
 
-		str Reported(std::initializer_list<const char*> names) {
+		str Reported(std::initializer_list<const char*> names, std::span<const ChildVariable> variables = {}) {
 			str command = QuoteCommandArgument(FileSystem::GetExecutablePath().ToString()) + " " + TestHelpers::PRINT_ENVIRONMENT_FLAG;
 			for (const char* name : names) {
 				command += " ";
 				command += name;
 			}
 			ChildProcess child;
-			if (!child.Start(command, {})) {
+			if (!child.Start(command, {}, variables)) {
 				ADD_FAILURE() << "child didn't start";
 				return {};
 			}
@@ -67,6 +68,16 @@ TEST_F(ChildProcessTest, ContributedVariableReachesAChild) {
 	EXPECT_EQ(ChildEnvironment::UnregisterOwnedBy(&_firstOwner), 1u);
 	EXPECT_EQ(Reported({"SLT_TEST_CHILD_VALUE", "SLT_TEST_CHILD_OTHER"}), "SLT_TEST_CHILD_VALUE=\nSLT_TEST_CHILD_OTHER=with space\n");
 	EXPECT_EQ(TestPlatform::GetEnvironment("SLT_TEST_CHILD_OTHER"), "");
+}
+
+TEST_F(ChildProcessTest, ChildTakesVariablesGivenAtStart) {
+	DeviceLossTest::ScopedEnvironment inherited("SLT_TEST_CHILD_INHERITED", "parent");
+	ChildEnvironment::Set("SLT_TEST_CHILD_VALUE", "contributed", &_firstOwner);
+	const ChildVariable given[] = {{"SLT_TEST_CHILD_VALUE", "given"}, {"SLT_TEST_CHILD_INHERITED", "given too"}, {"SLT_TEST_CHILD_OTHER", "new"}};
+	EXPECT_EQ(Reported({"SLT_TEST_CHILD_VALUE", "SLT_TEST_CHILD_INHERITED", "SLT_TEST_CHILD_OTHER"}, given),
+			  "SLT_TEST_CHILD_VALUE=given\nSLT_TEST_CHILD_INHERITED=given too\nSLT_TEST_CHILD_OTHER=new\n");
+	EXPECT_EQ(Reported({"SLT_TEST_CHILD_VALUE", "SLT_TEST_CHILD_INHERITED", "SLT_TEST_CHILD_OTHER"}),
+			  "SLT_TEST_CHILD_VALUE=contributed\nSLT_TEST_CHILD_INHERITED=parent\nSLT_TEST_CHILD_OTHER=\n");
 }
 
 TEST_F(ChildProcessTest, ContributedValueReplacesAnInheritedOne) {
