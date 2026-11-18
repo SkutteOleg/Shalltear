@@ -357,6 +357,15 @@ TEST_F(CSharpPlayerBuildTest, CSharpPlayerShipsNoIL) {
 	EXPECT_NE(log.find(std::format(": {} staged file(s) have no managed code", files)), str::npos) << log;
 }
 
+TEST_F(CSharpPlayerBuildTest, CSharpPlayerShipsRuntimeNotices) {
+	const str notices = ReadBytes(Staging("Windows") / "THIRD-PARTY-NOTICES-DotNet.txt");
+	EXPECT_TRUE(notices.starts_with(".NET ")) << notices.substr(0, 200);
+	EXPECT_NE(notices.find(" runtime/libraries, compiled into " + str(LIBRARY) + " by NativeAOT\n"), str::npos) << notices.substr(0, 200);
+	EXPECT_NE(notices.find("Copyright (c) .NET Foundation and Contributors"), str::npos);
+	EXPECT_NE(notices.find("License notice for xxHash"), str::npos);
+	EXPECT_LT(notices.find("Copyright (c) .NET Foundation and Contributors"), notices.find("License notice for xxHash"));
+}
+
 TEST_F(CSharpPlayerBuildTest, BatchBuildLeavesNoBuildServer) {
 	if (_suite->serverImages.empty() || _suite->serverRanBefore) {
 		GTEST_SKIP() << "pinned .NET SDK is elsewhere, or one of its build servers ran before the build";
@@ -625,6 +634,18 @@ TEST_F(CSharpBuildStepsTest, StageWithoutLibraryFailsWithPath) {
 	std::ofstream(publish / LIBRARY, std::ios::binary) << "library";
 	std::ofstream(publish / "GameScripts.pdb", std::ios::binary) << "symbols";
 	std::ofstream(publish / "Scripted.Scripts.pdb", std::ios::binary) << "managed symbols";
+	BuildContext unnoticed;
+	unnoticed.profile = &profile;
+	unnoticed.target = context.target;
+	unnoticed.projectRoot = context.projectRoot;
+	unnoticed.stagingDir = context.stagingDir;
+	unnoticed.intermediateDir = context.intermediateDir;
+	EXPECT_EQ(stage->fn(unnoticed), BuildStepStatus::Failed);
+	ASSERT_EQ(unnoticed.GetIssues().size(), 1u);
+	EXPECT_EQ(unnoticed.GetIssues()[0].message, "'" + (publish / "notices" / "LICENSE.TXT").generic_string() + "' is missing. Build player again");
+	fs::create_directories(publish / "notices");
+	std::ofstream(publish / "notices" / "LICENSE.TXT", std::ios::binary) << "runtime license";
+	std::ofstream(publish / "notices" / "THIRD-PARTY-NOTICES.TXT", std::ios::binary) << "runtime notices";
 	BuildContext staged;
 	staged.profile = &profile;
 	staged.target = context.target;
@@ -640,7 +661,10 @@ TEST_F(CSharpBuildStepsTest, StageWithoutLibraryFailsWithPath) {
 	for (const fs::directory_entry& entry : fs::recursive_directory_iterator(root / "Builds", ec)) {
 		staging += entry.is_regular_file(ec) ? 1u : 0u;
 	}
-	EXPECT_EQ(staging, 1u);
+	EXPECT_EQ(staging, 2u);
+	const str notices = ReadBytes(root / "Builds" / "Empty" / "THIRD-PARTY-NOTICES-DotNet.txt");
+	EXPECT_TRUE(notices.starts_with(".NET ")) << notices;
+	EXPECT_NE(notices.find(std::format(" runtime/libraries, compiled into {} by NativeAOT\n\nruntime license\nruntime notices\n", LIBRARY)), str::npos) << notices;
 
 	std::ofstream(publish / LIBRARY, std::ios::binary) << "library built again";
 	EXPECT_EQ(stage->fn(staged), BuildStepStatus::Succeeded);

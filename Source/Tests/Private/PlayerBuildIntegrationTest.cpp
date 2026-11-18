@@ -1317,6 +1317,7 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	std::error_code ec;
 	for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(staging, ec)) {
 		EXPECT_EQ(entry.path().filename().generic_string().find("GameScripts"), str::npos) << entry.path().generic_string();
+		EXPECT_EQ(entry.path().filename().generic_string().find("DotNet"), str::npos) << entry.path().generic_string();
 	}
 
 	if (!std::filesystem::is_regular_file(std::filesystem::path(SDKRoot()) / "lib" / PACKAGE_ARCHIVE, ec)) {

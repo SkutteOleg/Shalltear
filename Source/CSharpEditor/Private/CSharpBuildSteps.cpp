@@ -39,6 +39,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		constexpr std::string_view SymbolsFolder = "symbols";
 		constexpr std::string_view RenameFolder = "obj/rename";
 		constexpr std::string_view NameMap = "GameScripts.map";
+		constexpr std::string_view NoticesFolder = "notices";
+		constexpr std::string_view RuntimeNotices = "THIRD-PARTY-NOTICES-DotNet.txt";
 		constexpr std::string_view CommonArguments =
 			" -nologo -v:q -tl:off -clp:NoSummary -nodeReuse:false -p:UseSharedCompilation=false -p:GenerateFullPaths=true";
 		constexpr size_t UNPARSED_LINE_CAP = 30;
@@ -360,6 +362,21 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			fs::copy_file(library, fs::path(context.stagingDir) / CSharpImpl::NativeAOTHost::GetPlayerLibraryName(), fs::copy_options::overwrite_existing, ec);
 			if (ec) {
 				context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", library.generic_string(), ec.message()));
+				return BuildStepStatus::Failed;
+			}
+			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion,
+									  CSharpImpl::NativeAOTHost::GetPlayerLibraryName());
+			for (const std::string_view name : {"LICENSE.TXT", "THIRD-PARTY-NOTICES.TXT"}) {
+				const fs::path part = publish / NoticesFolder / name;
+				if (!fs::is_regular_file(part, ec)) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is missing. Build player again", part.generic_string()));
+					return BuildStepStatus::Failed;
+				}
+				notices += FileSystem::ReadTextFile(Path(part.generic_string()), MemTag::Editor) + "\n";
+			}
+			const fs::path staged = fs::path(context.stagingDir) / RuntimeNotices;
+			if (!FileSystem::WriteTextFile(Path(staged.generic_string()), notices)) {
+				context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't write '{}'. Check staging folder is writable", staged.generic_string()));
 				return BuildStepStatus::Failed;
 			}
 			const fs::path kept = fs::path(context.intermediateDir) / SymbolsFolder;

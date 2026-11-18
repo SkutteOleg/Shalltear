@@ -64,6 +64,14 @@
 		</ItemGroup>
 	</Target>
 
+	<Target Name="ShalltearCopyRuntimeNotices" AfterTargets="Publish" Condition="'$(ShalltearPlayerBuild)' == 'true'">
+		<PropertyGroup>
+			<_ShalltearRuntimePack>$([System.IO.Path]::GetFullPath('$(IlcFrameworkNativePath)../../../'))</_ShalltearRuntimePack>
+		</PropertyGroup>
+		<Error Condition="!Exists('$(_ShalltearRuntimePack)THIRD-PARTY-NOTICES.TXT')" Text="THIRD-PARTY-NOTICES.TXT was not found in '$(_ShalltearRuntimePack)'. Restore the NativeAOT runtime pack" />
+		<Copy SourceFiles="$(_ShalltearRuntimePack)LICENSE.TXT;$(_ShalltearRuntimePack)THIRD-PARTY-NOTICES.TXT" DestinationFolder="$(PublishDir)notices" SkipUnchangedFiles="true" />
+	</Target>
+
 	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true'">
 		<Error Condition="!Exists('$(ShalltearLinkerDir)lld-link.exe')" Text="lld-link.exe was not found in '$(ShalltearLinkerDir)'. Set ShalltearLinkerDir (or ShalltearWindowsLinker=VisualStudio)" />
 		<Error Condition="!Exists('$(ShalltearNativeDir)CRTShim.obj')" Text="CRTShim.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />
