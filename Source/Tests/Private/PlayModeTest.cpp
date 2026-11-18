@@ -508,6 +508,54 @@ TEST_F(PlayModeFixture, TransitionsPublishTheEditorPlayModeEvent) {
 
 namespace {
 
+	class PmStartWatcher : public Object {
+	public:
+		u32 starts = 0;
+
+		void OnPlayStarting(const EditorPlayStartingEvent&) {
+			++starts;
+			for (const Handle<Scene>& scene : SceneSystem::GetLoadedScenes()) {
+				Handle<SceneObject> holder = scene->FindObjectByName("Holder");
+				if (holder.IsValid()) {
+					holder->GetComponent<PmStatsComponent>()->label = "starting";
+				}
+			}
+		}
+	};
+
+} // anonymous namespace
+
+TEST_F(PlayModeFixture, PlayStartingComesBeforeTheSnapshot) {
+	PmStartWatcher* watcher = New<PmStartWatcher>(MemTag::Editor);
+	EditorEvents::PlayStarting.Subscribe(EventBus::GetGlobal(), Handle<PmStartWatcher>(watcher), &PmStartWatcher::OnPlayStarting);
+
+	PlayModeController controller;
+	Handle<Scene> scene = SceneSystem::CreateScene("Play");
+	SceneSystem::CreateObject("Holder", scene)->AddComponent<PmStatsComponent>()->label = "edited";
+
+	controller.RequestToggle();
+	RunFrame(controller);
+	ASSERT_TRUE(controller.IsPlaying());
+	EXPECT_EQ(watcher->starts, 1u);
+	Handle<SceneObject> playing = SceneSystem::GetLoadedScenes()[0]->FindObjectByName("Holder");
+	ASSERT_TRUE(playing.IsValid());
+	EXPECT_EQ(Stats(playing)->label, "starting");
+	Stats(playing)->label = "played";
+
+	controller.RequestToggle();
+	RunFrame(controller);
+	ASSERT_FALSE(controller.IsPlaying());
+	EXPECT_EQ(watcher->starts, 1u);
+	Handle<SceneObject> restored = SceneSystem::GetLoadedScenes()[0]->FindObjectByName("Holder");
+	ASSERT_TRUE(restored.IsValid());
+	EXPECT_EQ(Stats(restored)->label, "starting");
+
+	EventBus::GetGlobal().UnsubscribeAll(watcher->GetInstanceId());
+	Delete(watcher);
+}
+
+namespace {
+
 	class PmTickCounter : public Behavior {
 	public:
 		i32 updates = 0;

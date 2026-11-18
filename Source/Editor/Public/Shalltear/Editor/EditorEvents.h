@@ -26,6 +26,8 @@ namespace Shalltear {
 		PlayModeState state = PlayModeState::Editing;
 	};
 
+	struct EditorPlayStartingEvent {};
+
 	struct EditorSceneDirtiedEvent {
 		Handle<Scene> scene;
 	};
@@ -75,6 +77,8 @@ namespace Shalltear {
 	namespace EditorEvents {
 		inline constexpr Event<EditorSelectionChangedEvent> SelectionChanged{"Editor.SelectionChanged"_hash};
 		inline constexpr Event<EditorPlayModeChangedEvent> PlayModeChanged{"Editor.PlayModeChanged"_hash};
+		// sent before edited world is snapshotted for Play
+		inline constexpr Event<EditorPlayStartingEvent> PlayStarting{"Editor.PlayStarting"_hash};
 		inline constexpr Event<EditorSceneDirtiedEvent> SceneDirtied{"Editor.SceneDirtied"_hash};
 		inline constexpr Event<EditorModuleReloadBeganEvent> ModuleReloadBegan{"Editor.ModuleReloadBegan"_hash};
 		inline constexpr Event<EditorModuleReloadEndedEvent> ModuleReloadEnded{"Editor.ModuleReloadEnded"_hash};

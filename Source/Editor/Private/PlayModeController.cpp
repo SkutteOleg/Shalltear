@@ -81,6 +81,7 @@ namespace Shalltear {
 	}
 
 	void PlayModeController::EnterPlay() {
+		EditorEvents::PlayStarting.Publish(EventBus::GetGlobal(), {});
 		_snapshots.clear();
 		_paused = false;
 		_stepFrames = 0;
