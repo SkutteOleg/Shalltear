@@ -21,6 +21,7 @@
 #include "Shalltear/Editor/EditorLayoutOps.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorSelection.h"
+#include "Shalltear/Editor/EditorTasks.h"
 #include "Shalltear/Editor/EditorTheme.h"
 #include "Shalltear/Editor/EngineVersionOps.h"
 #include "Shalltear/Editor/PanelManager.h"
@@ -58,6 +59,9 @@ namespace Shalltear {
 		f32 ToolbarTextPx() { return EditorTheme::GetMetric(MetricToken::Font); }
 
 		constexpr f32 STATUS_REFRESH_SECONDS = 0.25f;
+
+		constexpr f32 TASK_TRACK_WIDTH = 72.0f;
+		constexpr f32 TASK_TRACK_HEIGHT = 4.0f;
 
 		constexpr std::string_view GraphicsAPILabel = "Vulkan";
 
@@ -457,6 +461,44 @@ namespace Shalltear {
 			PanelManager::FocusPanelOfType(StringHash("ConsolePanel"));
 		});
 
+		_taskNotice.root = context.CreateElement();
+		context.AppendChild(statusBar, _taskNotice.root);
+		UI::Style taskStyle;
+		taskStyle.flexDirection = UI::FlexDirection::Row;
+		taskStyle.alignItems = UI::Align::Center;
+		taskStyle.flexShrink = 0.0f;
+		taskStyle.margin = {12.0f, 0.0f, 0.0f, 0.0f};
+		context.SetStyle(_taskNotice.root, taskStyle);
+		context.SetVisible(_taskNotice.root, false);
+
+		_taskNotice.label = context.CreateElement();
+		context.AppendChild(_taskNotice.root, _taskNotice.label);
+		context.SetText(_taskNotice.label, font, EditorTheme::GetMetric(MetricToken::FontBody), TextDim(), "");
+
+		_taskNotice.track = context.CreateElement();
+		context.AppendChild(_taskNotice.root, _taskNotice.track);
+		UI::Style trackStyle;
+		trackStyle.width = UI::Length::Pixel(TASK_TRACK_WIDTH);
+		trackStyle.height = UI::Length::Pixel(TASK_TRACK_HEIGHT);
+		trackStyle.flexShrink = 0.0f;
+		trackStyle.margin = {8.0f, 0.0f, 0.0f, 0.0f};
+		trackStyle.borderRadius = UI::Radii::All(TASK_TRACK_HEIGHT * 0.5f);
+		trackStyle.background = UI::Brush::SolidColor(EditorTheme::GetColor(ColorToken::WindowButtonActive));
+		context.SetStyle(_taskNotice.track, trackStyle);
+
+		_taskNotice.fill = context.CreateElement();
+		context.AppendChild(_taskNotice.track, _taskNotice.fill);
+
+		_taskNotice.cancel = context.CreateElement();
+		context.AppendChild(_taskNotice.root, _taskNotice.cancel);
+		UI::Style cancelStyle;
+		cancelStyle.flexShrink = 0.0f;
+		cancelStyle.margin = {6.0f, 0.0f, 0.0f, 0.0f};
+		context.SetStyle(_taskNotice.cancel, cancelStyle);
+		context.AddClass(_taskNotice.cancel, EditorTheme::Class::StatusNotice);
+		context.SetText(_taskNotice.cancel, font, EditorTheme::GetMetric(MetricToken::FontBody), TextNormal(), "Cancel");
+		context.Events(_taskNotice.cancel).onClick = [this]() { EditorTasks::Cancel(_taskNotice.shown); };
+
 		_statusLeft = context.CreateElement();
 		context.AppendChild(statusBar, _statusLeft);
 		UI::Style readoutStyle;
@@ -662,6 +704,7 @@ namespace Shalltear {
 		}
 
 		RefreshState(*context);
+		RefreshTasks(*context);
 
 		_frameRate.Add(deltaSeconds);
 		if (_frameRate.GetWindowSeconds() < STATUS_REFRESH_SECONDS) {
@@ -731,6 +774,49 @@ namespace Shalltear {
 											  moduleStatus, now.selected,
 											  now.paused ? "PAUSED" : (now.playing ? "PLAYING" : "editing")));
 		}
+	}
+
+	void EditorShell::RefreshTasks(UI::Context& context) {
+		const u64 generation = EditorTasks::GetGeneration();
+		if (!context.IsAlive(_taskNotice.root) || (_taskNotice.written && generation == _taskNotice.generation)) {
+			return;
+		}
+		_taskNotice.generation = generation;
+		_taskNotice.written = true;
+
+		Vector<EditorTasks::TaskView> tasks{GetMemoryResource(MemTag::Editor)};
+		EditorTasks::GetActive(tasks);
+		context.SetVisible(_taskNotice.root, !tasks.empty());
+		if (tasks.empty()) {
+			_taskNotice.shown = 0;
+			return;
+		}
+
+		const EditorTasks::TaskView& first = tasks.front();
+		_taskNotice.shown = first.id;
+		str text = first.text;
+		if (tasks.size() > 1) {
+			text += std::format(" (+{})", tasks.size() - 1);
+		}
+		context.SetTextString(_taskNotice.label, text);
+
+		str tooltip;
+		for (const EditorTasks::TaskView& task : tasks) {
+			if (!tooltip.empty()) {
+				tooltip.push_back('\n');
+			}
+			tooltip += task.text;
+		}
+		context.SetTooltip(_taskNotice.root, tasks.size() > 1 ? tooltip : str());
+
+		UI::Style fillStyle;
+		fillStyle.width = UI::Length::Percent(first.fraction.value_or(0.0f));
+		fillStyle.height = UI::Length::Pixel(TASK_TRACK_HEIGHT);
+		fillStyle.borderRadius = UI::Radii::All(TASK_TRACK_HEIGHT * 0.5f);
+		fillStyle.background = UI::Brush::SolidColor(EditorTheme::GetColor(ColorToken::StatusOk));
+		context.SetStyle(_taskNotice.fill, fillStyle);
+		context.SetVisible(_taskNotice.track, first.fraction.has_value());
+		context.SetVisible(_taskNotice.cancel, first.cancellable);
 	}
 
 	void EditorShell::RefreshStatus(UI::Context& context) {

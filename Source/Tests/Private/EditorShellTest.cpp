@@ -21,6 +21,7 @@
 #include "Shalltear/Editor/EditorIcons.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorSelection.h"
+#include "Shalltear/Editor/EditorTasks.h"
 #include "Shalltear/Editor/EditorTheme.h"
 #include "Shalltear/Editor/EngineVersionOps.h"
 #include "Shalltear/Editor/PanelManager.h"
@@ -203,6 +204,55 @@ TEST_F(EditorShellTest, FrameRateWaitsForWindow) {
 
 TEST_F(EditorShellTest, StatusBarNamesApiAtOnce) {
 	EXPECT_TRUE(ChromeSays("Vulkan"));
+}
+
+TEST_F(EditorShellTest, StatusBarShowsBackgroundTasks) {
+	UI::Context& context = Context();
+	static char owner = 0;
+	u32 cancelled = 0;
+	EXPECT_FALSE(ChromeSays("Downloading SDK"));
+
+	const u64 task = EditorTasks::Begin({"Downloading SDK", [&cancelled]() { ++cancelled; }}, &owner);
+	Frame();
+	EXPECT_TRUE(ChromeSays("Downloading SDK"));
+	const UI::ElementHandle label = UITest::FindByText(context, context.GetRoot(), "Downloading SDK");
+	ASSERT_TRUE(context.IsAlive(label));
+	const UI::ElementHandle notice = context.MakeHandle(context.GetElement(label)->parent);
+	const UI::ElementHandle track = context.MakeHandle(context.GetElement(label)->nextSibling);
+	const UI::ElementHandle fill = context.MakeHandle(context.GetElement(track)->firstChild);
+	const auto shown = [&](UI::ElementHandle element) { return HasFlag(context.GetElement(element)->flags, UI::ElementFlags::Visible); };
+	EXPECT_TRUE(shown(notice));
+	EXPECT_FALSE(shown(track));
+
+	EditorTasks::Report(task, "Downloading SDK (53 of 212 MB)", 0.25f);
+	Frame();
+	EXPECT_TRUE(ChromeSays("Downloading SDK (53 of 212 MB)"));
+	EXPECT_TRUE(shown(track));
+	EXPECT_NEAR(context.GetLayout(fill).borderBox.w, context.GetLayout(track).borderBox.w * 0.25f, 1.0f);
+
+	const u64 other = EditorTasks::Begin({"Baking", {}}, &owner);
+	Frame();
+	EXPECT_TRUE(ChromeSays("Downloading SDK (53 of 212 MB) (+1)"));
+
+	const UI::ElementHandle cancel = UITest::FindByText(context, context.GetRoot(), "Cancel");
+	ASSERT_TRUE(context.IsAlive(cancel));
+	EXPECT_TRUE(shown(cancel));
+	UITest::ClickElement(context, cancel);
+	EXPECT_EQ(cancelled, 1u);
+
+	EditorTasks::End(task);
+	Frame();
+	EXPECT_TRUE(ChromeSays("Baking"));
+	EXPECT_FALSE(ChromeSays("Downloading"));
+	EXPECT_FALSE(shown(cancel));
+	EXPECT_FALSE(shown(track));
+	UITest::ClickElement(context, cancel);
+	EXPECT_EQ(cancelled, 1u);
+
+	EditorTasks::End(other);
+	Frame();
+	EXPECT_FALSE(shown(notice));
+	EXPECT_EQ(EditorTasks::UnregisterOwnedBy(&owner), 0u);
 }
 
 TEST_F(EditorShellTest, TitleNamesCommit) {

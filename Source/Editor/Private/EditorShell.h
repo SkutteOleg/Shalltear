@@ -42,6 +42,7 @@ namespace Shalltear {
 		void OpenCreateModulePopup(UI::Context& context);
 		void RefreshState(UI::Context& context);
 		void RefreshStatus(UI::Context& context);
+		void RefreshTasks(UI::Context& context);
 
 		Handle<Window> _mainWindow;
 		str _projectName;
@@ -63,6 +64,18 @@ namespace Shalltear {
 		UI::ElementHandle _statusLeft;
 		UI::ElementHandle _statusRight;
 		EditorChromeOps::ConsoleNoticeParts _consoleNotice;
+
+		struct TaskNotice {
+			UI::ElementHandle root;
+			UI::ElementHandle label;
+			UI::ElementHandle track;
+			UI::ElementHandle fill;
+			UI::ElementHandle cancel;
+			u64 generation = 0;
+			u64 shown = 0;
+			bool written = false;
+		};
+		TaskNotice _taskNotice;
 
 		struct ChromeState {
 			bool playing = false;

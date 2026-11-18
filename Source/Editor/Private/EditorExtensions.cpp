@@ -15,6 +15,7 @@
 #include "Shalltear/Editor/EditorIcons.h"
 #include "Shalltear/Editor/EditorPreviews.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
+#include "Shalltear/Editor/EditorTasks.h"
 #include "Shalltear/Editor/PropertyDrawers.h"
 #include "Shalltear/Editor/ProfilerModules.h"
 #include "Shalltear/Editor/RuntimeViewToolbar.h"
@@ -64,6 +65,7 @@ namespace Shalltear::EditorExtensions {
 		removed += MaterialInspectorOps::UnregisterShaderSourcesOwnedBy(moduleBase);
 		removed += EditorDocuments::UnregisterOwnedBy(moduleBase);
 		removed += ChildEnvironment::UnregisterOwnedBy(moduleBase);
+		removed += EditorTasks::UnregisterOwnedBy(moduleBase);
 
 		EditorPreviewStore::InvalidateAll();
 
