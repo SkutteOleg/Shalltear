@@ -19,6 +19,7 @@
 #include "Shalltear/Editor/EditorConsole.h"
 #include "Shalltear/Editor/EditorDocuments.h"
 #include "Shalltear/Editor/EditorLayoutOps.h"
+#include "Shalltear/Editor/EditorMenus.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorViewportOps.h"
 #include "Shalltear/Editor/SceneAnnotations.h"
@@ -393,6 +394,7 @@ namespace Shalltear {
 		ReleaseSmokeUIDocument();
 		EditorDocuments::Terminate();
 		AssetOpeners::Terminate();
+		EditorMenus::Terminate();
 		MaterialInspectorOps::TerminateShaderSources();
 		TerminateTextureAssetInspector();
 		TerminateFontAssetInspector();

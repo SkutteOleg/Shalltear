@@ -21,6 +21,7 @@
 #include "Shalltear/Editor/EditorConsole.h"
 #include "Shalltear/Editor/EditorFonts.h"
 #include "Shalltear/Editor/EditorIcons.h"
+#include "Shalltear/Editor/EditorMenus.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorSelection.h"
 #include "Shalltear/Editor/EditorTasks.h"
@@ -458,6 +459,41 @@ namespace {
 	}
 
 } // anonymous namespace
+
+TEST_F(EditorShellTest, MenusShowContributedItems) {
+	UI::Context& context = Context();
+	u32 selected = 0;
+	EditorMenus::MenuItemDesc item;
+	item.label = "Compile Scripts";
+	item.onSelect = [&selected, &context](UI::Context& given) { selected += &given == &context ? 1u : 100u; };
+	ASSERT_TRUE(EditorMenus::Register("Scripts", std::move(item), this));
+
+	auto openScriptsMenu = [&]() -> UI::ElementHandle {
+		UI::ElementHandle bar = UITest::FindByText(context, context.GetRoot(), "Scripts");
+		EXPECT_TRUE(bar.IsValid());
+		UITest::ClickElement(context, bar);
+		Frame();
+		EXPECT_EQ(context.GetOpenPopupCount(), 1u);
+		return context.GetOpenPopup(0);
+	};
+
+	UI::ElementHandle menu = openScriptsMenu();
+	ASSERT_TRUE(menu.IsValid());
+	EXPECT_TRUE(RowNamed(context, menu, "Toolchain...").IsValid());
+	UI::ElementHandle row = RowNamed(context, menu, "Compile Scripts");
+	ASSERT_TRUE(row.IsValid());
+	UITest::ClickElement(context, row);
+	Frame();
+	EXPECT_EQ(selected, 1u);
+	EXPECT_EQ(context.GetOpenPopupCount(), 0u);
+
+	EXPECT_EQ(EditorMenus::UnregisterOwnedBy(this), 1u);
+	menu = openScriptsMenu();
+	ASSERT_TRUE(menu.IsValid());
+	EXPECT_FALSE(RowNamed(context, menu, "Compile Scripts").IsValid());
+	context.CloseAllPopups();
+	Frame();
+}
 
 TEST_F(EditorShellTest, WindowMenuRecyclesPanel) {
 	UI::Context& context = Context();

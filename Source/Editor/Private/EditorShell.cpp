@@ -20,6 +20,7 @@
 #include "Shalltear/Editor/EditorIcons.h"
 #include "Shalltear/Editor/EditorInputOps.h"
 #include "Shalltear/Editor/EditorLayoutOps.h"
+#include "Shalltear/Editor/EditorMenus.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorSelection.h"
 #include "Shalltear/Editor/EditorTasks.h"
@@ -315,6 +316,13 @@ namespace Shalltear {
 							 }});
 		};
 		menus.push_back(std::move(helpMenu));
+
+		for (UI::Widgets::MenuBarItemDesc& menu : menus) {
+			menu.fill = [contextPtr, label = menu.label, fill = std::move(menu.fill)](Vector<UI::Widgets::MenuItem>& items) {
+				fill(items);
+				EditorMenus::AppendContributed(label, *contextPtr, items);
+			};
+		}
 
 		UI::ElementHandle titleBar = context.CreateElement();
 		context.AppendChild(context.GetRoot(), titleBar);

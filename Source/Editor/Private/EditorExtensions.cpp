@@ -15,6 +15,7 @@
 #include "Shalltear/Editor/EditorDocuments.h"
 #include "Shalltear/Editor/EditorGizmos.h"
 #include "Shalltear/Editor/EditorIcons.h"
+#include "Shalltear/Editor/EditorMenus.h"
 #include "Shalltear/Editor/EditorPreviews.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorTasks.h"
@@ -69,6 +70,7 @@ namespace Shalltear::EditorExtensions {
 		removed += ChildEnvironment::UnregisterOwnedBy(moduleBase);
 		removed += EditorTasks::UnregisterOwnedBy(moduleBase);
 		removed += CompileStatus::UnregisterOwnedBy(moduleBase);
+		removed += EditorMenus::UnregisterOwnedBy(moduleBase);
 
 		EditorPreviewStore::InvalidateAll();
 
