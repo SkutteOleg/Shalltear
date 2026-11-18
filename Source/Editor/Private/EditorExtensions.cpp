@@ -27,6 +27,7 @@
 #include "Shalltear/Editor/SceneAssetDrops.h"
 #include "Shalltear/Editor/SceneViewEffects.h"
 #include "Shalltear/Editor/SceneViewOverlays.h"
+#include "Shalltear/Editor/ScriptProjectOps.h"
 #include "Shalltear/Editor/SettingsPresentation.h"
 
 namespace Shalltear::EditorExtensions {
@@ -75,6 +76,7 @@ namespace Shalltear::EditorExtensions {
 		removed += EditorTasks::UnregisterOwnedBy(moduleBase);
 		removed += CompileStatus::UnregisterOwnedBy(moduleBase);
 		removed += EditorMenus::UnregisterOwnedBy(moduleBase);
+		removed += ScriptProjectOps::UnregisterDebugConfigurationsOwnedBy(moduleBase);
 
 		EditorPreviewStore::InvalidateAll();
 

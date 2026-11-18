@@ -10,6 +10,6 @@
 			"cwd": "{{EDITOR_DIRECTORY}}",
 			"stopAtEntry": false,
 			{{DEBUGGER_CONSOLE_ENTRY}}
-		}
+		}{{CONTRIBUTED_CONFIGURATIONS}}
 	]
 }

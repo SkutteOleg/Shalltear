@@ -8,6 +8,7 @@
 #include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/ProjectLayout.h"
+#include "Shalltear/Core/Serialization/JSON.h"
 #include "Shalltear/Core/StringUtil.h"
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
@@ -15,6 +16,7 @@
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/CppToolchain.h"
+#include "Shalltear/Editor/EditorExtensions.h"
 #include "Shalltear/Editor/PackageOps.h"
 #include "Shalltear/Editor/ProjectOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
@@ -1645,4 +1647,53 @@ TEST_F(ScriptWorkflowFixture, ScaffoldedIgnoreCoversDerivedAssetIndex) {
 
 	EXPECT_NE(gitignore.find("/Library/"), str::npos) << gitignore;
 	EXPECT_NE(gitignore.find("/Builds/"), str::npos) << gitignore;
+}
+
+TEST_F(ScriptWorkflowFixture, ContributedDebugConfigurationJoinsLaunchFile) {
+	WriteSource("project://Project.ini", "[Project]\nname = MyGame\n");
+
+	ScriptProjectOps::ScaffoldOptions options;
+	options.moduleName = "MyGame";
+	options.sdkRoot = "C:/Sdk";
+	options.editorExecutable = "C:/Sdk/Bin/Shalltear" SLT_TEST_EXE_SUFFIX;
+	ScriptProjectOps::ScaffoldResult scaffolded;
+	ASSERT_TRUE(ScriptProjectOps::ScaffoldScriptProject(Root(), options, scaffolded));
+	const str plain = Read(".vscode/launch.json");
+	EXPECT_EQ(plain.find("{{"), str::npos) << plain;
+	EXPECT_FALSE(ScriptProjectOps::NeedsProjectFileRegeneration(Root(), options));
+
+	static char first = 0;
+	static char second = 0;
+	ScriptProjectOps::RegisterDebugConfiguration("{\n\t\"name\": \"Attach A\",\n\t\"type\": \"a\",\n\t\"request\": \"attach\"\n}", &first);
+	ScriptProjectOps::RegisterDebugConfiguration("{ \"name\": \"Attach B\", \"type\": \"b\", \"request\": \"attach\" }", &second);
+	EXPECT_TRUE(ScriptProjectOps::NeedsProjectFileRegeneration(Root(), options));
+	ScriptProjectOps::ScaffoldResult regenerated;
+	ASSERT_TRUE(ScriptProjectOps::RegenerateProjectFiles(Root(), options, regenerated));
+	ASSERT_EQ(regenerated.written.size(), 1u);
+	EXPECT_EQ(regenerated.written[0], ".vscode/launch.json");
+
+	const str joined = Read(".vscode/launch.json");
+	EXPECT_NE(joined.find("\t\t},\n\t\t{\n\t\t\t\"name\": \"Attach A\",\n\t\t\t\"type\": \"a\",\n\t\t\t\"request\": \"attach\"\n\t\t},\n\t\t{ \"name\": \"Attach B\""),
+			  str::npos)
+		<< joined;
+	LinearAllocator arena(joined.size() + 64, MemTag::Editor);
+	const JSONValue root = JSONParse(joined, arena);
+	ASSERT_TRUE(root.IsObject()) << joined;
+	const JSONValue& configurations = root["configurations"];
+	ASSERT_EQ(configurations.Size(), 3u);
+	EXPECT_EQ(configurations[size_t{0}]["request"].AsString(), "launch");
+	EXPECT_EQ(configurations[size_t{1}]["name"].AsString(), "Attach A");
+	EXPECT_EQ(configurations[size_t{2}]["type"].AsString(), "b");
+
+	EXPECT_EQ(ScriptProjectOps::UnregisterDebugConfigurationsOwnedBy(&first), 1u);
+	EXPECT_EQ(ScriptProjectOps::UnregisterDebugConfigurationsOwnedBy(&first), 0u);
+	ScriptProjectOps::ScaffoldResult narrowed;
+	ASSERT_TRUE(ScriptProjectOps::RegenerateProjectFiles(Root(), options, narrowed));
+	EXPECT_EQ(Read(".vscode/launch.json").find("Attach A"), str::npos);
+	EXPECT_NE(Read(".vscode/launch.json").find("Attach B"), str::npos);
+
+	EXPECT_EQ(EditorExtensions::Unload(&second), 1u);
+	ScriptProjectOps::ScaffoldResult restored;
+	ASSERT_TRUE(ScriptProjectOps::RegenerateProjectFiles(Root(), options, restored));
+	EXPECT_EQ(Read(".vscode/launch.json"), plain);
 }

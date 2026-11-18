@@ -20,6 +20,7 @@
 #include <iterator>
 #include <system_error>
 #include <unordered_set>
+#include <vector>
 
 #include "Platform/EditorPlatform.h"
 
@@ -65,6 +66,13 @@ namespace Shalltear::ScriptProjectOps {
 		constexpr bool IsRegenerated(FileKind kind) {
 			return kind != FileKind::Yours;
 		}
+
+		struct DebugConfiguration {
+			str json;
+			const void* owner;
+		};
+
+		std::vector<DebugConfiguration> _debugConfigurations;
 
 		str Join(const str& root, std::string_view relative) {
 			if (relative.empty()) {
@@ -209,6 +217,11 @@ namespace Shalltear::ScriptProjectOps {
 				packagesEntry = ", \"SHALLTEAR_ENABLED_PACKAGES\": \"" + packageList + "\"";
 			}
 
+			str contributedConfigurations;
+			for (const DebugConfiguration& configuration : _debugConfigurations) {
+				contributedConfigurations += ",\n\t\t" + StringUtil::Replace(configuration.json, "\n", "\n\t\t");
+			}
+
 			tokens.push_back({"MODULE_NAME", moduleName});
 			tokens.push_back({"MODULE_UPPER", upper});
 			tokens.push_back({"ENABLED_PACKAGES_ENTRY", packagesEntry});
@@ -224,6 +237,7 @@ namespace Shalltear::ScriptProjectOps {
 			tokens.push_back({"DEBUGGER_CONSOLE_ENTRY", str(EditorPlatform::GetDebuggerConsoleEntry())});
 			tokens.push_back({"EDITOR_EXECUTABLE", editorExecutable});
 			tokens.push_back({"EDITOR_DIRECTORY", editorDirectory});
+			tokens.push_back({"CONTRIBUTED_CONFIGURATIONS", contributedConfigurations});
 			tokens.push_back({"ENGINE_ASSETS_DIRECTORY", engineAssetsDirectory});
 			return tokens;
 		}
@@ -663,6 +677,14 @@ namespace Shalltear::ScriptProjectOps {
 			}
 		}
 		return false;
+	}
+
+	void RegisterDebugConfiguration(std::string_view json, const void* owner) {
+		_debugConfigurations.push_back({str(json), owner});
+	}
+
+	u32 UnregisterDebugConfigurationsOwnedBy(const void* owner) {
+		return static_cast<u32>(std::erase_if(_debugConfigurations, [owner](const DebugConfiguration& configuration) { return configuration.owner == owner; }));
 	}
 
 	ExternalEditor DetectExternalEditor() {

@@ -101,6 +101,11 @@ namespace Shalltear::ScriptProjectOps {
 
 	SHALLTEAR_EDITOR_API bool NeedsProjectFileRegeneration(const str& projectPath, const ScaffoldOptions& options);
 
+	// 1 object of launch.json's configurations
+	SHALLTEAR_EDITOR_API void RegisterDebugConfiguration(std::string_view json, const void* owner);
+
+	SHALLTEAR_EDITOR_API u32 UnregisterDebugConfigurationsOwnedBy(const void* owner);
+
 	struct ExternalEditor {
 		str name;
 		str folderCommand;
