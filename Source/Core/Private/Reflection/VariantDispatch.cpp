@@ -8,6 +8,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
+#include <vector>
 
 namespace Shalltear {
 
@@ -19,7 +20,7 @@ namespace Shalltear {
 		};
 
 		struct DispatchData {
-			std::unordered_map<StringHash, DispatchEntry> entries;
+			std::unordered_map<StringHash, std::vector<DispatchEntry>> entries;
 
 			mutable std::shared_mutex mutex;
 		};
@@ -42,10 +43,13 @@ namespace Shalltear {
 		auto& data = GetData();
 		std::unique_lock lock(data.mutex);
 
-		if (data.entries.contains(typeId))
-			return;
-
-		data.entries.emplace(typeId, DispatchEntry{vtable, Platform::ImageBaseOf(vtable)});
+		void* ownerImage = Platform::ImageBaseOf(vtable);
+		std::vector<DispatchEntry>& copies = data.entries[typeId];
+		for (const DispatchEntry& copy : copies) {
+			if (copy.ownerImage == ownerImage)
+				return;
+		}
+		copies.push_back(DispatchEntry{vtable, ownerImage});
 	}
 
 	void VariantDispatch::Unregister(StringHash typeId) noexcept {
@@ -67,7 +71,8 @@ namespace Shalltear {
 
 		size_t removed = 0;
 		for (auto it = data.entries.begin(); it != data.entries.end();) {
-			if (it->second.ownerImage == imageBase) {
+			std::erase_if(it->second, [imageBase](const DispatchEntry& copy) { return copy.ownerImage == imageBase; });
+			if (it->second.empty()) {
 				it = data.entries.erase(it);
 				++removed;
 			} else {
@@ -85,7 +90,7 @@ namespace Shalltear {
 		std::shared_lock lock(data.mutex);
 
 		auto it = data.entries.find(typeId);
-		return (it != data.entries.end()) ? it->second.vtable : nullptr;
+		return (it != data.entries.end()) ? it->second.front().vtable : nullptr;
 	}
 
 	const void* VariantDispatch::GetOwner(StringHash typeId) noexcept {
@@ -96,7 +101,7 @@ namespace Shalltear {
 		std::shared_lock lock(data.mutex);
 
 		auto it = data.entries.find(typeId);
-		return (it != data.entries.end()) ? it->second.ownerImage : nullptr;
+		return (it != data.entries.end() && it->second.size() == 1) ? it->second.front().ownerImage : nullptr;
 	}
 
 	size_t VariantDispatch::GetEntryCount() noexcept {

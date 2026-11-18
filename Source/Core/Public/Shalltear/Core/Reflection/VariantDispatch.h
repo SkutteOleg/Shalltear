@@ -16,10 +16,12 @@ namespace Shalltear {
 		// must run before FreeLibrary
 		static void Unregister(StringHash typeId) noexcept;
 
+		// count of types left with no image
 		static size_t UnregisterAllOwnedBy(const void* imageBase) noexcept;
 
 		static const VariantVTable* Lookup(StringHash typeId) noexcept;
 
+		// null when more than 1 image registered it
 		static const void* GetOwner(StringHash typeId) noexcept;
 
 		static size_t GetEntryCount() noexcept;

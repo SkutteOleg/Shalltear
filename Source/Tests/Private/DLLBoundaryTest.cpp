@@ -173,10 +173,26 @@ TEST_F(DLLBoundaryTest, FirstOwnerKeepsHostVTables) {
 	EXPECT_EQ(VariantDispatch::Lookup(GetVariantTypeId<str>()), hostStrVTable);
 
 	const StringHash payloadId{getPayloadTypeId()};
-	EXPECT_NE(VariantDispatch::Lookup(payloadId), nullptr);
+	const VariantVTable* moduleVTable = VariantDispatch::Lookup(payloadId);
+	ASSERT_NE(moduleVTable, nullptr);
+	EXPECT_EQ(VariantDispatch::GetOwner(payloadId), static_cast<const void*>(module));
+
+	static const VariantVTable hostCopy = *hostI32VTable;
+	const StringHash sharedId{"DLLBoundaryTest.SharedBetweenImages"};
+	VariantDispatch::Register(sharedId, moduleVTable);
+	VariantDispatch::Register(sharedId, &hostCopy);
+	VariantDispatch::Register(sharedId, &hostCopy);
+	EXPECT_EQ(VariantDispatch::Lookup(sharedId), moduleVTable);
+	EXPECT_EQ(VariantDispatch::GetOwner(sharedId), nullptr);
+
 	EXPECT_EQ(VariantDispatch::UnregisterAllOwnedBy(module), 1u);
 	EXPECT_EQ(VariantDispatch::Lookup(payloadId), nullptr);
+	EXPECT_EQ(VariantDispatch::Lookup(sharedId), &hostCopy);
+	EXPECT_NE(VariantDispatch::GetOwner(sharedId), nullptr);
+	EXPECT_NE(VariantDispatch::GetOwner(sharedId), static_cast<const void*>(module));
 	EXPECT_EQ(VariantDispatch::Lookup(GetVariantTypeId<i32>()), hostI32VTable);
+	VariantDispatch::Unregister(sharedId);
+	EXPECT_EQ(VariantDispatch::Lookup(sharedId), nullptr);
 }
 
 TEST_F(DLLBoundaryTest, ModuleAllocationsVisibleInHostTracker) {
