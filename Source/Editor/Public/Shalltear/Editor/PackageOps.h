@@ -87,9 +87,12 @@ namespace Shalltear {
 
 		SHALLTEAR_EDITOR_API bool UpgradeStoredSet(std::span<const PackageManifest> catalogue);
 
-		SHALLTEAR_EDITOR_API u32 ScaffoldEnabledSet(const Path& projectDocument);
+		SHALLTEAR_EDITOR_API u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const str> optIn = {});
 
-		SHALLTEAR_EDITOR_API u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const PackageManifest> catalogue);
+		SHALLTEAR_EDITOR_API u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const PackageManifest> catalogue,
+													std::span<const str> optIn = {});
+
+		SHALLTEAR_EDITOR_API void ListOptInPackages(std::span<const PackageManifest> catalogue, Vector<PackageManifest>& out);
 
 		struct PackageRow {
 			str name;

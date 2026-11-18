@@ -626,21 +626,21 @@ namespace Shalltear {
 			return true;
 		}
 
-		u32 ScaffoldEnabledSet(const Path& projectDocument) {
+		u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const str> optIn) {
 			Vector<PackageManifest> catalogue;
 			Vector<str> diagnostics;
 			LoadBuiltInCatalogue(catalogue, diagnostics);
-			return ScaffoldEnabledSet(projectDocument, catalogue);
+			return ScaffoldEnabledSet(projectDocument, catalogue, optIn);
 		}
 
-		u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const PackageManifest> catalogue) {
+		u32 ScaffoldEnabledSet(const Path& projectDocument, std::span<const PackageManifest> catalogue, std::span<const str> optIn) {
 			if (projectDocument.ToString().empty()) {
 				return 0;
 			}
 
 			Vector<str> names;
 			for (const PackageManifest& manifest : catalogue) {
-				if (manifest.scaffold && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
+				if ((manifest.scaffold || Contains(optIn, manifest.name)) && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
 					names.push_back(manifest.name);
 				}
 			}
@@ -658,6 +658,15 @@ namespace Shalltear {
 				return 0;
 			}
 			return static_cast<u32>(names.size());
+		}
+
+		void ListOptInPackages(std::span<const PackageManifest> catalogue, Vector<PackageManifest>& out) {
+			out.clear();
+			for (const PackageManifest& manifest : catalogue) {
+				if (!manifest.scaffold && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
+					out.push_back(manifest);
+				}
+			}
 		}
 
 		namespace {

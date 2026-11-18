@@ -8,6 +8,7 @@
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Scene/Scene.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
+#include "Shalltear/Core/StringUtil.h"
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/BuildProfile.h"
@@ -32,6 +33,7 @@ namespace Shalltear::ProjectOps {
 		constexpr const char* PROJECT_FILE = "Project.ini";
 		constexpr const char* PROJECT_SETTINGS_FILE = "ProjectSettings.ini";
 		constexpr i64 REGISTRY_VERSION = 1;
+		constexpr const char* OPT_IN_CHOICE_KEY = "optInPackages";
 
 		constexpr const char* FIRST_SCENE_NAME = "Main";
 
@@ -352,6 +354,9 @@ namespace Shalltear::ProjectOps {
 		if (!CreateProject(parentDirectory, name, outPath)) {
 			return false;
 		}
+		if (!options.optInPackages.empty()) {
+			PackageOps::ScaffoldEnabledSet(Path(outPath + "/" + PROJECT_SETTINGS_FILE), options.optInPackages);
+		}
 		if (!options.includeCppModule) {
 			return true;
 		}
@@ -382,9 +387,49 @@ namespace Shalltear::ProjectOps {
 		}
 	}
 
+	void LoadOptInChoice(const Path& registryPath, Vector<str>& out) {
+		out.clear();
+		Config config;
+		if (!config.Load(registryPath)) {
+			return;
+		}
+		for (str& name : StringUtil::Split(config.GetString("Hub", OPT_IN_CHOICE_KEY), ";")) {
+			if (!name.empty()) {
+				out.push_back(std::move(name));
+			}
+		}
+	}
+
+	bool SaveOptInChoice(const Path& registryPath, std::span<const str> names) {
+		Config config;
+		if (!config.Load(registryPath)) {
+			config.SetI64("Hub", "version", REGISTRY_VERSION);
+		}
+		str joined;
+		for (const str& name : names) {
+			if (!joined.empty()) {
+				joined.push_back(';');
+			}
+			joined += name;
+		}
+		config.SetString("Hub", OPT_IN_CHOICE_KEY, joined);
+		str directory = registryPath.GetDirectory();
+		if (!directory.empty()) {
+			FileSystem::CreateDirectory(Path(directory));
+		}
+		return config.Save(registryPath);
+	}
+
 	bool SaveRegistry(const Path& registryPath, const Vector<ProjectEntry>& entries) {
 		Config config;
 		config.SetI64("Hub", "version", REGISTRY_VERSION);
+		Config previous;
+		if (previous.Load(registryPath)) {
+			const str choice = previous.GetString("Hub", OPT_IN_CHOICE_KEY);
+			if (!choice.empty()) {
+				config.SetString("Hub", OPT_IN_CHOICE_KEY, choice);
+			}
+		}
 		for (size_t i = 0; i < entries.size(); ++i) {
 			const ProjectEntry& entry = entries[i];
 			str section = std::format("Project.{}", i);

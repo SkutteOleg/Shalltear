@@ -79,6 +79,24 @@ namespace {
 			}
 			return nullptr;
 		}
+
+		static Vector<PackageOps::PackageManifest> OptInPackages() {
+			Vector<PackageOps::PackageManifest> catalogue;
+			Vector<str> diagnostics;
+			PackageOps::LoadBuiltInCatalogue(catalogue, diagnostics);
+			Vector<PackageOps::PackageManifest> offered;
+			PackageOps::ListOptInPackages(catalogue, offered);
+			return offered;
+		}
+
+		static Vector<str> EnabledIn(const str& projectPath) {
+			ScopedSettingsStore store{std::filesystem::path(projectPath)};
+			Vector<str> stored;
+			PackageOps::ReadEnabledSet(stored);
+			return stored;
+		}
+
+		static bool Holds(const Vector<str>& names, const str& name) { return std::find(names.begin(), names.end(), name) != names.end(); }
 	};
 
 	struct HubBuild {
@@ -904,6 +922,169 @@ TEST(ProjectRelaunchTest, EmptyExecutablePathRefused) {
 	EXPECT_TRUE(ProjectOps::BuildRelaunchCommandLine("", {arguments.data(), arguments.size()},
 													 "C:/Games/MyProject")
 					.empty());
+}
+
+TEST_F(ProjectHubFixture, CreateWithOptInPackageEnablesIt) {
+	const Vector<PackageOps::PackageManifest> offered = OptInPackages();
+	if (offered.empty()) {
+		GTEST_SKIP() << "no built-in package is opt-in in this tree";
+	}
+	ProjectOps::CreateOptions options;
+	options.includeCppModule = false;
+	options.optInPackages.push_back(offered.front().name);
+	options.optInPackages.push_back("com.acme.absent");
+	str path;
+	ASSERT_TRUE(ProjectOps::CreateProject(Location(), "OptedIn", options, path));
+
+	const Vector<str> enabled = EnabledIn(path);
+	EXPECT_TRUE(Holds(enabled, offered.front().name));
+	EXPECT_FALSE(Holds(enabled, "com.acme.absent"));
+	const Vector<str> plain = EnabledIn(MakeProject("Plain"));
+	EXPECT_EQ(enabled.size(), plain.size() + 1);
+	for (const str& name : plain) {
+		EXPECT_TRUE(Holds(enabled, name)) << name;
+	}
+}
+
+TEST_F(ProjectHubFixture, CreateWithoutItDoesNot) {
+	const Vector<PackageOps::PackageManifest> offered = OptInPackages();
+	if (offered.empty()) {
+		GTEST_SKIP() << "no built-in package is opt-in in this tree";
+	}
+	ProjectOps::CreateOptions options;
+	options.includeCppModule = false;
+	str path;
+	ASSERT_TRUE(ProjectOps::CreateProject(Location(), "NotOptedIn", options, path));
+	const Vector<str> enabled = EnabledIn(path);
+	ASSERT_FALSE(enabled.empty());
+	for (const PackageOps::PackageManifest& manifest : offered) {
+		EXPECT_FALSE(Holds(enabled, manifest.name)) << manifest.name;
+	}
+
+	ProjectHub hub{_registry};
+	ASSERT_TRUE(hub.CreateAndAdd(Location(), "HubDefault", false));
+	const Vector<str> fromHub = EnabledIn(hub.GetChosenPath());
+	for (const PackageOps::PackageManifest& manifest : offered) {
+		EXPECT_FALSE(Holds(fromHub, manifest.name)) << manifest.name;
+	}
+}
+
+TEST_F(ProjectHubFixture, OptInChoiceSurvivesRegistryWrites) {
+	Vector<str> choice{GetMemoryResource(MemTag::Editor)};
+	ProjectOps::LoadOptInChoice(_registry, choice);
+	EXPECT_TRUE(choice.empty());
+
+	const str names[] = {str{"com.acme.scripting"}, str{"com.acme.shaders"}};
+	ASSERT_TRUE(ProjectOps::SaveOptInChoice(_registry, names));
+	ProjectOps::LoadOptInChoice(_registry, choice);
+	ASSERT_EQ(choice.size(), 2u);
+	EXPECT_EQ(choice[0], "com.acme.scripting");
+	EXPECT_EQ(choice[1], "com.acme.shaders");
+
+	const str project = MakeProject("Listed");
+	ASSERT_TRUE(ProjectOps::AddProject(_registry, project));
+	ProjectOps::TouchProject(_registry, project);
+	ProjectOps::LoadOptInChoice(_registry, choice);
+	EXPECT_EQ(choice.size(), 2u);
+	ASSERT_EQ(Load().size(), 1u);
+
+	ASSERT_TRUE(ProjectOps::SaveOptInChoice(_registry, {}));
+	ProjectOps::LoadOptInChoice(_registry, choice);
+	EXPECT_TRUE(choice.empty());
+	EXPECT_EQ(Load().size(), 1u);
+}
+
+TEST_F(ProjectHubFixture, NewProjectRemembersOptInPackageChoice) {
+	const Vector<PackageOps::PackageManifest> offered = OptInPackages();
+	if (offered.empty()) {
+		GTEST_SKIP() << "no built-in package is opt-in in this tree";
+	}
+	const PackageOps::PackageManifest& package = offered.front();
+	const str label = "Include " + (package.displayName.empty() ? package.name : package.displayName);
+	const auto open = [&](ProjectHub& hub, HubBuild& build) {
+		hub.BuildContent(build.context, build.root);
+		build.context.Update();
+		Click(build.context, CenterOf(build.context, FindByText(build.context, build.root, "New Project...")));
+		build.context.Update();
+		return build.context.GetOpenPopupCount() == 1 ? build.context.GetOpenPopup(0) : UI::ElementHandle{};
+	};
+	const auto boxOf = [&](HubBuild& build, UI::ElementHandle card) {
+		const UI::Element* text = build.context.GetElement(FindByText(build.context, card, label));
+		return text ? FindByClass(build.context, build.context.MakeHandle(text->parent), StringHash("slt-checkbox"), 0) : UI::ElementHandle{};
+	};
+	const auto ticked = [&](HubBuild& build, UI::ElementHandle box) {
+		const UI::Element* mark = build.context.GetElement(FindByClass(build.context, box, StringHash("slt-check-mark"), 0));
+		return mark && HasFlag(mark->flags, UI::ElementFlags::Visible);
+	};
+
+	{
+		ProjectHub hub{_registry};
+		HubBuild build;
+		const UI::ElementHandle card = open(hub, build);
+		ASSERT_TRUE(build.context.IsAlive(card));
+		const UI::ElementHandle box = boxOf(build, card);
+		ASSERT_TRUE(build.context.IsAlive(box));
+		EXPECT_FALSE(ticked(build, box));
+
+		Click(build.context, CenterOf(build.context, FindByText(build.context, card, "Cancel")));
+		build.context.Update();
+		Vector<str> choice{GetMemoryResource(MemTag::Editor)};
+		ProjectOps::LoadOptInChoice(_registry, choice);
+		EXPECT_TRUE(choice.empty());
+	}
+
+	str created;
+	{
+		ProjectHub hub{_registry};
+		HubBuild build;
+		const UI::ElementHandle card = open(hub, build);
+		ASSERT_TRUE(build.context.IsAlive(card));
+		const UI::ElementHandle locationField = FindByClass(build.context, card, StringHash("slt-textfield"), 1);
+		ASSERT_TRUE(build.context.IsAlive(locationField));
+		build.context.SetTextString(locationField, Location());
+		ClickElement(build.context, boxOf(build, card));
+		EXPECT_TRUE(ticked(build, boxOf(build, card)));
+		Click(build.context, CenterOf(build.context, FindByText(build.context, card, "Create")));
+		build.context.Update();
+		created = hub.GetChosenPath();
+		ASSERT_FALSE(created.empty());
+	}
+	EXPECT_TRUE(Holds(EnabledIn(created), package.name));
+
+	{
+		ProjectHub hub{_registry};
+		HubBuild build;
+		const UI::ElementHandle card = open(hub, build);
+		ASSERT_TRUE(build.context.IsAlive(card));
+		EXPECT_TRUE(ticked(build, boxOf(build, card)));
+		build.context.SetTextString(FindByClass(build.context, card, StringHash("slt-textfield"), 0), "Kept");
+		Click(build.context, CenterOf(build.context, FindByText(build.context, card, "Create")));
+		build.context.Update();
+		ASSERT_NE(hub.GetChosenPath(), created);
+		EXPECT_TRUE(Holds(EnabledIn(hub.GetChosenPath()), package.name));
+	}
+	{
+		ProjectHub hub{_registry};
+		HubBuild build;
+		const UI::ElementHandle card = open(hub, build);
+		ASSERT_TRUE(build.context.IsAlive(card));
+		EXPECT_TRUE(ticked(build, boxOf(build, card)));
+		const UI::ElementHandle nameField = FindByClass(build.context, card, StringHash("slt-textfield"), 0);
+		build.context.SetTextString(nameField, "Unticked");
+		ClickElement(build.context, boxOf(build, card));
+		EXPECT_FALSE(ticked(build, boxOf(build, card)));
+		Click(build.context, CenterOf(build.context, FindByText(build.context, card, "Create")));
+		build.context.Update();
+		ASSERT_NE(hub.GetChosenPath(), created);
+		EXPECT_FALSE(Holds(EnabledIn(hub.GetChosenPath()), package.name));
+	}
+	{
+		ProjectHub hub{_registry};
+		HubBuild build;
+		const UI::ElementHandle card = open(hub, build);
+		ASSERT_TRUE(build.context.IsAlive(card));
+		EXPECT_FALSE(ticked(build, boxOf(build, card)));
+	}
 }
 
 TEST_F(ProjectHubFixture, CreatedProjectOpens) {

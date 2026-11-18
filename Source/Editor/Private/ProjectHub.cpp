@@ -12,10 +12,12 @@
 #include "Shalltear/Core/Window/Monitor.h"
 #include "Shalltear/Core/Window/WindowSystem.h"
 
+#include "Shalltear/Editor/PackageOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include "Platform/EditorPlatform.h"
 
+#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <format>
@@ -291,10 +293,12 @@ namespace Shalltear {
 		return FileSystem::IsDirectory(Path(documents)) ? documents : home;
 	}
 
-	bool ProjectHub::CreateAndAdd(const str& parentDirectory, const str& name, bool includeCppModule) {
+	bool ProjectHub::CreateAndAdd(const str& parentDirectory, const str& name, bool includeCppModule,
+								  std::span<const str> optInPackages) {
 		str created;
 		ProjectOps::CreateOptions options;
 		options.includeCppModule = includeCppModule;
+		options.optInPackages.assign(optInPackages.begin(), optInPackages.end());
 		options.sdkRoot = ScriptProjectOps::GetSDKRoot();
 		options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
 		if (!ProjectOps::CreateProject(parentDirectory, name, options, created)) {
@@ -644,10 +648,38 @@ namespace Shalltear {
 		AddPopupToggle(context, card, "Include C++ module", *includeCppModule,
 					   [includeCppModule](bool value) { *includeCppModule = value; });
 
+		Vector<PackageOps::PackageManifest> catalogue;
+		Vector<str> diagnostics;
+		PackageOps::LoadBuiltInCatalogue(catalogue, diagnostics);
+		Vector<PackageOps::PackageManifest> offered;
+		PackageOps::ListOptInPackages(catalogue, offered);
+		Vector<str> remembered{GetMemoryResource(MemTag::Editor)};
+		ProjectOps::LoadOptInChoice(_registryPath, remembered);
+		auto optIns = std::make_shared<Vector<str>>(GetMemoryResource(MemTag::Editor));
+		for (const PackageOps::PackageManifest& manifest : offered) {
+			const bool ticked = std::find(remembered.begin(), remembered.end(), manifest.name) != remembered.end();
+			if (ticked) {
+				optIns->push_back(manifest.name);
+			}
+			AddPopupToggle(context, card, "Include " + (manifest.displayName.empty() ? manifest.name : manifest.displayName), ticked,
+						   [optIns, name = manifest.name](bool value) {
+							   std::erase(*optIns, name);
+							   if (value) {
+								   optIns->push_back(name);
+							   }
+						   });
+		}
+
 		UI::Context* contextPtr = &context;
 		UI::ElementHandle buttons = AddButtonRow(context, card);
 		AddPopupButton(context, buttons, card, "Cancel", {});
-		AddPopupButton(context, buttons, card, "Create", [this, contextPtr, nameField, locationField, includeCppModule]() { CreateAndAdd(contextPtr->GetTextString(locationField), contextPtr->GetTextString(nameField), *includeCppModule); }, true);
+		AddPopupButton(
+			context, buttons, card, "Create",
+			[this, contextPtr, nameField, locationField, includeCppModule, optIns]() {
+				ProjectOps::SaveOptInChoice(_registryPath, *optIns);
+				CreateAndAdd(contextPtr->GetTextString(locationField), contextPtr->GetTextString(nameField), *includeCppModule, *optIns);
+			},
+			true);
 		context.OpenPopup(card, {}, DIALOG_FLAGS);
 		context.SetFocus(nameField);
 	}

@@ -47,6 +47,7 @@ namespace Shalltear::ProjectOps {
 		bool includeCppModule = true;
 		str sdkRoot;
 		str editorExecutable;
+		Vector<str> optInPackages{GetMemoryResource(MemTag::Editor)};
 	};
 
 	SHALLTEAR_EDITOR_API bool CreateProject(const str& parentDirectory, const str& name,
@@ -56,6 +57,9 @@ namespace Shalltear::ProjectOps {
 
 	SHALLTEAR_EDITOR_API void LoadRegistry(const Path& registryPath, Vector<ProjectEntry>& out);
 	SHALLTEAR_EDITOR_API bool SaveRegistry(const Path& registryPath, const Vector<ProjectEntry>& entries);
+
+	SHALLTEAR_EDITOR_API void LoadOptInChoice(const Path& registryPath, Vector<str>& out);
+	SHALLTEAR_EDITOR_API bool SaveOptInChoice(const Path& registryPath, std::span<const str> names);
 
 	SHALLTEAR_EDITOR_API bool AddProject(const Path& registryPath, const str& projectPath);
 

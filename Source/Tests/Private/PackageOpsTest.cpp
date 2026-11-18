@@ -9,6 +9,7 @@
 #include "Shalltear/Editor/PackageOps.h"
 #include "Shalltear/Editor/SettingsOps.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <filesystem>
@@ -698,6 +699,36 @@ TEST_F(PackageDiskFixture, ScaffoldSkipsPackageThatOptsOut) {
 	Config reread;
 	ASSERT_TRUE(reread.Load(document));
 	EXPECT_EQ(reread.GetString("Packages", "enabled"), "com.acme.effects;com.acme.physics");
+}
+
+TEST_F(PackageDiskFixture, ScaffoldTakesOptInPackagesByName) {
+	WritePackage("physics", R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})");
+	WritePackage("scripting", R"({"name":"com.acme.scripting","version":"1.0.0","kind":"engine","scaffold":false})");
+	WritePackage("shaders", R"({"name":"com.acme.shaders","version":"1.0.0","kind":"tool","scaffold":false})");
+	WritePackage("content", R"({"name":"com.acme.content","version":"1.0.0","kind":"package","scaffold":false})");
+
+	Path roots[] = {Root()};
+	Vector<PackageOps::PackageManifest> catalogue;
+	Vector<str> diagnostics;
+	PackageOps::DiscoverPackages(roots, catalogue, diagnostics);
+	ASSERT_EQ(catalogue.size(), 4u) << Join(diagnostics);
+
+	Vector<PackageOps::PackageManifest> offered;
+	PackageOps::ListOptInPackages(catalogue, offered);
+	Vector<str> names;
+	for (const PackageOps::PackageManifest& manifest : offered) {
+		names.push_back(manifest.name);
+	}
+	std::sort(names.begin(), names.end());
+	EXPECT_EQ(Join(names), "com.acme.scripting,com.acme.shaders");
+
+	const Path document{(_root / "ProjectSettings.ini").generic_string()};
+	const str optIn[] = {str{"com.acme.scripting"}, str{"com.acme.content"}, str{"com.acme.absent"}};
+	EXPECT_EQ(PackageOps::ScaffoldEnabledSet(document, catalogue, optIn), 2u);
+
+	Config reread;
+	ASSERT_TRUE(reread.Load(document));
+	EXPECT_EQ(reread.GetString("Packages", "enabled"), "com.acme.physics;com.acme.scripting");
 }
 
 TEST(PackagePlayerLinkTest, BinaryNameIsDirectoryName) {

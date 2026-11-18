@@ -13,6 +13,8 @@
 #include "Shalltear/Editor/EditorListView.h"
 #include "Shalltear/Editor/ProjectOps.h"
 
+#include <span>
+
 namespace Shalltear {
 
 	class SHALLTEAR_EDITOR_API ProjectHub : public Object {
@@ -37,7 +39,8 @@ namespace Shalltear {
 
 		str GetDefaultLocation() const;
 
-		bool CreateAndAdd(const str& parentDirectory, const str& name, bool includeCppModule = true);
+		bool CreateAndAdd(const str& parentDirectory, const str& name, bool includeCppModule = true,
+						  std::span<const str> optInPackages = {});
 		bool AddExisting(const str& projectPath);
 		bool Remove(const str& projectPath);
 		bool DeleteFromDisk(const str& projectPath);
