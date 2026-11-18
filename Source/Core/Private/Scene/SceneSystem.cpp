@@ -99,7 +99,7 @@ namespace Shalltear {
 		CancelAllLoads();
 		UnloadAllScenes();
 		state.frameEnd.Drain();
-		ReleaseUnresolvedComponentReports();
+		SceneInternal::ReleaseUnresolvedReportHold(true);
 
 		UnregisterSceneImporters();
 		FrameStages::UnregisterOwnedBy(&_FRAME_STAGE_OWNER);

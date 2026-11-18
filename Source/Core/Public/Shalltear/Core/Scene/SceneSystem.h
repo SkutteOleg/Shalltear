@@ -55,6 +55,7 @@ namespace Shalltear {
 
 		// release reports rows only for types still unregistered then
 		static void HoldUnresolvedComponentReports();
+		// reported once all holds are released
 		static void ReleaseUnresolvedComponentReports();
 
 		static Handle<SceneObject> CreateObject(std::string_view name,

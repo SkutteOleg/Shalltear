@@ -39,9 +39,11 @@ namespace Shalltear {
 				}
 			}
 
-			void OnModuleReloadBegan(const EditorModuleReloadBeganEvent&) {
+			void OnModuleReloadBegan(const EditorModuleReloadBeganEvent& event) {
 				// module typed Variants must not outlive their image
-				UndoSystem::Clear();
+				if (!TypeRegistry::IsOwnerToken(event.moduleBase)) {
+					UndoSystem::Clear();
+				}
 			}
 		};
 

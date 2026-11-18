@@ -31,6 +31,7 @@ namespace Shalltear::SceneInternal {
 	};
 
 	bool MigrationPreconditionsMet();
+	bool IsMigrationLegal();
 
 	HandleResolverScope MigrationResolverScope();
 

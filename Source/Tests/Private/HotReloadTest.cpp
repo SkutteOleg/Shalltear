@@ -630,6 +630,21 @@ TEST_F(HotReloadFixture, HeldReportsNameOnlyTypesStillMissing) {
 	EXPECT_EQ(capture->CountHolding("converting a document"), 1u);
 	EXPECT_EQ(capture->CountHolding(hex), 2u);
 
+	SceneSystem::UnloadScene(_scene);
+	SceneSystem::EndFrame();
+	SceneSystem::HoldUnresolvedComponentReports();
+	SceneSystem::HoldUnresolvedComponentReports();
+	loadAndCook();
+	SceneSystem::ReleaseUnresolvedComponentReports();
+	LogManager::DrainBeforeImageUnload();
+	EXPECT_EQ(capture->CountHolding(hex), 2u);
+	SceneSystem::ReleaseUnresolvedComponentReports();
+	LogManager::DrainBeforeImageUnload();
+	EXPECT_EQ(capture->CountHolding(hex), 4u);
+	SceneSystem::ReleaseUnresolvedComponentReports();
+	LogManager::DrainBeforeImageUnload();
+	EXPECT_EQ(capture->CountHolding(hex), 4u);
+
 	LogManager::RemoveSink(capture);
 	LogManager::Terminate();
 	JobSystem::Terminate();

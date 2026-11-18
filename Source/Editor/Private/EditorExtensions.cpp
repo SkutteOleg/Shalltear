@@ -2,6 +2,7 @@
 
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Module/ModuleSystem.h"
+#include "Shalltear/Core/Reflection/TypeRegistry.h"
 
 #include "Shalltear/Editor/AssetOpeners.h"
 #include "Shalltear/Editor/AuthoringDefaults.h"
@@ -28,7 +29,7 @@
 namespace Shalltear::EditorExtensions {
 
 	bool Load(const void* moduleBase) {
-		if (!moduleBase) {
+		if (!moduleBase || TypeRegistry::IsOwnerToken(moduleBase)) {
 			return false;
 		}
 		auto entry = reinterpret_cast<EditorExtensionRegisterFn>(ModuleSystem::FindSymbol(moduleBase, REGISTER_SYMBOL));

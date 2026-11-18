@@ -12,6 +12,7 @@
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
 #include "Shalltear/Core/Module/ModuleEvents.h"
+#include "Shalltear/Core/Module/TypeReplacement.h"
 #include "Shalltear/Core/Object.h"
 #include "Shalltear/Core/Profiler.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
@@ -637,5 +638,35 @@ namespace Shalltear {
 	}
 
 #undef SLT_MODULE_ASSERT_MAIN_THREAD
+
+	bool TypeReplacement::CanReplace() {
+		return SceneInternal::IsMigrationLegal();
+	}
+
+	bool TypeReplacement::Replace(const void* owner, bool (*swap)(void* user), void* user) {
+		if (!owner || !swap || !SceneInternal::MigrationPreconditionsMet()) {
+			return false;
+		}
+		SLT_PROFILE_ZONE("Module.Replace");
+
+		SceneInternal::MigrationSnapshot snapshot;
+		AssetInternal::AssetMigrationSnapshot assets;
+		{
+			ScopedHandleResolver scope(SceneInternal::MigrationResolverScope());
+			AssetInternal::CaptureAndDemolishModuleAssets(owner, assets);
+		}
+		SceneInternal::CaptureAndDemolishModuleComponents(owner, snapshot);
+
+		const bool swapped = swap(user);
+
+		{
+			ScopedHandleResolver scope(SceneInternal::MigrationResolverScope());
+			AssetInternal::RestoreModuleAssets(assets);
+		}
+		SceneInternal::RestoreModuleComponents(snapshot);
+		SceneInternal::RebuildPreservedComponents();
+		AssetInternal::RebuildPreservedAssets();
+		return swapped;
+	}
 
 } // namespace Shalltear

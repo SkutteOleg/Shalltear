@@ -227,7 +227,7 @@ namespace Shalltear {
 		};
 
 		bool InstallUnresolvedReportHold(UnresolvedReportHold& hold);
-		void ReleaseUnresolvedReportHold();
+		void ReleaseUnresolvedReportHold(bool everyHolder);
 
 		void LogUnconvertedRow(StringHash rowType);
 		void LogUnresolvedRows(u32 rows, const std::vector<UnresolvedTypeMention>& types, std::string_view what);

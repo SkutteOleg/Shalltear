@@ -161,6 +161,7 @@ namespace Shalltear {
 
 			std::mutex _holdMutex;
 			UnresolvedReportHold* _hold = nullptr;
+			u32 _holdCount = 0;
 
 			void ReportUnconvertedRow(StringHash rowType) {
 				{
@@ -177,6 +178,7 @@ namespace Shalltear {
 
 		bool InstallUnresolvedReportHold(UnresolvedReportHold& hold) {
 			std::lock_guard lock(_holdMutex);
+			++_holdCount;
 			if (_hold) {
 				return false;
 			}
@@ -184,11 +186,14 @@ namespace Shalltear {
 			return true;
 		}
 
-		void ReleaseUnresolvedReportHold() {
+		void ReleaseUnresolvedReportHold(bool everyHolder) {
 			UnresolvedReportHold* hold = nullptr;
 			{
 				std::lock_guard lock(_holdMutex);
-				hold = std::exchange(_hold, nullptr);
+				_holdCount = everyHolder || _holdCount == 0 ? 0 : _holdCount - 1;
+				if (_holdCount == 0) {
+					hold = std::exchange(_hold, nullptr);
+				}
 			}
 			if (hold) {
 				hold->Release();
@@ -1479,7 +1484,7 @@ namespace Shalltear {
 	} // namespace SceneInternal
 
 	void SceneSystem::ReleaseUnresolvedComponentReports() {
-		SceneInternal::ReleaseUnresolvedReportHold();
+		SceneInternal::ReleaseUnresolvedReportHold(false);
 	}
 
 	bool SceneSystem::SaveScene(Handle<Scene> sceneHandle, const Path& path, bool binary) {

@@ -147,6 +147,11 @@ namespace Shalltear::SceneInternal {
 		return true;
 	}
 
+	bool IsMigrationLegal() {
+		const SystemState& state = GetState();
+		return !state.initialized || (state.activeLoads.empty() && state.frameEnd.IsEmpty());
+	}
+
 	HandleResolverScope MigrationResolverScope() {
 		return HandleResolverScope{&MigrationToGuid, &MigrationToHandle, nullptr};
 	}

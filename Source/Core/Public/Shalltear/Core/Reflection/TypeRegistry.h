@@ -21,6 +21,9 @@ namespace Shalltear {
 		// null when name is taken
 		static const TypeInfo* RegisterOwned(TypeInfo* typeInfo, const void* ownerToken);
 
+		// still true once its types are unregistered
+		static bool IsOwnerToken(const void* owner);
+
 		// never frees the metadata (statics may cache the pointer)
 		static void Unregister(StringHash name);
 

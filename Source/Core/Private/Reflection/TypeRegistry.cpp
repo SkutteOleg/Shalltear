@@ -10,6 +10,7 @@
 #include "Module/EngineStateTable.h"
 #include "Platform/Library.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cstring>
 #include <mutex>
@@ -22,6 +23,8 @@ namespace Shalltear {
 		constexpr u16 INITIAL_CLASS_CAPACITY = 256;
 
 		constexpr u16 INVALID_CLASS_ID = 0xFFFF;
+
+		constexpr size_t INITIAL_OWNER_TOKEN_CAPACITY = 64;
 
 		struct IsDerivedMatrix {
 			u8* data = nullptr;
@@ -110,6 +113,8 @@ namespace Shalltear {
 
 			Vector<u16> freeClassIds{GetMemoryResource(MemTag::Core)};
 
+			Vector<const void*> ownerTokens{GetMemoryResource(MemTag::Core)};
+
 			IsDerivedMatrix matrix;
 
 			u16 nextClassId = 0;
@@ -122,6 +127,7 @@ namespace Shalltear {
 
 			RegistryData() {
 				byClassId.reserve(INITIAL_CLASS_CAPACITY);
+				ownerTokens.reserve(INITIAL_OWNER_TOKEN_CAPACITY);
 				matrix.Initialize(INITIAL_CLASS_CAPACITY);
 			}
 
@@ -155,6 +161,12 @@ namespace Shalltear {
 		return RegisterAs(typeInfo, ownerToken, true);
 	}
 
+	bool TypeRegistry::IsOwnerToken(const void* owner) {
+		auto& data = GetData();
+		std::shared_lock lock(data.mutex);
+		return std::find(data.ownerTokens.begin(), data.ownerTokens.end(), owner) != data.ownerTokens.end();
+	}
+
 	const TypeInfo* TypeRegistry::RegisterAs(TypeInfo* typeInfo, const void* owner, bool ownerIsToken) {
 		auto& data = GetData();
 		std::unique_lock lock(data.mutex);
@@ -165,6 +177,9 @@ namespace Shalltear {
 		}
 
 		typeInfo->ownerModule = ownerIsToken ? owner : Platform::ImageBaseOf(owner);
+		if (ownerIsToken && std::find(data.ownerTokens.begin(), data.ownerTokens.end(), owner) == data.ownerTokens.end()) {
+			data.ownerTokens.push_back(owner);
+		}
 
 		typeInfo->moduleEpoch = data.epoch.load(std::memory_order_relaxed);
 

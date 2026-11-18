@@ -1502,6 +1502,7 @@ namespace {
 		{"Shalltear/Core/Module.h", "loader"},
 		{"Shalltear/Core/Module/ModuleEvents.h", "image unload events"},
 		{"Shalltear/Core/Module/ModuleSystem.h", "loader"},
+		{"Shalltear/Core/Module/TypeReplacement.h", "package type swap"},
 		{"Shalltear/Core/Profiler.h", "zone instrument"},
 		{"Shalltear/Core/ProjectLayout.h", "project root layout"},
 		{"Shalltear/Core/Serialization/HandleResolver.h", "serializer"},
