@@ -1,5 +1,6 @@
 #include "TestsPCH.h"
 
+#include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Jobs/JobSystem.h"
 
 #include "Shalltear/Editor/EditorConsole.h"
@@ -330,4 +331,30 @@ TEST_F(ConsoleSinkTest, SummaryDoesNotWalkPastEvictedTail) {
 	EXPECT_EQ(summary.unseenErrors, 0u);
 	EXPECT_EQ(summary.newestUnseenError.sequence, 0u);
 	EXPECT_EQ(summary.newest.message, std::to_string(TOTAL - 1));
+}
+
+TEST_F(ConsoleSinkTest, LogRowFromProjectFileIsClickable) {
+	FileSystem::Mount("project", Path("C:/Games/MyGame"));
+	LogManager::Dispatch(LogLevel::Info, "Game", "C:\\Games\\MyGame\\Assets\\Scripts\\Spinner.cs", 12, "", "{}", "inside");
+	LogManager::Dispatch(LogLevel::Info, "Game", "C:/Games/MyGameTwo/Assets/Spinner.cs", 3, "", "{}", "sibling");
+	LogManager::Dispatch(LogLevel::Info, "Game", "Source/Game/Spinner.cpp", 7, "", "{}", "relative");
+	LogManager::Dispatch(LogLevel::Info, "Game", "", 0, "", "{}", "nowhere");
+	FileSystem::Mount("sdk", Path("C:/Sdk"));
+	LogManager::Dispatch(LogLevel::Info, "Game", "C:/Sdk/Templates/Spinner.cs", 2, "", "{}", "another mount");
+	const bool buffered = WaitForBuffered(5);
+	FileSystem::Unmount("sdk");
+	FileSystem::Unmount("project");
+	ASSERT_TRUE(buffered);
+
+	Vector<ConsoleEntry> entries{GetMemoryResource(MemTag::Editor)};
+	EditorConsole::ReadSince(0, entries);
+	ASSERT_EQ(entries.size(), 5u);
+	EXPECT_TRUE(entries[0].clickable);
+	EXPECT_EQ(entries[0].file, "C:\\Games\\MyGame\\Assets\\Scripts\\Spinner.cs");
+	EXPECT_EQ(entries[0].line, 12u);
+	EXPECT_EQ(entries[0].column, 0u);
+	EXPECT_FALSE(entries[1].clickable);
+	EXPECT_FALSE(entries[2].clickable);
+	EXPECT_FALSE(entries[3].clickable);
+	EXPECT_FALSE(entries[4].clickable);
 }

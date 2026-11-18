@@ -1,5 +1,6 @@
 #include "Shalltear/Editor/EditorConsole.h"
 
+#include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Memory.h"
 
 #include <mutex>
@@ -9,6 +10,10 @@ namespace Shalltear {
 	namespace {
 
 		constexpr size_t RING_CAP = 4096;
+
+		bool IsProjectFile(const str& file) {
+			return !file.empty() && FileSystem::Virtualize(Path(file)).ToString().starts_with("project://");
+		}
 
 		// sink owns the ring (late events may still arrive)
 		class EditorConsoleSink final : public ILogSink {
@@ -27,7 +32,7 @@ namespace Shalltear {
 				entry.function = event.function ? str(event.function) : str();
 				entry.line = event.line;
 				entry.column = 0;
-				entry.clickable = false;
+				entry.clickable = IsProjectFile(entry.file);
 				entry.sequence = _nextSequence++;
 			}
 
