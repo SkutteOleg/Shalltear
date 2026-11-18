@@ -10,6 +10,7 @@
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/AssetOpeners.h"
 #include "Shalltear/Editor/MaterialInspectorOps.h"
+#include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Core/Localization.h"
 #include "Shalltear/Editor/EditorAssetWatch.h"
@@ -1165,10 +1166,10 @@ namespace Shalltear {
 		};
 
 		if (performed(Shortcut::ReloadModule)) {
-			_moduleHost.RequestReload();
+			CompileStatus::RequestReload();
 		}
 		if (performed(Shortcut::CompileModule)) {
-			_moduleHost.RequestCompile();
+			CompileStatus::RequestCompile();
 		}
 		if (performed(Shortcut::RecompileModule)) {
 			_moduleHost.RequestRecompile();

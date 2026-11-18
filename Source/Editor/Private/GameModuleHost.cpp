@@ -83,6 +83,7 @@ namespace Shalltear {
 		_gamePackages = config.gamePackages;
 		_compileService = compileService;
 		_active = !_projectPath.empty() || !config.modulePath.empty();
+		CompileStatus::RegisterSource({"C++", &ReadSourceState, &CompileSource, &ReloadSource, &ReadSourceHeading, this}, this);
 
 		ArmSourceWatcher();
 
@@ -194,7 +195,37 @@ namespace Shalltear {
 		});
 	}
 
+	CompileStatus::SourceState GameModuleHost::ReadSourceState(void* user) {
+		const GameModuleHost& host = *static_cast<GameModuleHost*>(user);
+		CompileStatus::SourceState state;
+		if (host._compileService) {
+			state.compile = host._compileService->GetState();
+			state.errors = host._compileService->GetErrorCount();
+			state.warnings = host._compileService->GetWarningCount();
+		}
+		state.reloadHeld = host._heldReload;
+		state.typeOwner = host.GetModuleBase();
+		return state;
+	}
+
+	void GameModuleHost::CompileSource(void* user) {
+		GameModuleHost& host = *static_cast<GameModuleHost*>(user);
+		if (ScriptProjectOps::HasScriptProject(host._projectPath) || CompileStatus::GetSourceCount() <= 1) {
+			host.RequestCompile();
+		}
+	}
+
+	void GameModuleHost::ReloadSource(void* user) {
+		static_cast<GameModuleHost*>(user)->RequestReload();
+	}
+
+	str GameModuleHost::ReadSourceHeading(void* user) {
+		const str name = ScriptProjectOps::GetModuleName(static_cast<GameModuleHost*>(user)->_projectPath);
+		return name.empty() ? str("This project") : name;
+	}
+
 	void GameModuleHost::Terminate() {
+		CompileStatus::UnregisterOwnedBy(this);
 		ReleaseUnresolvedReports();
 		if (ModuleSystem::IsLoaded(_module)) {
 			EditorExtensions::Unload(GetModuleBase());

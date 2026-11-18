@@ -13,6 +13,7 @@
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/CompileService.h"
+#include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/CppToolchain.h"
 #include "Shalltear/Editor/EditorChromeOps.h"
 #include "Shalltear/Editor/EditorConsole.h"
@@ -405,12 +406,7 @@ namespace Shalltear {
 						 });
 
 		EditorIcons::IconButtonParts compileParts = addCaptionButton(
-			EditorIcons::Glyph::Compile, "Compile", "Compile", ModuleRest(), false,
-			[moduleHost]() {
-				if (moduleHost) {
-					moduleHost->RequestCompile();
-				}
-			});
+			EditorIcons::Glyph::Compile, "Compile", "Compile", ModuleRest(), false, []() { CompileStatus::RequestCompile(); });
 		_compileButtonFace = compileParts.face;
 		UI::Style compileGap;
 		compileGap.margin = {12.0f, 0.0f, 0.0f, 0.0f};
@@ -418,9 +414,8 @@ namespace Shalltear {
 
 		_reloadButtonFace = addCaptionButton(EditorIcons::Glyph::Reload, "Reload", "Reload Module", ModuleRest(), false,
 											 [moduleHost]() {
-												 if (moduleHost && moduleHost->HasModuleBinaryPath()) {
-													 moduleHost->RequestReload();
-												 } else {
+												 CompileStatus::RequestReload();
+												 if ((!moduleHost || !moduleHost->HasModuleBinaryPath()) && CompileStatus::GetSourceCount() <= 1) {
 													 SLT_LOG_INFO("Editor", "this project has no C++ module. Scripts > Create C++ Module...");
 												 }
 											 })
@@ -718,14 +713,13 @@ namespace Shalltear {
 		ChromeState now;
 		now.playing = _playMode && _playMode->IsPlaying();
 		now.paused = _playMode && _playMode->IsPaused();
-		now.reloadHeld = _moduleHost && _moduleHost->HasHeldReload();
+		const CompileStatus::Summary compile = CompileStatus::Combine();
+		now.reloadHeld = compile.reloadHeld;
 		now.moduleLoaded = _moduleHost && _moduleHost->IsModuleLoaded();
 		now.moduleConfigured = _moduleHost && _moduleHost->HasModuleBinaryPath();
-		if (_compileService) {
-			now.compile = _compileService->GetState();
-			now.compileErrors = _compileService->GetErrorCount();
-			now.compileWarnings = _compileService->GetWarningCount();
-		}
+		now.compile = compile.compile;
+		now.compileErrors = compile.errors;
+		now.compileWarnings = compile.warnings;
 		now.selected = EditorSelection::GetSelectionCount();
 		if (now.selected == 0) {
 			now.selected = EditorSelection::GetAssetSelectionCount();

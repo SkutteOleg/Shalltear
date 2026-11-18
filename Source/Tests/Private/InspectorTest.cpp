@@ -25,6 +25,7 @@
 #include "Shalltear/Core/Serialization/TextSerializer.h"
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
+#include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/ComponentMenu.h"
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorCommands.h"
@@ -7198,4 +7199,113 @@ TEST_F(InspectorSyncedListTest, ListGrownBehindFieldSyncGetsRows) {
 	PressAway(context, root);
 	ASSERT_EQ(list->source.size(), 1u);
 	EXPECT_EQ(list->source[0], 88);
+}
+
+namespace {
+
+	CompileStatus::SourceState _inspSourceState;
+	char _inspSourceOwner = 0;
+
+	CompileStatus::SourceState ReadInspSourceState(void*) {
+		return _inspSourceState;
+	}
+
+	str ReadInspSourceHeading(void*) {
+		return "Mine.Scripts";
+	}
+
+	class InspectorSourceTest : public InspectorSyncedListTest {
+	protected:
+		MockFontSystem _fonts;
+		std::unique_ptr<UI::Context> _context;
+
+		void SetUp() override {
+			InspectorSyncedListTest::SetUp();
+			_inspSourceState = {};
+			_inspSourceState.typeOwner = &_inspSyncToken;
+			CompileStatus::RegisterSource({"Mine", &ReadInspSourceState, nullptr, nullptr, &ReadInspSourceHeading, nullptr}, &_inspSourceOwner);
+		}
+
+		void TearDown() override {
+			_context.reset();
+			CompileStatus::UnregisterOwnedBy(&_inspSourceOwner);
+			InspectorSyncedListTest::TearDown();
+		}
+
+		Vector<str> OpenAddComponent(std::string_view filter) {
+			Handle<SceneObject> object = SceneSystem::CreateObject("Subject", _scene);
+			EditorSelection::Select(Handle<Object>(object.Get()));
+			Handle<EditorPanel> panel = OpenInspector();
+			UI::ContextDesc desc;
+			desc.sizePx = {500, 900};
+			_context = std::make_unique<UI::Context>(desc, &_fonts);
+			UI::Context& context = *_context;
+			UI::ElementHandle root = context.CreateElement();
+			context.AppendChild(context.GetRoot(), root);
+			panel.Get()->BuildContent(context, root);
+			context.Update();
+
+			UI::ElementHandle addLabel = FindElementByText(context, root, "Add Component");
+			PressAndRelease(context, context.MakeHandle(context.GetElement(addLabel)->parent));
+			context.Update();
+			if (!filter.empty() && context.GetOpenPopupCount() == 1) {
+				UI::ElementHandle search = FindByClass(context, context.GetOpenPopup(0), StringHash("slt-textfield"), 0);
+				context.Events(search).onTextChange(filter);
+				context.Update();
+			}
+			Vector<str> texts{GetMemoryResource(MemTag::Editor)};
+			if (context.GetOpenPopupCount() == 1) {
+				CollectTexts(context, context.GetOpenPopup(0), texts);
+			}
+			return texts;
+		}
+
+		static size_t IndexOf(const Vector<str>& texts, std::string_view whole) {
+			const auto found = std::find(texts.begin(), texts.end(), whole);
+			return found == texts.end() ? texts.size() : static_cast<size_t>(found - texts.begin());
+		}
+	};
+
+} // anonymous namespace
+
+TEST_F(InspectorSourceTest, AddComponentListsEverySourceFirst) {
+	const Vector<str> texts = OpenAddComponent({});
+	const size_t heading = IndexOf(texts, "Mine.Scripts");
+	const size_t type = IndexOf(texts, "InspSyncedList");
+	const size_t engine = IndexOf(texts, "Engine");
+	ASSERT_LT(heading, texts.size());
+	ASSERT_LT(type, texts.size());
+	ASSERT_LT(engine, texts.size());
+	EXPECT_LT(heading, type);
+	EXPECT_LT(type, engine);
+	EXPECT_EQ(std::count(texts.begin(), texts.end(), str("InspSyncedList")), 1);
+
+	CompileStatus::UnregisterOwnedBy(&_inspSourceOwner);
+	const Vector<str> without = OpenAddComponent({});
+	EXPECT_EQ(IndexOf(without, "Mine.Scripts"), without.size());
+	EXPECT_LT(IndexOf(without, "Engine"), IndexOf(without, "InspSyncedList"));
+}
+
+TEST_F(InspectorSourceTest, AddComponentWordsEmptyStateFromSources) {
+	Vector<str> texts = OpenAddComponent("zzzznotacomponent");
+	EXPECT_TRUE(ContainsText(texts, "(no matching components)"));
+	EXPECT_FALSE(ContainsText(texts, "no C++ module"));
+
+	_inspSourceState.compile = CompileState::Compiling;
+	texts = OpenAddComponent("zzzznotacomponent");
+	EXPECT_TRUE(ContainsText(texts, "compiling. Your components will appear when the compile finishes"));
+
+	_inspSourceState.compile = CompileState::Failed;
+	_inspSourceState.errors = 3;
+	texts = OpenAddComponent("zzzznotacomponent");
+	EXPECT_TRUE(ContainsText(texts, "the last compile failed (3 error(s)). Open the Console"));
+
+	_inspSourceState.compile = CompileState::Succeeded;
+	_inspSourceState.errors = 0;
+	texts = OpenAddComponent("zzzznotacomponent");
+	EXPECT_TRUE(ContainsText(texts, "(no matching components)"));
+
+	_inspSourceState.typeOwner = nullptr;
+	texts = OpenAddComponent("zzzznotacomponent");
+	EXPECT_TRUE(ContainsText(texts, "no C++ module"));
 }

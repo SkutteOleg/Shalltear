@@ -1,6 +1,7 @@
 #include "TestsPCH.h"
 
 #include "Checkout.h"
+#include "DeviceLossHarness.h"
 #include "UITestUtil.h"
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
@@ -16,6 +17,7 @@
 #include "Shalltear/Core/Window.h"
 
 #include "Shalltear/Editor/CompileService.h"
+#include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/EditorConsole.h"
 #include "Shalltear/Editor/EditorFonts.h"
 #include "Shalltear/Editor/EditorIcons.h"
@@ -29,8 +31,10 @@
 
 #include "EditorShell.h"
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <thread>
 
 using namespace Shalltear;
 
@@ -114,6 +118,7 @@ namespace {
 		}
 
 		void TearDown() override {
+			CompileStatus::UnregisterOwnedBy(this);
 			_shell.Terminate();
 			PanelManager::Terminate();
 			EditorSelection::Terminate();
@@ -143,7 +148,45 @@ namespace {
 			UI::Context& context = Context();
 			return AnyTextContains(context, context.GetRoot(), needle);
 		}
+
+		str TooltipOf(UI::ElementHandle element) {
+			UI::Context& context = Context();
+			const UI::Rect box = context.GetLayout(element).borderBox;
+			const Vec2 center{box.x + box.w * 0.5f, box.y + box.h * 0.5f};
+			UITest::TooltipAt(context, {center.x, 700.0f});
+			UITest::TooltipAt(context, center);
+			std::this_thread::sleep_for(std::chrono::milliseconds(600));
+			return UITest::TooltipAt(context, center);
+		}
+
+		static CompileStatus::SourceState ReadService(void* user) {
+			const CompileService& service = *static_cast<const CompileService*>(user);
+			CompileStatus::SourceState state;
+			state.compile = service.GetState();
+			state.errors = service.GetErrorCount();
+			state.warnings = service.GetWarningCount();
+			return state;
+		}
 	};
+
+	struct FakeSource {
+		CompileStatus::SourceState state;
+		u32 compiles = 0;
+		u32 reloads = 0;
+
+		static CompileStatus::SourceState Read(void* user) { return static_cast<FakeSource*>(user)->state; }
+		static void Compile(void* user) { ++static_cast<FakeSource*>(user)->compiles; }
+		static void Reload(void* user) { ++static_cast<FakeSource*>(user)->reloads; }
+	};
+
+	u32 Logged(const DeviceLossTest::LogSink& sink, const char* text) {
+		const u32 before = sink.Count(DeviceLossTest::LOG_SENTINEL);
+		SLT_LOG_INFO("Editor", "{}", DeviceLossTest::LOG_SENTINEL);
+		for (int attempt = 0; attempt < 400 && sink.Count(DeviceLossTest::LOG_SENTINEL) == before; ++attempt) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		}
+		return sink.Count(text);
+	}
 
 } // anonymous namespace
 
@@ -318,6 +361,7 @@ TEST_F(EditorShellTest, FailedCompilePressSkipsConsole) {
 	request.projectPath = project.generic_string();
 	EXPECT_FALSE(_compile.RequestCompile(request));
 	ASSERT_EQ(_compile.GetState(), CompileState::Failed);
+	CompileStatus::RegisterSource({"C++", &EditorShellTest::ReadService, nullptr, nullptr, nullptr, &_compile}, this);
 	Frame();
 
 	UI::ElementHandle face = FindWearing(context, context.GetRoot(), EditorIcons::Glyph::Compile);
@@ -326,6 +370,7 @@ TEST_F(EditorShellTest, FailedCompilePressSkipsConsole) {
 	ASSERT_NE(facePod, nullptr);
 	UI::ElementHandle button = context.MakeHandle(facePod->parent);
 	ASSERT_TRUE(context.IsAlive(button));
+	EXPECT_EQ(TooltipOf(button), "1 error(s). Click to compile");
 
 	UITest::ClickElement(context, button);
 	Frame();
@@ -335,6 +380,51 @@ TEST_F(EditorShellTest, FailedCompilePressSkipsConsole) {
 	Frame();
 	std::error_code ec;
 	std::filesystem::remove_all(project, ec);
+}
+
+TEST_F(EditorShellTest, CompileControlsReachEverySource) {
+	UI::Context& context = Context();
+	const auto sink = std::make_shared<DeviceLossTest::LogSink>();
+	LogManager::AddSink(sink);
+	FakeSource native;
+	FakeSource scripts;
+	CompileStatus::RegisterSource({"C++", &FakeSource::Read, &FakeSource::Compile, &FakeSource::Reload, nullptr, &native}, this);
+	const UI::ElementHandle compile = context.MakeHandle(context.GetElement(FindWearing(context, context.GetRoot(), EditorIcons::Glyph::Compile))->parent);
+	const UI::ElementHandle reload = context.MakeHandle(context.GetElement(FindWearing(context, context.GetRoot(), EditorIcons::Glyph::Reload))->parent);
+	ASSERT_TRUE(context.IsAlive(compile));
+	ASSERT_TRUE(context.IsAlive(reload));
+
+	UITest::ClickElement(context, reload);
+	EXPECT_EQ(native.reloads, 1u);
+	EXPECT_EQ(Logged(*sink, "this project has no C++ module"), 1u);
+
+	CompileStatus::RegisterSource({"C#", &FakeSource::Read, &FakeSource::Compile, &FakeSource::Reload, nullptr, &scripts}, this);
+	native.state.compile = CompileState::Succeeded;
+	native.state.warnings = 1;
+	scripts.state.compile = CompileState::Failed;
+	scripts.state.errors = 2;
+	Frame();
+	EXPECT_EQ(TooltipOf(compile), "2 error(s), 1 warning(s). Click to compile");
+
+	scripts.state.compile = CompileState::Succeeded;
+	scripts.state.errors = 0;
+	Frame();
+	EXPECT_EQ(TooltipOf(compile), "Up to date (1 warning(s)). Click to compile");
+
+	scripts.state.compile = CompileState::Compiling;
+	UITest::ClickElement(context, compile);
+	EXPECT_EQ(native.compiles, 1u);
+	EXPECT_EQ(scripts.compiles, 0u);
+
+	EXPECT_EQ(TooltipOf(reload), "Reload Module");
+	scripts.state.reloadHeld = true;
+	Frame();
+	EXPECT_EQ(TooltipOf(reload), "Reload Now (a compile finished while playing)");
+	UITest::ClickElement(context, reload);
+	EXPECT_EQ(native.reloads, 2u);
+	EXPECT_EQ(scripts.reloads, 1u);
+	EXPECT_EQ(Logged(*sink, "this project has no C++ module"), 1u);
+	LogManager::RemoveSink(sink);
 }
 
 namespace {

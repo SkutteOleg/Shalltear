@@ -5,6 +5,8 @@
 #include "Shalltear/Core/Module/ModuleSystem.h"
 #include "Shalltear/Core/Types.h"
 
+#include "Shalltear/Editor/CompileStatus.h"
+
 #include <filesystem>
 #include <mutex>
 #include <optional>
@@ -56,6 +58,11 @@ namespace Shalltear {
 
 		const str& GetExternalEditorCommand() const { return _externalEditorCommand; }
 	private:
+		static CompileStatus::SourceState ReadSourceState(void* user);
+		static void CompileSource(void* user);
+		static void ReloadSource(void* user);
+		static str ReadSourceHeading(void* user);
+
 		void ReloadNow();
 		void ArmBinaryWatcher();
 		void ArmSourceWatcher();

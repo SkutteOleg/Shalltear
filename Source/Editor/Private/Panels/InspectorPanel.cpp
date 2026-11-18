@@ -19,6 +19,7 @@
 #include "Shalltear/Core/ProjectLayout.h"
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/CompileService.h"
+#include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/ComponentMenu.h"
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorCommands.h"
@@ -3121,18 +3122,30 @@ namespace Shalltear {
 				return haystack.find(needle) != str::npos;
 			};
 
-			GameModuleHost* host = GameModuleHost::GetActive();
-			const void* moduleBase = host ? host->GetModuleBase() : nullptr;
+			struct SourceGroup {
+				str heading;
+				const void* owner = nullptr;
+				Vector<const TypeInfo*> types{GetMemoryResource(MemTag::Editor)};
+			};
+			Vector<CompileStatus::SourceView> sources{GetMemoryResource(MemTag::Editor)};
+			CompileStatus::GetSources(sources);
+			Vector<SourceGroup> sourceGroups{GetMemoryResource(MemTag::Editor)};
+			for (const CompileStatus::SourceView& source : sources) {
+				if (source.state.typeOwner) {
+					sourceGroups.push_back({source.heading, source.state.typeOwner});
+				}
+			}
 
-			Vector<const TypeInfo*> userTypes{GetMemoryResource(MemTag::Editor)};
 			Vector<const TypeInfo*> engineTypes{GetMemoryResource(MemTag::Editor)};
 			Vector<std::pair<str, Vector<const TypeInfo*>>> engineGroups{GetMemoryResource(MemTag::Editor)};
 			for (const TypeInfo* type : all) {
 				if (!matches(type)) {
 					continue;
 				}
-				if (moduleBase && type->ownerModule == moduleBase) {
-					userTypes.push_back(type);
+				const auto owning = std::find_if(sourceGroups.begin(), sourceGroups.end(),
+												 [type](const SourceGroup& group) { return group.owner == type->ownerModule; });
+				if (owning != sourceGroups.end()) {
+					owning->types.push_back(type);
 					continue;
 				}
 				std::string_view group = ComponentMenu::CategoryFor(type);
@@ -3155,7 +3168,9 @@ namespace Shalltear {
 				found->second.push_back(type);
 			}
 			auto byLabel = [](const TypeInfo* a, const TypeInfo* b) { return TypeLabel(a) < TypeLabel(b); };
-			std::sort(userTypes.begin(), userTypes.end(), byLabel);
+			for (SourceGroup& group : sourceGroups) {
+				std::sort(group.types.begin(), group.types.end(), byLabel);
+			}
 			std::sort(engineTypes.begin(), engineTypes.end(), byLabel);
 			std::sort(engineGroups.begin(), engineGroups.end(),
 					  [](const auto& a, const auto& b) { return a.first < b.first; });
@@ -3204,13 +3219,6 @@ namespace Shalltear {
 			};
 
 			str projectPath = ProjectOps::GetMountedProjectPath();
-			str userHeading = "This project";
-			if (!projectPath.empty()) {
-				str moduleName = ScriptProjectOps::GetModuleName(projectPath);
-				if (!moduleName.empty()) {
-					userHeading = moduleName;
-				}
-			}
 
 			auto addNavigationRow = [&](std::string_view label, str destination) {
 				UI::ElementHandle rowElement = ctx.CreateElement();
@@ -3232,7 +3240,9 @@ namespace Shalltear {
 				addNavigationRow(str("\xE2\x80\xB9  ") + str(category), str{});
 				addGroup(engineTypes, {});
 			} else {
-				addGroup(userTypes, userHeading);
+				for (const SourceGroup& group : sourceGroups) {
+					addGroup(group.types, group.heading);
+				}
 				if (!engineGroups.empty() || !engineTypes.empty()) {
 					addHeading("Engine");
 				}
@@ -3255,24 +3265,20 @@ namespace Shalltear {
 				str message = filter.empty() ? str("(no components available)") : str("(no matching components)");
 				bool focusConsole = false;
 				CompileService* compile = CompileService::GetActive();
-				switch (ScriptProjectOps::GetModuleStatus(projectPath)) {
-				case ScriptProjectOps::ModuleStatus::NoScriptProject:
+				const CompileStatus::Summary summary = CompileStatus::Combine();
+				const ScriptProjectOps::ModuleStatus module = ScriptProjectOps::GetModuleStatus(projectPath);
+				if (module == ScriptProjectOps::ModuleStatus::NoScriptProject && sourceGroups.empty()) {
 					message = "this project has no C++ module. Scripts > Create C++ Module...";
-					break;
-				case ScriptProjectOps::ModuleStatus::Compiling:
+				} else if (summary.compile == CompileState::Configuring || summary.compile == CompileState::Compiling ||
+						   module == ScriptProjectOps::ModuleStatus::Compiling) {
 					message = "compiling. Your components will appear when the compile finishes";
-					break;
-				case ScriptProjectOps::ModuleStatus::CompileFailed:
+				} else if (summary.compile == CompileState::Failed || module == ScriptProjectOps::ModuleStatus::CompileFailed) {
 					message = std::format("the last compile failed ({} error(s)). Open the Console",
-										  compile ? compile->GetErrorCount() : 0);
+										  summary.errors != 0 ? summary.errors : (compile ? compile->GetErrorCount() : 0));
 					focusConsole = true;
-					break;
-				case ScriptProjectOps::ModuleStatus::LoadFailed:
+				} else if (module == ScriptProjectOps::ModuleStatus::LoadFailed) {
 					message = "the module compiled but failed to load. See the Console";
 					focusConsole = true;
-					break;
-				case ScriptProjectOps::ModuleStatus::Loaded:
-					break;
 				}
 				UI::ElementHandle none = ctx.CreateElement();
 				ctx.AppendChild(*listContainer, none);
