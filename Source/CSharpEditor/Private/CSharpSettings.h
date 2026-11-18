@@ -50,10 +50,14 @@ namespace Shalltear::CSharpEditor {
 		SLT_REFLECT_CONSTRUCTIBLE()
 		SLT_REFLECT_FIELD(sdkPath, SLT_MUTABILITY(::Shalltear::MutabilityClass::Restart))
 		SLT_REFLECT_FIELD(codeOptimization)
+		SLT_REFLECT_FIELD(autoCompile)
+		SLT_REFLECT_FIELD(aotAnalysis)
 		SLT_END_REFLECT()
 
 		str sdkPath;
 		ScriptOptimization codeOptimization = ScriptOptimization::Debug;
+		bool autoCompile = true;
+		bool aotAnalysis = false;
 	};
 
 	namespace CSharpSettings {

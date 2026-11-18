@@ -1,5 +1,8 @@
 #pragma once
 
+#include "CSharpAuthoring.h"
+#include "CSharpCompile.h"
+#include "CSharpDiagnostics.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpSetup.h"
 #include "DotNetAcquire.h"
@@ -28,6 +31,21 @@ namespace Shalltear::CSharpEditor {
 		CSharpSetup::State (*getSetupState)();
 		const str& (*getSetupSDKRoot)();
 		void (*declareSettings)(const void* owner);
+		bool (*parseDiagnostic)(std::string_view line, CSharpDiagnostics::Diagnostic& out);
+		bool (*addUniqueDiagnostic)(Vector<CSharpDiagnostics::Diagnostic>& all, HashSet<str>& seen, const CSharpDiagnostics::Diagnostic& diagnostic);
+		str (*describeDiagnostic)(const CSharpDiagnostics::Diagnostic& diagnostic);
+		void (*configureCompile)(const CompileOptions& options);
+		bool (*requestCompile)();
+		void (*cancelCompile)();
+		void (*pumpCompile)();
+		const CSharpCompile& (*getCompile)();
+		str (*getCompileOutput)();
+		void (*beginAuthoring)(const CSharpAuthoring::Options& options, const void* owner);
+		void (*pumpAuthoring)();
+		void (*shutdownAuthoring)();
+		bool (*isAuthoringActive)();
+		const CSharpCompile& (*getAuthoringCompile)();
+		void (*notifySourceChanged)();
 		const char* muxerName;
 		const char* hostLibraryName;
 	};

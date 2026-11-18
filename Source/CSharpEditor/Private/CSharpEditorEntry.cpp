@@ -1,3 +1,4 @@
+#include "CSharpAuthoring.h"
 #include "CSharpComponentMenu.h"
 #include "CSharpSettings.h"
 #include "CSharpSetup.h"
@@ -12,6 +13,7 @@ namespace Shalltear::CSharpEditor {
 
 		void PumpStage(const FrameStageArgs&, void*) {
 			CSharpSetup::Pump();
+			CSharpAuthoring::Pump();
 		}
 
 	} // anonymous namespace

@@ -22,6 +22,7 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 		AcquireOptions acquire;
 		str projectPath;
 		std::function<bool(const str& sdkRoot, str& outError)> startRuntime;
+		bool authoring = false;
 	};
 
 	Options GetDefaultOptions();

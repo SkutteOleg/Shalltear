@@ -440,6 +440,14 @@ def stage_lld_link(lld: Path) -> None:
     shutil.copyfile(lld, link)
 
 
+def stop_build_servers(dotnet_dir: Path) -> None:
+    for muxer in sorted(dotnet_dir.glob("*/dotnet.exe" if HOST_IS_WINDOWS else "*/dotnet")):
+        try:
+            subprocess.run([str(muxer), "build-server", "shutdown"], capture_output=True, text=True)
+        except OSError:
+            pass
+
+
 def fetch_dotnet() -> None:
     pin = json.loads(DOTNET_PIN_PATH.read_text(encoding="utf-8"))
     version = pin["sdkVersion"]
@@ -456,6 +464,7 @@ def fetch_dotnet() -> None:
             archive = Path(tmp) / host["url"].rsplit("/", 1)[-1]
             download_verified(host["url"], host["sha512"], archive, "sha512")
             if target.parent.exists():
+                stop_build_servers(target.parent)
                 shutil.rmtree(target.parent)
             target.mkdir(parents=True)
             if HOST_IS_WINDOWS:

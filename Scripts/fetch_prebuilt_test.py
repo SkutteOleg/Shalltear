@@ -7,6 +7,7 @@ import tarfile
 import tempfile
 import unittest
 import zipfile
+from unittest import mock
 from pathlib import Path
 
 import fetch_prebuilt
@@ -72,6 +73,27 @@ class DotNetFetchTest(unittest.TestCase):
 		self.assertEqual((self.sdk / "sdk" / VERSION / "dotnet.dll").read_bytes(), b"cli")
 		self.assertTrue(fetch_prebuilt.is_current(self.sdk, VERSION))
 		self.assertFalse(older.exists())
+
+	def test_build_servers_of_the_older_sdk_are_stopped_before_it_goes(self):
+		older = self.prebuilt / "dotnet" / "9.9.99"
+		older.mkdir(parents=True)
+		(older / DOTNET).write_bytes(b"host")
+		self.write_pin(hashlib.sha512(self.archive.read_bytes()).hexdigest())
+		seen = []
+		with mock.patch.object(fetch_prebuilt.subprocess, "run", lambda command, **_: seen.append((command, older.exists()))):
+			self.fetch()
+		self.assertEqual(seen, [([str(older / DOTNET), "build-server", "shutdown"], True)])
+		self.assertFalse(older.exists())
+		self.assertTrue((self.sdk / DOTNET).exists())
+
+	def test_an_older_sdk_that_cannot_run_is_still_replaced(self):
+		older = self.prebuilt / "dotnet" / "9.9.99"
+		older.mkdir(parents=True)
+		(older / DOTNET).write_bytes(b"not a program")
+		self.write_pin(hashlib.sha512(self.archive.read_bytes()).hexdigest())
+		self.fetch()
+		self.assertFalse(older.exists())
+		self.assertTrue((self.sdk / DOTNET).exists())
 
 	def test_fetched_sdk_is_not_downloaded_again(self):
 		self.write_pin(hashlib.sha512(self.archive.read_bytes()).hexdigest())

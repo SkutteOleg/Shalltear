@@ -38,6 +38,35 @@ namespace {
 		CSharpSettings::RegisterPage(owner);
 	}
 
+	CSharpCompile& TestCompile() {
+		static CSharpCompile compile;
+		return compile;
+	}
+
+	void ConfigureCompile(const CompileOptions& options) {
+		TestCompile().Configure(options);
+	}
+
+	bool RequestCompile() {
+		return TestCompile().Request();
+	}
+
+	void CancelCompile() {
+		TestCompile().Cancel();
+	}
+
+	void PumpCompile() {
+		TestCompile().Pump();
+	}
+
+	const CSharpCompile& GetCompile() {
+		return TestCompile();
+	}
+
+	str GetCompileOutput() {
+		return TestCompile().GetOutputAssembly();
+	}
+
 } // anonymous namespace
 
 extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* ShalltearCSharpEditorTestHooks() {
@@ -58,6 +87,21 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* Shallt
 		&CSharpSetup::GetState,
 		&CSharpSetup::GetSDKRoot,
 		&DeclareSettings,
+		&CSharpDiagnostics::ParseLine,
+		&CSharpDiagnostics::AddUnique,
+		&CSharpDiagnostics::Describe,
+		&ConfigureCompile,
+		&RequestCompile,
+		&CancelCompile,
+		&PumpCompile,
+		&GetCompile,
+		&GetCompileOutput,
+		&CSharpAuthoring::Begin,
+		&CSharpAuthoring::Pump,
+		&CSharpAuthoring::Shutdown,
+		&CSharpAuthoring::IsActive,
+		&CSharpAuthoring::GetCompile,
+		&CSharpAuthoring::NotifySourceChanged,
 		HostFxr::GetMuxerName().data(),
 		HostFxr::GetLibraryName().data(),
 	};

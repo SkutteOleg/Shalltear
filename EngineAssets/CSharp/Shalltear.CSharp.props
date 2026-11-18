@@ -14,6 +14,11 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<RestoreAdditionalProjectFallbackFolders Condition="Exists('$(ShalltearPackagesRoot)')">$(RestoreAdditionalProjectFallbackFolders);$(ShalltearPackagesRoot)</RestoreAdditionalProjectFallbackFolders>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(ShalltearAOTAnalysis)' == 'false'">
+		<EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+		<EnableAotAnalyzer>false</EnableAotAnalyzer>
+		<EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedDir)Shalltear.Runtime.dll" Private="false" />
 		<Analyzer Include="$(ShalltearManagedDir)Shalltear.Generators.dll" />

@@ -1,5 +1,6 @@
 #include "CSharpSettings.h"
 
+#include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Settings.h"
 
 #include "Shalltear/Editor/SettingsPresentation.h"
@@ -8,8 +9,17 @@ namespace Shalltear::CSharpEditor::CSharpSettings {
 
 	namespace {
 
-		const CSharpProjectSettings* _project = nullptr;
-		const CSharpUserSettings* _user = nullptr;
+		template <typename T>
+		const T* FindLive(std::string_view path) {
+			Vector<SettingsCategoryInfo> categories{GetMemoryResource(MemTag::Editor)};
+			Settings::GetCategories(categories);
+			for (const SettingsCategoryInfo& category : categories) {
+				if (category.path == path && category.type == T::GetReflectType()) {
+					return static_cast<const T*>(category.live);
+				}
+			}
+			return nullptr;
+		}
 
 		void Field(std::string_view category, std::string_view name, std::string_view label, std::string_view tooltip, std::string_view keywords,
 				   const void* owner) {
@@ -23,8 +33,8 @@ namespace Shalltear::CSharpEditor::CSharpSettings {
 	} // anonymous namespace
 
 	void Declare() {
-		_project = Settings::DeclareCategory<CSharpProjectSettings>(ProjectCategory, SettingScope::Project);
-		_user = Settings::DeclareCategory<CSharpUserSettings>(UserCategory, SettingScope::User);
+		Settings::DeclareCategory<CSharpProjectSettings>(ProjectCategory, SettingScope::Project);
+		Settings::DeclareCategory<CSharpUserSettings>(UserCategory, SettingScope::User);
 	}
 
 	void RegisterPage(const void* owner) {
@@ -57,16 +67,23 @@ namespace Shalltear::CSharpEditor::CSharpSettings {
 			  owner);
 		Field(UserCategory, "codeOptimization", "Code Optimization",
 			  "\"Debug\" lets a debugger see all locals, \"Release\" runs scripts faster in the editor.", "debug release speed", owner);
+		Field(UserCategory, "autoCompile", "Auto Compile", "Compiles the project's C# when a script changes. When off, compile with the Compile button (F7).",
+			  "save watch", owner);
+		Field(UserCategory, "aotAnalysis", "AOT Analysis",
+			  "Runs the AOT/trim analyzers at each compile (slower). When off, player builds/the IDE report the same warnings.",
+			  "native trim analyzer warning", owner);
 	}
 
 	const CSharpProjectSettings& GetProject() {
 		static const CSharpProjectSettings defaults;
-		return _project ? *_project : defaults;
+		const CSharpProjectSettings* live = FindLive<CSharpProjectSettings>(ProjectCategory);
+		return live ? *live : defaults;
 	}
 
 	const CSharpUserSettings& GetUser() {
 		static const CSharpUserSettings defaults;
-		return _user ? *_user : defaults;
+		const CSharpUserSettings* live = FindLive<CSharpUserSettings>(UserCategory);
+		return live ? *live : defaults;
 	}
 
 } // namespace Shalltear::CSharpEditor::CSharpSettings

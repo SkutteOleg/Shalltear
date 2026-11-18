@@ -1,5 +1,6 @@
 #include "CSharpSetup.h"
 
+#include "CSharpAuthoring.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpSettings.h"
 #include "CoreCLRHost.h"
@@ -62,6 +63,9 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 			void OnSettingChanged(const SettingChangedEvent& event) {
 				if (event.categoryPath == CSharpSettings::ProjectCategory) {
 					WriteProjectFiles();
+					CSharpAuthoring::RequestCompile();
+				} else if (event.categoryPath == CSharpSettings::UserCategory && (event.fieldName == "codeOptimization" || event.fieldName == "aotAnalysis")) {
+					CSharpAuthoring::RequestCompile();
 				}
 			}
 		};
@@ -84,6 +88,13 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 			_state = State::Ready;
 			SLT_LOG_INFO("C#", "C# runtime ready in {:.0f} ms",
 						 std::chrono::duration<f64, std::milli>(std::chrono::steady_clock::now() - begin).count());
+			if (_options.authoring && !_options.projectPath.empty()) {
+				CSharpAuthoring::Options authoring;
+				authoring.projectPath = _options.projectPath;
+				authoring.projectFile = CSharpProjectFiles::GetProjectFile(CSharpProjectFiles::GetDefaultOptions(_options.projectPath, sdkRoot));
+				authoring.sdkRoot = sdkRoot;
+				CSharpAuthoring::Begin(authoring, _owner);
+			}
 		}
 
 		void ReportStep() {
@@ -109,6 +120,7 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 		options.acquire.cacheRoot = DotNetToolchain::GetCacheRoot();
 		options.projectPath = ProjectOps::GetMountedProjectPath();
 		options.startRuntime = &StartHostedRuntime;
+		options.authoring = true;
 		return options;
 	}
 
@@ -181,6 +193,7 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 	}
 
 	void Shutdown() {
+		CSharpAuthoring::Shutdown();
 		_acquire.reset();
 		EndTask();
 		if (_watcher) {

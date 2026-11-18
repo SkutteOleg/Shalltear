@@ -13,6 +13,7 @@
 #include "Shalltear/Core/Settings.h"
 
 #include "Shalltear/Editor/ChildProcess.h"
+#include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/EditorTasks.h"
 #include "Shalltear/Editor/SettingsPresentation.h"
 
@@ -371,6 +372,15 @@ namespace {
 
 	char _setupOwner = 0;
 
+	struct ForeignCategory {
+		SLT_REFLECT_VALUE(ForeignCategory)
+		SLT_REFLECT_CONSTRUCTIBLE()
+		SLT_REFLECT_FIELD(taken)
+		SLT_END_REFLECT()
+
+		bool taken = false;
+	};
+
 	class CSharpSetupTest : public DotNetToolchainTest {
 	protected:
 		fs::path _project;
@@ -392,6 +402,7 @@ namespace {
 				_editor->shutdownSetup();
 			}
 			EditorTasks::UnregisterOwnedBy(&_setupOwner);
+			CompileStatus::UnregisterOwnedBy(&_setupOwner);
 			ChildEnvironment::UnregisterOwnedBy(&_setupOwner);
 			SettingsPresentation::UnregisterOwnedBy(&_setupOwner);
 			FileSystem::Unmount("engine");
@@ -421,6 +432,17 @@ namespace {
 				std::this_thread::sleep_for(std::chrono::milliseconds(2));
 			}
 			return _editor->getSetupState();
+		}
+
+		static str ScriptSourceHeading() {
+			Vector<CompileStatus::SourceView> sources{GetMemoryResource(MemTag::Editor)};
+			CompileStatus::GetSources(sources);
+			for (const CompileStatus::SourceView& source : sources) {
+				if (source.name == "C#") {
+					return source.heading;
+				}
+			}
+			return "none";
 		}
 
 		static Vector<EditorTasks::TaskView> Tasks() {
@@ -619,7 +641,7 @@ TEST_F(CSharpSetupTest, SettingsPagesNameEveryField) {
 		}
 	}
 	EXPECT_EQ(seen, 2u);
-	EXPECT_EQ(SettingsPresentation::UnregisterOwnedBy(&_setupOwner), 8u);
+	EXPECT_EQ(SettingsPresentation::UnregisterOwnedBy(&_setupOwner), 10u);
 }
 
 TEST_F(CSharpSetupTest, ChangedSettingRewritesProjectFiles) {
@@ -651,6 +673,83 @@ TEST_F(CSharpSetupTest, ChangedSettingRewritesProjectFiles) {
 	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
 	EXPECT_NE(ReadProjectFile(paths).find("<ShalltearAllowUnsafeBlocks>true</ShalltearAllowUnsafeBlocks>"), str::npos);
 	EXPECT_GT(SettingsPresentation::UnregisterOwnedBy(&_setupOwner), 0u);
+}
+
+TEST_F(CSharpSetupTest, SettingsReachTheCompileOnceItRuns) {
+	MakeSDK(Installed(), _pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
+	ScopedSettingsStore store{_root / "settings"};
+	_editor->declareSettings(&_setupOwner);
+	const CSharpCompile& compile = _editor->getAuthoringCompile();
+
+	_editor->beginSetup(SetupOptions(), &_setupOwner);
+	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Ready);
+	EXPECT_EQ(ScriptSourceHeading(), "none");
+	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
+	EXPECT_EQ(compile.GetRestoreCount(), 0u);
+
+	CSharpSetup::Options options = SetupOptions();
+	options.authoring = true;
+	_startResult = false;
+	_editor->beginSetup(options, &_setupOwner);
+	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Failed);
+	EXPECT_EQ(ScriptSourceHeading(), "none");
+
+	_startResult = true;
+	CSharpSetup::Options homeless = options;
+	homeless.projectPath.clear();
+	_editor->beginSetup(homeless, &_setupOwner);
+	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Ready);
+	EXPECT_EQ(ScriptSourceHeading(), "none");
+
+	_editor->beginSetup(options, &_setupOwner);
+	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Ready);
+	EXPECT_EQ(ScriptSourceHeading(), "Project.Scripts");
+	EXPECT_EQ(compile.GetRestoreCount(), 0u);
+
+	Settings::NotifyChanged(CSharpSettings::UserCategory, "sdkPath");
+	EXPECT_EQ(compile.GetRestoreCount(), 0u);
+	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
+	EXPECT_EQ(compile.GetRestoreCount(), 1u);
+	Settings::NotifyChanged(CSharpSettings::UserCategory, "codeOptimization");
+	EXPECT_EQ(compile.GetRestoreCount(), 2u);
+	Settings::NotifyChanged(CSharpSettings::UserCategory, "aotAnalysis");
+	EXPECT_EQ(compile.GetRestoreCount(), 3u);
+	Settings::NotifyChanged(CSharpSettings::UserCategory, "autoCompile");
+	EXPECT_EQ(compile.GetRestoreCount(), 3u);
+
+	_editor->shutdownSetup();
+	EXPECT_EQ(ScriptSourceHeading(), "none");
+	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
+	EXPECT_EQ(compile.GetRestoreCount(), 3u);
+	SettingsPresentation::UnregisterOwnedBy(&_setupOwner);
+}
+
+TEST_F(CSharpSetupTest, ProjectOptionsFollowTheStoreInUse) {
+	const str project = (_root / "project").generic_string();
+	EXPECT_FALSE(_editor->getDefaultProjectOptions(project, "sdk").allowUnsafeCode);
+	{
+		ScopedSettingsStore store{_root / "settings"};
+		_editor->declareSettings(&_setupOwner);
+		Vector<SettingsCategoryInfo> categories;
+		Settings::GetCategories(categories);
+		for (const SettingsCategoryInfo& category : categories) {
+			if (category.path == CSharpSettings::ProjectCategory) {
+				static_cast<CSharpProjectSettings*>(category.live)->allowUnsafeCode = true;
+				static_cast<CSharpProjectSettings*>(category.live)->invariantGlobalization = false;
+			}
+		}
+		EXPECT_TRUE(_editor->getDefaultProjectOptions(project, "sdk").allowUnsafeCode);
+		EXPECT_FALSE(_editor->getDefaultProjectOptions(project, "sdk").invariantGlobalization);
+		SettingsPresentation::UnregisterOwnedBy(&_setupOwner);
+	}
+	EXPECT_FALSE(_editor->getDefaultProjectOptions(project, "sdk").allowUnsafeCode);
+	EXPECT_TRUE(_editor->getDefaultProjectOptions(project, "sdk").invariantGlobalization);
+
+	ScopedSettingsStore other{_root / "other"};
+	ForeignCategory* foreign = Settings::DeclareCategory<ForeignCategory>(CSharpSettings::ProjectCategory, SettingScope::Project);
+	ASSERT_NE(foreign, nullptr);
+	foreign->taken = true;
+	EXPECT_FALSE(_editor->getDefaultProjectOptions(project, "sdk").allowUnsafeCode);
 }
 
 #endif
