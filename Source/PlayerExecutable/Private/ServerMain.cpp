@@ -1,4 +1,5 @@
 #include "BootManifest.h"
+#include "LinkedPackages.h"
 
 #include "Game/BuildStamp.h"
 
@@ -56,6 +57,7 @@ namespace Shalltear {
 		Settings::Initialize(paths);
 
 		SceneSystem::Initialize();
+		InitializeLinkedPackages();
 		RegisterGameCoreExtensions();
 
 		BootManifest manifest;

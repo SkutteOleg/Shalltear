@@ -1251,6 +1251,25 @@ TEST_F(PlayerBuildIntegrationTest, LinkMatchesEnabledPackages) {
 		}
 	}
 	EXPECT_TRUE(sawLiveDelta) << enabledRun;
+
+	{
+		BuildProfile profile;
+		profile.name = "Server";
+		profile.target = SLT_TEST_HOST_TARGET "Server";
+		profile.SetList("scenes", Vector<str>{});
+		profile.SetString("configuration", _config);
+		ASSERT_TRUE(BuildProfileOps::SaveProfile(
+			BuildProfileOps::GetProfilePath(project.generic_string(), "Server"), profile));
+	}
+	str serverBuild = RunCommand(
+		"\"" + EditorExecutable() + "\" --project \"" + project.generic_string() + "\" --build Server", exitCode);
+	ASSERT_EQ(exitCode, 0) << serverBuild;
+	std::filesystem::path serverExe = project / "Builds" / "Server" / "PackageProbeServer" SLT_TEST_PLAYER_SUFFIX;
+	str serverRun = RunCommand("\"" + serverExe.generic_string() + "\" --frames 4", exitCode);
+	EXPECT_EQ(exitCode, 0) << serverRun;
+	EXPECT_NE(serverRun.find(PACKAGE_MARKER), str::npos) << serverRun;
+	EXPECT_NE(serverRun.find("type=registered"), str::npos) << serverRun;
+	EXPECT_EQ(serverRun.find("type=MISSING"), str::npos) << serverRun;
 }
 
 TEST_F(PlayerBuildIntegrationTest, DisabledPackageLinkRefused) {
