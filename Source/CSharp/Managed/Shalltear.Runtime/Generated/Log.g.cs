@@ -4,64 +4,21 @@
 
 using System;
 
-using Shalltear.Interop;
+namespace Shalltear.Interop;
 
-namespace Shalltear;
-
-/// <summary>Engine log (shown in Console).</summary>
-public static unsafe partial class Log {
-	/// <summary>Trace row (calls compiled out without DEBUG).</summary>
-	[System.Diagnostics.Conditional("DEBUG")]
-	[System.Runtime.CompilerServices.SkipLocalsInit]
-	public static void Trace(string category, string message) {
-		using UTF8Scratch categoryText = new(category, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		using UTF8Scratch messageText = new(message, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		int status = Bindings.table.logTrace(categoryText.Text, messageText.Text);
-		if (status != Bridge.OK) {
-			throw Bridge.LastError();
+internal static unsafe partial class LogBindings {
+	internal static int Level {
+		get {
+			return Bindings.table.logGetLevel();
 		}
 	}
 
-	/// <summary>Debug row (calls compiled out without DEBUG).</summary>
-	[System.Diagnostics.Conditional("DEBUG")]
 	[System.Runtime.CompilerServices.SkipLocalsInit]
-	public static void Debug(string category, string message) {
+	internal static void Write(int level, string category, string message, string file, int line) {
 		using UTF8Scratch categoryText = new(category, stackalloc byte[UTF8Scratch.STACK_BYTES]);
 		using UTF8Scratch messageText = new(message, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		int status = Bindings.table.logDebug(categoryText.Text, messageText.Text);
-		if (status != Bridge.OK) {
-			throw Bridge.LastError();
-		}
-	}
-
-	/// <summary>Info row.</summary>
-	[System.Runtime.CompilerServices.SkipLocalsInit]
-	public static void Info(string category, string message) {
-		using UTF8Scratch categoryText = new(category, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		using UTF8Scratch messageText = new(message, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		int status = Bindings.table.logInfo(categoryText.Text, messageText.Text);
-		if (status != Bridge.OK) {
-			throw Bridge.LastError();
-		}
-	}
-
-	/// <summary>Warning row.</summary>
-	[System.Runtime.CompilerServices.SkipLocalsInit]
-	public static void Warn(string category, string message) {
-		using UTF8Scratch categoryText = new(category, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		using UTF8Scratch messageText = new(message, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		int status = Bindings.table.logWarn(categoryText.Text, messageText.Text);
-		if (status != Bridge.OK) {
-			throw Bridge.LastError();
-		}
-	}
-
-	/// <summary>Error row.</summary>
-	[System.Runtime.CompilerServices.SkipLocalsInit]
-	public static void Error(string category, string message) {
-		using UTF8Scratch categoryText = new(category, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		using UTF8Scratch messageText = new(message, stackalloc byte[UTF8Scratch.STACK_BYTES]);
-		int status = Bindings.table.logError(categoryText.Text, messageText.Text);
+		using UTF8Scratch fileText = new(file, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		int status = Bindings.table.logWrite(level, categoryText.Text, messageText.Text, fileText.Text, line);
 		if (status != Bridge.OK) {
 			throw Bridge.LastError();
 		}

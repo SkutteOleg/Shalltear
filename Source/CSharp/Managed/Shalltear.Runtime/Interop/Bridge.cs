@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 8;
+	internal const uint ABI_VERSION = 9;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -143,14 +143,18 @@ internal static unsafe class Bridge {
 			said += " ---> " + (inner.GetType().FullName ?? inner.GetType().Name) + ": " + inner.Message;
 			frames = (inner.StackTrace ?? "") + "\n   --- End of inner exception stack trace ---\n" + frames;
 		}
+		LogOrigins.FindThrower(exception, out string thrower, out int line);
 		byte[] type = Encoding.UTF8.GetBytes(exception.GetType().FullName ?? exception.GetType().Name);
 		byte[] message = Encoding.UTF8.GetBytes(said);
 		byte[] trace = Encoding.UTF8.GetBytes(frames);
-		fixed (byte* typePtr = type, messagePtr = message, tracePtr = trace) {
+		byte[] file = Encoding.UTF8.GetBytes(thrower);
+		fixed (byte* typePtr = type, messagePtr = message, tracePtr = trace, filePtr = file) {
 			_engine.reportException(
 				new SltString { ptr = typePtr, length = type.Length },
 				new SltString { ptr = messagePtr, length = message.Length },
-				new SltString { ptr = tracePtr, length = trace.Length });
+				new SltString { ptr = tracePtr, length = trace.Length },
+				new SltString { ptr = filePtr, length = file.Length },
+				line);
 		}
 	}
 

@@ -31,13 +31,23 @@ internal static unsafe class UserAssemblies {
 		}
 
 		public Assembly LoadUnlocked(string path) {
-			return LoadFromStream(new MemoryStream(File.ReadAllBytes(path)));
+			return LoadWithSymbols(File.ReadAllBytes(path), ReadSymbols(path));
+		}
+
+		public Assembly LoadWithSymbols(byte[] image, byte[]? symbols) {
+			return LoadFromStream(new MemoryStream(image), symbols == null ? null : new MemoryStream(symbols));
 		}
 	}
 
 	sealed class Images {
 		public string directory = "";
 		public byte[][] bytes = [];
+		public byte[]?[] symbols = [];
+	}
+
+	static byte[]? ReadSymbols(string assembly) {
+		string symbols = Path.ChangeExtension(assembly, ".pdb");
+		return File.Exists(symbols) ? File.ReadAllBytes(symbols) : null;
 	}
 
 	static Context? _context;
@@ -54,10 +64,11 @@ internal static unsafe class UserAssemblies {
 				return Bridge.OK;
 			}
 			string first = Encoding.UTF8.GetString(paths[0].ptr, paths[0].length);
-			Images images = new() { directory = Path.GetDirectoryName(Path.GetFullPath(first)) ?? "", bytes = new byte[count][] };
+			Images images = new() { directory = Path.GetDirectoryName(Path.GetFullPath(first)) ?? "", bytes = new byte[count][], symbols = new byte[]?[count] };
 			for (int index = 0; index < count; ++index) {
-				string path = Encoding.UTF8.GetString(paths[index].ptr, paths[index].length);
-				images.bytes[index] = File.ReadAllBytes(Path.GetFullPath(path));
+				string path = Path.GetFullPath(Encoding.UTF8.GetString(paths[index].ptr, paths[index].length));
+				images.bytes[index] = File.ReadAllBytes(path);
+				images.symbols[index] = ReadSymbols(path);
 			}
 			LoadImages(images);
 			return Bridge.OK;
@@ -93,8 +104,8 @@ internal static unsafe class UserAssemblies {
 		Context context = new(images.directory);
 		_context = context;
 		try {
-			foreach (byte[] image in images.bytes) {
-				Assembly assembly = context.LoadFromStream(new MemoryStream(image));
+			for (int index = 0; index < images.bytes.Length; ++index) {
+				Assembly assembly = context.LoadWithSymbols(images.bytes[index], images.symbols[index]);
 				RuntimeHelpers.RunModuleConstructor(assembly.ManifestModule.ModuleHandle);
 			}
 		} catch {
@@ -125,6 +136,7 @@ internal static unsafe class UserAssemblies {
 		_context = null;
 		ConformanceRegistry.Clear();
 		ScriptTypes.Clear();
+		LogOrigins.Clear();
 		if (context == null) {
 			return new WeakReference(null);
 		}

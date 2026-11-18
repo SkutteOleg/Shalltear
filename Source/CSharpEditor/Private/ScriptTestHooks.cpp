@@ -8,6 +8,7 @@
 #include "DotNetPin.generated.h"
 #include "DotNetToolchain.h"
 #include "ManagedTypes.h"
+#include "ScriptLog.h"
 #include "ScriptRuntime.h"
 
 #include "Shalltear/Core/Export.h"
@@ -29,6 +30,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpImpl::ManagedTypes::GetOwnerToken,
 		&CSharpEditor::InstallComponentMenu,
 		&CSharpImpl::BindingProbe::TakeRecords,
+		&CSharpImpl::InternLogOrigin,
 		CSharpEditor::DotNetPinData::RUNTIME_VERSION,
 	};
 	return &HOOKS;

@@ -1,5 +1,6 @@
 #include "CSharpAuthoring.h"
 #include "CSharpComponentMenu.h"
+#include "CSharpProjectFiles.h"
 #include "CSharpScriptEditor.h"
 #include "CSharpSettings.h"
 #include "CSharpSetup.h"
@@ -24,6 +25,7 @@ namespace Shalltear::CSharpEditor {
 		CSharpSettings::RegisterPage(owner);
 		InstallComponentMenu();
 		RegisterScriptEditor(owner);
+		CSharpProjectFiles::RegisterAttachConfiguration(owner);
 		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Normal, &PumpStage, nullptr, owner);
 		CSharpSetup::Begin(CSharpSetup::GetDefaultOptions(), owner);
 	}

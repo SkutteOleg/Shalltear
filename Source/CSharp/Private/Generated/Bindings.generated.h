@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x0a25d5797fde799cull
-#define SLT_BINDINGS_INPUT_DIGEST 0x0b362eed42c5c77dull
+#define SLT_BRIDGE_LAYOUT_HASH 0xad806939f5eadeb9ull
+#define SLT_BINDINGS_INPUT_DIGEST 0x0351442598aa04dfull
 
 typedef struct SltString SltString;
 
@@ -25,11 +25,8 @@ typedef struct SltBindings {
 	int32_t (*componentIsEnabledSelf)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentIsEffectivelyEnabled)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentSetEnabled)(uint64_t self, uint8_t enabled);
-	int32_t (*logTrace)(SltString category, SltString message);
-	int32_t (*logDebug)(SltString category, SltString message);
-	int32_t (*logInfo)(SltString category, SltString message);
-	int32_t (*logWarn)(SltString category, SltString message);
-	int32_t (*logError)(SltString category, SltString message);
+	int32_t (*logGetLevel)(void);
+	int32_t (*logWrite)(int32_t level, SltString category, SltString message, SltString file, int32_t line);
 	uint8_t (*objectIsAlive)(uint64_t id);
 	int32_t (*objectIsA)(uint64_t id, uint64_t typeHash, uint8_t* outResult);
 	int32_t (*objectAreAlive)(const uint64_t* ids, int32_t idsCount, uint32_t* alive, int32_t aliveCount);

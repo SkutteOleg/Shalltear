@@ -81,6 +81,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* Shallt
 		&MakeLongPath,
 		&CSharpProjectFiles::GetDefaultOptions,
 		&CSharpProjectFiles::Write,
+		&CSharpProjectFiles::RegisterAttachConfiguration,
 		&CSharpSetup::Begin,
 		&CSharpSetup::Pump,
 		&CSharpSetup::Shutdown,

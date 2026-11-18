@@ -8,54 +8,25 @@ namespace Shalltear::CSharpImpl::Generated {
 
 	namespace {
 
-		int32_t LogTrace(SltString categoryIn, SltString messageIn) noexcept {
-			return ScriptRuntime::Guard([&] {
-				const std::string_view category = View(categoryIn);
-				const std::string_view message = View(messageIn);
-				::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Trace, category, message);
-			});
+		int32_t LogGetLevel() noexcept {
+			static_assert(noexcept(::Shalltear::CSharpImpl::GetLogLevel()));
+			return static_cast<int32_t>(::Shalltear::CSharpImpl::GetLogLevel());
 		}
 
-		int32_t LogDebug(SltString categoryIn, SltString messageIn) noexcept {
+		int32_t LogWrite(int32_t level, SltString categoryIn, SltString messageIn, SltString fileIn, int32_t line) noexcept {
 			return ScriptRuntime::Guard([&] {
 				const std::string_view category = View(categoryIn);
 				const std::string_view message = View(messageIn);
-				::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Debug, category, message);
-			});
-		}
-
-		int32_t LogInfo(SltString categoryIn, SltString messageIn) noexcept {
-			return ScriptRuntime::Guard([&] {
-				const std::string_view category = View(categoryIn);
-				const std::string_view message = View(messageIn);
-				::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Info, category, message);
-			});
-		}
-
-		int32_t LogWarn(SltString categoryIn, SltString messageIn) noexcept {
-			return ScriptRuntime::Guard([&] {
-				const std::string_view category = View(categoryIn);
-				const std::string_view message = View(messageIn);
-				::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Warn, category, message);
-			});
-		}
-
-		int32_t LogError(SltString categoryIn, SltString messageIn) noexcept {
-			return ScriptRuntime::Guard([&] {
-				const std::string_view category = View(categoryIn);
-				const std::string_view message = View(messageIn);
-				::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Error, category, message);
+				const std::string_view file = View(fileIn);
+				::Shalltear::CSharpImpl::WriteLog(level, category, message, file, line);
 			});
 		}
 
 	} // anonymous namespace
 
 	void FillLogBindings(SltBindings& table) {
-		table.logTrace = &LogTrace;
-		table.logDebug = &LogDebug;
-		table.logInfo = &LogInfo;
-		table.logWarn = &LogWarn;
-		table.logError = &LogError;
+		table.logGetLevel = &LogGetLevel;
+		table.logWrite = &LogWrite;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

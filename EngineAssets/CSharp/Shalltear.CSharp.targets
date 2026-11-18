@@ -13,6 +13,10 @@
 		<TrimmerSingleWarn>false</TrimmerSingleWarn>
 	</PropertyGroup>
 
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
+		<RuntimeHostConfigurationOption Include="Shalltear.LogOrigins" Value="false" Trim="true" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(Configuration)' == 'Release'">
 		<StackTraceSupport>false</StackTraceSupport>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>

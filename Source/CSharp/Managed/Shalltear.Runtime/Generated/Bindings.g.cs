@@ -13,11 +13,8 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEnabledSelf;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEffectivelyEnabled;
 	public delegate* unmanaged<ulong, byte, int> componentSetEnabled;
-	public delegate* unmanaged<SltString, SltString, int> logTrace;
-	public delegate* unmanaged<SltString, SltString, int> logDebug;
-	public delegate* unmanaged<SltString, SltString, int> logInfo;
-	public delegate* unmanaged<SltString, SltString, int> logWarn;
-	public delegate* unmanaged<SltString, SltString, int> logError;
+	public delegate* unmanaged[SuppressGCTransition]<int> logGetLevel;
+	public delegate* unmanaged<int, SltString, SltString, SltString, int, int> logWrite;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
 	public delegate* unmanaged<ulong, ulong, byte*, int> objectIsA;
 	public delegate* unmanaged<ulong*, int, uint*, int, int> objectAreAlive;
@@ -88,7 +85,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0x0a25d5797fde799c;
+	internal const ulong LAYOUT_HASH = 0xad806939f5eadeb9;
 
 	internal static SltBindings table;
 

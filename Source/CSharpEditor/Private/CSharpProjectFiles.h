@@ -16,6 +16,7 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		str engineRoot;
 		str managedDirectory;
 		str packagesRoot;
+		str editorExecutable;
 		DotNetToolchain::Pin pin;
 		bool allowUnsafeCode = false;
 		bool invariantGlobalization = true;
@@ -32,6 +33,10 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 	str GetRootNamespace(const str& projectPath);
 
 	str GetSolutionFile(const Options& options);
+
+	str GetAttachConfiguration(const str& editorExecutable);
+
+	void RegisterAttachConfiguration(const void* owner);
 
 	bool Write(const Options& options, Result& out);
 

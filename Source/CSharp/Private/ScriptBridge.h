@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 8
+#define SLT_BRIDGE_ABI_VERSION 9
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -124,7 +124,7 @@ typedef struct SltEngineAPI {
 	uint32_t abiVersion;
 	uint64_t layoutHash;
 	int32_t textSize;
-	void (*reportException)(SltString type, SltString message, SltString stackTrace);
+	void (*reportException)(SltString type, SltString message, SltString stackTrace, SltString file, int32_t line);
 	void (*log)(int32_t level, SltString message);
 	// valid until next engine call on this thread
 	void (*getLastError)(SltString* outText);

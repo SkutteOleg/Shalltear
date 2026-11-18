@@ -28,6 +28,7 @@ namespace Shalltear::CSharpEditor {
 		std::filesystem::path (*makeLongPath)(const str& path);
 		CSharpProjectFiles::Options (*getDefaultProjectOptions)(const str& projectPath, const str& dotnetRoot);
 		bool (*writeProjectFiles)(const CSharpProjectFiles::Options& options, CSharpProjectFiles::Result& out);
+		void (*registerAttachConfiguration)(const void* owner);
 		void (*beginSetup)(CSharpSetup::Options options, const void* owner);
 		void (*pumpSetup)();
 		void (*shutdownSetup)();

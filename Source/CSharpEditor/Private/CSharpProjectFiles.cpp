@@ -5,6 +5,7 @@
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/StringUtil.h"
 
 #include "Shalltear/Editor/ProjectOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
@@ -19,7 +20,7 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 
 		namespace fs = std::filesystem;
 
-		constexpr std::string_view IgnoredLines[] = {"/Library/", "/*.Scripts.csproj", "/*.slnx", "/global.json"};
+		constexpr std::string_view IgnoredLines[] = {"/Library/", "/*.Scripts.csproj", "/*.slnx", "/global.json", "/.vscode/launch.json"};
 
 		str SafeName(std::string_view raw) {
 			str result;
@@ -96,6 +97,11 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 			return ScriptProjectOps::RenderTemplate(name, tokens, out);
 		}
 
+		str RenderLaunchFile(const Options& options) {
+			return str(GeneratedMark) + "\n{\n\t\"version\": \"0.2.0\",\n\t\"configurations\": [\n\t\t" +
+				   StringUtil::Replace(GetAttachConfiguration(options.editorExecutable), "\n", "\n\t\t") + "\n\t]\n}\n";
+		}
+
 		bool AddIgnoredLines(const Options& options, Result& out) {
 			const fs::path file = fs::path(options.projectPath) / ".gitignore";
 			str text = ReadIfPresent(file);
@@ -157,6 +163,7 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		const fs::path folder = fs::path(dotnetRoot).parent_path().parent_path() / "nuget";
 		options.packagesRoot = fs::is_directory(folder, ec) ? folder.generic_string()
 															: DotNetToolchain::GetPackagesRoot(DotNetToolchain::GetCacheRoot(), DotNetToolchain::GetPin());
+		options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
 		options.pin = DotNetToolchain::GetPin();
 		options.allowUnsafeCode = CSharpSettings::GetProject().allowUnsafeCode;
 		options.invariantGlobalization = CSharpSettings::GetProject().invariantGlobalization;
@@ -169,6 +176,15 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 
 	str GetSolutionFile(const Options& options) {
 		return SafeName(options.projectName) + ".slnx";
+	}
+
+	str GetAttachConfiguration(const str& editorExecutable) {
+		return "{\n\t\"name\": \"Attach C# (editor)\",\n\t\"type\": \"coreclr\",\n\t\"request\": \"attach\",\n\t\"processName\": \"" +
+			   EscapeJSON(fs::path(editorExecutable).filename().generic_string()) + "\"\n}";
+	}
+
+	void RegisterAttachConfiguration(const void* owner) {
+		ScriptProjectOps::RegisterDebugConfiguration(GetAttachConfiguration(ScriptProjectOps::GetEditorExecutablePath()), owner);
 	}
 
 	bool Write(const Options& options, Result& out) {
@@ -195,6 +211,12 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		const str existingGlobal = ReadIfPresent(root / "global.json");
 		if (existingGlobal.empty() || existingGlobal.starts_with(GeneratedMark)) {
 			written = WriteIfDifferent(options, "global.json", global, out) && written;
+		}
+		if (!options.editorExecutable.empty() && !ScriptProjectOps::HasScriptProject(options.projectPath)) {
+			const str existingLaunch = ReadIfPresent(root / ".vscode" / "launch.json");
+			if (existingLaunch.empty() || existingLaunch.starts_with(GeneratedMark)) {
+				written = WriteIfDifferent(options, ".vscode/launch.json", RenderLaunchFile(options), out) && written;
+			}
 		}
 		if (!fs::exists(root / "CSharp.props", ec)) {
 			written = WriteIfDifferent(options, "CSharp.props", user, out) && written;

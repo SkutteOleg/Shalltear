@@ -1,5 +1,7 @@
 #include "ScriptRuntime.h"
 
+#include "ScriptLog.h"
+
 #include "ManagedBehavior.h"
 #include "ManagedTypes.h"
 #include "ShadowStorage.h"
@@ -25,9 +27,12 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 			return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
 		}
 
-		void ReportException(SltString type, SltString message, SltString stackTrace) noexcept {
+		void ReportException(SltString type, SltString message, SltString stackTrace, SltString file, int32_t line) noexcept {
 			try {
-				SLT_LOG_ERROR("C#", "{}: {}\n{}", View(type), View(message), View(stackTrace));
+				if (LogLevel::Error >= LogManager::GetGlobalLevel()) {
+					LogManager::Dispatch(LogLevel::Error, "C#", InternLogOrigin(View(file)), static_cast<u32>(std::max<int32_t>(line, 0)), "", "{}: {}\n{}",
+										 View(type), View(message), View(stackTrace));
+				}
 			} catch (...) {
 			}
 		}

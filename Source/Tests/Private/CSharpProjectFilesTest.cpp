@@ -7,6 +7,7 @@
 #include "TestPlatform.h"
 
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Serialization/JSON.h"
 
 #include "Shalltear/Editor/ChildProcess.h"
 
@@ -298,7 +299,7 @@ TEST_F(CSharpProjectFilesTest, UserPropsNeverOverwritten) {
 TEST_F(CSharpProjectFilesTest, IgnoreLinesAreAddedOnce) {
 	Put(".gitignore", "/Library/\n/Builds/");
 	Write();
-	EXPECT_EQ(Read(".gitignore"), "/Library/\n/Builds/\n/*.Scripts.csproj\n/*.slnx\n/global.json\n");
+	EXPECT_EQ(Read(".gitignore"), "/Library/\n/Builds/\n/*.Scripts.csproj\n/*.slnx\n/global.json\n/.vscode/launch.json\n");
 
 	Put(".gitignore", "/Library/\n");
 	_options.allowUnsafeCode = true;
@@ -309,7 +310,7 @@ TEST_F(CSharpProjectFilesTest, IgnoreLinesAreAddedOnce) {
 	Put(".gitignore", "/global.json\r\n/Builds/\r\n");
 	const std::vector<str> expected = {".gitignore", "CSharp.props"};
 	EXPECT_EQ(Write(), expected);
-	EXPECT_EQ(Read(".gitignore"), "/global.json\r\n/Builds/\r\n/Library/\r\n/*.Scripts.csproj\r\n/*.slnx\r\n");
+	EXPECT_EQ(Read(".gitignore"), "/global.json\r\n/Builds/\r\n/Library/\r\n/*.Scripts.csproj\r\n/*.slnx\r\n/.vscode/launch.json\r\n");
 }
 
 TEST_F(CSharpProjectFilesTest, MachinePathsOnlyInIgnoredFiles) {
@@ -409,6 +410,76 @@ TEST_F(CSharpProjectFilesTest, BuildWithoutARootWritesUnderIDE) {
 	EXPECT_FALSE(fs::exists(_project / "obj"));
 	EXPECT_FALSE(fs::exists(_project / "bin"));
 	EXPECT_EQ(Joined(lines).find("warning"), str::npos) << Joined(lines);
+}
+
+TEST_F(CSharpProjectFilesTest, ProjectWithoutModuleGetsAttachConfiguration) {
+	_options.editorExecutable = "C:/Engine/bin/Shalltear.exe";
+	const std::vector<str> written = Write();
+	EXPECT_EQ(std::count(written.begin(), written.end(), ".vscode/launch.json"), 1);
+	const str launch = Read(".vscode/launch.json");
+	ASSERT_TRUE(launch.starts_with(CSharpProjectFiles::GeneratedMark)) << launch;
+	const str body = launch.substr(launch.find('\n') + 1);
+	LinearAllocator arena(body.size() + 64, MemTag::Editor);
+	const JSONValue root = JSONParse(body, arena);
+	ASSERT_TRUE(root.IsObject()) << launch;
+	EXPECT_EQ(root["version"].AsString(), "0.2.0");
+	const JSONValue& configurations = root["configurations"];
+	ASSERT_EQ(configurations.Size(), 1u);
+	const JSONValue& attach = configurations[size_t{0}];
+	EXPECT_EQ(attach["name"].AsString(), "Attach C# (editor)");
+	EXPECT_EQ(attach["type"].AsString(), "coreclr");
+	EXPECT_EQ(attach["request"].AsString(), "attach");
+	EXPECT_EQ(attach["processName"].AsString(), "Shalltear.exe");
+	EXPECT_NE(launch.find("\t\t{\n\t\t\t\"name\": \"Attach C# (editor)\",\n"), str::npos) << launch;
+	EXPECT_TRUE(HasLine(Read(".gitignore"), "/.vscode/launch.json"));
+
+	EXPECT_TRUE(Write().empty());
+	_options.editorExecutable = "/opt/shalltear/bin/Shalltear";
+	EXPECT_EQ(Write(), std::vector<str>{".vscode/launch.json"});
+	EXPECT_NE(Read(".vscode/launch.json").find("\"processName\": \"Shalltear\"\n"), str::npos);
+}
+
+TEST_F(CSharpProjectFilesTest, UserLaunchFileIsLeftAlone) {
+	const str mine = "{\n\t\"version\": \"0.2.0\",\n\t\"configurations\": []\n}\n";
+	Put(".vscode/launch.json", mine);
+	_options.editorExecutable = "C:/Engine/bin/Shalltear.exe";
+	const std::vector<str> written = Write();
+	EXPECT_EQ(std::count(written.begin(), written.end(), ".vscode/launch.json"), 0);
+	EXPECT_EQ(Read(".vscode/launch.json"), mine);
+}
+
+TEST_F(CSharpProjectFilesTest, ModuleProjectLeavesLaunchFileToEditor) {
+	Put("CMakeLists.txt", "cmake_minimum_required(VERSION 3.25)\n");
+	fs::create_directories(_project / "Source");
+	ASSERT_TRUE(ScriptProjectOps::HasScriptProject(_options.projectPath));
+	_options.editorExecutable = "C:/Engine/bin/Shalltear.exe";
+	const std::vector<str> written = Write();
+	EXPECT_FALSE(written.empty());
+	EXPECT_FALSE(fs::exists(_project / ".vscode" / "launch.json"));
+
+	static char owner = 0;
+	_editor->registerAttachConfiguration(&owner);
+	ScriptProjectOps::ScaffoldOptions scaffold;
+	scaffold.moduleName = "SpaceGame";
+	scaffold.sdkRoot = "C:/Sdk";
+	scaffold.editorExecutable = "C:/Sdk/Bin/Shalltear" SLT_TEST_EXE_SUFFIX;
+	ScriptProjectOps::ScaffoldResult regenerated;
+	const bool wrote = ScriptProjectOps::RegenerateProjectFiles(_options.projectPath, scaffold, regenerated);
+	const str launch = Read(".vscode/launch.json");
+	EXPECT_EQ(ScriptProjectOps::UnregisterDebugConfigurationsOwnedBy(&owner), 1u);
+	ASSERT_TRUE(wrote);
+
+	LinearAllocator arena(launch.size() + 64, MemTag::Editor);
+	const JSONValue root = JSONParse(launch, arena);
+	ASSERT_TRUE(root.IsObject()) << launch;
+	const JSONValue& configurations = root["configurations"];
+	ASSERT_EQ(configurations.Size(), 2u) << launch;
+	EXPECT_EQ(configurations[size_t{0}]["request"].AsString(), "launch");
+	EXPECT_EQ(configurations[size_t{1}]["name"].AsString(), "Attach C# (editor)");
+	EXPECT_EQ(configurations[size_t{1}]["type"].AsString(), "coreclr");
+	const str process = fs::path(ScriptProjectOps::GetEditorExecutablePath()).filename().generic_string();
+	EXPECT_FALSE(process.empty());
+	EXPECT_EQ(configurations[size_t{1}]["processName"].AsString(), process);
 }
 
 #endif

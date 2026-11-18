@@ -24,6 +24,7 @@ namespace Shalltear::CSharpImpl {
 		const void* (*getOwnerToken)();
 		void (*installComponentMenu)();
 		std::vector<str> (*takeRecords)();
+		const char* (*internLogOrigin)(std::string_view file);
 		const char* runtimeVersion;
 	};
 

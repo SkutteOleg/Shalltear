@@ -68,7 +68,7 @@ internal unsafe struct SltEngineAPI {
 	public uint abiVersion;
 	public ulong layoutHash;
 	public int textSize;
-	public delegate* unmanaged<SltString, SltString, SltString, void> reportException;
+	public delegate* unmanaged<SltString, SltString, SltString, SltString, int, void> reportException;
 	public delegate* unmanaged<int, SltString, void> log;
 	public delegate* unmanaged<SltString*, void> getLastError;
 	public delegate* unmanaged<SltTypeDesc*, int> registerManagedType;

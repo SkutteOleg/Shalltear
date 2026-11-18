@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 using Shalltear.Interop;
@@ -28,6 +29,23 @@ static class TimeTests {
 	}
 }
 
+static class LogTests {
+	[ConformanceTest]
+	internal static void OneSiteResolvesOnce() {
+		LogOrigins.Clear();
+		int before = LogOrigins.ResolvedCount;
+		for (int index = 0; index < 3; ++index) {
+			Log.Info("Conformance", "from one site");
+		}
+		Check.Equal(RuntimeFeatures.LogOrigins ? 1 : 0, LogOrigins.ResolvedCount - before);
+	}
+
+	[ConformanceTest]
+	internal static void CaptureFollowsTheRuntime() {
+		Check.Equal(RuntimeFeature.IsDynamicCodeSupported, RuntimeFeatures.LogOrigins);
+	}
+}
+
 static class LogProbe {
 	[ConformanceTest]
 	internal static void WritesEachLevel() {
@@ -36,6 +54,11 @@ static class LogProbe {
 		Log.Info("Conformance", "info from C#");
 		Log.Warn("Conformance", "warn from C#");
 		Log.Error("Conformance", "error from C#");
+	}
+
+	[ConformanceTest]
+	internal static void SitesStartEmpty() {
+		Check.Equal(0, LogOrigins.SiteCount);
 	}
 
 	[ConformanceTest]
