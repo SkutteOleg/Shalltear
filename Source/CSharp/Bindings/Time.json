@@ -1,0 +1,79 @@
+{
+	"area": "Time",
+	"include": "Shalltear/Core/Time.h",
+	"class": "Shalltear.Time",
+	"doc": "Frame clock.",
+	"functions": [
+		{
+			"id": "GetDeltaTime",
+			"cpp": "::Shalltear::Time::GetDeltaTime()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DeltaTime", "kind": "getter" },
+			"doc": "Seconds since last frame (scaled by TimeScale, clamped)."
+		},
+		{
+			"id": "GetUnscaledDeltaTime",
+			"cpp": "::Shalltear::Time::GetUnscaledDeltaTime()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UnscaledDeltaTime", "kind": "getter" },
+			"doc": "Seconds since last frame (not scaled or clamped)."
+		},
+		{
+			"id": "GetFixedDeltaTime",
+			"cpp": "::Shalltear::Time::GetFixedDeltaTime()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FixedDeltaTime", "kind": "getter" },
+			"doc": "Seconds per fixed step."
+		},
+		{
+			"id": "GetTime",
+			"cpp": "::Shalltear::Time::GetTime()",
+			"returns": "f64",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ScaledTime", "kind": "getter" },
+			"doc": "Seconds since start (scaled by TimeScale)."
+		},
+		{
+			"id": "GetUnscaledTime",
+			"cpp": "::Shalltear::Time::GetUnscaledTime()",
+			"returns": "f64",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UnscaledTime", "kind": "getter" },
+			"doc": "Seconds since start (not scaled)."
+		},
+		{
+			"id": "GetFrameCount",
+			"cpp": "::Shalltear::Time::GetFrameCount()",
+			"returns": "i64",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FrameCount", "kind": "getter" },
+			"doc": "Frames since start."
+		},
+		{
+			"id": "GetTimeScale",
+			"cpp": "::Shalltear::Time::GetTimeScale()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "TimeScale", "kind": "getter" },
+			"doc": "Speed of game time (1 = real time, 0 = paused). Negative values ignored."
+		},
+		{
+			"id": "SetTimeScale",
+			"cpp": "::Shalltear::Time::SetTimeScale(scale)",
+			"returns": "void",
+			"params": [{ "name": "scale", "type": "f32" }],
+			"leaf": true,
+			"csharp": { "member": "TimeScale", "kind": "setter" }
+		}
+	]
+}

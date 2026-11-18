@@ -1,0 +1,171 @@
+{
+	"area": "Probe",
+	"include": "BindingProbe.h",
+	"class": "Shalltear.Interop.BindingProbe",
+	"test": true,
+	"functions": [
+		{
+			"id": "GetMathCaseCount",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::GetMathCaseCount()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "GetMathCaseCount", "kind": "method" }
+		},
+		{
+			"id": "EvaluateMath",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EvaluateMath(name, inputs, outputs)",
+			"returns": "i32",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "inputs", "type": "span<f32>" },
+				{ "name": "outputs", "type": "span<f32>", "out": true }
+			],
+			"csharp": { "member": "EvaluateMath", "kind": "method" }
+		},
+		{
+			"id": "EchoBool",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoBool(value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "bool" }],
+			"leaf": true,
+			"csharp": { "member": "EchoBool", "kind": "method" }
+		},
+		{
+			"id": "EchoI32",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoI32(value)",
+			"returns": "i32",
+			"params": [{ "name": "value", "type": "i32" }],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "EchoI32", "kind": "method" }
+		},
+		{
+			"id": "EchoU32",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoU32(value)",
+			"returns": "u32",
+			"params": [{ "name": "value", "type": "u32" }],
+			"leaf": true,
+			"csharp": { "member": "EchoU32", "kind": "method" }
+		},
+		{
+			"id": "EchoI64",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoI64(value)",
+			"returns": "i64",
+			"params": [{ "name": "value", "type": "i64" }],
+			"leaf": true,
+			"csharp": { "member": "EchoI64", "kind": "method" }
+		},
+		{
+			"id": "EchoU64",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoU64(value)",
+			"returns": "u64",
+			"params": [{ "name": "value", "type": "u64" }],
+			"leaf": true,
+			"csharp": { "member": "EchoU64", "kind": "method" }
+		},
+		{
+			"id": "EchoF32",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoF32(value)",
+			"returns": "f32",
+			"params": [{ "name": "value", "type": "f32" }],
+			"leaf": true,
+			"csharp": { "member": "EchoF32", "kind": "method" }
+		},
+		{
+			"id": "EchoF64",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoF64(value)",
+			"returns": "f64",
+			"params": [{ "name": "value", "type": "f64" }],
+			"leaf": true,
+			"csharp": { "member": "EchoF64", "kind": "method" }
+		},
+		{
+			"id": "EchoVec2",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoVec2(value)",
+			"returns": "Vec2",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"leaf": true,
+			"csharp": { "member": "EchoVec2", "kind": "method" }
+		},
+		{
+			"id": "EchoVec3",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoVec3(value)",
+			"returns": "Vec3",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"leaf": true,
+			"csharp": { "member": "EchoVec3", "kind": "method" }
+		},
+		{
+			"id": "EchoVec4",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoVec4(value)",
+			"returns": "Vec4",
+			"params": [{ "name": "value", "type": "Vec4" }],
+			"leaf": true,
+			"csharp": { "member": "EchoVec4", "kind": "method" }
+		},
+		{
+			"id": "EchoQuat",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoQuat(value)",
+			"returns": "Quat",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"leaf": true,
+			"csharp": { "member": "EchoQuat", "kind": "method" }
+		},
+		{
+			"id": "EchoColor",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::EchoColor(value)",
+			"returns": "Color",
+			"params": [{ "name": "value", "type": "Color" }],
+			"leaf": true,
+			"csharp": { "member": "EchoColor", "kind": "method" }
+		},
+		{
+			"id": "Mix",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::Mix(flag, count, scale, position, weight, plane, mask, rotation, tint, offset)",
+			"returns": "f64",
+			"params": [
+				{ "name": "flag", "type": "bool" },
+				{ "name": "count", "type": "i32" },
+				{ "name": "scale", "type": "f32" },
+				{ "name": "position", "type": "Vec3" },
+				{ "name": "weight", "type": "f64" },
+				{ "name": "plane", "type": "Vec4" },
+				{ "name": "mask", "type": "u64" },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "tint", "type": "Color" },
+				{ "name": "offset", "type": "Vec2" }
+			],
+			"leaf": true,
+			"csharp": { "member": "Mix", "kind": "method" }
+		},
+		{
+			"id": "SumGuarded",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::SumGuarded(first, second)",
+			"returns": "Vec3",
+			"params": [{ "name": "first", "type": "Vec3" }, { "name": "second", "type": "Vec4" }],
+			"csharp": { "member": "SumGuarded", "kind": "method" }
+		},
+		{
+			"id": "IsPositive",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::IsPositive(value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "IsPositive", "kind": "method" }
+		},
+		{
+			"id": "Throw",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::Throw()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Throw", "kind": "method" }
+		},
+		{
+			"id": "SumBytes",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::SumBytes(text)",
+			"returns": "i32",
+			"params": [{ "name": "text", "type": "string" }],
+			"csharp": { "member": "SumBytes", "kind": "method" }
+		}
+	]
+}

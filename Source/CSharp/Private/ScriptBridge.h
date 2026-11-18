@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Generated/Bindings.generated.h"
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -7,8 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 1
-#define SLT_BRIDGE_LAYOUT_HASH 0ull
+#define SLT_BRIDGE_ABI_VERSION 2
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -27,6 +28,7 @@ typedef struct SltEngineAPI {
 	// valid until next engine call on this thread
 	void (*getLastError)(SltString* outText);
 	int32_t (*throwForTest)(void);
+	SltBindings bindings;
 } SltEngineAPI;
 
 typedef struct SltManagedAPI {

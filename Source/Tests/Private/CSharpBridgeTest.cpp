@@ -2,96 +2,11 @@
 
 #ifdef SHALLTEAR_SHARED
 
-#include "DeviceLossHarness.h"
-
-#include "ScriptTestHooks.h"
-
-#include "Shalltear/Core/Module.h"
-
-#include "Shalltear/Editor/ScriptProjectOps.h"
-
-#include <filesystem>
+#include "CSharpRuntimeFixture.h"
 
 using namespace Shalltear;
-
-namespace {
-
-	constexpr int32_t MANAGED_FAILED = -1;
-	constexpr int32_t CASE_FAILED = 1;
-
-	std::string_view View(SltString text) {
-		return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
-	}
-
-	class CSharpRuntimeFixture : public ::testing::Test {
-	protected:
-		DeviceLossTest::ScopedLog _log;
-		ModuleHandle _package;
-		const CSharpImpl::ScriptTestHooks* _hooks = nullptr;
-		str _error;
-
-		void SetUp() override {
-			ModuleSystem::Initialize();
-			_package = ModuleSystem::Load(Path(str("CSharp") + SLT_TEST_DLL_SUFFIX));
-			ASSERT_TRUE(ModuleSystem::IsLoaded(_package));
-			const auto get = reinterpret_cast<CSharpImpl::GetScriptTestHooksFn>(
-				ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_package), CSharpImpl::SCRIPT_TEST_HOOKS_SYMBOL));
-			ASSERT_NE(get, nullptr);
-			_hooks = get();
-		}
-
-		void TearDown() override {
-			if (_hooks) {
-				_hooks->detach();
-			}
-			ModuleSystem::Terminate();
-		}
-
-		SltInitializeFn Host() {
-			if (const SltInitializeFn entry = _hooks->getHostEntry()) {
-				return entry;
-			}
-			return _hooks->startHost(_hooks->findSDKRoot(), _hooks->runtimeVersion, _hooks->getRuntimeAssemblyPath(), _error);
-		}
-
-		bool Attach() {
-			const SltInitializeFn entry = Host();
-			return entry && _hooks->attachAs(_hooks->makeEngineAPI(), entry, _error);
-		}
-
-		bool LoadConformance() {
-			const str path = (std::filesystem::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" /
-							  "Shalltear.Conformance.dll")
-								 .generic_string();
-			const SltString paths[] = {SltString{path.data(), static_cast<int32_t>(path.size())}};
-			return _hooks->getManaged().loadUserAssemblies(paths, 1) == SLT_OK;
-		}
-
-		int32_t Find(std::string_view wanted) {
-			const SltManagedAPI& managed = _hooks->getManaged();
-			for (int32_t index = 0; index < managed.getConformanceTestCount(); ++index) {
-				SltString name{};
-				if (managed.getConformanceTestName(index, &name) == SLT_OK && View(name) == wanted) {
-					return index;
-				}
-			}
-			return -1;
-		}
-
-		int32_t Run(std::string_view name, str& outMessage) {
-			const int32_t index = Find(name);
-			if (index < 0) {
-				outMessage = "no such case";
-				return -2;
-			}
-			SltString message{};
-			const int32_t result = _hooks->getManaged().runConformanceTest(index, &message);
-			outMessage = str(View(message));
-			return result;
-		}
-	};
-
-} // namespace
+using namespace Shalltear::CSharpTests;
+using Shalltear::CSharpConformance::View;
 
 TEST_F(CSharpRuntimeFixture, StartsAndAttaches) {
 	ASSERT_FALSE(_hooks->findSDKRoot().empty());
@@ -155,6 +70,7 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 	ASSERT_TRUE(Attach()) << _error;
 	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
 
+	const Time::FrameScope frame(CSharpConformance::MakeFrame());
 	const SltManagedAPI& managed = _hooks->getManaged();
 	const int32_t count = managed.getConformanceTestCount();
 	int32_t ran = 0;
@@ -162,14 +78,14 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 		SltString name{};
 		ASSERT_EQ(managed.getConformanceTestName(index, &name), SLT_OK);
 		const str caseName(View(name));
-		if (caseName.starts_with("Probe.")) {
+		if (CSharpConformance::IsProbe(caseName)) {
 			continue;
 		}
 		SltString message{};
 		EXPECT_EQ(managed.runConformanceTest(index, &message), SLT_OK) << caseName << ": " << View(message);
 		++ran;
 	}
-	EXPECT_GE(ran, 12);
+	EXPECT_GE(ran, 29);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);

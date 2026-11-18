@@ -55,6 +55,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		SltEngineAPI engine{};
 		engine.abiVersion = SLT_BRIDGE_ABI_VERSION;
 		engine.layoutHash = SLT_BRIDGE_LAYOUT_HASH;
+		Generated::FillBindings(engine.bindings);
 		engine.reportException = &ReportException;
 		engine.log = &Log;
 		engine.getLastError = &GetLastError;

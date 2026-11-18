@@ -1,0 +1,53 @@
+{
+	"area": "Log",
+	"include": "ScriptLog.h",
+	"class": "Shalltear.Log",
+	"doc": "Engine log (shown in Console).",
+	"functions": [
+		{
+			"id": "Trace",
+			"cpp": "::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Trace, category, message)",
+			"returns": "void",
+			"params": [{ "name": "category", "type": "string" }, { "name": "message", "type": "string" }],
+			"thread": "any",
+			"csharp": { "member": "Trace", "kind": "method", "conditional": "DEBUG" },
+			"doc": "Trace row (calls compiled out without DEBUG)."
+		},
+		{
+			"id": "Debug",
+			"cpp": "::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Debug, category, message)",
+			"returns": "void",
+			"params": [{ "name": "category", "type": "string" }, { "name": "message", "type": "string" }],
+			"thread": "any",
+			"csharp": { "member": "Debug", "kind": "method", "conditional": "DEBUG" },
+			"doc": "Debug row (calls compiled out without DEBUG)."
+		},
+		{
+			"id": "Info",
+			"cpp": "::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Info, category, message)",
+			"returns": "void",
+			"params": [{ "name": "category", "type": "string" }, { "name": "message", "type": "string" }],
+			"thread": "any",
+			"csharp": { "member": "Info", "kind": "method" },
+			"doc": "Info row."
+		},
+		{
+			"id": "Warn",
+			"cpp": "::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Warn, category, message)",
+			"returns": "void",
+			"params": [{ "name": "category", "type": "string" }, { "name": "message", "type": "string" }],
+			"thread": "any",
+			"csharp": { "member": "Warn", "kind": "method" },
+			"doc": "Warning row."
+		},
+		{
+			"id": "Error",
+			"cpp": "::Shalltear::CSharpImpl::WriteLog(::Shalltear::LogLevel::Error, category, message)",
+			"returns": "void",
+			"params": [{ "name": "category", "type": "string" }, { "name": "message", "type": "string" }],
+			"thread": "any",
+			"csharp": { "member": "Error", "kind": "method" },
+			"doc": "Error row."
+		}
+	]
+}

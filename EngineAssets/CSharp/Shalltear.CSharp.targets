@@ -17,6 +17,9 @@
 		<StackTraceSupport>false</StackTraceSupport>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
 	</PropertyGroup>
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(Configuration)' == 'Release'">
+		<RuntimeHostConfigurationOption Include="Shalltear.ThreadChecks" Value="false" Trim="true" />
+	</ItemGroup>
 
 	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('win')) and '$(ShalltearWindowsLinker)' != 'VisualStudio'">
 		<ShalltearBundledLinker>true</ShalltearBundledLinker>

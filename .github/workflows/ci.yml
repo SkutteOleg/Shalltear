@@ -75,6 +75,9 @@ jobs:
       - name: Third-party notices are current
         run: python Scripts/generate_notices.py --check
 
+      - name: C# bindings are current
+        run: python Scripts/generate_csharp_bindings.py --check
+
       - name: Redistribution rules classify the whole toolchain
         working-directory: Scripts
         run: python staging_test.py

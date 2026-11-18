@@ -2,6 +2,7 @@
 
 #ifdef SLT_TEST_CSHARP_AOT
 
+#include "CSharpConformance.h"
 #include "TestHelperProcess.h"
 #include "TestPlatform.h"
 
@@ -19,12 +20,9 @@
 #include <map>
 
 using namespace Shalltear;
+using Shalltear::CSharpConformance::View;
 
 namespace {
-
-	std::string_view View(SltString text) {
-		return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
-	}
 
 	std::filesystem::path AOTDirectory() {
 		return std::filesystem::path(FileSystem::GetExecutablePath().ToString()).parent_path() / "CSharp" / "aot";
@@ -70,6 +68,7 @@ namespace {
 int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	JobSystem::Initialize();
 	LogManager::Initialize({true, false});
+	LogManager::SetGlobalLevel(LogLevel::Trace);
 	str error;
 	if (!library || !CSharpImpl::NativeAOTHost::Start(library, error)) {
 		std::printf("START FAILED %s\n", error.c_str());
@@ -80,6 +79,7 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	const SltManagedAPI& managed = CSharpImpl::ScriptRuntime::GetManaged();
 	std::printf("ENTRIES load=%d unload=%d\n", managed.loadUserAssemblies != nullptr, managed.unloadUserAssemblies != nullptr);
 	const int32_t count = managed.getConformanceTestCount();
+	const Time::FrameScope frame(CSharpConformance::MakeFrame());
 	for (int32_t index = 0; index < count; ++index) {
 		SltString name{};
 		managed.getConformanceTestName(index, &name);
@@ -103,13 +103,13 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 
 	int ran = 0;
 	for (const auto& [name, outcome] : run.cases) {
-		if (name.starts_with("Probe.")) {
+		if (CSharpConformance::IsProbe(name)) {
 			continue;
 		}
 		EXPECT_EQ(outcome.first, SLT_OK) << name << ": " << outcome.second;
 		++ran;
 	}
-	EXPECT_GE(ran, 12) << run.output;
+	EXPECT_GE(ran, 29) << run.output;
 	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
 }
 
@@ -128,6 +128,41 @@ TEST(CSharpNativeAOTTest, FailuresAndExceptionsAreReported) {
 	ASSERT_TRUE(run.cases.contains("Probe.ThrowsOnStartedThread")) << run.output;
 	EXPECT_EQ(run.cases.at("Probe.ThrowsOnStartedThread").first, SLT_OK);
 	EXPECT_TRUE(run.Has("System.InvalidOperationException: thrown on a started thread")) << run.output;
+}
+
+TEST(CSharpNativeAOTTest, LogReachesEngineLog) {
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	ASSERT_EQ(run.exitCode, 0) << run.output;
+
+	ASSERT_TRUE(run.cases.contains("LogProbe.WritesEachLevel")) << run.output;
+	EXPECT_EQ(run.cases.at("LogProbe.WritesEachLevel").first, SLT_OK);
+	EXPECT_TRUE(run.Has("[Conformance] [INFO] [:0]: info from C#")) << run.output;
+	EXPECT_TRUE(run.Has("[Conformance] [WARN] [:0]: warn from C#")) << run.output;
+	EXPECT_TRUE(run.Has("[Conformance] [ERROR] [:0]: error from C#")) << run.output;
+#ifdef NDEBUG
+	const bool debugRows = false;
+#else
+	const bool debugRows = true;
+#endif
+	EXPECT_EQ(run.Has("[Conformance] [TRACE] [:0]: trace from C#"), debugRows) << run.output;
+	EXPECT_EQ(run.Has("[Conformance] [DEBUG] [:0]: debug from C#"), debugRows) << run.output;
+
+	ASSERT_TRUE(run.cases.contains("LogProbe.WritesOddText")) << run.output;
+	EXPECT_EQ(run.cases.at("LogProbe.WritesOddText").first, SLT_OK);
+	EXPECT_TRUE(run.Has("xxxx caf\xC3\xA9 end")) << run.output;
+	EXPECT_TRUE(run.Has("[Conformance] [INFO] [:0]: info from a started thread")) << run.output;
+}
+
+TEST(CSharpNativeAOTTest, ReleaseLibraryDropsThreadChecks) {
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	ASSERT_EQ(run.exitCode, 0) << run.output;
+
+	ASSERT_TRUE(run.cases.contains("FeatureProbe.ReportsThreadChecks")) << run.output;
+#ifdef NDEBUG
+	EXPECT_EQ(run.cases.at("FeatureProbe.ReportsThreadChecks").second, "thread checks off");
+#else
+	EXPECT_EQ(run.cases.at("FeatureProbe.ReportsThreadChecks").second, "thread checks on");
+#endif
 }
 
 TEST(CSharpNativeAOTTest, MissingLibraryNamesTheFile) {

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,8 +8,8 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 1;
-	internal const ulong LAYOUT_HASH = 0;
+	internal const uint ABI_VERSION = 2;
+	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
 	internal const int FAILED = -1;
@@ -17,6 +18,7 @@ internal static unsafe class Bridge {
 
 	static SltEngineAPI _engine;
 	static volatile bool _attached;
+	static int _mainThreadId;
 	static bool _handlerInstalled;
 
 	[UnmanagedCallersOnly]
@@ -42,6 +44,8 @@ internal static unsafe class Bridge {
 		}
 
 		_engine = *engine;
+		Bindings.table = engine->bindings;
+		_mainThreadId = Environment.CurrentManagedThreadId;
 		_attached = true;
 		managed->loadUserAssemblies = null;
 		managed->unloadUserAssemblies = null;
@@ -58,6 +62,16 @@ internal static unsafe class Bridge {
 			});
 		}
 		return OK;
+	}
+
+	internal static bool OffMainThread {
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		get => RuntimeFeatures.ThreadChecks && Environment.CurrentManagedThreadId != _mainThreadId;
+	}
+
+	[DoesNotReturn]
+	internal static void ThrowOffMainThread(string member) {
+		throw new InvalidOperationException(member + " called off main thread. Call from main thread");
 	}
 
 	internal static void Report(Exception exception) {

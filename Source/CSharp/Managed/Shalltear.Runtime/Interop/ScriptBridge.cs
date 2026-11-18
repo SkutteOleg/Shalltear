@@ -19,6 +19,7 @@ internal unsafe struct SltEngineAPI {
 	public delegate* unmanaged<int, SltString, void> log;
 	public delegate* unmanaged<SltString*, void> getLastError;
 	public delegate* unmanaged<int> throwForTest;
+	public SltBindings bindings;
 }
 
 [StructLayout(LayoutKind.Sequential)]
