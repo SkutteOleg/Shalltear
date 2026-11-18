@@ -874,6 +874,10 @@ namespace TestPlatform {
 		return false;
 	}
 
+	bool BuildsCSharpPlayers() {
+		return false;
+	}
+
 	void* AllocateAligned(size_t size, size_t alignment) {
 		void* block = nullptr;
 		const size_t accepted = alignment < sizeof(void*) ? sizeof(void*) : alignment;

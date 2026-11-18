@@ -10,6 +10,7 @@
 #include "Shalltear/Core/Module/ModuleAPI.h"
 #include "Shalltear/Core/Serialization/JSON.h"
 
+#include "Shalltear/Editor/BuildPipeline.h"
 #include "Shalltear/Editor/PackageOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
@@ -99,9 +100,21 @@ TEST(CSharpPackageTest, LoadsAndUnloads) {
 	EXPECT_TRUE(ModuleSystem::IsLoaded(package));
 	EXPECT_NE(AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")), nullptr);
 	EXPECT_EQ(AssetImporterRegistry::FindByExtension(".cs"), AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")));
+	const auto scriptSteps = []() {
+		Vector<BuildStepDesc> steps{GetMemoryResource(MemTag::Debug)};
+		BuildStepRegistry::GetSteps(steps);
+		u32 count = 0;
+		for (const BuildStepDesc& step : steps) {
+			count += step.name.starts_with("csharp-") ? 1u : 0u;
+		}
+		return count;
+	};
+	EXPECT_EQ(scriptSteps(), 4u);
 	ModuleSystem::Unload(package);
 	EXPECT_FALSE(ModuleSystem::IsLoaded(package));
 	EXPECT_EQ(AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")), nullptr);
+	EXPECT_EQ(scriptSteps(), 0u);
+	BuildStepRegistry::Shutdown();
 #else
 	char token = 0;
 	SLT_CALL_LINKED_PACKAGE(CSharp, &token);

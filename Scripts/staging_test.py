@@ -1,5 +1,9 @@
+import contextlib
+import io
 import os
+import shutil
 import sys
+import tempfile
 
 import build_sdk
 import generate_notices
@@ -110,6 +114,83 @@ def check_rules(fail):
 	return checks
 
 
+CSHARP_CASES = (
+	('Shalltear.Runtime.dll', build_sdk.SHIP),
+	('Shalltear.Runtime.xml', build_sdk.SHIP),
+	('Shalltear.Runtime.runtimeconfig.json', build_sdk.SHIP),
+	('Shalltear.Generators.dll', build_sdk.SHIP),
+	('native/CRTShim.obj', build_sdk.SHIP),
+	('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.SHIP),
+	('native/libs/kernel32.lib', build_sdk.SHIP),
+	('Shalltear.Conformance.dll', build_sdk.DROP),
+)
+
+CSHARP_UNGOVERNED = (
+	'Mono.Cecil.dll',
+	'Microsoft.CodeAnalysis.dll',
+	'Shalltear.Runtime.deps.json',
+	'Shalltear.Runtime.pdb',
+	'ref/Shalltear.Runtime.dll',
+	'native/libs/kernel32.a',
+	'native/lld-link.exe',
+	'aot/Shalltear.ConformanceAOT.dll',
+)
+
+CSHARP_LICENSES = (build_sdk.ENGINE_LICENSE, build_sdk.LLVM_LICENSE, build_sdk.MINGW_RUNTIME_LICENSE)
+
+
+def check_csharp_rules(fail):
+	checks = 0
+	for relative, expected in CSHARP_CASES:
+		rule = build_sdk.classify(relative, build_sdk.CSHARP_RULES)
+		if rule is None or rule.verdict is not expected:
+			fail("CSharp/%s: expected %s" % (relative, 'SHIP' if expected else 'DROP'))
+		checks += 1
+	for relative in CSHARP_UNGOVERNED:
+		if build_sdk.classify(relative, build_sdk.CSHARP_RULES) is not None:
+			fail("CSharp/%s: an unknown file must stop the package" % relative)
+		checks += 1
+	for rule in build_sdk.CSHARP_RULES:
+		if rule.verdict is build_sdk.SHIP and rule.license not in CSHARP_LICENSES:
+			fail("a CSharp/ rule ships under %r. Add the Component to Scripts/generate_notices.py first" % rule.license)
+		checks += 1
+	builtins = build_sdk.classify('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.CSHARP_RULES)
+	if builtins is None or builtins.license != build_sdk.LLVM_LICENSE:
+		fail("compiler-rt's builtins ship under LLVM's license, not the import libs'")
+	checks += 1
+
+	def staged(names):
+		directory = tempfile.mkdtemp()
+		for name in names:
+			target = os.path.join(directory, name)
+			os.makedirs(os.path.dirname(target), exist_ok=True)
+			with open(target, 'w', encoding='utf-8') as out:
+				out.write(name)
+		left = None
+		try:
+			with contextlib.redirect_stdout(io.StringIO()):
+				build_sdk.stage_csharp(directory)
+			left = sorted(os.path.relpath(os.path.join(root, name), directory).replace(os.sep, '/')
+						  for root, _, files in os.walk(directory) for name in files)
+		except SystemExit:
+			pass
+		finally:
+			shutil.rmtree(directory, True)
+		return left
+
+	built = [relative for relative, _ in CSHARP_CASES]
+	shipped = sorted(relative for relative, verdict in CSHARP_CASES if verdict is build_sdk.SHIP)
+	if staged(built) != shipped:
+		fail("staging CSharp/ should leave %s" % ', '.join(shipped))
+	if staged(built + ['Mono.Cecil.dll']) is not None:
+		fail("staging CSharp/ accepted a file no rule governs")
+	if staged(built[1:]) is not None:
+		fail("staging CSharp/ accepted a build without %s" % built[0])
+	if staged([name for name in built if name != 'native/CRTShim.obj']) is not None:
+		fail("staging CSharp/ accepted a build without the link shim")
+	return checks + 4
+
+
 def check_real_tree(fail):
 	checks = 0
 	unclassified, shipped = [], 0
@@ -199,6 +280,7 @@ def main():
 		failures.append(message)
 
 	total = check_rules(fail)
+	total += check_csharp_rules(fail)
 	total += check_archive_pruning(fail)
 	if os.path.isdir(PREBUILT):
 		total += check_real_tree(fail)

@@ -102,6 +102,7 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 				authoring.projectPath = _options.projectPath;
 				authoring.projectFile = CSharpProjectFiles::GetProjectFile(CSharpProjectFiles::GetDefaultOptions(_options.projectPath, sdkRoot));
 				authoring.sdkRoot = sdkRoot;
+				authoring.buildServers = _options.buildServers;
 				CSharpAuthoring::Begin(authoring, _owner);
 			}
 		}

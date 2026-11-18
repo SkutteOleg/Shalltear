@@ -1,6 +1,8 @@
+#include "NativeAOTHost.h"
 #include "ScriptRuntime.h"
 
 #ifdef SLT_WITH_EDITOR
+#include "CSharpBuildSteps.h"
 #include "CSharpScriptAsset.h"
 #include "CSharpSetup.h"
 #endif
@@ -22,12 +24,16 @@ namespace Shalltear::CSharpImpl {
 		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Late, &TickStage, nullptr, owner);
 #ifdef SLT_WITH_EDITOR
 		CSharpEditor::CSharpScripts::RegisterImporter(owner);
+		CSharpEditor::CSharpBuildSteps::Register(owner);
+#else
+		NativeAOTHost::StartPlayer();
 #endif
 	}
 
 	void ShutdownPackage() {
 #ifdef SLT_WITH_EDITOR
 		CSharpEditor::CSharpSetup::Shutdown();
+		CSharpEditor::CSharpBuildSteps::Shutdown();
 #endif
 		ScriptRuntime::Detach();
 	}

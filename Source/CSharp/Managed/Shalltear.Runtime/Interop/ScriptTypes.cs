@@ -42,11 +42,13 @@ public readonly struct ScriptField {
 [EditorBrowsable(EditorBrowsableState.Never)]
 public readonly struct ScriptEnumConstant {
 	internal readonly string _name;
+	internal readonly ulong _nameHash;
 	internal readonly long _value;
 
 	/// <summary>1 constant of a serialized enum.</summary>
-	public ScriptEnumConstant(string name, long value) {
+	public ScriptEnumConstant(string name, ulong nameHash, long value) {
 		_name = name;
+		_nameHash = nameHash;
 		_value = value;
 	}
 }
@@ -87,6 +89,7 @@ public static unsafe class ScriptTypes {
 			byte* at = textStart;
 			for (int index = 0; index < constants.Length; ++index) {
 				descStart[index].name = Put(constants[index]._name, ref at, textEnd);
+				descStart[index].nameHash = constants[index]._nameHash;
 				descStart[index].value = constants[index]._value;
 			}
 			SltEnumDesc desc;

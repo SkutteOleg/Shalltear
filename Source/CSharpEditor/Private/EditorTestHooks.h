@@ -58,6 +58,7 @@ namespace Shalltear::CSharpEditor {
 		void (*reloadNow)();
 		bool (*isReloadHeld)();
 		void (*setBuildRunning)(bool running);
+		void (*hideSDK)(bool hidden);
 		bool (*areScriptsLoaded)();
 		CSharpReload::Outcome (*getReloadOutcome)();
 		u32 (*getReloadCount)();

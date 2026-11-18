@@ -19,6 +19,7 @@
 #include "Shalltear/Core/UI/UISystem.h"
 
 #include "Shalltear/Editor/BuildPipeline.h"
+#include "Shalltear/Editor/BuildTarget.h"
 #include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/EditTarget.h"
 #include "Shalltear/Editor/EditorConsole.h"
@@ -27,9 +28,11 @@
 #include "Shalltear/Editor/TypeNameOps.h"
 #include "Shalltear/Editor/UndoSystem.h"
 
+#include <algorithm>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <thread>
 
 using namespace Shalltear;
@@ -47,6 +50,12 @@ namespace {
 										   "\tpublic string label = \"second\";\n\tpublic int bonus = 42;\n\tpublic float speed = 5f;\n\tpublic SceneObject? target;\n}\n";
 
 	constexpr const char* WHIRLER = "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Whirler : Behavior {\n\tpublic float speed = 5f;\n}\n";
+
+	constexpr const char* PLAYER_ONLY = "namespace Space_Game;\n\npublic static class PlayerOnly {\n#if SHALLTEAR_PLAYER\n\tpublic static int Broken() {\n"
+										"\t\treturn missing;\n\t}\n#endif\n}\n";
+
+	constexpr const char* BOOT_REFUSED = "namespace Space_Game;\n\nstatic class Boot {\n\t[System.Runtime.CompilerServices.ModuleInitializer]\n"
+										 "\tinternal static void Start() {\n\t\tthrow new System.InvalidOperationException(\"boot refused\");\n\t}\n}\n";
 
 	constexpr const char* GREETER = "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Greeter : Behavior {\n"
 									"\tprotected override void OnEnable() {\n\t\tLog.Info(\"Game\", \"greeter on \" + Owner.Name);\n\t}\n}\n";
@@ -943,7 +952,9 @@ namespace {
 			EditorConsole::Terminate();
 			std::error_code ec;
 			fs::remove_all(_root, ec);
+			FileSystem::Unmount("project");
 			FileSystem::Unmount("engine");
+			BuildTargetRegistry::Shutdown();
 			CSharpRuntimeFixture::TearDown();
 		}
 
@@ -1017,6 +1028,33 @@ namespace {
 			_editor->shutdownAuthoring();
 			EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
 		}
+
+		BuildStepStatus RunStep(std::string_view name, BuildContext& context, f64 seconds, const std::function<bool()>& until = {}) {
+			Vector<BuildStepDesc> steps{GetMemoryResource(MemTag::Debug)};
+			BuildStepRegistry::GetSteps(steps);
+			const auto step = std::find_if(steps.begin(), steps.end(), [name](const BuildStepDesc& each) { return each.name == name; });
+			if (step == steps.end()) {
+				ADD_FAILURE() << "no build step named " << name;
+				return BuildStepStatus::Failed;
+			}
+			_profile.name = "Windows";
+			context.profile = &_profile;
+			context.target = BuildTargetRegistry::Find("Windows");
+			context.projectRoot = _project.generic_string();
+			context.configuration = "Debug";
+			BuildStepStatus status = BuildStepStatus::Running;
+			const auto deadline = std::chrono::steady_clock::now() + std::chrono::duration<f64>(seconds);
+			while (status == BuildStepStatus::Running && std::chrono::steady_clock::now() < deadline) {
+				status = step->fn(context);
+				if (until && until()) {
+					break;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			}
+			return status;
+		}
+
+		ResolvedProfile _profile;
 	};
 
 } // anonymous namespace
@@ -1262,6 +1300,171 @@ TEST_F(CSharpSessionTest, OpenCompilesGoneScriptOrMovedConfiguration) {
 	EXPECT_FALSE(_editor->getAuthoringCompile().IsBusy());
 	EXPECT_NE(Type("Spinner"), nullptr);
 	SettingsPresentation::UnregisterOwnedBy(&_sessionOwner);
+}
+
+TEST_F(CSharpSessionTest, PlayerBuildStartsWithCurrentScripts) {
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	Put("Assets/Scripts/Spinner.cs", SPINNER_SECOND);
+	_editor->setBuildRunning(true);
+	BuildContext current;
+	EXPECT_EQ(RunStep("csharp-load", current, 180.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+	EXPECT_TRUE(current.GetIssues().empty());
+	EXPECT_EQ(_editor->getReloadCount(), 2u);
+	EXPECT_NE(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+	EXPECT_FALSE(CompileStatus::Combine().reloadHeld);
+
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	CompileStatus::RequestCompile();
+	ASSERT_TRUE(PumpUntilIdle(180.0));
+	EXPECT_EQ(_editor->getReloadCount(), 2u);
+	EXPECT_TRUE(CompileStatus::Combine().reloadHeld);
+	_editor->setBuildRunning(false);
+	ASSERT_TRUE(PumpUntilReloads(3, 30.0));
+	EXPECT_EQ(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+
+	const u32 compiles = _editor->getAuthoringCompile().GetCompileCount();
+	BuildContext unchanged;
+	EXPECT_EQ(RunStep("csharp-load", unchanged, 180.0), BuildStepStatus::Succeeded);
+	EXPECT_EQ(_editor->getAuthoringCompile().GetCompileCount(), compiles + 1);
+	EXPECT_EQ(_editor->getReloadCount(), 3u);
+
+	Put("Assets/Scripts/Spinner.cs", str(SPINNER_FIRST) + "broken\n");
+	BuildContext broken;
+	EXPECT_EQ(RunStep("csharp-load", broken, 180.0), BuildStepStatus::Failed);
+	ASSERT_EQ(broken.GetIssues().size(), 1u);
+	EXPECT_NE(broken.GetIssues()[0].message.find("C# scripts don't compile"), str::npos) << broken.GetIssues()[0].message;
+	EXPECT_NE(Type("Spinner"), nullptr);
+	EXPECT_EQ(_editor->getReloadCount(), 3u);
+}
+
+TEST_F(CSharpSessionTest, PlayerBuildDuringPlayKeepsRunningScripts) {
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	EditorEvents::PlayModeChanged.Publish(EventBus::GetGlobal(), {PlayModeState::Playing});
+	Put("Assets/Scripts/Spinner.cs", SPINNER_SECOND);
+	const u32 compiles = _editor->getAuthoringCompile().GetCompileCount();
+	BuildContext context;
+	EXPECT_EQ(RunStep("csharp-load", context, 60.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+	EXPECT_TRUE(context.GetIssues().empty());
+	EXPECT_EQ(_editor->getAuthoringCompile().GetCompileCount(), compiles);
+	EXPECT_EQ(_editor->getReloadCount(), 1u);
+	EXPECT_EQ(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+	EditorEvents::PlayModeChanged.Publish(EventBus::GetGlobal(), {PlayModeState::Editing});
+}
+
+TEST_F(CSharpSessionTest, PlayerBuildWaitsUntilSceneTakesReload) {
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	Put("Assets/Scripts/Spinner.cs", SPINNER_SECOND);
+	SceneSystem::Destroy(SceneSystem::CreateObject("Doomed", _world));
+	const u32 compiles = _editor->getAuthoringCompile().GetCompileCount();
+	const auto compiled = [&] { return _editor->getAuthoringCompile().GetCompileCount() > compiles && !_editor->getAuthoringCompile().IsBusy(); };
+	BuildContext context;
+	EXPECT_EQ(RunStep("csharp-load", context, 180.0, compiled), BuildStepStatus::Running) << _log.Delivered().Joined();
+	EXPECT_EQ(_editor->getAuthoringCompile().GetState(), CompileState::Succeeded);
+	EXPECT_EQ(_editor->getReloadCount(), 1u);
+	EXPECT_EQ(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+
+	SceneSystem::EndFrame();
+	EXPECT_EQ(RunStep("csharp-load", context, 30.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+	EXPECT_TRUE(context.GetIssues().empty());
+	EXPECT_EQ(_editor->getReloadCount(), 2u);
+	EXPECT_NE(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+}
+
+TEST_F(CSharpSessionTest, PlayerBuildRefusesStaleScripts) {
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	Put("Assets/Scripts/Spinner.cs", SPINNER_SECOND);
+	Put("Assets/Scripts/Boot.cs", BOOT_REFUSED);
+	CompileStatus::RequestCompile();
+	ASSERT_TRUE(PumpUntilIdle(180.0));
+	ASSERT_EQ(_editor->getAuthoringCompile().GetState(), CompileState::Succeeded) << _log.Delivered().Joined();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::RolledBack) << _log.Delivered().Joined();
+	EditorEvents::PlayStarting.Publish(EventBus::GetGlobal(), {});
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	EXPECT_TRUE(_editor->areScriptsLoaded());
+	EXPECT_EQ(_editor->getReloadCount(), 3u);
+
+	BuildContext refused;
+	EXPECT_EQ(RunStep("csharp-load", refused, 180.0), BuildStepStatus::Failed);
+	ASSERT_EQ(refused.GetIssues().size(), 1u);
+	EXPECT_EQ(refused.GetIssues()[0].message, "C# scripts couldn't be loaded (errors in log above)");
+	EXPECT_EQ(_editor->getReloadCount(), 3u);
+	EXPECT_EQ(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+
+	ASSERT_TRUE(fs::remove(_project / "Assets" / "Scripts" / "Boot.cs"));
+	BuildContext fixed;
+	EXPECT_EQ(RunStep("csharp-load", fixed, 180.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+	EXPECT_TRUE(fixed.GetIssues().empty());
+	EXPECT_EQ(_editor->getReloadCount(), 4u);
+	EXPECT_NE(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+}
+
+TEST_F(CSharpSessionTest, PlayerCompileFailureNamesLinePerBuild) {
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Put("Assets/Scripts/PlayerOnly.cs", PLAYER_ONLY);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	FileSystem::Mount("project", Path(_project.generic_string()));
+	const fs::path source = _project / "Assets" / "Scripts" / "PlayerOnly.cs";
+	for (u32 build = 1; build <= 2; ++build) {
+		BuildContext context;
+		ASSERT_EQ(RunStep("csharp-validate", context, 10.0), BuildStepStatus::Succeeded);
+		EXPECT_EQ(RunStep("csharp-compile", context, 180.0), BuildStepStatus::Failed);
+		ASSERT_EQ(context.GetIssues().size(), 1u);
+		EXPECT_EQ(context.GetIssues()[0].message, "C# script compile failed (1 error(s) in log above)");
+		Vector<ConsoleEntry> rows{GetMemoryResource(MemTag::Editor)};
+		EditorConsole::ReadSince(0, rows);
+		u32 named = 0;
+		for (const ConsoleEntry& row : rows) {
+			if (row.category != "C#" || !row.file.ends_with("PlayerOnly.cs")) {
+				continue;
+			}
+			++named;
+			EXPECT_TRUE(fs::equivalent(fs::path(row.file), source)) << row.file;
+			EXPECT_EQ(row.level, LogLevel::Error);
+			EXPECT_EQ(row.line, 6u);
+			EXPECT_TRUE(row.clickable);
+			EXPECT_NE(row.message.find("CS0103: "), str::npos) << row.message;
+		}
+		EXPECT_EQ(named, build);
+	}
+
+	fs::remove(source);
+	Put("global.json", "{\"sdk\": {\"version\": \"99.0.100\", \"rollForward\": \"disable\"}}\n");
+	BuildContext unreachable;
+	ASSERT_EQ(RunStep("csharp-validate", unreachable, 10.0), BuildStepStatus::Succeeded);
+	EXPECT_EQ(RunStep("csharp-compile", unreachable, 180.0), BuildStepStatus::Failed);
+	ASSERT_EQ(unreachable.GetIssues().size(), 1u);
+	const str& said = unreachable.GetIssues()[0].message;
+	EXPECT_TRUE(said.starts_with("C# script compile failed with exit code ")) << said;
+	EXPECT_NE(said.find("Requested SDK version: 99.0.100"), str::npos) << said;
 }
 
 TEST_F(CSharpSessionTest, OpenHoldsReportsWhileCompiling) {

@@ -9,6 +9,7 @@
 
 #include "Shalltear/Core/Module.h"
 
+#include "Shalltear/Editor/BuildPipeline.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include <gtest/gtest.h>
@@ -42,6 +43,7 @@ namespace Shalltear::CSharpTests {
 				_hooks->detach();
 			}
 			ModuleSystem::Terminate();
+			BuildStepRegistry::Shutdown();
 		}
 
 		SltInitializeFn Host() {

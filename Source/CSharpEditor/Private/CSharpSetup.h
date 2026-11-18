@@ -23,6 +23,7 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 		str projectPath;
 		std::function<bool(const str& sdkRoot, str& outError)> startRuntime;
 		bool authoring = false;
+		bool buildServers = true;
 	};
 
 	Options GetDefaultOptions();

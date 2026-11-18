@@ -1272,6 +1272,70 @@ TEST_F(PlayerBuildIntegrationTest, LinkMatchesEnabledPackages) {
 	EXPECT_EQ(serverRun.find("type=MISSING"), str::npos) << serverRun;
 }
 
+TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
+	constexpr const char* PACKAGE_ID = "dev.shalltear.csharp";
+	constexpr const char* PACKAGE_ARCHIVE = "CSharp.a";
+	constexpr const char* PACKAGE_OBJECT = "ScriptRuntime.cpp.o";
+	constexpr const char* PACKAGE_SYMBOL = "Shalltear::CSharpImpl::";
+
+	std::filesystem::path project = _root / "ScriptlessProject";
+	std::filesystem::create_directories(project / "Assets");
+	{
+		Config projectFile;
+		projectFile.SetString("Project", "name", "Scriptless");
+		ASSERT_TRUE(projectFile.Save(Path(project.generic_string() + "/Project.ini")));
+	}
+	{
+		BuildProfile profile;
+		profile.name = "Windows";
+		profile.target = SLT_TEST_HOST_TARGET;
+		profile.SetList("scenes", Vector<str>{});
+		profile.SetString("configuration", _config);
+		ASSERT_TRUE(BuildProfileOps::SaveProfile(
+			BuildProfileOps::GetProfilePath(project.generic_string(), "Windows"), profile));
+	}
+	const std::filesystem::path staging = project / "Builds" / "Windows";
+	const str command = "\"" + EditorExecutable() + "\" --project \"" + project.generic_string() + "\" --build Windows";
+	const auto build = [&](const std::filesystem::path& map, int& exitCode) {
+		const str previous = TestPlatform::GetEnvironment("LDFLAGS");
+		TestPlatform::SetEnvironment("LDFLAGS", "-Wl,-Map=" + map.generic_string());
+		str log = RunCommand(command, exitCode);
+		TestPlatform::SetEnvironment("LDFLAGS", previous);
+		return log;
+	};
+
+	int exitCode = 0;
+	const std::filesystem::path plainMap = _root / "scriptless.map";
+	const str plainLog = build(plainMap, exitCode);
+	ASSERT_EQ(exitCode, 0) << plainLog;
+	const str plain = ReadAllBytes(plainMap);
+	ASSERT_NE(plain.find("TypeRegistry.cpp.o"), str::npos) << plainLog;
+	ASSERT_NE(plain.find("Shalltear::TypeRegistry::"), str::npos) << plainLog;
+	EXPECT_EQ(plain.find(PACKAGE_OBJECT), str::npos);
+	EXPECT_EQ(plain.find(PACKAGE_SYMBOL), str::npos);
+	EXPECT_EQ(plain.find("NativeAOTHost"), str::npos);
+	std::error_code ec;
+	for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(staging, ec)) {
+		EXPECT_EQ(entry.path().filename().generic_string().find("GameScripts"), str::npos) << entry.path().generic_string();
+	}
+
+	if (!std::filesystem::is_regular_file(std::filesystem::path(SDKRoot()) / "lib" / PACKAGE_ARCHIVE, ec)) {
+		return;
+	}
+	{
+		Config settings;
+		settings.SetString("Packages", "enabled", PACKAGE_ID);
+		ASSERT_TRUE(settings.Save(Path(project.generic_string() + "/ProjectSettings.ini")));
+	}
+	std::filesystem::remove_all(project / "Library" / "Player", ec);
+	const std::filesystem::path scriptedMap = _root / "scripted.map";
+	const str scriptedLog = build(scriptedMap, exitCode);
+	ASSERT_EQ(exitCode, 0) << scriptedLog;
+	const str scripted = ReadAllBytes(scriptedMap);
+	EXPECT_NE(scripted.find(PACKAGE_OBJECT), str::npos) << scriptedLog;
+	EXPECT_NE(scripted.find(PACKAGE_SYMBOL), str::npos) << scriptedLog;
+}
+
 TEST_F(PlayerBuildIntegrationTest, DisabledPackageLinkRefused) {
 	Config projectFile;
 	projectFile.SetString("Project", "name", "PackageCallProbe");

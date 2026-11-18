@@ -5,8 +5,12 @@
 #if defined(SHALLTEAR_SHARED)
 
 #include "CSharpRuntimeFixture.h"
+#include "CSharpScenarioUtil.h"
 #include "TestPlatform.h"
 
+#include "Shalltear/Core/Serialization/TextSerializer.h"
+
+#include <format>
 #include <fstream>
 #include <optional>
 
@@ -129,6 +133,144 @@ TEST_F(CSharpGeneratorTest, ScriptPathsProjectRelativeAbsentInPlayer) {
 	EXPECT_NE(player.find("Scratch.Near(), null"), str::npos) << player;
 	EXPECT_EQ(player.find("Scripts.cs"), str::npos) << player;
 	std::filesystem::remove_all(outside, ec);
+}
+
+TEST_F(CSharpGeneratorTest, ReleasePlayerTableHashedLoadsSceneText) {
+	const str source = "using Shalltear;\nnamespace Scratch;\npublic enum Gear { Low = 2, High = 5 }\n[System.Serializable]\npublic struct Tuning {\n\tpublic float grip;\n}\n"
+					   "public sealed class Racer : Behavior {\n\t[Tooltip(\"how fast\")]\n\tpublic float speed = 1.5f;\n"
+					   "\t[Header(\"Driving\")]\n\tpublic Gear gear = Gear.Low;\n\tpublic Tuning tuning;\n\tpublic Racer rival;\n"
+					   "\tpublic System.Collections.Generic.List<Racer> pack = new();\n}\n";
+	const str head = "\t<ItemGroup>\n\t\t<CompilerVisibleProperty Include=\"ShalltearScriptNames\" />\n\t</ItemGroup>\n"
+					 "\t<PropertyGroup>\n\t\t<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>\n";
+	const auto table = [&]() {
+		str text;
+		std::error_code ec;
+		for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(_root / "obj", ec)) {
+			if (entry.path().filename() == "TypeTable.g.cs") {
+				std::ifstream file(entry.path(), std::ios::binary);
+				text.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+			}
+		}
+		return text;
+	};
+	const char* names[] = {"\"Scratch.Racer\"",
+						   "\"Scratch.Gear\"",
+						   "\"Scratch.Tuning\"",
+						   "\"speed\"",
+						   "\"grip\"",
+						   "\"High\"",
+						   "\"Scratch.Racer.rival\"",
+						   "\"Scratch.Racer.pack\""};
+
+	int exitCode = 0;
+	str output = Build(source, exitCode, head + "\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	const str editor = table();
+	for (const char* name : names) {
+		EXPECT_NE(editor.find(name), str::npos) << name;
+	}
+	EXPECT_NE(editor.find("how fast"), str::npos) << editor;
+	EXPECT_NE(editor.find("\"Driving\""), str::npos) << editor;
+	EXPECT_NE(editor.find("static class TypeTable"), str::npos);
+	EXPECT_EQ(editor.find("public static class TypeTable"), str::npos);
+	EXPECT_NE(editor.find("internal static void Register()"), str::npos);
+
+	std::error_code ec;
+	std::filesystem::remove_all(_root / "obj", ec);
+	output = Build(source, exitCode, head + "\t\t<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>\n\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	const str development = table();
+	for (const char* name : names) {
+		EXPECT_NE(development.find(name), str::npos) << name;
+	}
+	EXPECT_EQ(development.find("how fast"), str::npos) << development;
+	EXPECT_EQ(development.find("\"Driving\""), str::npos) << development;
+	EXPECT_NE(development.find("public static class TypeTable"), str::npos);
+	EXPECT_NE(development.find("public static void Register()"), str::npos);
+
+	std::filesystem::remove_all(_root / "obj", ec);
+	output = Build(source, exitCode,
+				   head + "\t\t<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>\n"
+						  "\t\t<ShalltearScriptNames>hashed</ShalltearScriptNames>\n\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	const str release = table();
+	ASSERT_FALSE(release.empty());
+	for (const char* name : names) {
+		EXPECT_EQ(release.find(name), str::npos) << name;
+	}
+	EXPECT_EQ(release.find("how fast"), str::npos) << release;
+	EXPECT_EQ(release.find("\"Driving\""), str::npos) << release;
+	EXPECT_NE(release.find(std::format("{:016x}UL", StringHash("Scratch.Racer").GetValue())), str::npos) << release;
+
+	str library;
+	for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(_root / "bin", ec)) {
+		if (entry.path().filename() == "Scratch.dll") {
+			library = entry.path().generic_string();
+		}
+	}
+	ASSERT_FALSE(library.empty());
+	ASSERT_TRUE(Attach()) << _error;
+	SceneSystem::Initialize();
+	const SltString paths[] = {SltString{library.data(), static_cast<int32_t>(library.size())}};
+	ASSERT_EQ(_hooks->getManaged().loadUserAssemblies(paths, 1), SLT_OK) << _log.Delivered().Joined();
+	const TypeInfo* racer = TypeRegistry::FindType(StringHash("Scratch.Racer"));
+	ASSERT_NE(racer, nullptr) << _log.Delivered().Joined();
+	EXPECT_EQ(str(racer->displayName), std::format("{:016x}", StringHash("Scratch.Racer").GetValue()));
+	const FieldInfo* speed = FindField(racer, StringHash("speed"));
+	ASSERT_NE(speed, nullptr);
+	EXPECT_EQ(speed->displayName, nullptr);
+	const TypeInfo* gear = TypeRegistry::FindType(StringHash("Scratch.Gear"));
+	ASSERT_NE(gear, nullptr);
+	ASSERT_EQ(gear->enumConstantCount, 2u);
+	EXPECT_EQ(gear->enumConstants[1].displayName, nullptr);
+	{
+		Handle<Scene> scene = SceneSystem::CreateScene("Track");
+		Handle<Component> made = SceneSystem::CreateObject("Car", scene)->AddComponent(racer);
+		ASSERT_TRUE(made.IsValid()) << _log.Delivered().Joined();
+		EXPECT_FLOAT_EQ(CSharpScenarios::Read<f32>(made, "speed"), 1.5f);
+		EXPECT_EQ(CSharpScenarios::Read<i64>(made, "gear"), 2);
+		ASSERT_TRUE(TextSerializer::Deserialize(made.Get(), racer, R"({"speed": 4.25, "gear": "High", "tuning": {"grip": 0.5}})"));
+		EXPECT_FLOAT_EQ(CSharpScenarios::Read<f32>(made, "speed"), 4.25f);
+		EXPECT_EQ(CSharpScenarios::Read<i64>(made, "gear"), 5);
+		const str written = TextSerializer::Serialize(made.Get(), racer);
+		EXPECT_NE(written.find("0.5"), str::npos) << written;
+		SceneSystem::UnloadScene(scene);
+		SceneSystem::EndFrame();
+	}
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("Scratch.Racer")), nullptr);
+	SceneSystem::Terminate();
+	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Warn), 0u) << _log.Delivered().Joined();
+}
+
+TEST_F(CSharpGeneratorTest, PlayerTableExistsWithoutComponents) {
+	const str source = "namespace Scratch;\npublic sealed class Helper {\n\tpublic int uses;\n}\n";
+	const str head = "\t<PropertyGroup>\n\t\t<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>\n";
+	const auto table = [&]() {
+		str text;
+		std::error_code ec;
+		for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(_root / "obj", ec)) {
+			if (entry.path().filename() == "TypeTable.g.cs") {
+				std::ifstream file(entry.path(), std::ios::binary);
+				text.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+			}
+		}
+		return text;
+	};
+
+	int exitCode = 0;
+	str output = Build(source, exitCode, head + "\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	EXPECT_TRUE(table().empty());
+
+	std::error_code ec;
+	std::filesystem::remove_all(_root / "obj", ec);
+	output = Build(source, exitCode, head + "\t\t<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>\n\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	const str player = table();
+	EXPECT_NE(player.find("public static class TypeTable"), str::npos) << player;
+	EXPECT_NE(player.find("public static void Register()"), str::npos) << player;
+	EXPECT_EQ(player.find("Register<"), str::npos) << player;
 }
 
 TEST_F(CSharpGeneratorTest, TooManyFieldsFailTheCompile) {

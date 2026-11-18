@@ -45,6 +45,10 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 
 	DiscoveryOptions GetDefaultDiscovery();
 
+#ifdef SLT_CSHARP_TEST_HOOKS
+	void HideSDKForTest(bool hidden);
+#endif
+
 	bool HoldsPin(const str& root, const Pin& pin);
 
 	Info Discover(const Pin& pin, const DiscoveryOptions& options);

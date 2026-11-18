@@ -84,8 +84,23 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 		return (fs::path(sdkRoot) / HostFxr::GetMuxerName()).generic_string();
 	}
 
+#ifdef SLT_CSHARP_TEST_HOOKS
+	namespace {
+		bool _hiddenForTest = false;
+	} // anonymous namespace
+
+	void HideSDKForTest(bool hidden) {
+		_hiddenForTest = hidden;
+	}
+#endif
+
 	DiscoveryOptions GetDefaultDiscovery() {
 		DiscoveryOptions options;
+#ifdef SLT_CSHARP_TEST_HOOKS
+		if (_hiddenForTest) {
+			return options;
+		}
+#endif
 		options.overrideRoot = CSharpSettings::GetUser().sdkPath;
 		options.cacheRoot = GetCacheRoot();
 		const str source = ReadEngineSourceDirectory(ScriptProjectOps::GetSDKRoot());

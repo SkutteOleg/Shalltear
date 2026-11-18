@@ -61,6 +61,7 @@ namespace TestPlatform {
 	str MakeCompilerAlias(const str& compilerPath, const str& directory);
 	bool MonitorsAlwaysReportRefreshRate();
 	bool ChangesDisplayModes();
+	bool BuildsCSharpPlayers();
 
 	str FindSystemFont(std::string_view fileName);
 	bool SystemFontsCover(char32_t codepoint);

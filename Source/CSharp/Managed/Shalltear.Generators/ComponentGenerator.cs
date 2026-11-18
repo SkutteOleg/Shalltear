@@ -148,6 +148,18 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public readonly List<Problem> problems = new();
 	}
 
+	sealed class Target : IEquatable<Target> {
+		public string scriptRoot = "";
+		public bool player;
+		public bool hashedNames;
+
+		public bool Equals(Target? other) => other != null && scriptRoot == other.scriptRoot && player == other.player && hashedNames == other.hashedNames;
+
+		public override bool Equals(object? other) => Equals(other as Target);
+
+		public override int GetHashCode() => scriptRoot.GetHashCode();
+	}
+
 	sealed class Component : IEquatable<Component> {
 		public string name = "";
 		public string qualified = "";
@@ -182,15 +194,18 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			static (node, _) => node is ClassDeclarationSyntax declaration && declaration.BaseList != null,
 			static (syntax, cancel) => Describe(syntax.SemanticModel.GetDeclaredSymbol((ClassDeclarationSyntax)syntax.Node, cancel) as INamedTypeSymbol));
 		IncrementalValuesProvider<Component> components = classes.Where(static component => component != null)!;
-		IncrementalValueProvider<string> scriptRoot = context.AnalyzerConfigOptionsProvider.Combine(context.ParseOptionsProvider).Select(static (pair, _) => {
-			if (pair.Right.PreprocessorSymbolNames.Contains("SHALLTEAR_PLAYER")) {
-				return "";
+		IncrementalValueProvider<Target> target = context.AnalyzerConfigOptionsProvider.Combine(context.ParseOptionsProvider).Select(static (pair, _) => {
+			Target target = new() { player = pair.Right.PreprocessorSymbolNames.Contains("SHALLTEAR_PLAYER") };
+			if (target.player) {
+				target.hashedNames = pair.Left.GlobalOptions.TryGetValue("build_property.ShalltearScriptNames", out string? names) && names == "hashed";
+			} else if (pair.Left.GlobalOptions.TryGetValue("build_property.MSBuildProjectDirectory", out string? directory)) {
+				target.scriptRoot = directory ?? "";
 			}
-			return pair.Left.GlobalOptions.TryGetValue("build_property.MSBuildProjectDirectory", out string? directory) ? directory ?? "" : "";
+			return target;
 		});
-		context.RegisterSourceOutput(components.Collect().Combine(scriptRoot), static (output, pair) => {
-			ImmutableArray<Component> found = pair.Left;
-			if (found.IsDefaultOrEmpty) {
+		context.RegisterSourceOutput(components.Collect().Combine(target), static (output, pair) => {
+			ImmutableArray<Component> found = pair.Left.IsDefault ? ImmutableArray<Component>.Empty : pair.Left;
+			if (found.IsEmpty && !pair.Right.player) {
 				return;
 			}
 			List<Component> ordered = new();
@@ -529,16 +544,20 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		return value.ToString("R", CultureInfo.InvariantCulture) + "f";
 	}
 
-	static string Spec(Field field) {
+	static string Name(string name, Target target) {
+		return target.hashedNames ? "\"\"" : Literal(name);
+	}
+
+	static string Spec(Field field, Target target) {
 		string[] spec = {
-			Literal(field.name),
+			Name(field.name, target),
 			Hex(Hash(field.name)),
 			field.kind.kind.ToString(CultureInfo.InvariantCulture),
 			field.flags.ToString(CultureInfo.InvariantCulture) + "u",
 			Literal(field.rangeMin),
 			Literal(field.rangeMax),
-			Literal(field.tooltip),
-			Literal(field.header),
+			target.player ? "null" : Literal(field.tooltip),
+			target.player ? "null" : Literal(field.header),
 			field.kind.typeName.Length == 0 ? "0UL" : Hex(Hash(field.kind.typeName)),
 		};
 		return "new(" + string.Join(", ", spec) + ")";
@@ -546,6 +565,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 
 	sealed class Writer {
 		public readonly Dictionary<string, int> values = new(StringComparer.Ordinal);
+		public bool hashedNames;
 		int _locals;
 
 		public void Push(StringBuilder to, string tabs, FieldType type, string access, string at, string? cache) {
@@ -586,7 +606,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			}
 			case KIND_OBJECT:
 				to.Append(tabs).Append(SHADOW).Append(type.reference == Reference.Script ? ".ReadScript<" : ".ReadObject<").Append(type.element).Append(">(").Append(at).Append(", out ").Append(access);
-				to.Append(type.reference == Reference.Script ? ", " + Literal(member) : "").Append(");\n");
+				to.Append(type.reference == Reference.Script ? ", " + Literal(hashedNames ? "" : member) : "").Append(");\n");
 				break;
 			case KIND_VALUE:
 				to.Append(tabs).Append("PullValue").Append(values[type.typeName]).Append("(ref ").Append(access).Append(", ").Append(at).Append(");\n");
@@ -628,7 +648,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				return;
 			case KIND_OBJECT:
 				to.Append(tabs).Append(SHADOW).Append(type.reference == Reference.Script ? ".ReadScripts<" : ".ReadObjects<").Append(type.element).Append(">(").Append(at).Append(", ref ").Append(access);
-				to.Append(type.reference == Reference.Script ? ", " + Literal(member) : "").Append(");\n");
+				to.Append(type.reference == Reference.Script ? ", " + Literal(hashedNames ? "" : member) : "").Append(");\n");
 				return;
 			case KIND_VALUE:
 				break;
@@ -650,17 +670,18 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		return "\t[global::System.Runtime.CompilerServices.UnsafeAccessor(global::System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = " + Literal(name) + ")]\n";
 	}
 
-	static void RenderEnum(StringBuilder text, EnumType type, int index) {
+	static void RenderEnum(StringBuilder text, EnumType type, int index, Target target) {
 		text.Append("\n\tstatic void RegisterEnum").Append(index).Append("() {\n");
-		text.Append("\t\t").Append(TYPES).Append(".RegisterEnum(").Append(Literal(type.name)).Append(", ").Append(Hex(Hash(type.name))).Append(", ").Append(type.size);
+		text.Append("\t\t").Append(TYPES).Append(".RegisterEnum(").Append(Name(type.name, target)).Append(", ").Append(Hex(Hash(type.name))).Append(", ").Append(type.size);
 		text.Append(", new global::Shalltear.Interop.ScriptEnumConstant[] {\n");
 		foreach (KeyValuePair<string, long> constant in type.constants) {
-			text.Append("\t\t\tnew(").Append(Literal(constant.Key)).Append(", ").Append(constant.Value.ToString(CultureInfo.InvariantCulture)).Append("L),\n");
+			text.Append("\t\t\tnew(").Append(Name(constant.Key, target)).Append(", ").Append(Hex(Hash(constant.Key))).Append(", ");
+			text.Append(constant.Value.ToString(CultureInfo.InvariantCulture)).Append("L),\n");
 		}
 		text.Append("\t\t});\n\t}\n");
 	}
 
-	static void RenderValue(StringBuilder text, Writer writer, ValueType type, int index) {
+	static void RenderValue(StringBuilder text, Writer writer, ValueType type, int index, Target target) {
 		StringBuilder specs = new();
 		StringBuilder push = new();
 		StringBuilder pull = new();
@@ -677,7 +698,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				text.Append("\tstatic extern ref ").Append(field.type).Append(' ').Append(accessor).Append('(').Append(type.isClass ? "" : "ref ").Append(field.owner).Append(" value);\n");
 				access = accessor + "(" + (type.isClass ? "" : "ref ") + "value)";
 			}
-			specs.Append("\t\t\t").Append(Spec(field)).Append(",\n");
+			specs.Append("\t\t\t").Append(Spec(field, target)).Append(",\n");
 			writer.Push(push, "\t\t", field.kind, access, "at + " + offset, null);
 			writer.Pull(pull, "\t\t", field.kind, access, "at + " + offset, null, type.name + "." + field.name);
 			offsets.Append("\t\t").Append(offset).Append(" = offsets[").Append(slot.ToString(CultureInfo.InvariantCulture)).Append("];\n");
@@ -697,7 +718,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append(pull).Append("\t}\n");
 		text.Append("\n\tstatic void RegisterValue").Append(index).Append("() {\n");
 		text.Append("\t\tglobal::System.Span<int> offsets = stackalloc int[").Append(type.fields.Length).Append("];\n");
-		text.Append("\t\t_valueSize").Append(index).Append(" = ").Append(TYPES).Append(".RegisterValue(").Append(Literal(type.name)).Append(", ").Append(Hex(Hash(type.name)));
+		text.Append("\t\t_valueSize").Append(index).Append(" = ").Append(TYPES).Append(".RegisterValue(").Append(Name(type.name, target)).Append(", ").Append(Hex(Hash(type.name)));
 		text.Append(", new global::Shalltear.Interop.ScriptField[] {\n").Append(specs).Append("\t\t}, offsets);\n");
 		text.Append(offsets).Append("\t}\n");
 	}
@@ -711,7 +732,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		return Literal(file.Substring(folder.Length));
 	}
 
-	static string Render(List<Component> components, string scriptRoot) {
+	static string Render(List<Component> components, Target target) {
 		List<EnumType> enums = new();
 		List<ValueType> values = new();
 		HashSet<string> seen = new(StringComparer.Ordinal);
@@ -722,37 +743,37 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		enums.Sort(static (left, right) => string.CompareOrdinal(left.name, right.name));
 		values.Sort(static (left, right) => left.depth != right.depth ? left.depth.CompareTo(right.depth) : string.CompareOrdinal(left.name, right.name));
 
-		Writer writer = new();
+		Writer writer = new() { hashedNames = target.hashedNames };
 		StringBuilder text = new();
 		text.Append("// <auto-generated/>\n");
 		text.Append("#nullable disable\n");
 		text.Append("#pragma warning disable CA2255\n");
 		text.Append("namespace Shalltear.Generated;\n\n");
-		text.Append("static class TypeTable {\n");
+		text.Append(target.player ? "public " : "").Append("static class TypeTable {\n");
 		text.Append("\tstatic bool _registered;\n");
 		StringBuilder calls = new();
 		for (int index = 0; index < enums.Count; ++index) {
-			RenderEnum(text, enums[index], index);
+			RenderEnum(text, enums[index], index, target);
 			calls.Append("\t\tRegisterEnum").Append(index).Append("();\n");
 		}
 		for (int index = 0; index < values.Count; ++index) {
 			writer.values.Add(values[index].name, index);
 		}
 		for (int index = 0; index < values.Count; ++index) {
-			RenderValue(text, writer, values[index], index);
+			RenderValue(text, writer, values[index], index, target);
 			calls.Append("\t\tRegisterValue").Append(index).Append("();\n");
 		}
 		for (int index = 0; index < components.Count; ++index) {
 			Component component = components[index];
 			string[] head = {
-				Literal(component.name),
+				Name(component.name, target),
 				Hex(Hash(component.name)),
 				component.parent.Length == 0 ? "0UL" : Hex(Hash(component.parent)),
 				component.isAbstract ? "true" : "false",
 				component.hookMask.ToString(CultureInfo.InvariantCulture) + "u",
 				((component.hookMask >> 5) & 7u).ToString(CultureInfo.InvariantCulture) + "u",
 				component.isAbstract ? "null" : "static () => new " + component.qualified + "()",
-				ScriptOf(component, scriptRoot),
+				ScriptOf(component, target.scriptRoot),
 			};
 			string register = "\t\t" + TYPES + ".Register<" + component.qualified + ">(" + string.Join(", ", head);
 			if (component.fields.Length == 0) {
@@ -788,7 +809,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				if (field.kind.kind == KIND_STRING && field.kind.shape == Shape.Single) {
 					cache = "_textBase" + index + " + " + texts++;
 				}
-				specs.Append("\t\t\t").Append(Spec(field)).Append(",\n");
+				specs.Append("\t\t\t").Append(Spec(field, target)).Append(",\n");
 				writer.Push(push, "\t\t", field.kind, access, "shadow + " + offset, cache);
 				writer.Pull(pull, "\t\t", field.kind, access, "shadow + " + offset, cache, component.name + "." + field.name);
 				offsets.Append("\t\t").Append(offset).Append(" = offsets[").Append(slot.ToString(CultureInfo.InvariantCulture)).Append("];\n");
@@ -807,7 +828,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			calls.Append("\t\tRegister").Append(index).Append("();\n");
 		}
 		text.Append("\n\t[global::System.Runtime.CompilerServices.ModuleInitializer]\n");
-		text.Append("\tinternal static void Register() {\n");
+		text.Append(target.player ? "\tpublic" : "\tinternal").Append(" static void Register() {\n");
 		text.Append("\t\tif (_registered || !").Append(TYPES).Append(".IsAttached) {\n\t\t\treturn;\n\t\t}\n");
 		text.Append("\t\t_registered = true;\n");
 		text.Append(calls);

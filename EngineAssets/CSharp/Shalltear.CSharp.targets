@@ -30,6 +30,10 @@
 		<IlcUseEnvironmentalTools>true</IlcUseEnvironmentalTools>
 	</PropertyGroup>
 
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('win'))">
+		<LinkerArg Include="/PDBALTPATH:%25_PDB%25" />
+	</ItemGroup>
+
 	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true'">
 		<Error Condition="!Exists('$(ShalltearLinkerDir)lld-link.exe')" Text="lld-link.exe was not found in '$(ShalltearLinkerDir)'. Set ShalltearLinkerDir (or ShalltearWindowsLinker=VisualStudio)" />
 		<Error Condition="!Exists('$(ShalltearNativeDir)CRTShim.obj')" Text="CRTShim.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />
@@ -42,7 +46,6 @@
 			<LinkerArg Include="ucrt.lib" />
 			<LinkerArg Include="clang_rt.builtins-x86_64.lib" />
 			<LinkerArg Include="&quot;$(ShalltearNativeDir)CRTShim.obj&quot;" />
-			<LinkerArg Include="/PDBALTPATH:%25_PDB%25" />
 			<LinkerArg Include="/Brepro" />
 		</ItemGroup>
 	</Target>

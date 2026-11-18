@@ -333,6 +333,8 @@ TEST(CSharpWindowsLinkTest, LinkNamesNoVisualStudioFile) {
 	u32 bare = 0;
 	u32 searchPaths = 0;
 	bool withoutDefaults = false;
+	bool repeatable = false;
+	bool symbolsByName = false;
 	size_t start = 0;
 	while (start < inputs.size()) {
 		size_t end = inputs.find_first_of("\r\n", start);
@@ -342,6 +344,8 @@ TEST(CSharpWindowsLinkTest, LinkNamesNoVisualStudioFile) {
 		str token = inputs.substr(start, end - start);
 		start = end + 1;
 		withoutDefaults = withoutDefaults || token == "/NODEFAULTLIB";
+		repeatable = repeatable || token == "/Brepro";
+		symbolsByName = symbolsByName || token == "/PDBALTPATH:%_PDB%";
 		if (token.starts_with("/LIBPATH:")) {
 			++searchPaths;
 			continue;
@@ -358,6 +362,8 @@ TEST(CSharpWindowsLinkTest, LinkNamesNoVisualStudioFile) {
 	EXPECT_GE(bare, 17u);
 	EXPECT_EQ(searchPaths, 1u);
 	EXPECT_TRUE(withoutDefaults);
+	EXPECT_TRUE(repeatable);
+	EXPECT_TRUE(symbolsByName);
 }
 
 #endif

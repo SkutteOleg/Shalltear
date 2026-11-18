@@ -111,6 +111,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* Shallt
 		&CSharpReload::ReloadNow,
 		&CSharpReload::IsHeld,
 		&CSharpReload::SetBuildRunningForTest,
+		&DotNetToolchain::HideSDKForTest,
 		&CSharpReload::IsLoaded,
 		&CSharpReload::GetLastOutcome,
 		&CSharpReload::GetReloadCount,

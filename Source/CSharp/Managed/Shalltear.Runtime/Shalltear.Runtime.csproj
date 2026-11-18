@@ -13,5 +13,6 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="Shalltear.Conformance" />
 		<InternalsVisibleTo Include="Shalltear.ConformanceAOT" />
+		<InternalsVisibleTo Include="GameScripts" />
 	</ItemGroup>
 </Project>

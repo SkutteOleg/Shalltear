@@ -3,8 +3,14 @@
 #include "NativeAOTHost.h"
 
 #include "HostLibrary.h"
+#include "ManagedTypes.h"
 #include "ScriptRuntime.h"
 
+#include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Time.h"
+
+#include <filesystem>
 #include <format>
 
 namespace Shalltear::CSharpImpl::NativeAOTHost {
@@ -22,6 +28,25 @@ namespace Shalltear::CSharpImpl::NativeAOTHost {
 			return false;
 		}
 		return ScriptRuntime::Attach(initialize, outError);
+	}
+
+	void StartPlayer() {
+		const str name = GetPlayerLibraryName();
+		const str library = FileSystem::GetExecutablePath().GetDirectory() + "/" + name;
+		std::error_code ec;
+		if (!std::filesystem::is_regular_file(std::filesystem::path(library), ec)) {
+			return;
+		}
+		const u64 begin = Time::GetTicks();
+		str error;
+		if (!Start(library, error)) {
+			SLT_LOG_ERROR("C#", "{}", error);
+			return;
+		}
+		u32 types = 0;
+		ManagedTypes::ForEachType([](const ManagedType&, void* user) { ++*static_cast<u32*>(user); }, &types);
+		SLT_LOG_INFO("C#", "{} started in {:.1f} ms ({} script type(s))", name,
+					 static_cast<f64>(Time::GetTicks() - begin) * 1000.0 / static_cast<f64>(Time::GetTicksPerSecond()), types);
 	}
 
 } // namespace Shalltear::CSharpImpl::NativeAOTHost

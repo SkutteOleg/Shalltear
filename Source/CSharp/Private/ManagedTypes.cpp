@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <format>
 #include <initializer_list>
 #include <map>
 #include <new>
@@ -117,12 +118,19 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		}
 
 		bool NameMatches(std::string_view kind, std::string_view name, u64 nameHash) {
+			if (name.empty() && nameHash != 0) {
+				return true;
+			}
 			const StringHash hash(name);
 			if (!name.empty() && hash.GetValue() == nameHash) {
 				return true;
 			}
 			SLT_LOG_ERROR("C#", "C# {} '{}' has name hash {:016x}, engine computes {:016x}. Rebuild the scripts", kind, name, nameHash, hash.GetValue());
 			return false;
+		}
+
+		str LabelOf(std::string_view name, u64 nameHash) {
+			return name.empty() ? std::format("{:016x}", nameHash) : str(name);
 		}
 
 		Object* Create(const TypeInfo* info, MemTag tag) {
@@ -298,10 +306,10 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 	ManagedBehavior* dirtyHead = nullptr;
 
 	i32 Register(const SltTypeDesc& desc) {
-		const std::string_view name = View(desc.name);
-		if (!NameMatches("type", name, desc.nameHash)) {
+		if (!NameMatches("type", View(desc.name), desc.nameHash)) {
 			return SLT_ERR_REFUSED;
 		}
+		const str name = LabelOf(View(desc.name), desc.nameHash);
 		if (desc.managedTypeId < 0) {
 			SLT_LOG_ERROR("C#", "C# type '{}' has id {}. Rebuild the scripts", name, desc.managedTypeId);
 			return SLT_ERR_REFUSED;
@@ -346,8 +354,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		type->hasFields = desc.fieldCount > 0 || (managedParent && managedParent->hasFields);
 		type->normalizes = (desc.flags & SLT_TYPE_NORMALIZE) != 0 || (managedParent && managedParent->normalizes);
 
-		const StringHash hash(name);
-		ReflectBuilder builder(hash, (static_cast<size_t>(slot) * SLOT_BYTES + 15) / 16 * 16, 16);
+		ReflectBuilder builder(StringHash(desc.nameHash), (static_cast<size_t>(slot) * SLOT_BYTES + 15) / 16 * 16, 16);
 		builder.SetParent(parent);
 		builder.SetFlags(TypeFlagComponent | ((desc.flags & SLT_TYPE_ABSTRACT) ? TypeFlagAbstract : 0u));
 		builder.SetCreateTypedFn(&Create);
@@ -381,10 +388,10 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 	}
 
 	i32 RegisterEnum(const SltEnumDesc& desc) {
-		const std::string_view name = View(desc.name);
-		if (!NameMatches("enum", name, desc.nameHash)) {
+		if (!NameMatches("enum", View(desc.name), desc.nameHash)) {
 			return SLT_ERR_REFUSED;
 		}
+		const str name = LabelOf(View(desc.name), desc.nameHash);
 		if (desc.size != 1 && desc.size != 2 && desc.size != 4 && desc.size != 8) {
 			SLT_LOG_ERROR("C#", "C# enum '{}' has size {}. Rebuild the scripts", name, desc.size);
 			return SLT_ERR_REFUSED;
@@ -394,10 +401,15 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		made->displayName = name;
 		made->constants.reserve(static_cast<size_t>(std::max(desc.constantCount, 0)));
 		for (i32 index = 0; index < desc.constantCount; ++index) {
-			const str& constant = made->names.emplace_back(View(desc.constants[index].name));
-			made->constants.push_back({StringHash(constant), constant.c_str(), desc.constants[index].value});
+			const SltEnumConstant& constant = desc.constants[index];
+			if (!NameMatches("enum constant", View(constant.name), constant.nameHash)) {
+				Delete(made);
+				return SLT_ERR_REFUSED;
+			}
+			const str& text = made->names.emplace_back(View(constant.name));
+			made->constants.push_back({StringHash(constant.nameHash), text.empty() ? nullptr : text.c_str(), constant.value});
 		}
-		made->info.name = StringHash(name);
+		made->info.name = StringHash(desc.nameHash);
 		made->info.size = static_cast<size_t>(desc.size);
 		made->info.alignment = static_cast<size_t>(desc.size);
 		made->info.flags = TypeFlagPrimitive | TypeFlagEnum | TypeFlagTriviallyCopyable;
@@ -414,10 +426,10 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 	}
 
 	i32 RegisterValue(SltValueDesc& desc) {
-		const std::string_view name = View(desc.name);
-		if (!NameMatches("value", name, desc.nameHash)) {
+		if (!NameMatches("value", View(desc.name), desc.nameHash)) {
 			return SLT_ERR_REFUSED;
 		}
+		const str name = LabelOf(View(desc.name), desc.nameHash);
 
 		ManagedValue* made = New<ManagedValue>(MemTag::Scripting);
 		made->name = name;
@@ -436,7 +448,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		made->alignment = alignment;
 		made->size = static_cast<u32>((slot * SLOT_BYTES + alignment - 1) / alignment * alignment);
 
-		ReflectBuilder builder(StringHash(name), made->size, made->alignment);
+		ReflectBuilder builder(StringHash(desc.nameHash), made->size, made->alignment);
 		builder.SetDisplayName(ShortName(made->name));
 		for (i32 index = 0; index < desc.fieldCount; ++index) {
 			const SltFieldDesc& field = desc.fields[index];

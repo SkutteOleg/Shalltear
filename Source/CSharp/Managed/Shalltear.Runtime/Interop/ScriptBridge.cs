@@ -28,6 +28,7 @@ internal unsafe struct SltFieldDesc {
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct SltEnumConstant {
 	public SltString name;
+	public ulong nameHash;
 	public long value;
 }
 

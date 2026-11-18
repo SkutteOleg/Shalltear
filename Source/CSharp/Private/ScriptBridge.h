@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 9
+#define SLT_BRIDGE_ABI_VERSION 10
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -69,6 +69,7 @@ typedef struct SltString {
 	int32_t length;
 } SltString;
 
+// names empty in a Release player (matched by nameHash)
 typedef struct SltFieldDesc {
 	SltString name;
 	uint64_t nameHash;
@@ -85,6 +86,7 @@ typedef struct SltFieldDesc {
 
 typedef struct SltEnumConstant {
 	SltString name;
+	uint64_t nameHash;
 	int64_t value;
 } SltEnumConstant;
 

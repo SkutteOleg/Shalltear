@@ -43,8 +43,10 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 		bool _active = false;
 		bool _pending = false;
 		bool _held = false;
+		bool _buildStarting = false;
 		bool _playing = false;
 		bool _loaded = false;
+		bool _behind = false;
 		Outcome _lastOutcome = Outcome::None;
 		u32 _reloadCount = 0;
 		u32 _lastMigrated = 0;
@@ -92,6 +94,9 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 			_lastMigrated = migrated;
 			_lastMilliseconds = static_cast<f64>(Time::GetTicks() - begin) * 1000.0 / static_cast<f64>(Time::GetTicksPerSecond());
 			_loaded = swap.outcome != Outcome::Failed;
+			if (source == Source::File) {
+				_behind = swap.outcome != Outcome::Loaded;
+			}
 			++_reloadCount;
 			if (swap.outcome == Outcome::Loaded && first) {
 				SLT_LOG_INFO("C#", "C# scripts loaded in {:.0f} ms", _lastMilliseconds);
@@ -110,6 +115,9 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 #endif
 
 		bool IsBuildRunning() {
+			if (_buildStarting) {
+				return false;
+			}
 #ifdef SLT_CSHARP_TEST_HOOKS
 			if (_buildRunningForTest) {
 				return true;
@@ -163,6 +171,7 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 		_held = false;
 		_playing = false;
 		_loaded = false;
+		_behind = false;
 		_lastOutcome = Outcome::None;
 		_reloadCount = 0;
 		_lastMigrated = 0;
@@ -218,12 +227,28 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 		return _active;
 	}
 
+	void SetBuildStarting(bool starting) {
+		_buildStarting = starting;
+	}
+
 	bool IsHeld() {
 		return _held;
 	}
 
+	bool IsPending() {
+		return _pending;
+	}
+
+	bool IsPlaying() {
+		return _playing;
+	}
+
 	bool IsLoaded() {
 		return _loaded;
+	}
+
+	bool IsBehind() {
+		return _behind;
 	}
 
 	Outcome GetLastOutcome() {

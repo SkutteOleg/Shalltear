@@ -21,13 +21,18 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 
 	void ReloadNow();
 
+	void SetBuildStarting(bool starting);
+
 #ifdef SLT_CSHARP_TEST_HOOKS
 	void SetBuildRunningForTest(bool running);
 #endif
 
 	bool IsActive();
 	bool IsHeld();
+	bool IsPending();
+	bool IsPlaying();
 	bool IsLoaded();
+	bool IsBehind();
 	Outcome GetLastOutcome();
 	u32 GetReloadCount();
 	u32 GetLastMigratedCount();

@@ -154,6 +154,7 @@ if(SHALLTEAR_BUILD_SHARED)
 	target_sources(CSharp PRIVATE ${CSHARP_EDITOR_SOURCES})
 	target_link_libraries(CSharp PRIVATE ShalltearEditor)
 	target_compile_definitions(CSharp PRIVATE SLT_WITH_EDITOR)
+	install(DIRECTORY "${sltManagedOutput}/" DESTINATION ${SHALLTEAR_INSTALL_BIN}/CSharp)
 
 	if(WIN32)
 		set(sltHostRid "win-x64")

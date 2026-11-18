@@ -17,4 +17,8 @@ namespace Shalltear::CSharpImpl {
 		return ::dlsym(library, name);
 	}
 
+	std::string_view GetSharedLibrarySuffix() {
+		return ".so";
+	}
+
 } // namespace Shalltear::CSharpImpl

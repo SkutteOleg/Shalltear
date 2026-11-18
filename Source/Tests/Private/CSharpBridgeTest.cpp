@@ -4,7 +4,10 @@
 
 #include "CSharpRuntimeFixture.h"
 
+#include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
+
+#include <format>
 
 using namespace Shalltear;
 using namespace Shalltear::CSharpTests;
@@ -66,6 +69,72 @@ TEST_F(CSharpRuntimeFixture, MismatchedLayoutNamesBothSides) {
 	EXPECT_NE(error.find("bridge ABI 77"), str::npos) << error;
 
 	EXPECT_TRUE(Attach()) << _error;
+}
+
+TEST_F(CSharpRuntimeFixture, NamelessTypeNeedsItsHash) {
+	ASSERT_TRUE(Attach()) << _error;
+	const SltEngineAPI engine = _hooks->makeEngineAPI();
+
+	SltEnumConstant constants[2]{};
+	constants[0].nameHash = StringHash("Low").GetValue();
+	constants[0].value = 2;
+	constants[1].nameHash = StringHash("High").GetValue();
+	constants[1].value = 5;
+	SltEnumDesc gear{};
+	gear.nameHash = StringHash("Bare.Gear").GetValue();
+	gear.size = 4;
+	gear.constants = constants;
+	gear.constantCount = 2;
+	ASSERT_EQ(engine.registerManagedEnum(&gear), SLT_OK);
+	const TypeInfo* registered = TypeRegistry::FindType(StringHash("Bare.Gear"));
+	ASSERT_NE(registered, nullptr);
+	EXPECT_EQ(str(registered->displayName), std::format("{:016x}", gear.nameHash));
+	ASSERT_EQ(registered->enumConstantCount, 2u);
+	EXPECT_EQ(registered->enumConstants[1].displayName, nullptr);
+	const EnumConstantInfo* high = FindEnumConstantByName(registered, "High");
+	ASSERT_NE(high, nullptr);
+	EXPECT_EQ(high->value, 5);
+
+	SltFieldDesc grip{};
+	grip.nameHash = StringHash("grip").GetValue();
+	grip.kind = SLT_KIND_F32;
+	SltValueDesc tuning{};
+	tuning.nameHash = StringHash("Bare.Tuning").GetValue();
+	tuning.fields = &grip;
+	tuning.fieldCount = 1;
+	ASSERT_EQ(engine.registerManagedValue(&tuning), SLT_OK);
+	const TypeInfo* packed = TypeRegistry::FindType(StringHash("Bare.Tuning"));
+	ASSERT_NE(packed, nullptr);
+	EXPECT_EQ(packed->fieldCount, 1u);
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("")), nullptr);
+	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Warn), 0u) << _log.Delivered().Joined();
+
+	SltEnumDesc nameless{};
+	nameless.size = 4;
+	EXPECT_EQ(engine.registerManagedEnum(&nameless), SLT_ERR_REFUSED);
+	SltTypeDesc type{};
+	EXPECT_EQ(engine.registerManagedType(&type), SLT_ERR_REFUSED);
+	SltValueDesc value{};
+	EXPECT_EQ(engine.registerManagedValue(&value), SLT_ERR_REFUSED);
+
+	const str wrongName = "Slow";
+	SltEnumConstant wrong{};
+	wrong.name = SltString{wrongName.data(), static_cast<int32_t>(wrongName.size())};
+	wrong.nameHash = StringHash("Fast").GetValue();
+	const str paceName = "Bare.Pace";
+	SltEnumDesc pace{};
+	pace.name = SltString{paceName.data(), static_cast<int32_t>(paceName.size())};
+	pace.nameHash = StringHash(paceName).GetValue();
+	pace.size = 4;
+	pace.constants = &wrong;
+	pace.constantCount = 1;
+	EXPECT_EQ(engine.registerManagedEnum(&pace), SLT_ERR_REFUSED);
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("Bare.Pace")), nullptr);
+	EXPECT_EQ(_log.Delivered().Count("Rebuild the scripts"), 4u) << _log.Delivered().Joined();
+
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("Bare.Gear")), nullptr);
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("Bare.Tuning")), nullptr);
 }
 
 TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {

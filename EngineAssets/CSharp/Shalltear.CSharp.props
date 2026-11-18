@@ -14,6 +14,11 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<RestoreAdditionalProjectFallbackFolders Condition="Exists('$(ShalltearPackagesRoot)')">$(RestoreAdditionalProjectFallbackFolders);$(ShalltearPackagesRoot)</RestoreAdditionalProjectFallbackFolders>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(ShalltearPlayerScripts)' == 'true'">
+		<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>
+		<PathMap>$([System.IO.Path]::GetFullPath('$(ShalltearBuildRoot)'))=./Library/,$(MSBuildProjectDirectory)=.</PathMap>
+		<ShalltearScriptNames Condition="'$(Configuration)' == 'Release'">hashed</ShalltearScriptNames>
+	</PropertyGroup>
 	<PropertyGroup Condition="'$(ShalltearAOTAnalysis)' == 'false'">
 		<EnableTrimAnalyzer>false</EnableTrimAnalyzer>
 		<EnableAotAnalyzer>false</EnableAotAnalyzer>
@@ -21,6 +26,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<CompilerVisibleProperty Include="MSBuildProjectDirectory" />
+		<CompilerVisibleProperty Include="ShalltearScriptNames" />
 		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedDir)Shalltear.Runtime.dll" Private="false" />
 		<Analyzer Include="$(ShalltearManagedDir)Shalltear.Generators.dll" />
 	</ItemGroup>

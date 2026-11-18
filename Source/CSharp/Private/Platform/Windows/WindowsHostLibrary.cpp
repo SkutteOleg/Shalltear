@@ -26,4 +26,8 @@ namespace Shalltear::CSharpImpl {
 		return reinterpret_cast<void*>(::GetProcAddress(static_cast<HMODULE>(library), name));
 	}
 
+	std::string_view GetSharedLibrarySuffix() {
+		return ".dll";
+	}
+
 } // namespace Shalltear::CSharpImpl

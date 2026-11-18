@@ -48,7 +48,7 @@ LLVM_BIN_ALLOWLIST = frozenset([
 	'mingw32-common.cfg', 'x86_64-pc-windows-gnu.cfg', 'x86_64-w64-windows-gnu.cfg',
 	'libLLVM-23.dll', 'libclang-cpp.dll',
 	'libc++.dll', 'libunwind.dll', 'libwinpthread-1.dll',
-	'ld.lld.exe', 'ld', 'ld-wrapper.sh', 'x86_64-w64-mingw32-ld',
+	'ld.lld.exe', 'lld-link.exe', 'ld', 'ld-wrapper.sh', 'x86_64-w64-mingw32-ld',
 	'llvm-ar.exe', 'llvm-ranlib.exe', 'llvm-lib.exe', 'llvm-dlltool.exe',
 	'llvm-nm.exe', 'llvm-objcopy.exe', 'llvm-strip.exe', 'llvm-symbolizer.exe',
 	'llvm-rc.exe', 'llvm-windres.exe', 'llvm-cvtres.exe', 'llvm-ml.exe',
@@ -127,8 +127,26 @@ LLVM_RULES = (
 )
 
 
-def classify(relative):
-	for rule in LLVM_RULES:
+ENGINE_LICENSE = "MIT"
+
+CSHARP_RULES = (
+	Rule(('Shalltear.Runtime.dll', 'Shalltear.Runtime.xml', 'Shalltear.Runtime.runtimeconfig.json'),
+		 SHIP, ENGINE_LICENSE, 'C# runtime the editor hosts + script projects reference'),
+	Rule(('Shalltear.Generators.dll',), SHIP, ENGINE_LICENSE,
+		 'source generator a script compile loads'),
+	Rule(('native/CRTShim.obj',), SHIP, ENGINE_LICENSE,
+		 "startup shim a game's script library links"),
+	Rule(('native/libs/clang_rt.builtins-x86_64.lib',), SHIP, LLVM_LICENSE,
+		 "compiler-rt builtins (the shim's stack probe)"),
+	Rule(('native/libs/*.lib',), SHIP, MINGW_RUNTIME_LICENSE,
+		 "Win32 import libs a game's script library links"),
+	Rule(('Shalltear.Conformance.dll',), DROP, '',
+		 'test assembly (only the test suite loads it)'),
+)
+
+
+def classify(relative, rules=LLVM_RULES):
+	for rule in rules:
 		for pattern in rule.patterns:
 			if fnmatch.fnmatchcase(relative, pattern):
 				return rule
@@ -157,7 +175,7 @@ def build_engine(is_shared):
 		f"-DSHALLTEAR_BUILD_SHARED={'ON' if is_shared else 'OFF'}",
 		"-DSHALLTEAR_BUILD_TESTS=OFF",
 		"-DSHALLTEAR_BUILD_BENCHMARKS=OFF",
-		"-DSHALLTEAR_CSHARP=OFF",
+		"-DSHALLTEAR_CSHARP=ON",
 		"-DCMAKE_BUILD_TYPE=Release"
 	]
 	run_cmd(cmake_cmd, cwd=build_path)
@@ -307,6 +325,7 @@ def verify_toolchain():
 	required = [
 		os.path.join(TOOLCHAIN_DIR, 'LLVM', 'bin', 'x86_64-w64-mingw32-clang++.exe'),
 		os.path.join(TOOLCHAIN_DIR, 'LLVM', 'bin', 'ld.lld.exe'),
+		os.path.join(TOOLCHAIN_DIR, 'LLVM', 'bin', 'lld-link.exe'),
 		os.path.join(TOOLCHAIN_DIR, 'CMake', 'bin', 'cmake.exe'),
 		os.path.join(TOOLCHAIN_DIR, 'Ninja', 'ninja.exe'),
 	]
@@ -352,6 +371,34 @@ def stage_toolchain():
 	print(f"           {executables} of them executables (all on the allowlist)")
 
 
+def stage_csharp(directory):
+	unclassified = []
+	shipped = 0
+	for root, _, files in os.walk(directory):
+		for file_name in files:
+			absolute = os.path.join(root, file_name)
+			relative = os.path.relpath(absolute, directory).replace(os.sep, '/')
+			rule = classify(relative, CSHARP_RULES)
+			if rule is None:
+				unclassified.append(relative)
+			elif rule.verdict is DROP:
+				os.remove(absolute)
+			else:
+				shipped += 1
+	if unclassified:
+		print(f"Error: {len(unclassified)} file(s) under CSharp/ match no rule in CSHARP_RULES.")
+		print("  Read each one, decide whether it may ship and under what license, then add a rule.")
+		for relative in sorted(unclassified):
+			print(f"    {relative}")
+		sys.exit(1)
+	missing = [pattern for rule in CSHARP_RULES if rule.verdict is SHIP for pattern in rule.patterns
+			   if '*' not in pattern and not os.path.exists(os.path.join(directory, pattern))]
+	if missing:
+		print(f"Error: CSharp/ lacks {', '.join(missing)}")
+		sys.exit(1)
+	print(f"  CSharp {shipped:>5} file(s)")
+
+
 def finish_sdk():
 
 	dxc_dll = os.path.join(ROOT_DIR, 'External', 'Prebuilt', 'dxc', 'bin', 'x64', 'dxcompiler.dll')
@@ -380,6 +427,7 @@ if __name__ == "__main__":
 
 	print("\n======== Staging the toolchain ========")
 	stage_toolchain()
+	stage_csharp(os.path.join(SDK_DIR, 'CSharp'))
 
 	print("\n======== Finishing SDK ========")
 	finish_sdk()
