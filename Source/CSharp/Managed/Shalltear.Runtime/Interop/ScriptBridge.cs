@@ -63,5 +63,6 @@ internal unsafe struct SltManagedAPI {
 	public delegate* unmanaged<int> getConformanceTestCount;
 	public delegate* unmanaged<int, SltString*, int> getConformanceTestName;
 	public delegate* unmanaged<int, SltString*, int> runConformanceTest;
+	public delegate* unmanaged<void> tick;
 	public delegate* unmanaged<void> shutdown;
 }

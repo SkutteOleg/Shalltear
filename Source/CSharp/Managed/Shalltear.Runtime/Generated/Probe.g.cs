@@ -175,4 +175,75 @@ internal static unsafe partial class BindingProbe {
 		}
 		return result;
 	}
+
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static SceneObject CreateObject(string name) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.CreateObject");
+		}
+		using UTF8Scratch nameText = new(name, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		ulong result;
+		int status = Bindings.table.probeCreateObject(nameText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return ObjectCache.SceneObject(result)!;
+	}
+
+	internal static int Touch(SceneObject target) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.Touch");
+		}
+		ArgumentNullException.ThrowIfNull(target);
+		int result;
+		int status = Bindings.table.probeTouch(target._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "BindingProbe.Touch");
+		}
+		return result;
+	}
+
+	internal static int GetTouches() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.GetTouches");
+		}
+		int result;
+		int status = Bindings.table.probeGetTouches(&result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
+	internal static int GetAliveChecks() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.GetAliveChecks");
+		}
+		int result;
+		int status = Bindings.table.probeGetAliveChecks(&result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
+	internal static void EndFrame() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.EndFrame");
+		}
+		int status = Bindings.table.probeEndFrame();
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
+
+	internal static void RunFrames(int count) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.RunFrames");
+		}
+		int status = Bindings.table.probeRunFrames(count);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
 }

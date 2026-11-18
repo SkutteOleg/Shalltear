@@ -16,12 +16,14 @@ namespace Shalltear::CSharpImpl::Generated {
 		}
 
 		int32_t ProbeEvaluateMath(SltString nameIn, const float* inputsData, int32_t inputsCount, float* outputsData, int32_t outputsCount, int32_t* outResult) noexcept {
-			return ScriptRuntime::Guard([&] {
+			const int32_t status = ScriptRuntime::Guard([&] {
 				const std::string_view name = View(nameIn);
 				const std::span<const float> inputs(inputsData, static_cast<size_t>(inputsCount));
 				const std::span<float> outputs(outputsData, static_cast<size_t>(outputsCount));
 				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::EvaluateMath(name, inputs, outputs));
 			});
+			ManagedTypes::FlushDirty();
+			return status;
 		}
 
 		uint8_t ProbeEchoBool(uint8_t valueIn) noexcept {
@@ -102,23 +104,29 @@ namespace Shalltear::CSharpImpl::Generated {
 		}
 
 		int32_t ProbeSumGuarded(float firstX, float firstY, float firstZ, float secondX, float secondY, float secondZ, float secondW, ::Shalltear::Vec3* outResult) noexcept {
-			return ScriptRuntime::Guard([&] {
+			const int32_t status = ScriptRuntime::Guard([&] {
 				const ::Shalltear::Vec3 first(firstX, firstY, firstZ);
 				const ::Shalltear::Vec4 second(secondX, secondY, secondZ, secondW);
 				::new (static_cast<void*>(outResult)) ::Shalltear::Vec3(::Shalltear::CSharpImpl::BindingProbe::SumGuarded(first, second));
 			});
+			ManagedTypes::FlushDirty();
+			return status;
 		}
 
 		int32_t ProbeIsPositive(float value, uint8_t* outResult) noexcept {
-			return ScriptRuntime::Guard([&] {
+			const int32_t status = ScriptRuntime::Guard([&] {
 				*outResult = static_cast<uint8_t>((::Shalltear::CSharpImpl::BindingProbe::IsPositive(value)) ? 1 : 0);
 			});
+			ManagedTypes::FlushDirty();
+			return status;
 		}
 
 		int32_t ProbeThrow() noexcept {
-			return ScriptRuntime::Guard([&] {
+			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::BindingProbe::Throw();
 			});
+			ManagedTypes::FlushDirty();
+			return status;
 		}
 
 		int32_t ProbeRecord(SltString textIn) noexcept {
@@ -129,10 +137,65 @@ namespace Shalltear::CSharpImpl::Generated {
 		}
 
 		int32_t ProbeSumBytes(SltString textIn, int32_t* outResult) noexcept {
-			return ScriptRuntime::Guard([&] {
+			const int32_t status = ScriptRuntime::Guard([&] {
 				const std::string_view text = View(textIn);
 				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::SumBytes(text));
 			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeCreateObject(SltString nameIn, uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view name = View(nameIn);
+				*outResult = IdOf(::Shalltear::CSharpImpl::BindingProbe::CreateObject(name));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeTouch(uint64_t targetId, int32_t* outResult) noexcept {
+			::Shalltear::SceneObject* const target = ResolveObject<::Shalltear::SceneObject>(targetId);
+			if (!target) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::Touch(*target));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeGetTouches(int32_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::GetTouches());
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeGetAliveChecks(int32_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::GetAliveChecks());
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeEndFrame() noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::SceneSystem::EndFrame();
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeRunFrames(int32_t count) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::RunFrames(count);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
 		}
 
 	} // anonymous namespace
@@ -158,6 +221,12 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeThrow = &ProbeThrow;
 		table.probeRecord = &ProbeRecord;
 		table.probeSumBytes = &ProbeSumBytes;
+		table.probeCreateObject = &ProbeCreateObject;
+		table.probeTouch = &ProbeTouch;
+		table.probeGetTouches = &ProbeGetTouches;
+		table.probeGetAliveChecks = &ProbeGetAliveChecks;
+		table.probeEndFrame = &ProbeEndFrame;
+		table.probeRunFrames = &ProbeRunFrames;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

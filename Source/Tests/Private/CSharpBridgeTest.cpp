@@ -4,6 +4,8 @@
 
 #include "CSharpRuntimeFixture.h"
 
+#include "Shalltear/Core/Scene.h"
+
 using namespace Shalltear;
 using namespace Shalltear::CSharpTests;
 using Shalltear::CSharpConformance::View;
@@ -67,8 +69,10 @@ TEST_F(CSharpRuntimeFixture, MismatchedLayoutNamesBothSides) {
 }
 
 TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
+	SceneSystem::Initialize();
 	ASSERT_TRUE(Attach()) << _error;
 	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
 
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
 	const SltManagedAPI& managed = _hooks->getManaged();
@@ -85,9 +89,10 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 		EXPECT_EQ(managed.runConformanceTest(index, &message), SLT_OK) << caseName << ": " << View(message);
 		++ran;
 	}
-	EXPECT_GE(ran, 29);
+	EXPECT_GE(ran, 44);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
+	SceneSystem::Terminate();
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);
 	EXPECT_EQ(managed.getConformanceTestCount(), 0);
 }

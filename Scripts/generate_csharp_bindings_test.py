@@ -32,6 +32,23 @@ METHOD = {
 	"csharp": {"member": "Describe", "kind": "method"},
 	"doc": "Fills samples.",
 }
+ATTACH = {
+	"id": "Attach",
+	"cpp": "::Game::Attach(*target, parent, slot)",
+	"returns": "SceneObject",
+	"params": [{"name": "target", "type": "SceneObject"}, {"name": "slot", "type": "i32"},
+			   {"name": "parent", "type": "SceneObject", "optional": True}],
+	"csharp": {"member": "Attach", "kind": "method"},
+	"doc": "Attached copy.",
+}
+LABEL = {
+	"id": "GetLabel",
+	"cpp": "self->label",
+	"returns": "string",
+	"params": [],
+	"csharp": {"member": "Label", "kind": "getter"},
+	"doc": "Label.",
+}
 
 
 class BindingsTest(unittest.TestCase):
@@ -66,11 +83,12 @@ class BindingsTest(unittest.TestCase):
 		broken["params"][2]["type"] = "Vec5"
 		message = self.refusal([GETTER, broken])
 		self.assertTrue(message.startswith("Game.json: Describe: unknown type 'Vec5'. Use bool, i32,"), message)
+		self.assertTrue(message.endswith(", SceneObject, Component, string, span<T>"), message)
 
 	def test_unknown_return_is_refused(self):
-		broken = dict(GETTER, returns="string")
-		self.assertEqual("Game.json: GetSpeed: can't return 'string'. Use void, bool, i32, u32, i64, u64, f32, f64, Vec2, Vec3, Vec4, Quat, Color",
-						 self.refusal([broken]))
+		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, Vec2, Vec3, Vec4, Quat, Color, SceneObject, string"
+		self.assertEqual("Game.json: GetSpeed: can't return 'span<f32>'. " + expected, self.refusal([dict(GETTER, returns="span<f32>")]))
+		self.assertEqual("Game.json: GetSpeed: can't return 'Component'. " + expected, self.refusal([dict(GETTER, returns="Component", leaf=False)]))
 
 	def test_area_is_named_like_its_file(self):
 		self.assertEqual("Game.json: 'area' is 'Rules'. Name it like the file (Game)", self.refusal([GETTER], area="Rules"))
@@ -91,11 +109,16 @@ class BindingsTest(unittest.TestCase):
 		broken = {key: value for key, value in GETTER.items() if key != "doc"}
 		self.assertEqual("Game.json: GetSpeed: 'doc' is missing", self.refusal([broken]))
 		bindings.parse_area(self.write([broken], test=True))
+		bindings.parse_area(self.write([broken], internal=True))
 
 	def test_out_needs_a_span(self):
 		broken = copy.deepcopy(METHOD)
 		broken["params"][2]["out"] = True
 		self.assertEqual("Game.json: Describe: 'out' is for a span, 'origin' is Vec3", self.refusal([broken]))
+
+	def test_optional_needs_an_object(self):
+		broken = dict(SETTER, params=[{"name": "speed", "type": "f32", "optional": True}])
+		self.assertEqual("Game.json: SetSpeed: 'optional' is for an object, 'speed' is f32", self.refusal([broken]))
 
 	def test_unknown_key_is_refused(self):
 		broken = dict(GETTER, leef=True)
@@ -105,17 +128,20 @@ class BindingsTest(unittest.TestCase):
 		def hashed(functions):
 			return bindings.layout_hash([bindings.parse_area(self.write(functions))])
 
-		base = hashed([GETTER, SETTER, METHOD])
-		self.assertEqual(base, hashed([dict(GETTER, doc="Other words."), SETTER, METHOD]))
-		self.assertNotEqual(base, hashed([SETTER, GETTER, METHOD]))
-		self.assertNotEqual(base, hashed([dict(GETTER, returns="f64"), dict(SETTER, params=[{"name": "speed", "type": "f64"}]), METHOD]))
-		self.assertNotEqual(base, hashed([dict(GETTER, leaf=False), SETTER, METHOD]))
+		base = hashed([GETTER, SETTER, METHOD, ATTACH])
+		self.assertEqual(base, hashed([dict(GETTER, doc="Other words."), SETTER, METHOD, ATTACH]))
+		self.assertNotEqual(base, hashed([SETTER, GETTER, METHOD, ATTACH]))
+		self.assertNotEqual(base, hashed([dict(GETTER, returns="f64"), dict(SETTER, params=[{"name": "speed", "type": "f64"}]), METHOD, ATTACH]))
+		self.assertNotEqual(base, hashed([dict(GETTER, leaf=False), SETTER, METHOD, ATTACH]))
 		plain = copy.deepcopy(METHOD)
 		del plain["params"][1]["out"]
-		self.assertNotEqual(base, hashed([GETTER, SETTER, plain]))
+		self.assertNotEqual(base, hashed([GETTER, SETTER, plain, ATTACH]))
+		required = copy.deepcopy(ATTACH)
+		del required["params"][2]["optional"]
+		self.assertNotEqual(base, hashed([GETTER, SETTER, METHOD, required]))
 		bindings.LOWERING += 1
 		try:
-			self.assertNotEqual(base, hashed([GETTER, SETTER, METHOD]))
+			self.assertNotEqual(base, hashed([GETTER, SETTER, METHOD, ATTACH]))
 		finally:
 			bindings.LOWERING -= 1
 
@@ -127,7 +153,7 @@ class BindingsTest(unittest.TestCase):
 		native = bindings.render_native_area(area)
 		self.assertIn("\t\tfloat GameGetSpeed() noexcept {\n\t\t\tstatic_assert(noexcept(::Game::GetSpeed()));\n", native)
 		self.assertIn("\t\tint32_t GameDescribe(SltString labelIn, float* samplesData, int32_t samplesCount, float originX, float originY, float originZ, "
-					  "::Shalltear::Vec3* outResult) noexcept {\n\t\t\treturn ScriptRuntime::Guard([&] {\n", native)
+					  "::Shalltear::Vec3* outResult) noexcept {\n\t\t\tconst int32_t status = ScriptRuntime::Guard([&] {\n", native)
 		self.assertIn("\t\t\t\tconst ::Shalltear::Vec3 origin(originX, originY, originZ);\n"
 					  "\t\t\t\t::new (static_cast<void*>(outResult)) ::Shalltear::Vec3(::Game::Describe(label, samples, origin));\n", native)
 
@@ -141,7 +167,7 @@ class BindingsTest(unittest.TestCase):
 					  "\t\t\treturn FromEngine(::Game::GetSpin());\n", native)
 		self.assertIn("\t\t::Shalltear::Vec3 GameGetAim() noexcept {\n\t\t\tstatic_assert(noexcept(::Game::GetAim()));\n"
 					  "\t\t\treturn ::Game::GetAim();\n", native)
-		self.assertIn("\t\tint32_t GameFindSpin(SltQuat* outResult) noexcept {\n\t\t\treturn ScriptRuntime::Guard([&] {\n"
+		self.assertIn("\t\tint32_t GameFindSpin(SltQuat* outResult) noexcept {\n\t\t\tconst int32_t status = ScriptRuntime::Guard([&] {\n"
 					  "\t\t\t\t*outResult = FromEngine(::Game::FindSpin());\n", native)
 
 	def test_property_joins_getter_and_setter(self):
@@ -151,8 +177,8 @@ class BindingsTest(unittest.TestCase):
 					  "\t\t\tBindings.table.gameSetSpeed(value);\n\t\t}\n", managed)
 		self.assertIn("\tpublic static Vec3 Describe(string label, Span<float> samples, Vec3 origin) {\n", managed)
 		self.assertIn("\t\tfixed (float* samplesData = samples) {\n\t\t\tVec3 result;\n"
-					  "\t\t\tint status = Bindings.table.gameDescribe(labelText.Text, samplesData, samples.Length, origin.x, origin.y, origin.z, &result);\n",
-					  managed)
+					  "\t\t\tint status = Bindings.table.gameDescribe(labelText.Text, samplesData, samples.Length, origin.x, origin.y, origin.z, &result);\n"
+					  "\t\t\tif (status != Bridge.OK) {\n\t\t\t\tthrow Bridge.LastError();\n", managed)
 
 	def test_any_thread_skips_the_check(self):
 		free = dict(GETTER, thread="any")
@@ -160,12 +186,89 @@ class BindingsTest(unittest.TestCase):
 		self.assertNotIn("OffMainThread", managed)
 		self.assertEqual("Game.json: GetSpeed: 'thread' is 'worker'. Use main/any", self.refusal([dict(GETTER, thread="worker")]))
 
+	def test_main_thread_call_pulls_marked_scripts(self):
+		slow = dict(GETTER, leaf=False)
+		native = bindings.render_native_area(bindings.parse_area(self.write([slow])))
+		self.assertIn("\t\t\t\t*outResult = static_cast<float>(::Game::GetSpeed());\n\t\t\t});\n"
+					  "\t\t\tManagedTypes::FlushDirty();\n\t\t\treturn status;\n\t\t}\n", native)
+		free = bindings.render_native_area(bindings.parse_area(self.write([dict(slow, thread="any")])))
+		self.assertIn("\t\t\treturn ScriptRuntime::Guard([&] {\n", free)
+		self.assertNotIn("FlushDirty", free)
+
+	def test_object_is_resolved_before_the_call(self):
+		area = bindings.parse_area(self.write([ATTACH]))
+		self.assertEqual("delegate* unmanaged<ulong, int, ulong, ulong*, int>", bindings.cs_pointer(area.functions[0]))
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\tint32_t GameAttach(uint64_t targetId, int32_t slot, uint64_t parentId, uint64_t* outResult) noexcept {\n"
+					  "\t\t\t::Shalltear::SceneObject* const target = ResolveObject<::Shalltear::SceneObject>(targetId);\n"
+					  "\t\t\tif (!target) {\n\t\t\t\treturn SLT_ERR_DESTROYED;\n\t\t\t}\n"
+					  "\t\t\t::Shalltear::SceneObject* const parent = ResolveObject<::Shalltear::SceneObject>(parentId);\n"
+					  "\t\t\tconst int32_t status = ScriptRuntime::Guard([&] {\n"
+					  "\t\t\t\t*outResult = IdOf(::Game::Attach(*target, parent, slot));\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("\tpublic static SceneObject? Attach(SceneObject target, int slot, SceneObject? parent = null) {\n", managed)
+		self.assertIn("\t\tArgumentNullException.ThrowIfNull(target);\n\t\tulong result;\n"
+					  "\t\tint status = Bindings.table.gameAttach(target._id, slot, parent is null ? 0UL : parent._id, &result);\n"
+					  "\t\tif (status != Bridge.OK) {\n\t\t\tthrow Bridge.Failure(status, \"Game.Attach\");\n\t\t}\n"
+					  "\t\treturn ObjectCache.SceneObject(result);\n", managed)
+
+	def test_returned_object_may_be_declared_present(self):
+		managed = bindings.render_managed_area(bindings.parse_area(self.write([dict(ATTACH, nullable=False)])))
+		self.assertIn("\tpublic static SceneObject Attach(SceneObject target, int slot, SceneObject? parent = null) {\n", managed)
+		self.assertIn("\t\treturn ObjectCache.SceneObject(result)!;\n", managed)
+		self.assertEqual("Game.json: GetSpeed: 'nullable' is for a returned object, this returns f32", self.refusal([dict(GETTER, nullable=False)]))
+
+	def test_instance_area_passes_its_object(self):
+		relayed = dict(ATTACH, csharp={"member": "Attach", "kind": "method", "relay": True})
+		area = bindings.parse_area(self.write([LABEL, relayed], instance="SceneObject", **{"class": "Shalltear.SceneObject"}))
+		self.assertEqual("delegate* unmanaged<ulong, SltString*, int>", bindings.cs_pointer(area.functions[0]))
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\tint32_t GameGetLabel(uint64_t selfId, SltString* outResult) noexcept {\n"
+					  "\t\t\t::Shalltear::SceneObject* const self = ResolveObject<::Shalltear::SceneObject>(selfId);\n"
+					  "\t\t\tif (!self) {\n\t\t\t\treturn SLT_ERR_DESTROYED;\n\t\t\t}\n"
+					  "\t\t\tconst int32_t status = ScriptRuntime::Guard([&] {\n"
+					  "\t\t\t\t*outResult = ScriptRuntime::KeepString(self->label);\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("public unsafe partial class SceneObject {\n\t/// <summary>Label.</summary>\n\tpublic string Label {\n", managed)
+		self.assertIn("\t\t\tint status = Bindings.table.gameGetLabel(_id, &result);\n\t\t\tif (status != Bridge.OK) {\n"
+					  "\t\t\t\tthrow Bridge.Failure(status, \"SceneObject.Label\");\n\t\t\t}\n\t\t\treturn Bridge.Text(result);\n", managed)
+		self.assertIn("\tpublic SceneObject? Attach(SceneObject target, int slot, SceneObject? parent, string member) {\n", managed)
+		self.assertIn("\t\t\tBridge.ThrowOffMainThread(member);\n", managed)
+		self.assertIn("\t\t\tthrow Bridge.Failure(status, member);\n", managed)
+		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component", self.refusal([LABEL], instance="Widget"))
+		self.assertEqual("Game.json: GetLabel: 'relay' needs a method",
+						 self.refusal([dict(LABEL, csharp={"member": "Label", "kind": "getter", "relay": True})], instance="SceneObject"))
+
+	def test_leaf_with_an_object_keeps_its_status(self):
+		area = bindings.parse_area(self.write([dict(ATTACH, leaf=True), GETTER]))
+		self.assertEqual("delegate* unmanaged[SuppressGCTransition]<ulong, int, ulong, ulong*, int>", bindings.cs_pointer(area.functions[0]))
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\t\tif (!target) {\n\t\t\t\treturn SLT_ERR_DESTROYED;\n\t\t\t}\n"
+					  "\t\t\t::Shalltear::SceneObject* const parent = ResolveObject<::Shalltear::SceneObject>(parentId);\n"
+					  "\t\t\treturn ScriptRuntime::Guard([&] {\n"
+					  "\t\t\t\t*outResult = IdOf(::Game::Attach(*target, parent, slot));\n\t\t\t});\n\t\t}\n", native)
+		self.assertNotIn("FlushDirty", native)
+		self.assertIn("\t\tfloat GameGetSpeed() noexcept {\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("\t\t\tthrow Bridge.Failure(status, \"Game.Attach\");\n", managed)
+
+		member = bindings.parse_area(self.write([GETTER], instance="SceneObject", **{"class": "Shalltear.SceneObject"}))
+		self.assertEqual("delegate* unmanaged[SuppressGCTransition]<ulong, float*, int>", bindings.cs_pointer(member.functions[0]))
+		self.assertEqual("Game.json: GetSpeed: 'leaf' can't return a string", self.refusal([dict(GETTER, returns="string")]))
+
 	def test_test_area_stays_out_of_shipped_builds(self):
 		area = bindings.parse_area(self.write([GETTER], test=True))
 		native = bindings.render_native_area(area)
 		self.assertIn("#ifdef SLT_CSHARP_TEST_HOOKS\n", native)
 		self.assertIn("#else\n\nnamespace Shalltear::CSharpImpl::Generated {\n\n\tvoid FillGameBindings(SltBindings&) {}\n", native)
 		self.assertIn("internal static unsafe partial class Game {\n", bindings.render_managed_area(area))
+
+	def test_internal_area_ships_without_public_members(self):
+		area = bindings.parse_area(self.write([GETTER, ATTACH], internal=True))
+		self.assertNotIn("SLT_CSHARP_TEST_HOOKS", bindings.render_native_area(area))
+		managed = bindings.render_managed_area(area)
+		self.assertIn("internal static unsafe partial class Game {\n", managed)
+		self.assertNotIn("public", managed)
 
 	def test_digest_follows_schemas_and_script(self):
 		script = self.directory / "script.py"

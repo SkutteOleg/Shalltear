@@ -26,6 +26,11 @@ namespace Shalltear::CSharpImpl {
 
 		void SetLastError(std::string_view text);
 
+		// valid until this thread's next KeepString
+		SltString KeepString(std::string_view text);
+
+		void Tick();
+
 		// no C++ exception may unwind into managed frames
 		template <typename Body>
 		int32_t Guard(Body&& body) noexcept {

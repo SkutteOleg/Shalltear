@@ -8,13 +8,14 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 4;
+	internal const uint ABI_VERSION = 5;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
 	internal const int FAILED = -1;
 	const int ABI_MISMATCH = 1;
 	const int LAYOUT_MISMATCH = 2;
+	const int DESTROYED = 3;
 
 	static SltEngineAPI _engine;
 	static volatile bool _attached;
@@ -57,6 +58,7 @@ internal static unsafe class Bridge {
 		managed->getConformanceTestCount = &GetConformanceTestCount;
 		managed->getConformanceTestName = &GetConformanceTestName;
 		managed->runConformanceTest = &RunConformanceTest;
+		managed->tick = &Tick;
 		managed->shutdown = &Shutdown;
 
 		if (!_handlerInstalled) {
@@ -116,6 +118,14 @@ internal static unsafe class Bridge {
 		return new EngineException(text.length > 0 ? Encoding.UTF8.GetString(text.ptr, text.length) : "engine call failed");
 	}
 
+	internal static Exception Failure(int status, string member) {
+		return status == DESTROYED ? new DestroyedObjectException(member) : LastError();
+	}
+
+	internal static string Text(SltString text) {
+		return text.length > 0 ? Encoding.UTF8.GetString(text.ptr, text.length) : "";
+	}
+
 	internal static void ThrowForTest() {
 		if (_engine.throwForTest == null) {
 			throw new InvalidOperationException("engine built without test hooks");
@@ -152,8 +162,18 @@ internal static unsafe class Bridge {
 	}
 
 	[UnmanagedCallersOnly]
+	static void Tick() {
+		try {
+			ObjectCache.Sweep();
+		} catch (Exception exception) {
+			Report(exception);
+		}
+	}
+
+	[UnmanagedCallersOnly]
 	static void Shutdown() {
 		ScriptTypes.Clear();
+		ObjectCache.Clear();
 		_attached = false;
 	}
 }

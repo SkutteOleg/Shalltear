@@ -15,8 +15,10 @@
 #include "Platform/EditorPlatform.h"
 
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Module/ModuleAPI.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 
@@ -26,6 +28,8 @@
 
 using namespace Shalltear;
 using Shalltear::CSharpConformance::View;
+
+SLT_DECLARE_LINKED_PACKAGE(CSharp)
 
 namespace {
 
@@ -132,19 +136,46 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 		JobSystem::Terminate();
 		return 2;
 	}
+	SceneSystem::Initialize();
+	SceneSystem::CreateScene("World");
 	const SltManagedAPI& managed = CSharpImpl::ScriptRuntime::GetManaged();
 	std::printf("ENTRIES load=%d unload=%d\n", managed.loadUserAssemblies != nullptr, managed.unloadUserAssemblies != nullptr);
 	const int32_t count = managed.getConformanceTestCount();
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
+	int32_t fillsCache = -1;
+	int32_t reportsCache = -1;
 	for (int32_t index = 0; index < count; ++index) {
 		SltString name{};
 		managed.getConformanceTestName(index, &name);
 		const str caseName(View(name));
+		fillsCache = caseName == "ObjectProbe.FillsCache" ? index : fillsCache;
+		reportsCache = caseName == "ObjectProbe.ReportsCacheCount" ? index : reportsCache;
 		SltString message{};
 		const int32_t result = managed.runConformanceTest(index, &message);
 		std::printf("CASE %d %s | %.*s\n", result, caseName.c_str(), static_cast<int>(View(message).size()), View(message).data());
 		std::fflush(stdout);
 	}
+
+	char token = 0;
+	SLT_CALL_LINKED_PACKAGE(CSharp, &token);
+	const auto cached = [&] {
+		SltString message{};
+		managed.runConformanceTest(reportsCache, &message);
+		return str(View(message));
+	};
+	for (u32 pass = 0; pass < 64 && cached() != "0"; ++pass) {
+		FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	}
+	SltString ignored{};
+	managed.runConformanceTest(fillsCache, &ignored);
+	const str filled = cached();
+	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	const str swept = cached();
+	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	std::printf("SWEEP %s %s %s\n", filled.c_str(), swept.c_str(), cached().c_str());
+	FrameStages::UnregisterOwnedBy(&token);
+
+	SceneSystem::Terminate();
 	CSharpImpl::ScriptRuntime::Detach();
 	LogManager::Terminate();
 	JobSystem::Terminate();
@@ -165,8 +196,14 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 		EXPECT_EQ(outcome.first, SLT_OK) << name << ": " << outcome.second;
 		++ran;
 	}
-	EXPECT_GE(ran, 29) << run.output;
+	EXPECT_GE(ran, 44) << run.output;
 	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
+}
+
+TEST(CSharpNativeAOTTest, FrameEndSweepsTheCache) {
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	ASSERT_EQ(run.exitCode, 0) << run.output;
+	EXPECT_TRUE(run.Has("\nSWEEP 300 44 0")) << run.output;
 }
 
 TEST(CSharpNativeAOTTest, FailuresAndExceptionsAreReported) {
@@ -184,6 +221,10 @@ TEST(CSharpNativeAOTTest, FailuresAndExceptionsAreReported) {
 	ASSERT_TRUE(run.cases.contains("Probe.ThrowsOnStartedThread")) << run.output;
 	EXPECT_EQ(run.cases.at("Probe.ThrowsOnStartedThread").first, SLT_OK);
 	EXPECT_TRUE(run.Has("System.InvalidOperationException: thrown on a started thread")) << run.output;
+
+	ASSERT_TRUE(run.cases.contains("ObjectProbe.AddsAFailingScript")) << run.output;
+	EXPECT_EQ(run.cases.at("ObjectProbe.AddsAFailingScript").first, SLT_OK) << run.cases.at("ObjectProbe.AddsAFailingScript").second;
+	EXPECT_TRUE(run.Has("System.InvalidOperationException: thrown by a constructor")) << run.output;
 }
 
 TEST(CSharpNativeAOTTest, LogReachesEngineLog) {

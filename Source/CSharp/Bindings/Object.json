@@ -1,0 +1,67 @@
+{
+	"area": "Object",
+	"include": "ObjectBindings.h",
+	"class": "Shalltear.Interop.ObjectBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "IsAlive",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::IsAlive(id)",
+			"returns": "bool",
+			"params": [{ "name": "id", "type": "u64" }],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "IsAlive", "kind": "method" }
+		},
+		{
+			"id": "AreAlive",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::AreAlive(ids, alive)",
+			"returns": "void",
+			"params": [
+				{ "name": "ids", "type": "span<u64>" },
+				{ "name": "alive", "type": "span<u32>", "out": true }
+			],
+			"csharp": { "member": "AreAlive", "kind": "method" }
+		},
+		{
+			"id": "FindScript",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::FindScript(*self, scriptIndex)",
+			"returns": "i64",
+			"params": [
+				{ "name": "self", "type": "SceneObject" },
+				{ "name": "scriptIndex", "type": "i32" }
+			],
+			"leaf": true,
+			"csharp": { "member": "FindScript", "kind": "method", "relay": true }
+		},
+		{
+			"id": "FindScripts",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::FindScripts(*self, scriptIndex, handles)",
+			"returns": "i32",
+			"params": [
+				{ "name": "self", "type": "SceneObject" },
+				{ "name": "scriptIndex", "type": "i32" },
+				{ "name": "handles", "type": "span<i64>", "out": true }
+			],
+			"leaf": true,
+			"csharp": { "member": "FindScripts", "kind": "method", "relay": true }
+		},
+		{
+			"id": "AddScript",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::AddScript(*self, scriptIndex)",
+			"returns": "i64",
+			"params": [
+				{ "name": "self", "type": "SceneObject" },
+				{ "name": "scriptIndex", "type": "i32" }
+			],
+			"csharp": { "member": "AddScript", "kind": "method", "relay": true }
+		},
+		{
+			"id": "Destroy",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::Destroy(objectId)",
+			"returns": "void",
+			"params": [{ "name": "objectId", "type": "u64" }],
+			"csharp": { "member": "Destroy", "kind": "method", "relay": true }
+		}
+	]
+}

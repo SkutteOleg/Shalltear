@@ -43,12 +43,13 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		constexpr auto SlotThunks = MakeThunks(std::make_index_sequence<THUNK_COUNT>{});
 
 		std::vector<ManagedType*> _types;
+		std::vector<ManagedType*> _byIndex;
 		std::vector<ManagedType*> _retired;
 		std::unordered_map<const TypeInfo*, ManagedType*> _byInfo;
 		ManagedBehavior* _live = nullptr;
-		ManagedBehavior* _dirty = nullptr;
 		TypeObserver _observer;
 		Counters _counters;
+		i32 _lifecycleDepth = 0;
 
 		std::string_view View(SltString text) {
 			return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
@@ -111,12 +112,19 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 	} // anonymous namespace
 
+	ManagedBehavior* dirtyHead = nullptr;
+
 	i32 Register(const SltTypeDesc& desc) {
 		const std::string_view name = View(desc.name);
 		const StringHash hash(name);
 		if (name.empty() || hash.GetValue() != desc.nameHash) {
 			SLT_LOG_ERROR("C#", "C# type '{}' has name hash {:016x}, engine computes {:016x}. Rebuild the scripts", name, desc.nameHash,
 						  hash.GetValue());
+			return SLT_ERR_REFUSED;
+		}
+
+		if (desc.managedTypeId < 0) {
+			SLT_LOG_ERROR("C#", "C# type '{}' has id {}. Rebuild the scripts", name, desc.managedTypeId);
 			return SLT_ERR_REFUSED;
 		}
 
@@ -152,6 +160,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 		ManagedType* type = New<ManagedType>(MemTag::Scripting);
 		type->name = name;
+		type->parent = managedParent;
 		type->managedTypeId = desc.managedTypeId;
 		type->hookMask = desc.hookMask;
 		type->slotEnd = slot;
@@ -181,6 +190,10 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 		_types.push_back(type);
 		_byInfo[type->info] = type;
+		if (_byIndex.size() <= static_cast<size_t>(desc.managedTypeId)) {
+			_byIndex.resize(static_cast<size_t>(desc.managedTypeId) + 1);
+		}
+		_byIndex[static_cast<size_t>(desc.managedTypeId)] = type;
 		if (_observer.registered) {
 			_observer.registered(type->info, type->name, &_TOKEN);
 		}
@@ -210,10 +223,16 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			}
 		}
 		_types.clear();
+		_byIndex.clear();
 		_byInfo.clear();
 		if (orphans > 0) {
 			SLT_LOG_ERROR("C#", "{} C# component(s) alive at script unload (hooks stopped)", orphans);
 		}
+	}
+
+	const ManagedType* FindByIndex(i32 scriptIndex) {
+		const size_t id = static_cast<size_t>(scriptIndex) - 1;
+		return id < _byIndex.size() ? _byIndex[id] : nullptr;
 	}
 
 	const void* GetOwnerToken() {
@@ -245,32 +264,36 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 	void LinkDirty(ManagedBehavior& proxy) {
 		proxy.dirtyPrevious = nullptr;
-		proxy.dirtyNext = _dirty;
-		if (_dirty) {
-			_dirty->dirtyPrevious = &proxy;
+		proxy.dirtyNext = dirtyHead;
+		if (dirtyHead) {
+			dirtyHead->dirtyPrevious = &proxy;
 		}
-		_dirty = &proxy;
+		dirtyHead = &proxy;
 	}
 
 	void UnlinkDirty(ManagedBehavior& proxy) {
 		if (proxy.dirtyPrevious) {
 			proxy.dirtyPrevious->dirtyNext = proxy.dirtyNext;
 		} else {
-			_dirty = proxy.dirtyNext;
+			dirtyHead = proxy.dirtyNext;
 		}
 		if (proxy.dirtyNext) {
 			proxy.dirtyNext->dirtyPrevious = proxy.dirtyPrevious;
 		}
 	}
 
-	void FlushDirty() {
-		while (_dirty) {
-			_dirty->Pull();
+	void PullDirty() {
+		while (dirtyHead) {
+			dirtyHead->Pull();
 		}
 	}
 
 	Counters& GetCounters() {
 		return _counters;
+	}
+
+	i32& GetLifecycleDepth() {
+		return _lifecycleDepth;
 	}
 
 } // namespace Shalltear::CSharpImpl::ManagedTypes

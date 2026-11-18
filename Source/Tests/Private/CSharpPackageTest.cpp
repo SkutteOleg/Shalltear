@@ -3,6 +3,7 @@
 #include "Checkout.h"
 
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Module.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
@@ -99,6 +100,7 @@ TEST(CSharpPackageTest, LoadsAndUnloads) {
 #else
 	char token = 0;
 	SLT_CALL_LINKED_PACKAGE(CSharp, &token);
+	EXPECT_EQ(FrameStages::UnregisterOwnedBy(&token), 1u);
 #endif
 	ModuleSystem::Terminate();
 }

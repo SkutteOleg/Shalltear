@@ -14,6 +14,7 @@ namespace Shalltear::CSharpImpl {
 
 	struct ManagedType {
 		const TypeInfo* info = nullptr;
+		const ManagedType* parent = nullptr;
 		str name;
 		std::deque<str> fieldNames;
 		i32 managedTypeId = 0;
@@ -34,6 +35,9 @@ namespace Shalltear::CSharpImpl {
 
 		void ReleaseAll();
 
+		// scriptIndex = managedTypeId + 1
+		const ManagedType* FindByIndex(i32 scriptIndex);
+
 		const void* GetOwnerToken();
 		void SetTypeObserver(const TypeObserver& observer);
 
@@ -42,14 +46,23 @@ namespace Shalltear::CSharpImpl {
 
 		void LinkDirty(ManagedBehavior& proxy);
 		void UnlinkDirty(ManagedBehavior& proxy);
-		void FlushDirty();
+		void PullDirty();
+		extern ManagedBehavior* dirtyHead;
+		inline void FlushDirty() {
+			if (dirtyHead) {
+				PullDirty();
+			}
+		}
 
 		struct Counters {
 			u64 hookCrossings = 0;
 			u64 pushes = 0;
 			u64 pulls = 0;
+			u64 aliveChecks = 0;
 		};
 		Counters& GetCounters();
+
+		i32& GetLifecycleDepth();
 
 	} // namespace ManagedTypes
 

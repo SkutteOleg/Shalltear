@@ -9,11 +9,12 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 4
+#define SLT_BRIDGE_ABI_VERSION 5
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
 #define SLT_ERR_REFUSED 2
+#define SLT_ERR_DESTROYED 3
 
 // bit N of hookMask, must match Behavior.cs
 #define SLT_HOOK_ATTACH 0
@@ -114,6 +115,7 @@ typedef struct SltManagedAPI {
 	// strings valid until next managed call
 	int32_t (*getConformanceTestName)(int32_t index, SltString* outName);
 	int32_t (*runConformanceTest)(int32_t index, SltString* outMessage);
+	void (*tick)(void);
 	void (*shutdown)(void);
 } SltManagedAPI;
 

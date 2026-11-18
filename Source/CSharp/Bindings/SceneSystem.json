@@ -1,0 +1,28 @@
+{
+	"area": "SceneSystem",
+	"include": "ObjectBindings.h",
+	"class": "Shalltear.SceneSystem",
+	"doc": "Objects of loaded scenes.",
+	"functions": [
+		{
+			"id": "Instantiate",
+			"nullable": false,
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::Instantiate(*source, parent)",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "source", "type": "SceneObject" },
+				{ "name": "parent", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "Instantiate", "kind": "method" },
+			"doc": "Copy of source with its children + components (under parent when given)."
+		},
+		{
+			"id": "FindObjectByName",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::FindObjectByName(name)",
+			"returns": "SceneObject",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindObjectByName", "kind": "method" },
+			"doc": "1st object with this name in loaded scenes (null when none)."
+		}
+	]
+}

@@ -15,6 +15,13 @@ static class Check {
 		}
 	}
 
+	internal static void Same<T>(T? expected, T? actual)
+		where T : class {
+		if (!ReferenceEquals(expected, actual)) {
+			throw new ConformanceFailure($"not the same {typeof(T).Name}");
+		}
+	}
+
 	internal static void Equal<T>(T expected, T actual) {
 		if (!EqualityComparer<T>.Default.Equals(expected, actual)) {
 			throw new ConformanceFailure($"expected {expected}, got {actual}");

@@ -35,13 +35,21 @@ namespace Shalltear::CSharpImpl::Generated {
 	static_assert(offsetof(::Shalltear::Color, b) == 8 && offsetof(::Shalltear::Color, b) == 8);
 	static_assert(offsetof(::Shalltear::Color, a) == 12 && offsetof(::Shalltear::Color, a) == 12);
 
+	void FillComponentBindings(SltBindings& table);
 	void FillLogBindings(SltBindings& table);
+	void FillObjectBindings(SltBindings& table);
 	void FillProbeBindings(SltBindings& table);
+	void FillSceneObjectBindings(SltBindings& table);
+	void FillSceneSystemBindings(SltBindings& table);
 	void FillTimeBindings(SltBindings& table);
 
 	void FillBindings(SltBindings& table) {
+		FillComponentBindings(table);
 		FillLogBindings(table);
+		FillObjectBindings(table);
 		FillProbeBindings(table);
+		FillSceneObjectBindings(table);
+		FillSceneSystemBindings(table);
 		FillTimeBindings(table);
 	}
 

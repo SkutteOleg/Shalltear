@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xbaff74d32ac71ccaull
-#define SLT_BINDINGS_INPUT_DIGEST 0xa29a4d4c3891a833ull
+#define SLT_BRIDGE_LAYOUT_HASH 0x3323a33453dc2b36ull
+#define SLT_BINDINGS_INPUT_DIGEST 0x43afea6b4df25bcaull
 
 typedef struct SltString SltString;
 
@@ -21,11 +21,21 @@ typedef struct SltQuat {
 } SltQuat;
 
 typedef struct SltBindings {
+	int32_t (*componentGetOwner)(uint64_t self, uint64_t* outResult);
+	int32_t (*componentIsEnabledSelf)(uint64_t self, uint8_t* outResult);
+	int32_t (*componentIsEffectivelyEnabled)(uint64_t self, uint8_t* outResult);
+	int32_t (*componentSetEnabled)(uint64_t self, uint8_t enabled);
 	int32_t (*logTrace)(SltString category, SltString message);
 	int32_t (*logDebug)(SltString category, SltString message);
 	int32_t (*logInfo)(SltString category, SltString message);
 	int32_t (*logWarn)(SltString category, SltString message);
 	int32_t (*logError)(SltString category, SltString message);
+	uint8_t (*objectIsAlive)(uint64_t id);
+	int32_t (*objectAreAlive)(const uint64_t* ids, int32_t idsCount, uint32_t* alive, int32_t aliveCount);
+	int32_t (*objectFindScript)(uint64_t self, int32_t scriptIndex, int64_t* outResult);
+	int32_t (*objectFindScripts)(uint64_t self, int32_t scriptIndex, int64_t* handles, int32_t handlesCount, int32_t* outResult);
+	int32_t (*objectAddScript)(uint64_t self, int32_t scriptIndex, int64_t* outResult);
+	int32_t (*objectDestroy)(uint64_t objectId);
 	int32_t (*probeGetMathCaseCount)(void);
 	int32_t (*probeEvaluateMath)(SltString name, const float* inputs, int32_t inputsCount, float* outputs, int32_t outputsCount, int32_t* outResult);
 	uint8_t (*probeEchoBool)(uint8_t value);
@@ -46,6 +56,37 @@ typedef struct SltBindings {
 	int32_t (*probeThrow)(void);
 	int32_t (*probeRecord)(SltString text);
 	int32_t (*probeSumBytes)(SltString text, int32_t* outResult);
+	int32_t (*probeCreateObject)(SltString name, uint64_t* outResult);
+	int32_t (*probeTouch)(uint64_t target, int32_t* outResult);
+	int32_t (*probeGetTouches)(int32_t* outResult);
+	int32_t (*probeGetAliveChecks)(int32_t* outResult);
+	int32_t (*probeEndFrame)(void);
+	int32_t (*probeRunFrames)(int32_t count);
+	int32_t (*sceneObjectGetName)(uint64_t self, SltString* outResult);
+	int32_t (*sceneObjectSetName)(uint64_t self, SltString value);
+	int32_t (*sceneObjectIsActiveSelf)(uint64_t self, uint8_t* outResult);
+	int32_t (*sceneObjectIsActiveInHierarchy)(uint64_t self, uint8_t* outResult);
+	int32_t (*sceneObjectSetActive)(uint64_t self, uint8_t active);
+	int32_t (*sceneObjectGetParent)(uint64_t self, uint64_t* outResult);
+	int32_t (*sceneObjectSetParent)(uint64_t self, uint64_t parent, uint8_t worldStays);
+	int32_t (*sceneObjectGetChildCount)(uint64_t self, int32_t* outResult);
+	int32_t (*sceneObjectGetChild)(uint64_t self, int32_t index, uint64_t* outResult);
+	int32_t (*sceneObjectFindChildByName)(uint64_t self, SltString childName, uint64_t* outResult);
+	int32_t (*sceneObjectGetSiblingIndex)(uint64_t self, int32_t* outResult);
+	int32_t (*sceneObjectSetSiblingIndex)(uint64_t self, int32_t value);
+	int32_t (*sceneObjectGetLocalPosition)(uint64_t self, ::Shalltear::Vec3* outResult);
+	int32_t (*sceneObjectSetLocalPosition)(uint64_t self, float valueX, float valueY, float valueZ);
+	int32_t (*sceneObjectGetLocalRotation)(uint64_t self, SltQuat* outResult);
+	int32_t (*sceneObjectSetLocalRotation)(uint64_t self, float valueX, float valueY, float valueZ, float valueW);
+	int32_t (*sceneObjectGetLocalScale)(uint64_t self, ::Shalltear::Vec3* outResult);
+	int32_t (*sceneObjectSetLocalScale)(uint64_t self, float valueX, float valueY, float valueZ);
+	int32_t (*sceneObjectGetWorldPosition)(uint64_t self, ::Shalltear::Vec3* outResult);
+	int32_t (*sceneObjectSetWorldPosition)(uint64_t self, float valueX, float valueY, float valueZ);
+	int32_t (*sceneObjectGetWorldRotation)(uint64_t self, SltQuat* outResult);
+	int32_t (*sceneObjectSetWorldRotation)(uint64_t self, float valueX, float valueY, float valueZ, float valueW);
+	int32_t (*sceneObjectGetLossyScale)(uint64_t self, ::Shalltear::Vec3* outResult);
+	int32_t (*sceneSystemInstantiate)(uint64_t source, uint64_t parent, uint64_t* outResult);
+	int32_t (*sceneSystemFindObjectByName)(SltString name, uint64_t* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);
 	float (*timeGetFixedDeltaTime)(void);

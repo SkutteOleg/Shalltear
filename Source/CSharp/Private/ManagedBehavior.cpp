@@ -69,7 +69,13 @@ namespace Shalltear::CSharpImpl {
 #ifdef SLT_CSHARP_TEST_HOOKS
 		++ManagedTypes::GetCounters().hookCrossings;
 #endif
+		if (hook > SLT_HOOK_DESTROY) {
+			ScriptRuntime::GetManaged().invokeHook(_instance, hook);
+			return;
+		}
+		++ManagedTypes::GetLifecycleDepth();
 		ScriptRuntime::GetManaged().invokeHook(_instance, hook);
+		--ManagedTypes::GetLifecycleDepth();
 	}
 
 } // namespace Shalltear::CSharpImpl

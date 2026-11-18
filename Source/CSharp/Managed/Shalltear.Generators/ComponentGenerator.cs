@@ -275,7 +275,8 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				component.isAbstract ? "null" : "static () => new " + component.qualified + "()",
 			};
 			if (component.fields.Length == 0) {
-				calls.Append("\t\tglobal::Shalltear.Interop.ScriptTypes.Register(").Append(string.Join(", ", head)).Append(", default, default, null, null);\n");
+				calls.Append("\t\tglobal::Shalltear.Interop.ScriptTypes.Register<").Append(component.qualified).Append(">(");
+				calls.Append(string.Join(", ", head)).Append(", default, default, null, null);\n");
 				continue;
 			}
 
@@ -327,7 +328,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			}
 			text.Append("\n\tstatic void Register").Append(index).Append("() {\n");
 			text.Append("\t\tglobal::System.Span<int> offsets = stackalloc int[").Append(component.fields.Length).Append("];\n");
-			text.Append("\t\tglobal::Shalltear.Interop.ScriptTypes.Register(").Append(string.Join(", ", head));
+			text.Append("\t\tglobal::Shalltear.Interop.ScriptTypes.Register<").Append(component.qualified).Append(">(").Append(string.Join(", ", head));
 			text.Append(", new global::Shalltear.Interop.ScriptField[] {\n").Append(specs);
 			text.Append("\t\t}, offsets, Push").Append(index).Append(", Pull").Append(index).Append(");\n");
 			text.Append(offsets).Append("\t}\n");

@@ -31,16 +31,22 @@ VALUES = {
 # 16 byte aligned in engine, 4 in C#
 WIDE = ("Vec4", "Quat")
 VALUE_HEADERS = ("Shalltear/Core/Math/Color.h", "Shalltear/Core/Math/Quat.h", "Shalltear/Core/Math/Vector.h")
+OBJECTS = {
+	"SceneObject": "::Shalltear::SceneObject",
+	"Component": "::Shalltear::Component",
+}
+WRAPPERS = {"SceneObject": "ObjectCache.SceneObject"}
 # bump when a type's C signature changes
 LOWERING = 1
-TYPE_LIST = ", ".join(list(SCALARS) + list(VALUES)) + ", string, span<T>"
+TYPE_LIST = ", ".join(list(SCALARS) + list(VALUES) + list(OBJECTS)) + ", string, span<T>"
+RETURN_LIST = ", ".join(["void"] + list(SCALARS) + list(VALUES) + list(WRAPPERS)) + ", string"
 IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9]*\Z")
 CLASS_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*(\.[A-Za-z][A-Za-z0-9]*)+\Z")
 SPAN = re.compile(r"span<([A-Za-z0-9]+)>\Z")
-AREA_KEYS = {"area", "include", "class", "doc", "test", "functions"}
-FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc"}
-PARAM_KEYS = {"name", "type", "out"}
-CSHARP_KEYS = {"member", "kind", "conditional"}
+AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions"}
+FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable"}
+PARAM_KEYS = {"name", "type", "out", "optional"}
+CSHARP_KEYS = {"member", "kind", "conditional", "relay"}
 FNV_OFFSET = 0xCBF29CE484222325
 FNV_PRIME = 0x100000001B3
 
@@ -50,11 +56,13 @@ class SchemaError(Exception):
 
 
 class Param:
-	def __init__(self, name, kind, type_name, out):
+	def __init__(self, name, kind, type_name, out=False, optional=False, implicit=False):
 		self.name = name
 		self.kind = kind
 		self.type = type_name
 		self.out = out
+		self.optional = optional
+		self.implicit = implicit
 
 
 class Function:
@@ -81,6 +89,8 @@ def classify(type_name):
 		return "value", type_name
 	if type_name == "string":
 		return "string", type_name
+	if isinstance(type_name, str) and type_name in OBJECTS:
+		return "object", type_name
 	match = SPAN.match(type_name) if isinstance(type_name, str) else None
 	if match and match.group(1) in SCALARS and match.group(1) != "bool":
 		return "span", match.group(1)
@@ -107,15 +117,17 @@ def parse_function(raw, area, path):
 		raise SchemaError(f"{path.name}: {where}: 'id' must be letters/digits")
 	function.cpp = raw["cpp"]
 	function.leaf = raw.get("leaf", False)
-	function.guarded = not function.leaf
 	function.any_thread = raw.get("thread", "main") == "any"
 	if raw.get("thread", "main") not in ("main", "any"):
 		raise SchemaError(f"{path.name}: {where}: 'thread' is '{raw['thread']}'. Use main/any")
 	function.doc = raw.get("doc", "")
 
 	function.return_kind, function.returns = classify(raw["returns"])
-	if function.return_kind not in ("void", "scalar", "value"):
-		raise SchemaError(f"{path.name}: {where}: can't return '{raw['returns']}'. Use void, {', '.join(list(SCALARS) + list(VALUES))}")
+	if function.return_kind not in ("void", "scalar", "value", "string", "object") or (function.return_kind == "object" and function.returns not in WRAPPERS):
+		raise SchemaError(f"{path.name}: {where}: can't return '{raw['returns']}'. Use {RETURN_LIST}")
+	function.nullable = raw.get("nullable", True)
+	if "nullable" in raw and function.return_kind != "object":
+		raise SchemaError(f"{path.name}: {where}: 'nullable' is for a returned object, this returns {raw['returns']}")
 
 	function.params = []
 	for entry in raw["params"]:
@@ -127,17 +139,22 @@ def parse_function(raw, area, path):
 			raise SchemaError(f"{path.name}: {where}: unknown type '{entry['type']}'. Use {TYPE_LIST}")
 		if entry.get("out", False) and kind != "span":
 			raise SchemaError(f"{path.name}: {where}: 'out' is for a span, '{entry['name']}' is {entry['type']}")
+		if entry.get("optional", False) and kind != "object":
+			raise SchemaError(f"{path.name}: {where}: 'optional' is for an object, '{entry['name']}' is {entry['type']}")
 		if not isinstance(entry["name"], str) or not IDENTIFIER.match(entry["name"]):
 			raise SchemaError(f"{path.name}: {where}: parameter name must be letters/digits")
-		function.params.append(Param(entry["name"], kind, type_name, entry.get("out", False)))
+		function.params.append(Param(entry["name"], kind, type_name, entry.get("out", False), entry.get("optional", False)))
 
 	csharp = raw["csharp"]
 	check_keys(csharp, CSHARP_KEYS, {"member", "kind"}, path, where)
 	function.member = csharp["member"]
 	function.kind = csharp["kind"]
 	function.conditional = csharp.get("conditional", "")
+	function.relay = csharp.get("relay", False)
 	if function.kind not in ("getter", "setter", "method"):
 		raise SchemaError(f"{path.name}: {where}: 'kind' is '{function.kind}'. Use getter/setter/method")
+	if function.relay and function.kind != "method":
+		raise SchemaError(f"{path.name}: {where}: 'relay' needs a method")
 	if function.kind == "getter" and (function.params or function.return_kind == "void"):
 		raise SchemaError(f"{path.name}: {where}: getter must take nothing + return a value")
 	if function.kind == "setter" and (len(function.params) != 1 or function.return_kind != "void"):
@@ -146,8 +163,14 @@ def parse_function(raw, area, path):
 		raise SchemaError(f"{path.name}: {where}: 'conditional' needs a method returning void")
 	if function.member == area.class_name:
 		raise SchemaError(f"{path.name}: {where}: member '{function.member}' has the class name. Rename the member")
-	if not area.test and not function.doc and function.kind != "setter":
+	if not area.test and not area.internal and not function.doc and function.kind != "setter":
 		raise SchemaError(f"{path.name}: {where}: 'doc' is missing")
+	if area.instance:
+		function.params.insert(0, Param("self", "object", area.instance, implicit=True))
+	function.has_objects = any(param.kind == "object" for param in function.params)
+	if function.leaf and function.return_kind == "string":
+		raise SchemaError(f"{path.name}: {where}: 'leaf' can't return a string")
+	function.guarded = not function.leaf or function.has_objects or function.return_kind == "object"
 	function.table_member = area.name[0].lower() + area.name[1:] + function.id
 	function.thunk = area.name + function.id
 	return function
@@ -170,8 +193,12 @@ def parse_area(path):
 		raise SchemaError(f"{path.name}: 'class' must be a namespace + name (Shalltear.Time)")
 	area.namespace, area.class_name = raw["class"].rsplit(".", 1)
 	area.test = raw.get("test", False)
+	area.internal = raw.get("internal", False)
+	area.instance = raw.get("instance", "")
+	if area.instance and area.instance not in OBJECTS:
+		raise SchemaError(f"{path.name}: 'instance' is '{area.instance}'. Use {', '.join(OBJECTS)}")
 	area.doc = raw.get("doc", "")
-	if not area.test and not area.doc:
+	if not area.test and not area.internal and not area.instance and not area.doc:
 		raise SchemaError(f"{path.name}: 'doc' is missing")
 	area.functions = [parse_function(entry, area, path) for entry in raw["functions"]]
 
@@ -190,9 +217,14 @@ def parse_area(path):
 		if kinds == ["getter", "setter"]:
 			getter = next(function for function in group if function.kind == "getter")
 			setter = next(function for function in group if function.kind == "setter")
-			if setter.params[0].type != getter.returns or setter.params[0].kind != getter.return_kind:
-				raise SchemaError(f"{path.name}: {setter.id}: sets {setter.params[0].type}, '{member}' gets {getter.returns}")
+			value = explicit(setter)[0]
+			if value.type != getter.returns or value.kind != getter.return_kind:
+				raise SchemaError(f"{path.name}: {setter.id}: sets {value.type}, '{member}' gets {getter.returns}")
 	return area
+
+
+def explicit(function):
+	return [param for param in function.params if not param.implicit]
 
 
 def load_areas(directory):
@@ -210,8 +242,8 @@ def layout_hash(areas):
 	lines = [f"lowering {LOWERING}"] + [f"{name}{{{','.join(fields)}}}" for name, fields in VALUES.items()]
 	for area in areas:
 		for function in area.functions:
-			params = ",".join(("span<" + param.type + ">" if param.kind == "span" else param.type) + ("&" if param.out else "")
-							  for param in function.params)
+			params = ",".join(("span<" + param.type + ">" if param.kind == "span" else param.type) + ("&" if param.out else "") +
+							  ("?" if param.optional else "") for param in function.params)
 			lines.append(f"{area.name}.{function.id}:{function.returns}({params}){'|leaf' if function.leaf else ''}")
 	return fnv1a(("\n".join(lines) + "\n").encode("utf-8"))
 
@@ -221,12 +253,20 @@ def c_type(kind, type_name):
 		return "void"
 	if kind == "scalar":
 		return SCALARS[type_name][0]
+	if kind == "string":
+		return "SltString"
+	if kind == "object":
+		return "uint64_t"
 	return "Slt" + type_name if type_name in WIDE else "::Shalltear::" + type_name
 
 
 def cs_abi_type(kind, type_name):
 	if kind == "void":
 		return "void"
+	if kind == "string":
+		return "SltString"
+	if kind == "object":
+		return "ulong"
 	return SCALARS[type_name][1] if kind == "scalar" else type_name
 
 
@@ -234,6 +274,12 @@ def cs_api_type(kind, type_name):
 	if kind == "void":
 		return "void"
 	return SCALARS[type_name][2] if kind == "scalar" else type_name
+
+
+def cs_return_type(function):
+	if function.return_kind == "object":
+		return function.returns + ("?" if function.nullable else "")
+	return cs_api_type(function.return_kind, function.returns)
 
 
 def c_parameters(function, thunk):
@@ -246,6 +292,8 @@ def c_parameters(function, thunk):
 			parts += [f"float {param.name}{field.upper()}" for field in VALUES[param.type]]
 		elif param.kind == "string":
 			parts.append(f"SltString {param.name}{suffix}")
+		elif param.kind == "object":
+			parts.append(f"uint64_t {param.name}{'Id' if thunk else ''}")
 		else:
 			parts.append(f"{'' if param.out else 'const '}{SCALARS[param.type][0]}* {param.name}{'Data' if thunk else ''}")
 			parts.append(f"int32_t {param.name}Count")
@@ -311,9 +359,25 @@ def cpp_locals(function):
 	return lines
 
 
+def cpp_objects(function):
+	lines = []
+	for param in function.params:
+		if param.kind != "object":
+			continue
+		resolved = f"ResolveObject<{OBJECTS[param.type]}>({param.name}Id)"
+		lines.append(f"{OBJECTS[param.type]}* const {param.name} = {resolved};")
+		if not param.optional:
+			lines += [f"if (!{param.name}) {{", "\treturn SLT_ERR_DESTROYED;", "}"]
+	return lines
+
+
 def cpp_result(function):
 	if function.return_kind == "value":
 		return f"FromEngine({function.cpp})" if function.returns in WIDE else function.cpp
+	if function.return_kind == "string":
+		return f"ScriptRuntime::KeepString({function.cpp})"
+	if function.return_kind == "object":
+		return f"IdOf({function.cpp})"
 	if function.returns == "bool":
 		return f"static_cast<uint8_t>(({function.cpp}) ? 1 : 0)"
 	return f"static_cast<{SCALARS[function.returns][0]}>({function.cpp})"
@@ -323,7 +387,10 @@ def render_thunk(function):
 	tabs = "\t\t"
 	out = [f"{tabs}{c_return(function)} {function.thunk}({', '.join(c_parameters(function, True))}) noexcept {{"]
 	if function.guarded:
-		out.append(f"{tabs}\treturn ScriptRuntime::Guard([&] {{")
+		# a leaf must not reach C# (FlushDirty would)
+		flushes = not function.any_thread and not function.leaf
+		out += [f"{tabs}\t{line}" for line in cpp_objects(function)]
+		out.append(f"{tabs}\tconst int32_t status = ScriptRuntime::Guard([&] {{" if flushes else f"{tabs}\treturn ScriptRuntime::Guard([&] {{")
 		out += [f"{tabs}\t\t{line}" for line in cpp_locals(function)]
 		if function.return_kind == "void":
 			out.append(f"{tabs}\t\t{function.cpp};")
@@ -332,6 +399,8 @@ def render_thunk(function):
 		else:
 			out.append(f"{tabs}\t\t*outResult = {cpp_result(function)};")
 		out.append(f"{tabs}\t}});")
+		if flushes:
+			out += [f"{tabs}\tManagedTypes::FlushDirty();", f"{tabs}\treturn status;"]
 	else:
 		out += [f"{tabs}\t{line}" for line in cpp_locals(function)]
 		out.append(f"{tabs}\tstatic_assert(noexcept({function.cpp}));")
@@ -401,12 +470,13 @@ def xml_text(text):
 
 def cs_call(area, function, setter):
 	lines = []
+	member = "member" if function.relay else f'"{area.class_name}.{function.member}"'
 	if not function.any_thread:
-		lines += ["if (Bridge.OffMainThread) {", f'\tBridge.ThrowOffMainThread("{area.class_name}.{function.member}");', "}"]
+		lines += ["if (Bridge.OffMainThread) {", f"\tBridge.ThrowOffMainThread({member});", "}"]
 	arguments = []
 	pinned = []
 	for param in function.params:
-		name = "value" if setter else param.name
+		name = "value" if setter and not param.implicit else param.name
 		if param.kind == "scalar":
 			arguments.append(f"{name} ? (byte)1 : (byte)0" if param.type == "bool" else name)
 		elif param.kind == "value":
@@ -414,6 +484,14 @@ def cs_call(area, function, setter):
 		elif param.kind == "string":
 			lines.append(f"using UTF8Scratch {name}Text = new({name}, stackalloc byte[UTF8Scratch.STACK_BYTES]);")
 			arguments.append(f"{name}Text.Text")
+		elif param.kind == "object":
+			if param.implicit:
+				arguments.append("_id")
+			elif param.optional:
+				arguments.append(f"{name} is null ? 0UL : {name}._id")
+			else:
+				lines.append(f"ArgumentNullException.ThrowIfNull({name});")
+				arguments.append(f"{name}._id")
 		else:
 			pinned.append(f"fixed ({SCALARS[param.type][1]}* {name}Data = {name})")
 			arguments += [f"{name}Data", f"{name}.Length"]
@@ -424,9 +502,14 @@ def cs_call(area, function, setter):
 		if function.return_kind != "void":
 			body.append(f"{cs_abi_type(function.return_kind, function.returns)} result;")
 			arguments.append("&result")
+		failure = f"Bridge.Failure(status, {member})" if function.has_objects else "Bridge.LastError()"
 		body += [f"int status = Bindings.table.{function.table_member}({', '.join(arguments)});", "if (status != Bridge.OK) {",
-				 "\tthrow Bridge.LastError();", "}"]
-		if function.return_kind != "void":
+				 f"\tthrow {failure};", "}"]
+		if function.return_kind == "string":
+			body.append("return Bridge.Text(result);")
+		elif function.return_kind == "object":
+			body.append(f"return {WRAPPERS[function.returns]}(result){'' if function.nullable else '!'};")
+		elif function.return_kind != "void":
 			body.append("return result != 0;" if is_bool else "return result;")
 	else:
 		call = f"Bindings.table.{function.table_member}({', '.join(arguments)})"
@@ -443,25 +526,32 @@ def cs_call(area, function, setter):
 
 def cs_parameters(function):
 	parts = []
-	for param in function.params:
+	listed = explicit(function)
+	for index, param in enumerate(listed):
 		if param.kind == "string":
 			parts.append(f"string {param.name}")
 		elif param.kind == "span":
 			parts.append(f"{'Span' if param.out else 'ReadOnlySpan'}<{SCALARS[param.type][2]}> {param.name}")
+		elif param.kind == "object":
+			last = index + 1 == len(listed) and not function.relay
+			parts.append(f"{param.type}? {param.name}{' = null' if last else ''}" if param.optional else f"{param.type} {param.name}")
 		else:
 			parts.append(f"{cs_api_type(param.kind, param.type)} {param.name}")
+	if function.relay:
+		parts.append("string member")
 	return ", ".join(parts)
 
 
 def render_managed_area(area):
-	access = "internal" if area.test else "public"
+	access = "internal" if area.test or area.internal else "public"
+	static = "" if area.instance else "static "
 	out = ["// <auto-generated/>", f"// {BANNER}", "#nullable enable", "", "using System;", ""]
 	if area.namespace != "Shalltear.Interop":
 		out += ["using Shalltear.Interop;", ""]
 	out += [f"namespace {area.namespace};", ""]
 	if area.doc:
 		out.append(f"/// <summary>{xml_text(area.doc)}</summary>")
-	out.append(f"{access} static unsafe partial class {area.class_name} {{")
+	out.append(f"{access} {static}unsafe partial class {area.class_name} {{")
 
 	emitted = set()
 	blocks = []
@@ -477,7 +567,7 @@ def render_managed_area(area):
 				block.append(f'\t[System.Diagnostics.Conditional("{function.conditional}")]')
 			if any(param.kind == "string" for param in function.params):
 				block.append("\t[System.Runtime.CompilerServices.SkipLocalsInit]")
-			block.append(f"\t{access} static {cs_api_type(function.return_kind, function.returns)} {function.member}({cs_parameters(function)}) {{")
+			block.append(f"\t{access} {static}{cs_return_type(function)} {function.member}({cs_parameters(function)}) {{")
 			block += ["\t\t" + line for line in cs_call(area, function, False)]
 			block.append("\t}")
 		else:
@@ -487,11 +577,14 @@ def render_managed_area(area):
 			doc = (getter.doc if getter else "") or (setter.doc if setter else "")
 			if doc:
 				block.append(f"\t/// <summary>{xml_text(doc)}</summary>")
+			value = None if getter else explicit(setter)[0]
 			if getter:
-				type_name = cs_api_type(getter.return_kind, getter.returns)
+				type_name = cs_return_type(getter)
+			elif value.kind == "object":
+				type_name = value.type + ("?" if value.optional else "")
 			else:
-				type_name = cs_api_type(setter.params[0].kind, setter.params[0].type)
-			block.append(f"\t{access} static {type_name} {function.member} {{")
+				type_name = cs_api_type(value.kind, value.type)
+			block.append(f"\t{access} {static}{type_name} {function.member} {{")
 			if getter:
 				block += ["\t\tget {"] + ["\t\t\t" + line for line in cs_call(area, getter, False)] + ["\t\t}"]
 			if setter:

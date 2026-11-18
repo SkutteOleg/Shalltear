@@ -1,0 +1,44 @@
+{
+	"area": "Component",
+	"include": "ObjectBindings.h",
+	"class": "Shalltear.Component",
+	"instance": "Component",
+	"functions": [
+		{
+			"id": "GetOwner",
+			"cpp": "self->GetOwner()",
+			"returns": "SceneObject",
+			"nullable": false,
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Owner", "kind": "getter" },
+			"doc": "Object this component is on."
+		},
+		{
+			"id": "IsEnabledSelf",
+			"cpp": "self->IsEnabledSelf()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsEnabledSelf", "kind": "getter" },
+			"doc": "Own enabled flag (its object's active state not counted)."
+		},
+		{
+			"id": "IsEffectivelyEnabled",
+			"cpp": "self->IsEffectivelyEnabled()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsEffectivelyEnabled", "kind": "getter" },
+			"doc": "True when enabled + its object is active in hierarchy."
+		},
+		{
+			"id": "SetEnabled",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::SetEnabled(*self, enabled)",
+			"returns": "void",
+			"params": [{ "name": "enabled", "type": "bool" }],
+			"csharp": { "member": "SetEnabled", "kind": "method" },
+			"doc": "Turn this component on/off."
+		}
+	]
+}

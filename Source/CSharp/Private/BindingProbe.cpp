@@ -2,6 +2,8 @@
 
 #include "BindingProbe.h"
 
+#include "ManagedTypes.h"
+
 #include "Shalltear/Core/Math/MathUtil.h"
 
 #include <iterator>
@@ -187,6 +189,7 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 
 		std::mutex _recordsMutex;
 		std::vector<str> _records;
+		i32 _touches = 0;
 
 	} // anonymous namespace
 
@@ -283,6 +286,32 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		std::vector<str> taken;
 		taken.swap(_records);
 		return taken;
+	}
+
+	SceneObject* CreateObject(std::string_view name) {
+		return SceneSystem::CreateObject(name).Get();
+	}
+
+	i32 Touch(SceneObject& target) {
+		(void)target;
+		return ++_touches;
+	}
+
+	i32 GetTouches() {
+		return _touches;
+	}
+
+	i32 GetAliveChecks() {
+		return static_cast<i32>(ManagedTypes::GetCounters().aliveChecks);
+	}
+
+	void RunFrames(i32 count) {
+		for (i32 frame = 0; frame < count; ++frame) {
+			SceneSystem::FixedUpdateAll();
+			SceneSystem::UpdateAll();
+			SceneSystem::LateUpdateAll();
+			SceneSystem::EndFrame();
+		}
 	}
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

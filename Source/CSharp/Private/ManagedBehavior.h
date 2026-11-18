@@ -17,6 +17,8 @@ namespace Shalltear::CSharpImpl {
 		const TypeInfo* GetType() const override { return _type.info; }
 
 		void ReleaseInstance();
+		intptr_t GetInstance() const { return _instance; }
+		const ManagedType& GetManagedType() const { return _type; }
 
 		static void SyncFields(void* instance, FieldSync phase);
 		void Pull();

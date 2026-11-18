@@ -1,9 +1,7 @@
 namespace Shalltear;
 
 /// <summary>Part of a scene object. Scripts derive from Behavior.</summary>
-public abstract class Component {
-	internal ulong _nativeId;
-
+public abstract partial class Component : EngineObject {
 	private protected Component() {}
 
 	/// <summary>Added to its object.</summary>

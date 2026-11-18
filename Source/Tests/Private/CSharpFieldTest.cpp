@@ -127,6 +127,47 @@ TEST_F(CSharpGeneratorTest, FieldsWithinTheSpanCompile) {
 	EXPECT_TRUE(std::filesystem::exists(_root / "bin" / "Debug")) << output;
 }
 
+TEST_F(CSharpGeneratorTest, NullOperatorsOnEngineObjectsWarn) {
+	const str source = "using Shalltear;\nnamespace Scratch;\npublic sealed class Seeker : Behavior {\n"
+					   "\tSceneObject? _target;\n\tobject? _plain;\n"
+					   "\tpublic string? A() => _target?.Name;\n"
+					   "\tpublic SceneObject B(SceneObject other) => _target ?? other;\n"
+					   "\tpublic void C(SceneObject other) { _target ??= other; }\n"
+					   "\tpublic bool D() => _target is null;\n"
+					   "\tpublic bool E() => _target is not null;\n"
+					   "\tpublic bool F(Seeker? other) => other?.D() ?? false;\n"
+					   "\tpublic bool G<T>(T? found) where T : Component => found is null;\n"
+					   "\tpublic bool H() => _target == null || !_target || _plain is null || _plain?.ToString() == null;\n"
+					   "\tpublic bool I(SceneObject other) => other is SceneObject same && (_plain ?? same) != null;\n"
+					   "\tpublic bool J(EngineObject? any) => any is null;\n"
+					   "}\n";
+
+	int exitCode = 0;
+	const str output = Build(source, exitCode);
+	EXPECT_EQ(exitCode, 0) << output;
+	const auto warned = [&output](u32 line, std::string_view used, std::string_view type) {
+		const str position = std::format("Scripts.cs({},", line);
+		const str message = std::format("warning SLT2001: '{}' misses a destroyed {}. Compare with == null.", used, type);
+		for (size_t at = output.find(position); at != str::npos; at = output.find(position, at + 1)) {
+			const size_t end = output.find('\n', at);
+			if (std::string_view(output).substr(at, end - at).find(message) != std::string_view::npos) {
+				return true;
+			}
+		}
+		return false;
+	};
+	EXPECT_TRUE(warned(6, "?.", "SceneObject")) << output;
+	EXPECT_TRUE(warned(7, "??", "SceneObject")) << output;
+	EXPECT_TRUE(warned(8, "??=", "SceneObject")) << output;
+	EXPECT_TRUE(warned(9, "is null", "SceneObject")) << output;
+	EXPECT_TRUE(warned(10, "is not null", "SceneObject")) << output;
+	EXPECT_TRUE(warned(11, "?.", "Seeker")) << output;
+	EXPECT_TRUE(warned(12, "is null", "T")) << output;
+	EXPECT_EQ(output.find("Scripts.cs(13,"), str::npos) << output;
+	EXPECT_EQ(output.find("Scripts.cs(14,"), str::npos) << output;
+	EXPECT_TRUE(warned(15, "is null", "EngineObject")) << output;
+}
+
 #elif defined(SLT_TEST_CSHARP_AOT)
 
 #include "CSharpConformance.h"

@@ -3,6 +3,8 @@
 #include "Shalltear/Core/Math/Color.h"
 #include "Shalltear/Core/Math/Quat.h"
 #include "Shalltear/Core/Math/Vector.h"
+#include "Shalltear/Core/Scene/SceneObject.h"
+#include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/Types.h"
 
 #include <span>
@@ -36,5 +38,11 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 
 	void Record(std::string_view text);
 	std::vector<str> TakeRecords();
+
+	SceneObject* CreateObject(std::string_view name);
+	i32 Touch(SceneObject& target);
+	i32 GetTouches();
+	i32 GetAliveChecks();
+	void RunFrames(i32 count);
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

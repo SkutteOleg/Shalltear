@@ -1,7 +1,11 @@
 #pragma once
 
+#include "ManagedTypes.h"
 #include "ScriptBridge.h"
 #include "ScriptRuntime.h"
+
+#include "Shalltear/Core/Handle.h"
+#include "Shalltear/Core/Object.h"
 
 #include <new>
 #include <span>
@@ -19,6 +23,19 @@ namespace Shalltear::CSharpImpl {
 	}
 	inline SltQuat FromEngine(const Quat& value) noexcept {
 		return SltQuat{value.x, value.y, value.z, value.w};
+	}
+
+	template <typename T>
+	T* ResolveObject(uint64_t id) noexcept {
+		return static_cast<T*>(ObjectRegistry::Resolve(id));
+	}
+
+	template <typename T>
+	uint64_t IdOf(const Handle<T>& handle) noexcept {
+		return handle.IsValid() ? handle.GetInstanceId() : 0;
+	}
+	inline uint64_t IdOf(const Object* object) noexcept {
+		return object ? object->GetInstanceId() : 0;
 	}
 
 } // namespace Shalltear::CSharpImpl

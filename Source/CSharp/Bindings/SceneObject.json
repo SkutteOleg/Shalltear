@@ -1,0 +1,196 @@
+{
+	"area": "SceneObject",
+	"include": "ObjectBindings.h",
+	"class": "Shalltear.SceneObject",
+	"instance": "SceneObject",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "std::string_view(self->name)",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" },
+			"doc": "Name shown in Hierarchy."
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name.assign(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "IsActiveSelf",
+			"cpp": "self->IsActiveSelf()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsActiveSelf", "kind": "getter" },
+			"doc": "Own active flag (parents not counted)."
+		},
+		{
+			"id": "IsActiveInHierarchy",
+			"cpp": "self->IsActiveInHierarchy()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsActiveInHierarchy", "kind": "getter" },
+			"doc": "True when this object + all parents are active."
+		},
+		{
+			"id": "SetActive",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::SetActive(*self, active)",
+			"returns": "void",
+			"params": [{ "name": "active", "type": "bool" }],
+			"csharp": { "member": "SetActive", "kind": "method" },
+			"doc": "Turn this object (with its children) on/off."
+		},
+		{
+			"id": "GetParent",
+			"cpp": "self->GetParent()",
+			"returns": "SceneObject",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Parent", "kind": "getter" },
+			"doc": "Parent object (null at scene root)."
+		},
+		{
+			"id": "SetParent",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::SetParent(*self, parent, worldStays)",
+			"returns": "void",
+			"params": [
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "worldStays", "type": "bool" }
+			],
+			"csharp": { "member": "SetParent", "kind": "method" },
+			"doc": "Move under parent (null = scene root). World transform unchanged when worldStays."
+		},
+		{
+			"id": "GetChildCount",
+			"cpp": "self->GetChildCount()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ChildCount", "kind": "getter" },
+			"doc": "Number of direct children."
+		},
+		{
+			"id": "GetChild",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::GetChild(*self, index)",
+			"returns": "SceneObject",
+			"params": [{ "name": "index", "type": "i32" }],
+			"leaf": true,
+			"csharp": { "member": "GetChild", "kind": "method" },
+			"doc": "Child at index (null when out of range)."
+		},
+		{
+			"id": "FindChildByName",
+			"cpp": "self->FindChildByName(childName)",
+			"returns": "SceneObject",
+			"params": [{ "name": "childName", "type": "string" }],
+			"csharp": { "member": "FindChildByName", "kind": "method" },
+			"doc": "1st direct child with this name (null when none)."
+		},
+		{
+			"id": "GetSiblingIndex",
+			"cpp": "self->GetSiblingIndex()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "SiblingIndex", "kind": "getter" },
+			"doc": "Position among its parent's children."
+		},
+		{
+			"id": "SetSiblingIndex",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::SetSiblingIndex(*self, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SiblingIndex", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalPosition",
+			"cpp": "self->GetLocalPosition()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LocalPosition", "kind": "getter" },
+			"doc": "Position relative to parent."
+		},
+		{
+			"id": "SetLocalPosition",
+			"cpp": "self->SetLocalPosition(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "LocalPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalRotation",
+			"cpp": "self->GetLocalRotation()",
+			"returns": "Quat",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LocalRotation", "kind": "getter" },
+			"doc": "Rotation relative to parent."
+		},
+		{
+			"id": "SetLocalRotation",
+			"cpp": "self->SetLocalRotation(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "LocalRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalScale",
+			"cpp": "self->GetLocalScale()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LocalScale", "kind": "getter" },
+			"doc": "Scale relative to parent."
+		},
+		{
+			"id": "SetLocalScale",
+			"cpp": "self->SetLocalScale(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "LocalScale", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldPosition",
+			"cpp": "self->GetWorldPosition()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "WorldPosition", "kind": "getter" },
+			"doc": "Position in world space."
+		},
+		{
+			"id": "SetWorldPosition",
+			"cpp": "self->SetWorldPosition(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "WorldPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldRotation",
+			"cpp": "self->GetWorldRotation()",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "WorldRotation", "kind": "getter" },
+			"doc": "Rotation in world space."
+		},
+		{
+			"id": "SetWorldRotation",
+			"cpp": "self->SetWorldRotation(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "WorldRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetLossyScale",
+			"cpp": "self->GetLossyScale()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "LossyScale", "kind": "getter" },
+			"doc": "Scale in world space (approximate under rotated non-uniform parents)."
+		}
+	]
+}

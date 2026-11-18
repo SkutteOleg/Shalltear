@@ -5,6 +5,7 @@
 #include "CSharpComponentScenarios.h"
 #include "CSharpRuntimeFixture.h"
 
+#include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 
@@ -261,6 +262,40 @@ TEST_F(CSharpComponentFixture, UnloadStopsHooksOfLiveComponents) {
 	SceneSystem::EndFrame();
 	EXPECT_EQ(Records(), "");
 	EXPECT_FALSE(component.IsValid());
+}
+
+TEST_F(CSharpComponentFixture, FrameEndSweepsTheCache) {
+	str message;
+	ASSERT_EQ(Run("ObjectProbe.FillsCache", message), SLT_OK) << message;
+	EXPECT_EQ(Run("ObjectProbe.ReportsCacheCount", message), CASE_FAILED);
+	EXPECT_EQ(message, "300");
+	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	EXPECT_EQ(Run("ObjectProbe.ReportsCacheCount", message), CASE_FAILED);
+	EXPECT_EQ(message, "44");
+	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	EXPECT_EQ(Run("ObjectProbe.ReportsCacheCount", message), CASE_FAILED);
+	EXPECT_EQ(message, "0");
+}
+
+TEST_F(CSharpComponentFixture, DetachEmptiesTheCache) {
+	str message;
+	ASSERT_EQ(Run("ObjectProbe.FillsCache", message), SLT_OK) << message;
+	EXPECT_EQ(Run("ObjectProbe.ReportsCacheCount", message), CASE_FAILED);
+	EXPECT_EQ(message, "300");
+
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+	_hooks->detach();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	EXPECT_EQ(Run("ObjectProbe.ReportsCacheCount", message), CASE_FAILED);
+	EXPECT_EQ(message, "0");
+	EXPECT_EQ(Run("ObjectTests.GetComponentFindsScript", message), SLT_OK) << message;
+}
+
+TEST_F(CSharpComponentFixture, AddComponentReportsAFailedConstructor) {
+	str message;
+	EXPECT_EQ(Run("ObjectProbe.AddsAFailingScript", message), SLT_OK) << message;
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a constructor"), 1u) << _log.Delivered().Joined();
 }
 
 #endif

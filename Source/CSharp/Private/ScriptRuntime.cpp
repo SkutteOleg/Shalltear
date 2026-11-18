@@ -15,6 +15,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		SltManagedAPI _managed{};
 		bool _attached = false;
 		thread_local str _lastError;
+		thread_local str _keptString;
 
 		std::string_view View(SltString text) {
 			return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
@@ -57,6 +58,17 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 
 	void SetLastError(std::string_view text) {
 		_lastError.assign(text);
+	}
+
+	SltString KeepString(std::string_view text) {
+		_keptString.assign(text);
+		return SltString{_keptString.data(), static_cast<int32_t>(_keptString.size())};
+	}
+
+	void Tick() {
+		if (_attached) {
+			_managed.tick();
+		}
 	}
 
 	SltEngineAPI MakeEngineAPI() {

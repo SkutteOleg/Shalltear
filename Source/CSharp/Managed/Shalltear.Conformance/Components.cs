@@ -115,17 +115,17 @@ static class ComponentProbe {
 
 	[ConformanceTest]
 	internal static void RegistersATakenName() {
-		ScriptTypes.Register("SceneObject", Hash("SceneObject"), 0UL, false, 0u, 0u, static () => new Silent(), default, default, null, null);
+		ScriptTypes.Register<Silent>("SceneObject", Hash("SceneObject"), 0UL, false, 0u, 0u, static () => new Silent(), default, default, null, null);
 	}
 
 	[ConformanceTest]
 	internal static void RegistersAWrongHash() {
-		ScriptTypes.Register("Shalltear.Conformance.Misnamed", Hash("Shalltear.Conformance.Other"), 0UL, false, 0u, 0u, static () => new Silent(), default, default, null, null);
+		ScriptTypes.Register<Silent>("Shalltear.Conformance.Misnamed", Hash("Shalltear.Conformance.Other"), 0UL, false, 0u, 0u, static () => new Silent(), default, default, null, null);
 	}
 
 	[ConformanceTest]
 	internal static void RegistersAnUnknownParent() {
-		ScriptTypes.Register("Shalltear.Conformance.Orphan", Hash("Shalltear.Conformance.Orphan"), Hash("SceneObject"), false, 0u, 0u,
-							 static () => new Silent(), default, default, null, null);
+		ScriptTypes.Register<Silent>("Shalltear.Conformance.Orphan", Hash("Shalltear.Conformance.Orphan"), Hash("SceneObject"), false, 0u, 0u,
+									 static () => new Silent(), default, default, null, null);
 	}
 }

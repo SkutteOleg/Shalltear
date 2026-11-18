@@ -9,11 +9,21 @@ namespace Shalltear.Interop;
 
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct SltBindings {
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> componentGetOwner;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEnabledSelf;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEffectivelyEnabled;
+	public delegate* unmanaged<ulong, byte, int> componentSetEnabled;
 	public delegate* unmanaged<SltString, SltString, int> logTrace;
 	public delegate* unmanaged<SltString, SltString, int> logDebug;
 	public delegate* unmanaged<SltString, SltString, int> logInfo;
 	public delegate* unmanaged<SltString, SltString, int> logWarn;
 	public delegate* unmanaged<SltString, SltString, int> logError;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
+	public delegate* unmanaged<ulong*, int, uint*, int, int> objectAreAlive;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int> objectFindScript;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int, int*, int> objectFindScripts;
+	public delegate* unmanaged<ulong, int, long*, int> objectAddScript;
+	public delegate* unmanaged<ulong, int> objectDestroy;
 	public delegate* unmanaged[SuppressGCTransition]<int> probeGetMathCaseCount;
 	public delegate* unmanaged<SltString, float*, int, float*, int, int*, int> probeEvaluateMath;
 	public delegate* unmanaged[SuppressGCTransition]<byte, byte> probeEchoBool;
@@ -34,6 +44,37 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<int> probeThrow;
 	public delegate* unmanaged<SltString, int> probeRecord;
 	public delegate* unmanaged<SltString, int*, int> probeSumBytes;
+	public delegate* unmanaged<SltString, ulong*, int> probeCreateObject;
+	public delegate* unmanaged<ulong, int*, int> probeTouch;
+	public delegate* unmanaged<int*, int> probeGetTouches;
+	public delegate* unmanaged<int*, int> probeGetAliveChecks;
+	public delegate* unmanaged<int> probeEndFrame;
+	public delegate* unmanaged<int, int> probeRunFrames;
+	public delegate* unmanaged<ulong, SltString*, int> sceneObjectGetName;
+	public delegate* unmanaged<ulong, SltString, int> sceneObjectSetName;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> sceneObjectIsActiveSelf;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> sceneObjectIsActiveInHierarchy;
+	public delegate* unmanaged<ulong, byte, int> sceneObjectSetActive;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> sceneObjectGetParent;
+	public delegate* unmanaged<ulong, ulong, byte, int> sceneObjectSetParent;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> sceneObjectGetChildCount;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int, ulong*, int> sceneObjectGetChild;
+	public delegate* unmanaged<ulong, SltString, ulong*, int> sceneObjectFindChildByName;
+	public delegate* unmanaged<ulong, int*, int> sceneObjectGetSiblingIndex;
+	public delegate* unmanaged<ulong, int, int> sceneObjectSetSiblingIndex;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec3*, int> sceneObjectGetLocalPosition;
+	public delegate* unmanaged<ulong, float, float, float, int> sceneObjectSetLocalPosition;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Quat*, int> sceneObjectGetLocalRotation;
+	public delegate* unmanaged<ulong, float, float, float, float, int> sceneObjectSetLocalRotation;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec3*, int> sceneObjectGetLocalScale;
+	public delegate* unmanaged<ulong, float, float, float, int> sceneObjectSetLocalScale;
+	public delegate* unmanaged<ulong, Vec3*, int> sceneObjectGetWorldPosition;
+	public delegate* unmanaged<ulong, float, float, float, int> sceneObjectSetWorldPosition;
+	public delegate* unmanaged<ulong, Quat*, int> sceneObjectGetWorldRotation;
+	public delegate* unmanaged<ulong, float, float, float, float, int> sceneObjectSetWorldRotation;
+	public delegate* unmanaged<ulong, Vec3*, int> sceneObjectGetLossyScale;
+	public delegate* unmanaged<ulong, ulong, ulong*, int> sceneSystemInstantiate;
+	public delegate* unmanaged<SltString, ulong*, int> sceneSystemFindObjectByName;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetFixedDeltaTime;
@@ -45,7 +86,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xbaff74d32ac71cca;
+	internal const ulong LAYOUT_HASH = 0x3323a33453dc2b36;
 
 	internal static SltBindings table;
 

@@ -54,8 +54,9 @@ public static unsafe class ScriptTypes {
 	public static bool IsAttached => Bridge.IsAttached;
 
 	/// <summary>Registers 1 component class (parents before children) + writes field offsets.</summary>
-	public static void Register(string name, ulong nameHash, ulong parentHash, bool isAbstract, uint hookMask, uint tickMask, Func<Behavior>? factory,
-								ReadOnlySpan<ScriptField> fields, Span<int> offsets, ScriptFieldSync? push, ScriptFieldSync? pull) {
+	public static void Register<T>(string name, ulong nameHash, ulong parentHash, bool isAbstract, uint hookMask, uint tickMask, Func<Behavior>? factory,
+								   ReadOnlySpan<ScriptField> fields, Span<int> offsets, ScriptFieldSync? push, ScriptFieldSync? pull)
+		where T : Behavior {
 		if (!Bridge.IsAttached) {
 			return;
 		}
@@ -109,6 +110,7 @@ public static unsafe class ScriptTypes {
 			return;
 		}
 		_byHash[nameHash] = type;
+		ScriptIndex<T>.value = _types.Count;
 		for (int index = 0; index < fields.Length; ++index) {
 			offsets[index] = descs[index].offset;
 		}
@@ -134,7 +136,7 @@ public static unsafe class ScriptTypes {
 				return 0;
 			}
 			Behavior behavior = type._factory();
-			behavior._nativeId = nativeId;
+			behavior._id = nativeId;
 			behavior._scriptType = type;
 			return GCHandle.ToIntPtr(GCHandle.Alloc(behavior));
 		} catch (Exception exception) {
@@ -146,11 +148,7 @@ public static unsafe class ScriptTypes {
 	[UnmanagedCallersOnly]
 	internal static void DestroyInstance(nint instance) {
 		try {
-			GCHandle handle = GCHandle.FromIntPtr(instance);
-			if (handle.Target is Behavior behavior) {
-				behavior._nativeId = 0;
-			}
-			handle.Free();
+			GCHandle.FromIntPtr(instance).Free();
 		} catch (Exception exception) {
 			Bridge.Report(exception);
 		}
@@ -181,7 +179,7 @@ public static unsafe class ScriptTypes {
 	internal static void PullFields(nint instance, byte* shadow, ulong nativeId) {
 		try {
 			Behavior behavior = Unsafe.As<Behavior>(GCHandle.FromIntPtr(instance).Target!);
-			behavior._nativeId = nativeId;
+			behavior._id = nativeId;
 			foreach (ScriptFieldSync pull in behavior._scriptType!._pull) {
 				pull(behavior, (nint)shadow);
 			}
