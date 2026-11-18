@@ -5,6 +5,8 @@
 #include "CSharpDiagnostics.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpReload.h"
+#include "CSharpScriptAsset.h"
+#include "CSharpScriptEditor.h"
 #include "CSharpSetup.h"
 #include "DotNetAcquire.h"
 #include "DotNetToolchain.h"
@@ -60,6 +62,12 @@ namespace Shalltear::CSharpEditor {
 		u32 (*getReloadCount)();
 		u32 (*getReloadMigratedCount)();
 		f64 (*getReloadMilliseconds)();
+		void (*registerScriptImporter)(const void* owner);
+		void (*registerScriptEditor)(const void* owner);
+		void (*getScriptComponents)(const Guid& script, Vector<const TypeInfo*>& out);
+		const TypeInfo* (*resolveScriptComponent)(const Guid& script);
+		bool (*isValidScriptName)(std::string_view name);
+		Guid (*createScript)(const Path& virtualDir, const str& name, CSharpScripts::Template kind);
 		const char* muxerName;
 		const char* hostLibraryName;
 	};

@@ -115,6 +115,12 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* Shallt
 		&CSharpReload::GetReloadCount,
 		&CSharpReload::GetLastMigratedCount,
 		&CSharpReload::GetLastMilliseconds,
+		&CSharpScripts::RegisterImporter,
+		&RegisterScriptEditor,
+		&CSharpScripts::GetComponents,
+		&CSharpScripts::ResolveComponent,
+		&CSharpScripts::IsValidName,
+		&CSharpScripts::Create,
 		HostFxr::GetMuxerName().data(),
 		HostFxr::GetLibraryName().data(),
 	};

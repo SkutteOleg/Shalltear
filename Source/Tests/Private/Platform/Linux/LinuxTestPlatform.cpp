@@ -1065,6 +1065,10 @@ namespace TestPlatform {
 		return "sh -c \"echo [$" + str(name) + "] > '" + receiptPath + "'\"";
 	}
 
+	str GetEditorProbeCommand(const str& receiptPath) {
+		return "sh -c \"echo '[{file}] [{line}]' > '" + receiptPath + "'\"";
+	}
+
 	str StageExternalEditor(const str& root, str& outVariable) {
 		const std::filesystem::path programs = std::filesystem::path(root) / "home" / ".local" / "bin";
 		std::filesystem::create_directories(programs);

@@ -338,6 +338,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		}
 
 		type->name = name;
+		type->script = View(desc.script);
 		type->parent = managedParent;
 		type->managedTypeId = desc.managedTypeId;
 		type->hookMask = desc.hookMask;
@@ -519,6 +520,12 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 	const void* GetOwnerToken() {
 		return &_TOKEN;
+	}
+
+	void ForEachType(void (*visit)(const ManagedType& type, void* user), void* user) {
+		for (const ManagedType* type : _types) {
+			visit(*type, user);
+		}
 	}
 
 	u32 GetLiveCount() {

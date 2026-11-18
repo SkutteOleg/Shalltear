@@ -6,6 +6,7 @@
 #include "Shalltear/Core/Types.h"
 
 #include "Shalltear/Editor/CompileStatus.h"
+#include "Shalltear/Editor/EditorAPI.h"
 
 #include <filesystem>
 #include <mutex>
@@ -26,9 +27,9 @@ namespace Shalltear {
 			Vector<str> gamePackages;
 		};
 
-		void Initialize(const Config& config, CompileService* compileService);
+		SHALLTEAR_EDITOR_API void Initialize(const Config& config, CompileService* compileService);
 
-		void Terminate();
+		SHALLTEAR_EDITOR_API void Terminate();
 
 		void PumpMainThread();
 

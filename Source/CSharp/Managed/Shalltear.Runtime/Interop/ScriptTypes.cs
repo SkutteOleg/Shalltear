@@ -129,8 +129,8 @@ public static unsafe class ScriptTypes {
 
 	/// <summary>Registers 1 component class (parents before children) + writes field offsets.</summary>
 	public static void Register<T>(string name, ulong nameHash, ulong parentHash, bool isAbstract, uint hookMask, uint tickMask, Func<Behavior>? factory,
-								   ReadOnlySpan<ScriptField> fields, Span<int> offsets, ScriptFieldSync? push, ScriptFieldSync? pull, bool normalizes,
-								   int texts, out int textBase)
+								   string? script, ReadOnlySpan<ScriptField> fields, Span<int> offsets, ScriptFieldSync? push, ScriptFieldSync? pull,
+								   bool normalizes, int texts, out int textBase)
 		where T : Behavior {
 		textBase = 0;
 		if (!Bridge.IsAttached) {
@@ -148,7 +148,7 @@ public static unsafe class ScriptTypes {
 			type._pull = [..type._pull, pull];
 		}
 
-		byte[] text = new byte[TextBytes(name, fields)];
+		byte[] text = new byte[TextBytes(name, fields) + Encoding.UTF8.GetByteCount(script ?? "")];
 		SltFieldDesc[] descs = new SltFieldDesc[Math.Max(fields.Length, 1)];
 		bool registered;
 		fixed (byte* textStart = text)
@@ -166,6 +166,7 @@ public static unsafe class ScriptTypes {
 			desc.tickMask = tickMask;
 			desc.fields = descStart;
 			desc.fieldCount = fields.Length;
+			desc.script = Put(script, ref at, textEnd);
 			registered = Bridge.RegisterManagedType(&desc);
 		}
 		_types.Add(type);

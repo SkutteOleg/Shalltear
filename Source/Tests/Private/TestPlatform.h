@@ -85,6 +85,7 @@ namespace TestPlatform {
 
 	bool RunHelperProcess(int argc, char** argv, int& outExitCode);
 	str GetEnvironmentProbeCommand(const char* name, const str& receiptPath, str& outUnsetText);
+	str GetEditorProbeCommand(const str& receiptPath);
 	str StageExternalEditor(const str& root, str& outVariable);
 
 	struct LaunchedProcess;

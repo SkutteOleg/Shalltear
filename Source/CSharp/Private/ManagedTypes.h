@@ -18,6 +18,7 @@ namespace Shalltear::CSharpImpl {
 		const TypeInfo* info = nullptr;
 		const ManagedType* parent = nullptr;
 		str name;
+		str script;
 		std::deque<str> fieldNames;
 		std::vector<ShadowInit> inits;
 		i32 managedTypeId = 0;
@@ -46,6 +47,7 @@ namespace Shalltear::CSharpImpl {
 
 		const void* GetOwnerToken();
 		u32 GetLiveCount();
+		void ForEachType(void (*visit)(const ManagedType& type, void* user), void* user);
 		void SetTypeObserver(const TypeObserver& observer);
 
 		void Link(ManagedBehavior& proxy);

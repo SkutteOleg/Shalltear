@@ -574,6 +574,10 @@ namespace TestPlatform {
 		return "cmd.exe /c \"echo [%" + str(name) + "%]> \"" + receiptPath + "\"\"";
 	}
 
+	str GetEditorProbeCommand(const str& receiptPath) {
+		return "cmd.exe /c \"echo [{file}] [{line}]> \"" + receiptPath + "\"\"";
+	}
+
 	str StageExternalEditor(const str& root, str& outVariable) {
 		const std::filesystem::path programs = std::filesystem::path(root) / "AppData" / "Programs" / "Microsoft VS Code";
 		std::filesystem::create_directories(programs);

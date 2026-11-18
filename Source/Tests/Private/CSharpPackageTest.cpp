@@ -2,6 +2,7 @@
 
 #include "Checkout.h"
 
+#include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Memory.h"
@@ -93,10 +94,14 @@ TEST_F(CSharpPackageFixture, NewProjectLeavesItOut) {
 TEST(CSharpPackageTest, LoadsAndUnloads) {
 	ModuleSystem::Initialize();
 #ifdef SHALLTEAR_SHARED
+	EXPECT_EQ(AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")), nullptr);
 	ModuleHandle package = ModuleSystem::Load(Path(str(PACKAGE_TARGET) + SLT_TEST_DLL_SUFFIX));
 	EXPECT_TRUE(ModuleSystem::IsLoaded(package));
+	EXPECT_NE(AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")), nullptr);
+	EXPECT_EQ(AssetImporterRegistry::FindByExtension(".cs"), AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")));
 	ModuleSystem::Unload(package);
 	EXPECT_FALSE(ModuleSystem::IsLoaded(package));
+	EXPECT_EQ(AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")), nullptr);
 #else
 	char token = 0;
 	SLT_CALL_LINKED_PACKAGE(CSharp, &token);

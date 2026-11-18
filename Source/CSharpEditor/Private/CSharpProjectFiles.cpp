@@ -126,13 +126,27 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 
 	} // anonymous namespace
 
+	namespace {
+
+		str ReadProjectName(const str& projectPath) {
+			str name;
+			u64 created = 0;
+			if (!ProjectOps::ReadProjectFile(projectPath, name, created) || name.empty()) {
+				name = fs::path(projectPath).filename().generic_string();
+			}
+			return name;
+		}
+
+	} // anonymous namespace
+
+	str GetRootNamespace(const str& projectPath) {
+		return SafeName(ReadProjectName(projectPath));
+	}
+
 	Options GetDefaultOptions(const str& projectPath, const str& dotnetRoot) {
 		Options options;
 		options.projectPath = projectPath;
-		u64 created = 0;
-		if (!ProjectOps::ReadProjectFile(projectPath, options.projectName, created) || options.projectName.empty()) {
-			options.projectName = fs::path(projectPath).filename().generic_string();
-		}
+		options.projectName = ReadProjectName(projectPath);
 		options.dotnetRoot = dotnetRoot;
 		const str props = FileSystem::Resolve(Path("engine://CSharp/Shalltear.CSharp.props")).ToString();
 		if (props.find("://") == str::npos) {

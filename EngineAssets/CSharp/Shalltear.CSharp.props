@@ -20,6 +20,7 @@
 		<EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
 	</PropertyGroup>
 	<ItemGroup>
+		<CompilerVisibleProperty Include="MSBuildProjectDirectory" />
 		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedDir)Shalltear.Runtime.dll" Private="false" />
 		<Analyzer Include="$(ShalltearManagedDir)Shalltear.Generators.dll" />
 	</ItemGroup>

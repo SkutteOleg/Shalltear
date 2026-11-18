@@ -1,6 +1,7 @@
 #include "ScriptRuntime.h"
 
 #ifdef SLT_WITH_EDITOR
+#include "CSharpScriptAsset.h"
 #include "CSharpSetup.h"
 #endif
 
@@ -19,6 +20,9 @@ namespace Shalltear::CSharpImpl {
 
 	void RegisterPackage(const void* owner) {
 		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Late, &TickStage, nullptr, owner);
+#ifdef SLT_WITH_EDITOR
+		CSharpEditor::CSharpScripts::RegisterImporter(owner);
+#endif
 	}
 
 	void ShutdownPackage() {

@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 7;
+	internal const uint ABI_VERSION = 8;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;

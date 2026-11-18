@@ -1,0 +1,15 @@
+using Shalltear;
+
+namespace {{NAMESPACE}};
+
+// new Shalltear component
+public sealed class {{CLASS_NAME}} : Behavior {
+	public float degreesPerSecond = 60f;
+	public SceneObject? target;
+
+	protected override void OnUpdate() {
+		SceneObject rotated = target != null ? target : Owner;
+		Quat step = Quat.AngleAxis(degreesPerSecond * Time.DeltaTime, Vec3.Up);
+		rotated.LocalRotation = (rotated.LocalRotation * step).Normalized;
+	}
+}

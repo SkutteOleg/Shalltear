@@ -29,6 +29,8 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 
 	str GetProjectFile(const Options& options);
 
+	str GetRootNamespace(const str& projectPath);
+
 	str GetSolutionFile(const Options& options);
 
 	bool Write(const Options& options, Result& out);

@@ -65,7 +65,7 @@ namespace {
 			CSharpRuntimeFixture::TearDown();
 		}
 
-		str Build(const str& source, int& outExitCode) {
+		str Build(const str& source, int& outExitCode, const str& extra = {}) {
 			const std::filesystem::path managed = std::filesystem::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp";
 			const str version = _hooks->runtimeVersion;
 			const str framework = "net" + version.substr(0, version.rfind('.'));
@@ -75,7 +75,8 @@ namespace {
 				<< (_root / "packages").generic_string() << "</RestorePackagesPath>\n\t</PropertyGroup>\n\t<ItemGroup>\n"
 				<< "\t\t<Reference Include=\"Shalltear.Runtime\" HintPath=\"" << (managed / "Shalltear.Runtime.dll").generic_string()
 				<< "\" Private=\"false\" />\n\t\t<Analyzer Include=\"" << (managed / "Shalltear.Generators.dll").generic_string()
-				<< "\" />\n\t</ItemGroup>\n</Project>\n";
+				<< "\" />\n\t</ItemGroup>\n"
+				<< extra << "</Project>\n";
 			std::ofstream(_root / "Scripts.cs", std::ios::binary) << source;
 
 			const str sdkRoot = _hooks->findSDKRoot();
@@ -91,6 +92,44 @@ namespace {
 	};
 
 } // anonymous namespace
+
+TEST_F(CSharpGeneratorTest, ScriptPathsProjectRelativeAbsentInPlayer) {
+	const std::filesystem::path outside = _root.parent_path() / (_root.filename().string() + "_outside");
+	std::filesystem::create_directories(outside);
+	std::ofstream(outside / "Far.cs", std::ios::binary) << "using Shalltear;\nnamespace Scratch;\npublic sealed class Far : Behavior {\n}\n";
+	const str source = "using Shalltear;\nnamespace Scratch;\npublic sealed class Near : Behavior {\n}\n";
+	const str items = "\t<ItemGroup>\n\t\t<CompilerVisibleProperty Include=\"MSBuildProjectDirectory\" />\n\t\t<Compile Include=\"" +
+					  (outside / "Far.cs").generic_string() + "\" />\n\t</ItemGroup>\n";
+	const auto table = [&]() {
+		str text;
+		std::error_code ec;
+		for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(_root / "obj", ec)) {
+			if (entry.path().filename() == "TypeTable.g.cs") {
+				std::ifstream file(entry.path(), std::ios::binary);
+				text.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+			}
+		}
+		return text;
+	};
+
+	int exitCode = 0;
+	str output = Build(source, exitCode, items + "\t<PropertyGroup>\n\t\t<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>\n\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	const str editor = table();
+	EXPECT_NE(editor.find("Scratch.Near(), \"Scripts.cs\""), str::npos) << editor;
+	EXPECT_NE(editor.find("Scratch.Far(), null"), str::npos) << editor;
+
+	std::error_code ec;
+	std::filesystem::remove_all(_root / "obj", ec);
+	output = Build(source, exitCode,
+				   items + "\t<PropertyGroup>\n\t\t<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>\n"
+						   "\t\t<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>\n\t</PropertyGroup>\n");
+	ASSERT_EQ(exitCode, 0) << output;
+	const str player = table();
+	EXPECT_NE(player.find("Scratch.Near(), null"), str::npos) << player;
+	EXPECT_EQ(player.find("Scripts.cs"), str::npos) << player;
+	std::filesystem::remove_all(outside, ec);
+}
 
 TEST_F(CSharpGeneratorTest, TooManyFieldsFailTheCompile) {
 	str source = "using Shalltear;\nnamespace Scratch;\npublic sealed class Small : Behavior {\n\tpublic float speed;\n}\n"

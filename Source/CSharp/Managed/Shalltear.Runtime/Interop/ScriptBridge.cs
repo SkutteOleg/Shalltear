@@ -60,6 +60,7 @@ internal unsafe struct SltTypeDesc {
 	public uint tickMask;
 	public SltFieldDesc* fields;
 	public int fieldCount;
+	public SltString script;
 }
 
 [StructLayout(LayoutKind.Sequential)]

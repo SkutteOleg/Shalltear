@@ -156,6 +156,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public uint hookMask;
 		public int depth;
 		public int slots;
+		public string script = "";
 		public Location? location;
 		public ImmutableArray<Field> fields = ImmutableArray<Field>.Empty;
 		public ImmutableArray<EnumType> enums = ImmutableArray<EnumType>.Empty;
@@ -164,7 +165,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		string? _key;
 
 		string Key() {
-			return _key ??= string.Join("|", name, qualified, parent, isAbstract, hookMask, depth, slots) + "[" + string.Join(";", fields.Select(static field => field.Key())) +
+			return _key ??= string.Join("|", name, qualified, parent, isAbstract, hookMask, depth, slots, script) + "[" + string.Join(";", fields.Select(static field => field.Key())) +
 							"][" + string.Join(";", enums.Select(static type => type.Key())) + "][" + string.Join(";", values.Select(static type => type.Key())) + "][" +
 							string.Join(";", problems.Select(static problem => problem.field + ">" + problem.type)) + "]";
 		}
@@ -181,7 +182,14 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			static (node, _) => node is ClassDeclarationSyntax declaration && declaration.BaseList != null,
 			static (syntax, cancel) => Describe(syntax.SemanticModel.GetDeclaredSymbol((ClassDeclarationSyntax)syntax.Node, cancel) as INamedTypeSymbol));
 		IncrementalValuesProvider<Component> components = classes.Where(static component => component != null)!;
-		context.RegisterSourceOutput(components.Collect(), static (output, found) => {
+		IncrementalValueProvider<string> scriptRoot = context.AnalyzerConfigOptionsProvider.Combine(context.ParseOptionsProvider).Select(static (pair, _) => {
+			if (pair.Right.PreprocessorSymbolNames.Contains("SHALLTEAR_PLAYER")) {
+				return "";
+			}
+			return pair.Left.GlobalOptions.TryGetValue("build_property.MSBuildProjectDirectory", out string? directory) ? directory ?? "" : "";
+		});
+		context.RegisterSourceOutput(components.Collect().Combine(scriptRoot), static (output, pair) => {
+			ImmutableArray<Component> found = pair.Left;
 			if (found.IsDefaultOrEmpty) {
 				return;
 			}
@@ -202,7 +210,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 					}
 				}
 			}
-			output.AddSource("TypeTable.g.cs", SourceText.From(Render(ordered), Encoding.UTF8));
+			output.AddSource("TypeTable.g.cs", SourceText.From(Render(ordered, pair.Right), Encoding.UTF8));
 		});
 	}
 
@@ -242,6 +250,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			isAbstract = type.IsAbstract,
 			location = type.Locations.FirstOrDefault(),
 		};
+		component.script = component.location?.SourceTree?.FilePath ?? "";
 		Collector collector = new();
 		List<Field> fields = new();
 		bool behavior = false;
@@ -693,7 +702,16 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append(offsets).Append("\t}\n");
 	}
 
-	static string Render(List<Component> components) {
+	static string ScriptOf(Component component, string root) {
+		string file = component.script.Replace('\\', '/');
+		string folder = root.Replace('\\', '/').TrimEnd('/') + "/";
+		if (folder.Length == 1 || !file.StartsWith(folder, StringComparison.OrdinalIgnoreCase)) {
+			return "null";
+		}
+		return Literal(file.Substring(folder.Length));
+	}
+
+	static string Render(List<Component> components, string scriptRoot) {
 		List<EnumType> enums = new();
 		List<ValueType> values = new();
 		HashSet<string> seen = new(StringComparer.Ordinal);
@@ -734,6 +752,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				component.hookMask.ToString(CultureInfo.InvariantCulture) + "u",
 				((component.hookMask >> 5) & 7u).ToString(CultureInfo.InvariantCulture) + "u",
 				component.isAbstract ? "null" : "static () => new " + component.qualified + "()",
+				ScriptOf(component, scriptRoot),
 			};
 			string register = "\t\t" + TYPES + ".Register<" + component.qualified + ">(" + string.Join(", ", head);
 			if (component.fields.Length == 0) {

@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 7
+#define SLT_BRIDGE_ABI_VERSION 8
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -116,6 +116,8 @@ typedef struct SltTypeDesc {
 	uint32_t tickMask;
 	SltFieldDesc* fields;
 	int32_t fieldCount;
+	// source file from project root (empty in a player)
+	SltString script;
 } SltTypeDesc;
 
 typedef struct SltEngineAPI {
