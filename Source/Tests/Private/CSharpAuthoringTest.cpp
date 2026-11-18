@@ -95,6 +95,7 @@ namespace {
 			_options.sdkRoot = _sdk;
 			_options.buildServers = buildServers;
 			_options.watchSources = watchSources;
+			_options.openBuild = false;
 			_options.debounceSeconds = debounceSeconds;
 			_editor->beginAuthoring(_options, &_authoringOwner);
 			return true;

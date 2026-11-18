@@ -10,6 +10,7 @@
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Object.h"
+#include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/Settings.h"
 
 #include "Shalltear/Editor/ChildProcess.h"
@@ -31,6 +32,14 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 		std::unique_ptr<DotNetAcquire> _acquire;
 		u64 _task = 0;
 		AcquireStep _loggedStep = AcquireStep::Idle;
+		bool _holdingReports = false;
+
+		void ReleaseReports() {
+			if (_holdingReports) {
+				_holdingReports = false;
+				SceneSystem::ReleaseUnresolvedComponentReports();
+			}
+		}
 
 		bool StartHostedRuntime(const str& sdkRoot, str& outError) {
 			const SltInitializeFn entry =
@@ -150,6 +159,8 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 
 		SLT_LOG_INFO("C#", "downloading .NET SDK {} into '{}' (C# scripts start when done)", pin.sdkVersion, _options.acquire.cacheRoot);
 		_state = State::Acquiring;
+		_holdingReports = true;
+		SceneSystem::HoldUnresolvedComponentReports();
 		_loggedStep = AcquireStep::Idle;
 		_acquire = std::make_unique<DotNetAcquire>(_options.acquire);
 		_acquire->Start();
@@ -190,10 +201,12 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 			SLT_LOG_ERROR("C#", "{}", status.error);
 			break;
 		}
+		ReleaseReports();
 	}
 
 	void Shutdown() {
 		CSharpAuthoring::Shutdown();
+		ReleaseReports();
 		_acquire.reset();
 		EndTask();
 		if (_watcher) {

@@ -5,6 +5,7 @@
 #include "Shalltear/Core/Types.h"
 
 #include <exception>
+#include <span>
 
 namespace Shalltear::CSharpImpl {
 
@@ -15,6 +16,8 @@ namespace Shalltear::CSharpImpl {
 
 		void Detach();
 
+		i32 LoadUserAssemblies(std::span<const str> paths);
+		i32 LoadKeptUserAssemblies();
 		i32 UnloadUserAssemblies();
 
 		bool IsAttached();

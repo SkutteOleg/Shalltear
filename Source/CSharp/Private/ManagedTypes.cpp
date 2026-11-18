@@ -105,6 +105,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		TypeObserver _observer;
 		Counters _counters;
 		i32 _lifecycleDepth = 0;
+		bool _restoring = false;
 
 		std::string_view View(SltString text) {
 			return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
@@ -520,6 +521,14 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		return &_TOKEN;
 	}
 
+	u32 GetLiveCount() {
+		u32 count = 0;
+		for (const ManagedBehavior* proxy = _live; proxy; proxy = proxy->next) {
+			++count;
+		}
+		return count;
+	}
+
 	void SetTypeObserver(const TypeObserver& observer) {
 		_observer = observer;
 	}
@@ -567,6 +576,14 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		while (dirtyHead) {
 			dirtyHead->Pull();
 		}
+	}
+
+	void SetRestoring(bool restoring) {
+		_restoring = restoring;
+	}
+
+	bool IsRestoring() {
+		return _restoring;
 	}
 
 	Counters& GetCounters() {

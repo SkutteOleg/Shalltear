@@ -89,6 +89,7 @@ namespace Shalltear::CSharpEditor {
 		if (_options.projectPath.empty() || _options.projectFile.empty() || _options.muxer.empty()) {
 			return false;
 		}
+		++_requestCount;
 		_previousWarnings.clear();
 		if (_state == CompileState::Succeeded) {
 			_previousWarnings = _diagnostics;

@@ -41,14 +41,16 @@ namespace Shalltear::CSharpEditor {
 		bool IsBusy() const { return _state == CompileState::Configuring || _state == CompileState::Compiling; }
 		u32 GetErrorCount() const { return _errorCount; }
 		u32 GetWarningCount() const { return _warningCount; }
+		u32 GetRequestCount() const { return _requestCount; }
 		u32 GetRestoreCount() const { return _restoreCount; }
 		u32 GetCompileCount() const { return _compileCount; }
 		f64 GetLastDurationSeconds() const { return _lastDurationSeconds; }
 		const Vector<CSharpDiagnostics::Diagnostic>& GetDiagnostics() const { return _diagnostics; }
 
 		str GetOutputAssembly() const;
-	private:
+
 		str ComputeRestoreStamp() const;
+	private:
 		void BeginRestore();
 		void BeginBuild();
 		bool StartChild(const str& arguments);
@@ -63,6 +65,7 @@ namespace Shalltear::CSharpEditor {
 		bool _rerunQueued = false;
 		u32 _errorCount = 0;
 		u32 _warningCount = 0;
+		u32 _requestCount = 0;
 		u32 _restoreCount = 0;
 		u32 _compileCount = 0;
 		u64 _startTicks = 0;

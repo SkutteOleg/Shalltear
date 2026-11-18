@@ -45,6 +45,7 @@ namespace Shalltear::CSharpImpl {
 		const ManagedType* FindByIndex(i32 scriptIndex);
 
 		const void* GetOwnerToken();
+		u32 GetLiveCount();
 		void SetTypeObserver(const TypeObserver& observer);
 
 		void Link(ManagedBehavior& proxy);
@@ -59,6 +60,9 @@ namespace Shalltear::CSharpImpl {
 				PullDirty();
 			}
 		}
+
+		void SetRestoring(bool restoring);
+		bool IsRestoring();
 
 		struct Counters {
 			u64 hookCrossings = 0;

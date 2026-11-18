@@ -12,6 +12,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		str sdkRoot;
 		bool buildServers = true;
 		bool watchSources = true;
+		bool openBuild = true;
 		f64 debounceSeconds = 0.25;
 	};
 
@@ -28,5 +29,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 	void RequestCompile();
 
 	void NotifySourceChanged();
+
+	bool IsHoldingReports();
 
 } // namespace Shalltear::CSharpEditor::CSharpAuthoring

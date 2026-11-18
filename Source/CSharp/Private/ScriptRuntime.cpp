@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <format>
 #include <stdexcept>
+#include <vector>
 
 namespace Shalltear::CSharpImpl::ScriptRuntime {
 
@@ -166,6 +167,22 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		_managed.shutdown();
 		_managed = {};
 		_attached = false;
+	}
+
+	i32 LoadUserAssemblies(std::span<const str> paths) {
+		if (!_attached || !_managed.loadUserAssemblies) {
+			return SLT_ERR_REFUSED;
+		}
+		std::vector<SltString> views;
+		views.reserve(paths.size());
+		for (const str& path : paths) {
+			views.push_back(SltString{path.data(), static_cast<int32_t>(path.size())});
+		}
+		return _managed.loadUserAssemblies(views.data(), static_cast<int32_t>(views.size()));
+	}
+
+	i32 LoadKeptUserAssemblies() {
+		return _attached && _managed.loadKeptUserAssemblies ? _managed.loadKeptUserAssemblies() : SLT_ERR_REFUSED;
 	}
 
 	i32 UnloadUserAssemblies() {

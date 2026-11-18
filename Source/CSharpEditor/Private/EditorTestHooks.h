@@ -4,6 +4,7 @@
 #include "CSharpCompile.h"
 #include "CSharpDiagnostics.h"
 #include "CSharpProjectFiles.h"
+#include "CSharpReload.h"
 #include "CSharpSetup.h"
 #include "DotNetAcquire.h"
 #include "DotNetToolchain.h"
@@ -46,6 +47,19 @@ namespace Shalltear::CSharpEditor {
 		bool (*isAuthoringActive)();
 		const CSharpCompile& (*getAuthoringCompile)();
 		void (*notifySourceChanged)();
+		bool (*isHoldingReports)();
+		void (*beginReload)(const str& assembly);
+		void (*shutdownReload)();
+		void (*pumpReload)();
+		void (*requestReload)();
+		void (*reloadNow)();
+		bool (*isReloadHeld)();
+		void (*setBuildRunning)(bool running);
+		bool (*areScriptsLoaded)();
+		CSharpReload::Outcome (*getReloadOutcome)();
+		u32 (*getReloadCount)();
+		u32 (*getReloadMigratedCount)();
+		f64 (*getReloadMilliseconds)();
 		const char* muxerName;
 		const char* hostLibraryName;
 	};

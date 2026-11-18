@@ -10,6 +10,8 @@
 #include "TestPlatform.h"
 
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Reflection.h"
+#include "Shalltear/Core/Scene.h"
 #include "Shalltear/Core/Settings.h"
 
 #include "Shalltear/Editor/ChildProcess.h"
@@ -381,6 +383,44 @@ namespace {
 		bool taken = false;
 	};
 
+	char _unknownRowToken = 0;
+
+	class UnknownRowProbe final : public Component {
+	public:
+		const TypeInfo* GetType() const override { return type; }
+
+		const TypeInfo* type = nullptr;
+	};
+
+	struct UnknownRowScene {
+		Buffer snapshot;
+
+		UnknownRowScene() {
+			SceneSystem::Initialize();
+			TypeRegistry::InitializePrimitives();
+			ReflectBuilder builder(StringHash("UnknownRowProbe"), sizeof(UnknownRowProbe), alignof(UnknownRowProbe));
+			builder.SetDisplayName("UnknownRowProbe");
+			builder.SetParent(Component::GetReflectType());
+			builder.SetFlags(TypeFlagComponent);
+			builder.SetCreateTypedFn(+[](const TypeInfo* type, MemTag tag) -> Object* {
+				UnknownRowProbe* probe = New<UnknownRowProbe>(tag);
+				probe->type = type;
+				return probe;
+			});
+			const TypeInfo* type = builder.FinalizeOwned(&_unknownRowToken);
+			Handle<Scene> scene = SceneSystem::CreateScene("Waiting");
+			SceneSystem::CreateObject("Holder", scene)->AddComponent(type);
+			SceneSystem::SaveSceneToMemory(scene, snapshot);
+			SceneSystem::UnloadScene(scene);
+			SceneSystem::EndFrame();
+			TypeRegistry::UnregisterOwnedBy(&_unknownRowToken);
+		}
+
+		~UnknownRowScene() { SceneSystem::Terminate(); }
+
+		bool Load() const { return SceneSystem::LoadSceneFromMemory(snapshot).IsValid(); }
+	};
+
 	class CSharpSetupTest : public DotNetToolchainTest {
 	protected:
 		fs::path _project;
@@ -486,9 +526,12 @@ namespace {
 } // anonymous namespace
 
 TEST_F(CSharpSetupTest, FoundToolchainStartsAtOnce) {
+	const UnknownRowScene waiting;
 	const str root = MakeSDK(Installed(), _pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
 	Write(_project / "Project.ini", "[Project]\nname = Space Game\n");
 	_editor->beginSetup(SetupOptions(), &_setupOwner);
+	ASSERT_TRUE(waiting.Load());
+	EXPECT_EQ(_log.Delivered().Count("'Waiting' loaded with 1 component row(s) of 1 unloaded type(s)"), 1u);
 
 	EXPECT_EQ(_editor->getSetupState(), CSharpSetup::State::Ready);
 	EXPECT_EQ(_editor->getSetupSDKRoot(), root);
@@ -506,6 +549,7 @@ TEST_F(CSharpSetupTest, FoundToolchainStartsAtOnce) {
 }
 
 TEST_F(CSharpSetupTest, MissingToolchainIsAcquiredBehindATask) {
+	const UnknownRowScene waiting;
 	MakeArchive(_pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
 	_editor->beginSetup(SetupOptions(), &_setupOwner);
 
@@ -517,8 +561,11 @@ TEST_F(CSharpSetupTest, MissingToolchainIsAcquiredBehindATask) {
 	EXPECT_TRUE(tasks[0].text.starts_with("Downloading .NET SDK 10.0.999")) << tasks[0].text;
 	EXPECT_TRUE(tasks[0].cancellable);
 	EXPECT_EQ(_log.Delivered().Count("downloading .NET SDK 10.0.999 into"), 1u);
+	ASSERT_TRUE(waiting.Load());
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 0u);
 
 	ASSERT_EQ(Settle(), CSharpSetup::State::Ready) << _log.Delivered().Joined();
+	EXPECT_EQ(_log.Delivered().Count("'Waiting' loaded with 1 component row(s) of 1 unloaded type(s)"), 1u);
 	EXPECT_TRUE(Tasks().empty());
 	EXPECT_EQ(_started, 1u);
 	EXPECT_EQ(_startedWith, Installed().generic_string());
@@ -532,13 +579,17 @@ TEST_F(CSharpSetupTest, MissingToolchainIsAcquiredBehindATask) {
 }
 
 TEST_F(CSharpSetupTest, CancelFromTheTaskStopsTheDownload) {
+	const UnknownRowScene waiting;
 	MakeArchive(_pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
 	_editor->beginSetup(SetupOptions(), &_setupOwner);
 	const Vector<EditorTasks::TaskView> tasks = Tasks();
 	ASSERT_EQ(tasks.size(), 1u);
+	ASSERT_TRUE(waiting.Load());
 
 	EXPECT_TRUE(EditorTasks::Cancel(tasks[0].id));
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 0u);
 	EXPECT_EQ(Settle(), CSharpSetup::State::Cancelled);
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 1u);
 	EXPECT_TRUE(Tasks().empty());
 	EXPECT_EQ(_started, 0u);
 	EXPECT_FALSE(fs::exists(Installed()));
@@ -547,12 +598,44 @@ TEST_F(CSharpSetupTest, CancelFromTheTaskStopsTheDownload) {
 	EXPECT_EQ(_log.Delivered().Count(".NET SDK 10.0.999 download cancelled. Reopen the project to download it"), 1u);
 }
 
+TEST_F(CSharpSetupTest, ShutdownDuringTheDownloadReleasesHeldReports) {
+	const UnknownRowScene waiting;
+	MakeArchive(_pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
+	_editor->beginSetup(SetupOptions(), &_setupOwner);
+	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Acquiring);
+	ASSERT_TRUE(waiting.Load());
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 0u);
+
+	_editor->shutdownSetup();
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 1u);
+	EXPECT_TRUE(Tasks().empty());
+	ASSERT_TRUE(waiting.Load());
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 2u);
+}
+
+TEST_F(CSharpSetupTest, AnotherHoldOutlivesSetup) {
+	const UnknownRowScene waiting;
+	MakeSDK(Installed(), _pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
+	SceneSystem::HoldUnresolvedComponentReports();
+	_editor->beginSetup(SetupOptions(), &_setupOwner);
+	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Ready);
+	_editor->shutdownSetup();
+	ASSERT_TRUE(waiting.Load());
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 0u) << _log.Delivered().Joined();
+	SceneSystem::ReleaseUnresolvedComponentReports();
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 1u) << _log.Delivered().Joined();
+}
+
 TEST_F(CSharpSetupTest, FailedDownloadIsReported) {
 	MakeArchive(_pin.sdkVersion.c_str(), _pin.runtimeVersion.c_str());
 	_pin.archiveSHA512 = str(128, '0');
+	const UnknownRowScene waiting;
 	_editor->beginSetup(SetupOptions(), &_setupOwner);
+	ASSERT_TRUE(waiting.Load());
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 0u);
 
 	EXPECT_EQ(Settle(), CSharpSetup::State::Failed);
+	EXPECT_EQ(_log.Delivered().Count("unloaded type(s)"), 1u);
 	EXPECT_TRUE(Tasks().empty());
 	EXPECT_EQ(_started, 0u);
 	EXPECT_EQ(_log.Delivered().Count(("expected " + _pin.archiveSHA512).c_str()), 1u) << _log.Delivered().Joined();
@@ -704,23 +787,23 @@ TEST_F(CSharpSetupTest, SettingsReachTheCompileOnceItRuns) {
 	_editor->beginSetup(options, &_setupOwner);
 	ASSERT_EQ(_editor->getSetupState(), CSharpSetup::State::Ready);
 	EXPECT_EQ(ScriptSourceHeading(), "Project.Scripts");
-	EXPECT_EQ(compile.GetRestoreCount(), 0u);
+	EXPECT_EQ(compile.GetRestoreCount(), 1u);
 
 	Settings::NotifyChanged(CSharpSettings::UserCategory, "sdkPath");
-	EXPECT_EQ(compile.GetRestoreCount(), 0u);
-	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
 	EXPECT_EQ(compile.GetRestoreCount(), 1u);
-	Settings::NotifyChanged(CSharpSettings::UserCategory, "codeOptimization");
+	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
 	EXPECT_EQ(compile.GetRestoreCount(), 2u);
+	Settings::NotifyChanged(CSharpSettings::UserCategory, "codeOptimization");
+	EXPECT_EQ(compile.GetRestoreCount(), 3u);
 	Settings::NotifyChanged(CSharpSettings::UserCategory, "aotAnalysis");
-	EXPECT_EQ(compile.GetRestoreCount(), 3u);
+	EXPECT_EQ(compile.GetRestoreCount(), 4u);
 	Settings::NotifyChanged(CSharpSettings::UserCategory, "autoCompile");
-	EXPECT_EQ(compile.GetRestoreCount(), 3u);
+	EXPECT_EQ(compile.GetRestoreCount(), 4u);
 
 	_editor->shutdownSetup();
 	EXPECT_EQ(ScriptSourceHeading(), "none");
 	Settings::NotifyChanged(CSharpSettings::ProjectCategory, "allowUnsafeCode");
-	EXPECT_EQ(compile.GetRestoreCount(), 3u);
+	EXPECT_EQ(compile.GetRestoreCount(), 4u);
 	SettingsPresentation::UnregisterOwnedBy(&_setupOwner);
 }
 

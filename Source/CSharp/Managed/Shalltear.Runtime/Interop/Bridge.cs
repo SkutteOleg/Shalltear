@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 6;
+	internal const uint ABI_VERSION = 7;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -28,7 +28,9 @@ internal static unsafe class Bridge {
 	static int Initialize(SltEngineAPI* engine, SltManagedAPI* managed) {
 		int result = Attach(engine, managed);
 		if (result == OK) {
+			UserAssemblies.Forget();
 			managed->loadUserAssemblies = &UserAssemblies.Load;
+			managed->loadKeptUserAssemblies = &UserAssemblies.LoadKept;
 			managed->unloadUserAssemblies = &UserAssemblies.Unload;
 		}
 		return result;
@@ -49,6 +51,7 @@ internal static unsafe class Bridge {
 		_mainThreadId = Environment.CurrentManagedThreadId;
 		_attached = true;
 		managed->loadUserAssemblies = null;
+		managed->loadKeptUserAssemblies = null;
 		managed->unloadUserAssemblies = null;
 		managed->createInstance = &ScriptTypes.CreateInstance;
 		managed->destroyInstance = &ScriptTypes.DestroyInstance;
@@ -134,9 +137,15 @@ internal static unsafe class Bridge {
 		if (!_attached) {
 			return;
 		}
+		string said = exception.Message;
+		string frames = exception.StackTrace ?? "";
+		for (Exception? inner = exception.InnerException; inner != null; inner = inner.InnerException) {
+			said += " ---> " + (inner.GetType().FullName ?? inner.GetType().Name) + ": " + inner.Message;
+			frames = (inner.StackTrace ?? "") + "\n   --- End of inner exception stack trace ---\n" + frames;
+		}
 		byte[] type = Encoding.UTF8.GetBytes(exception.GetType().FullName ?? exception.GetType().Name);
-		byte[] message = Encoding.UTF8.GetBytes(exception.Message);
-		byte[] trace = Encoding.UTF8.GetBytes(exception.StackTrace ?? "");
+		byte[] message = Encoding.UTF8.GetBytes(said);
+		byte[] trace = Encoding.UTF8.GetBytes(frames);
 		fixed (byte* typePtr = type, messagePtr = message, tracePtr = trace) {
 			_engine.reportException(
 				new SltString { ptr = typePtr, length = type.Length },

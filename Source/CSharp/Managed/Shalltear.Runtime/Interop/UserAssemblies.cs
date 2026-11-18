@@ -35,7 +35,14 @@ internal static unsafe class UserAssemblies {
 		}
 	}
 
+	sealed class Images {
+		public string directory = "";
+		public byte[][] bytes = [];
+	}
+
 	static Context? _context;
+	static Images? _loaded;
+	static Images? _kept;
 
 	[UnmanagedCallersOnly]
 	internal static int Load(SltString* paths, int count) {
@@ -47,18 +54,12 @@ internal static unsafe class UserAssemblies {
 				return Bridge.OK;
 			}
 			string first = Encoding.UTF8.GetString(paths[0].ptr, paths[0].length);
-			Context context = new(Path.GetDirectoryName(Path.GetFullPath(first)) ?? "");
-			_context = context;
-			try {
-				for (int index = 0; index < count; ++index) {
-					string path = Encoding.UTF8.GetString(paths[index].ptr, paths[index].length);
-					Assembly assembly = context.LoadUnlocked(Path.GetFullPath(path));
-					RuntimeHelpers.RunModuleConstructor(assembly.ManifestModule.ModuleHandle);
-				}
-			} catch {
-				Release();
-				throw;
+			Images images = new() { directory = Path.GetDirectoryName(Path.GetFullPath(first)) ?? "", bytes = new byte[count][] };
+			for (int index = 0; index < count; ++index) {
+				string path = Encoding.UTF8.GetString(paths[index].ptr, paths[index].length);
+				images.bytes[index] = File.ReadAllBytes(Path.GetFullPath(path));
 			}
+			LoadImages(images);
 			return Bridge.OK;
 		} catch (Exception exception) {
 			Bridge.Report(exception);
@@ -66,9 +67,50 @@ internal static unsafe class UserAssemblies {
 		}
 	}
 
+	internal static void Forget() {
+		_loaded = null;
+		_kept = null;
+	}
+
+	[UnmanagedCallersOnly]
+	internal static int LoadKept() {
+		try {
+			if (_context != null) {
+				throw new InvalidOperationException("user assemblies are already loaded");
+			}
+			if (_kept == null) {
+				return Bridge.FAILED;
+			}
+			LoadImages(_kept);
+			return Bridge.OK;
+		} catch (Exception exception) {
+			Bridge.Report(exception);
+			return Bridge.FAILED;
+		}
+	}
+
+	static void LoadImages(Images images) {
+		Context context = new(images.directory);
+		_context = context;
+		try {
+			foreach (byte[] image in images.bytes) {
+				Assembly assembly = context.LoadFromStream(new MemoryStream(image));
+				RuntimeHelpers.RunModuleConstructor(assembly.ManifestModule.ModuleHandle);
+			}
+		} catch {
+			Release();
+			throw;
+		}
+		_loaded = images;
+	}
+
 	[UnmanagedCallersOnly]
 	internal static int Unload() {
 		try {
+			if (_loaded != null) {
+				_kept = _loaded;
+				_loaded = null;
+			}
 			return Release();
 		} catch (Exception exception) {
 			Bridge.Report(exception);

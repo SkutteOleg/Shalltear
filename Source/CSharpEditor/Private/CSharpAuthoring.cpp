@@ -1,18 +1,23 @@
 #include "CSharpAuthoring.h"
 
+#include "CSharpReload.h"
 #include "CSharpSettings.h"
 #include "DotNetToolchain.h"
 #include "ManagedTypes.h"
+#include "SHA512.h"
 
 #include "Shalltear/Core/BuildInfo.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/Time.h"
 
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileStatus.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <filesystem>
 #include <format>
 #include <mutex>
@@ -34,6 +39,11 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		std::optional<FileWatcher> _assetsWatcher;
 		i64 _propsTime = 0;
 		u64 _lastPollTicks = 0;
+		u32 _describedRequests = 0;
+		u32 _handledRequests = 0;
+		str _pendingStamp;
+		i64 _loadedOutputTime = 0;
+		bool _holdingReports = false;
 		std::mutex _pendingMutex;
 		bool _pendingCompile = false;
 		u64 _lastChangeTicks = 0;
@@ -42,10 +52,108 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			return static_cast<f64>(Time::GetTicks() - ticks) / static_cast<f64>(Time::GetTicksPerSecond());
 		}
 
-		i64 ReadPropsTime() {
+		i64 ReadWriteTime(const fs::path& file) {
 			std::error_code ec;
-			const fs::file_time_type time = fs::last_write_time(fs::path(_options.projectPath) / "CSharp.props", ec);
+			const fs::file_time_type time = fs::last_write_time(file, ec);
 			return ec ? 0 : static_cast<i64>(time.time_since_epoch().count());
+		}
+
+		i64 ReadPropsTime() {
+			return ReadWriteTime(fs::path(_options.projectPath) / "CSharp.props");
+		}
+
+		str DescribeFile(const fs::path& file) {
+			std::error_code ec;
+			const std::uintmax_t size = fs::file_size(file, ec);
+			return std::format("{} {}", ec ? 0 : size, ReadWriteTime(file));
+		}
+
+		str DescribeSources() {
+			const fs::path root(_options.projectPath);
+			Vector<str> rows{GetMemoryResource(MemTag::Editor)};
+			std::error_code ec;
+			for (fs::recursive_directory_iterator it(root / "Assets", fs::directory_options::skip_permission_denied, ec), end; !ec && it != end;
+				 it.increment(ec)) {
+				std::error_code entry;
+				if (it->is_regular_file(entry) && StringUtil::ToLower(it->path().extension().generic_string()) == ".cs") {
+					rows.push_back(std::format("{} {}", it->path().lexically_relative(root).generic_string(), DescribeFile(it->path())));
+				}
+			}
+			std::sort(rows.begin(), rows.end());
+			SHA512 hash;
+			for (const str& row : rows) {
+				hash.Update({reinterpret_cast<const u8*>(row.data()), row.size() + 1});
+			}
+			return hash.Finish();
+		}
+
+		fs::path GetStampFile() {
+			return fs::path(_compile.GetOutputAssembly()).replace_extension(".stamp");
+		}
+
+		str DescribeBuild() {
+			const fs::path managed = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path();
+			return std::format("{}\n{} {} {}\n{}\n{}\n", _compile.ComputeRestoreStamp(),
+							   CSharpSettings::GetUser().codeOptimization == ScriptOptimization::Release ? "Release" : "Debug",
+							   DescribeFile(managed / "Shalltear.Runtime.dll"), DescribeFile(managed / "Shalltear.Generators.dll"), _options.projectPath,
+							   DescribeSources());
+		}
+
+		void DescribeStartedCompile() {
+			if (_compile.GetRequestCount() != _describedRequests) {
+				_describedRequests = _compile.GetRequestCount();
+				_pendingStamp = DescribeBuild();
+			}
+		}
+
+		void WriteBuildStamp() {
+			if (!FileSystem::WriteTextFile(Path(GetStampFile().generic_string()), _pendingStamp)) {
+				SLT_LOG_WARN("C#", "couldn't write '{}' (scripts compile again at next open)", GetStampFile().generic_string());
+			}
+		}
+
+		bool IsLastBuildCurrent() {
+			std::error_code ec;
+			if (!fs::is_regular_file(fs::path(_compile.GetOutputAssembly()), ec) || !fs::is_regular_file(GetStampFile(), ec)) {
+				return false;
+			}
+			return FileSystem::ReadTextFile(Path(GetStampFile().generic_string()), MemTag::Editor) == DescribeBuild();
+		}
+
+		void ReleaseReports() {
+			if (_holdingReports) {
+				_holdingReports = false;
+				SceneSystem::ReleaseUnresolvedComponentReports();
+			}
+		}
+
+		void OpenBuild() {
+			if (IsLastBuildCurrent()) {
+				_loadedOutputTime = ReadWriteTime(fs::path(_compile.GetOutputAssembly()));
+				CSharpReload::Request();
+				CSharpReload::Pump();
+				return;
+			}
+			_holdingReports = true;
+			SceneSystem::HoldUnresolvedComponentReports();
+			RequestCompile();
+		}
+
+		void HandleFinishedCompile() {
+			if (_compile.IsBusy() || _compile.GetRequestCount() == _handledRequests) {
+				return;
+			}
+			_handledRequests = _compile.GetRequestCount();
+			if (_compile.GetState() != CompileState::Succeeded) {
+				ReleaseReports();
+				return;
+			}
+			const i64 output = ReadWriteTime(fs::path(_compile.GetOutputAssembly()));
+			WriteBuildStamp();
+			if (output != _loadedOutputTime) {
+				_loadedOutputTime = output;
+				CSharpReload::Request();
+			}
 		}
 
 		void ApplyCompileOptions() {
@@ -91,12 +199,17 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			state.compile = _compile.GetState();
 			state.errors = _compile.GetErrorCount();
 			state.warnings = _compile.GetWarningCount();
+			state.reloadHeld = CSharpReload::IsHeld();
 			state.typeOwner = CSharpImpl::ManagedTypes::GetOwnerToken();
 			return state;
 		}
 
 		void CompileNow(void*) {
 			RequestCompile();
+		}
+
+		void ReloadNow(void*) {
+			CSharpReload::ReloadNow();
 		}
 
 		str ReadHeading(void*) {
@@ -114,7 +227,11 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		if (_options.watchSources) {
 			ArmWatcher();
 		}
-		CompileStatus::RegisterSource({"C#", &ReadState, &CompileNow, nullptr, &ReadHeading, nullptr}, owner);
+		CompileStatus::RegisterSource({"C#", &ReadState, &CompileNow, &ReloadNow, &ReadHeading, nullptr}, owner);
+		CSharpReload::Begin(_compile.GetOutputAssembly());
+		if (_options.openBuild) {
+			OpenBuild();
+		}
 	}
 
 	void Pump() {
@@ -131,11 +248,23 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			RequestCompile();
 		}
 		_compile.Pump();
+		DescribeStartedCompile();
+		HandleFinishedCompile();
+		CSharpReload::Pump();
+		if (_holdingReports && CSharpReload::GetReloadCount() > 0) {
+			ReleaseReports();
+		}
 	}
 
 	void Shutdown() {
 		_assetsWatcher.reset();
 		_compile.Cancel();
+		ReleaseReports();
+		CSharpReload::Shutdown();
+		_describedRequests = _compile.GetRequestCount();
+		_handledRequests = _compile.GetRequestCount();
+		_pendingStamp.clear();
+		_loadedOutputTime = 0;
 		if (_active && _startedServers && _options.buildServers) {
 			StartDetachedProcess(QuoteCommandArgument(DotNetToolchain::GetMuxerPath(_options.sdkRoot)) + " build-server shutdown", _options.projectPath);
 		}
@@ -168,6 +297,11 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		}
 		ApplyCompileOptions();
 		_startedServers = _compile.Request() || _startedServers;
+		DescribeStartedCompile();
+	}
+
+	bool IsHoldingReports() {
+		return _holdingReports;
 	}
 
 	void NotifySourceChanged() {

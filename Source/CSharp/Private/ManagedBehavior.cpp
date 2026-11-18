@@ -17,6 +17,10 @@ namespace Shalltear::CSharpImpl {
 				ScriptRuntime::GetManaged().pullFields(_instance, this, GetInstanceId());
 			}
 		}
+		if (_instance && ManagedTypes::IsRestoring()) {
+			_dirty = true;
+			ManagedTypes::LinkDirty(*this);
+		}
 	}
 
 	ManagedBehavior::~ManagedBehavior() {

@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 6
+#define SLT_BRIDGE_ABI_VERSION 7
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -144,6 +144,7 @@ typedef struct SltManagedAPI {
 	uint32_t abiVersion;
 	uint64_t layoutHash;
 	int32_t (*loadUserAssemblies)(const SltString* paths, int32_t count);
+	int32_t (*loadKeptUserAssemblies)(void);
 	int32_t (*unloadUserAssemblies)(void);
 	intptr_t (*createInstance)(int32_t managedTypeId, uint64_t nativeId);
 	void (*destroyInstance)(intptr_t instance);

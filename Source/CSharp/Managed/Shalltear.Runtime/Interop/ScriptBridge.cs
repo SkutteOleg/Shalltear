@@ -87,6 +87,7 @@ internal unsafe struct SltManagedAPI {
 	public uint abiVersion;
 	public ulong layoutHash;
 	public delegate* unmanaged<SltString*, int, int> loadUserAssemblies;
+	public delegate* unmanaged<int> loadKeptUserAssemblies;
 	public delegate* unmanaged<int> unloadUserAssemblies;
 	public delegate* unmanaged<int, ulong, nint> createInstance;
 	public delegate* unmanaged<nint, void> destroyInstance;
