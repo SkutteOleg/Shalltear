@@ -158,6 +158,8 @@ namespace Shalltear {
 			void* fieldAddr;
 			StringHash pointeeType;
 			Guid assetId;
+			// when set, fieldAddr = patched object (call AfterWrite)
+			const TypeInfo* writtenType = nullptr;
 		};
 
 		bool BinaryWriteObject(BinaryWriter& writer, const void* instance, const TypeInfo* type, u32 depth);

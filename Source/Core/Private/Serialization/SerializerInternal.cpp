@@ -434,6 +434,7 @@ namespace Shalltear {
 
 			obj.AddMember("_type", JSONValue::MakeString(TextKey(type->displayName, type->name, pool)));
 
+			SyncFieldsBeforeRead(instance, type);
 			std::vector<const FieldInfo*> fields;
 			CollectSerializedFields(type, fields);
 			for (const FieldInfo* field : fields) {
@@ -518,6 +519,7 @@ namespace Shalltear {
 				return false;
 			}
 
+			SyncFieldsBeforeRead(instance, type);
 			for (size_t i = 0; i < obj.MemberCount(); ++i) {
 				std::string_view key = obj.KeyAt(i);
 				if (key == "_type") {
@@ -533,6 +535,7 @@ namespace Shalltear {
 				}
 				TextReadValue(DescribeField(field), field->addrFn(instance), obj.ChildAt(i), depth);
 			}
+			SyncFieldsAfterWrite(instance, type);
 			return true;
 		}
 
@@ -602,6 +605,7 @@ namespace Shalltear {
 				return false;
 			}
 
+			SyncFieldsBeforeRead(instance, type);
 			std::vector<const FieldInfo*> fields;
 			CollectSerializedFields(type, fields);
 
@@ -690,6 +694,38 @@ namespace Shalltear {
 				}
 			}
 
+			bool BinaryReadFields(BinaryReader& reader, void* instance, const TypeInfo* type, u32 depth, std::vector<HandleFixupJob>& fixups) {
+				u64 typeNameHash = 0;
+				u32 fieldCount = 0;
+				if (!reader.ReadU64(typeNameHash) || !reader.ReadU32(fieldCount)) {
+					return false;
+				}
+
+				for (u32 i = 0; i < fieldCount; ++i) {
+					u64 nameHash = 0;
+					u32 fieldFlags = 0;
+					u32 valueLen = 0;
+					if (!reader.ReadU64(nameHash) || !reader.ReadU32(fieldFlags) || !reader.ReadU32(valueLen)) {
+						return false;
+					}
+
+					size_t valueStart = reader.Tell();
+					if (valueLen > reader.Remaining()) {
+						return false;
+					}
+
+					const FieldInfo* field = FindField(type, StringHash(nameHash));
+					if (field && field->addrFn && !(field->flags & FieldFlagTransient)) {
+						BinaryReadValueInto(reader, DescribeField(field), field->addrFn(instance), depth, fixups, valueLen);
+					}
+
+					if (!reader.Seek(valueStart + valueLen)) {
+						return false;
+					}
+				}
+				return true;
+			}
+
 		} // anonymous namespace
 
 		bool BinaryReadObject(BinaryReader& reader, void* instance, const TypeInfo* type, u32 depth, std::vector<HandleFixupJob>& fixups) {
@@ -700,40 +736,26 @@ namespace Shalltear {
 				SLT_LOG_FATAL("Serialization", "BinarySerializer: exceeded max depth {} while reading (corrupt blob?)", SLT_MAX_SERIALIZATION_DEPTH);
 				return false;
 			}
-
-			u64 typeNameHash = 0;
-			u32 fieldCount = 0;
-			if (!reader.ReadU64(typeNameHash) || !reader.ReadU32(fieldCount)) {
-				return false;
+			if (!type->fieldSyncFn) {
+				return BinaryReadFields(reader, instance, type, depth, fixups);
 			}
 
-			for (u32 i = 0; i < fieldCount; ++i) {
-				u64 nameHash = 0;
-				u32 fieldFlags = 0;
-				u32 valueLen = 0;
-				if (!reader.ReadU64(nameHash) || !reader.ReadU32(fieldFlags) || !reader.ReadU32(valueLen)) {
-					return false;
-				}
-
-				size_t valueStart = reader.Tell();
-				if (valueLen > reader.Remaining()) {
-					return false;
-				}
-
-				const FieldInfo* field = FindField(type, StringHash(nameHash));
-				if (field && field->addrFn && !(field->flags & FieldFlagTransient)) {
-					BinaryReadValueInto(reader, DescribeField(field), field->addrFn(instance), depth, fixups, valueLen);
-				}
-
-				if (!reader.Seek(valueStart + valueLen)) {
-					return false;
-				}
+			const size_t pending = fixups.size();
+			SyncFieldsBeforeRead(instance, type);
+			const bool read = BinaryReadFields(reader, instance, type, depth, fixups);
+			SyncFieldsAfterWrite(instance, type);
+			if (fixups.size() > pending) {
+				fixups.push_back(HandleFixupJob{instance, StringHash(), Guid{}, type});
 			}
-			return true;
+			return read;
 		}
 
 		void RunHandleFixups(const std::vector<HandleFixupJob>& fixups) {
 			for (const HandleFixupJob& job : fixups) {
+				if (job.writtenType) {
+					SyncFieldsAfterWrite(job.fieldAddr, job.writtenType);
+					continue;
+				}
 				if (!job.assetId.IsValid()) {
 					*reinterpret_cast<u64*>(job.fieldAddr) = 0;
 					continue;

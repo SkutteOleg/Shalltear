@@ -99,6 +99,9 @@ namespace Shalltear {
 		const void* GetData() const noexcept;
 
 		bool IsOnHeap() const noexcept { return _heapPtr != nullptr; }
+
+		// source must point to a typeId value
+		static bool CopyFromRaw(Variant& out, StringHash typeId, const void* source);
 	private:
 		void* GetStoragePtr() noexcept;
 		const void* GetStoragePtr() const noexcept;

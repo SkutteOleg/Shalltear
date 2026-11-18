@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 3;
+	internal const uint ABI_VERSION = 4;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -52,6 +52,8 @@ internal static unsafe class Bridge {
 		managed->createInstance = &ScriptTypes.CreateInstance;
 		managed->destroyInstance = &ScriptTypes.DestroyInstance;
 		managed->invokeHook = &ScriptTypes.InvokeHook;
+		managed->pushFields = &ScriptTypes.PushFields;
+		managed->pullFields = &ScriptTypes.PullFields;
 		managed->getConformanceTestCount = &GetConformanceTestCount;
 		managed->getConformanceTestName = &GetConformanceTestName;
 		managed->runConformanceTest = &RunConformanceTest;
@@ -69,8 +71,8 @@ internal static unsafe class Bridge {
 
 	internal static bool IsAttached => _attached;
 
-	internal static int RegisterManagedType(SltTypeDesc* type) {
-		return _engine.registerManagedType(type);
+	internal static bool RegisterManagedType(SltTypeDesc* type) {
+		return _engine.registerManagedType(type) == OK;
 	}
 
 	internal static bool OffMainThread {

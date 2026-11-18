@@ -73,19 +73,18 @@ namespace Shalltear {
 				return false;
 			}
 			void* at = field->addrFn(instance);
-			if (!at) {
+			if (!at || (component != ANIMATION_WHOLE_VALUE && component >= scalars)) {
 				return false;
 			}
 
+			SyncFieldsBeforeRead(instance, field->ownerType);
 			f32 channels[4] = {value.x, value.y, value.z, value.w};
 			if (component != ANIMATION_WHOLE_VALUE) {
-				if (component >= scalars) {
-					return false;
-				}
 				std::memcpy(channels, at, scalars * sizeof(f32));
 				channels[component] = value.x;
 			}
 			std::memcpy(at, channels, scalars * sizeof(f32));
+			SyncFieldsAfterWrite(instance, field->ownerType);
 			return true;
 		}
 

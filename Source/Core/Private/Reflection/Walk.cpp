@@ -1,6 +1,9 @@
 #include "Shalltear/Core/Reflection/Walk.h"
 
 #include "Shalltear/Core/Assert.h"
+#include "Shalltear/Core/Reflection/VariantDispatch.h"
+
+#include <cstring>
 
 namespace Shalltear {
 
@@ -27,9 +30,7 @@ namespace Shalltear {
 					continue;
 
 				Variant value;
-				if (field->getFn) {
-					field->getFn(instance, &value);
-				}
+				GetFieldValue(field, instance, &value);
 
 				callback(field, &value, userData);
 
@@ -72,12 +73,14 @@ namespace Shalltear {
 	void ForEachField(const void* instance, const TypeInfo* type, FieldWalkCallback callback, void* userData, u32 walkFlags) {
 		if (!instance || !type || !callback)
 			return;
+		SyncFieldsBeforeRead(instance, type);
 		WalkTypeChain(type, callback, instance, userData, walkFlags);
 	}
 
 	void ForEachFieldRaw(void* instance, const TypeInfo* type, FieldRawCallback callback, void* userData, u32 walkFlags) {
 		if (!instance || !type || !callback)
 			return;
+		SyncFieldsBeforeRead(instance, type);
 		WalkTypeChainRaw(type, callback, instance, userData, walkFlags);
 	}
 
@@ -151,9 +154,40 @@ namespace Shalltear {
 		if (!instance || !type || !out)
 			return false;
 		const FieldInfo* field = FindField(type, fieldName);
-		if (!field || !field->getFn)
+		if (!field)
 			return false;
-		field->getFn(instance, out);
+		SyncFieldsBeforeRead(instance, type);
+		return GetFieldValue(field, instance, out);
+	}
+
+	bool GetFieldValue(const FieldInfo* field, const void* instance, Variant* out) {
+		if (!field || !instance || !out)
+			return false;
+		if (field->getFn) {
+			field->getFn(instance, out);
+			return true;
+		}
+		if (!field->addrFn || !field->fieldType)
+			return false;
+		const void* at = field->addrFn(const_cast<void*>(instance));
+		return at && Variant::CopyFromRaw(*out, field->fieldType->name, at);
+	}
+
+	bool SetFieldValue(const FieldInfo* field, void* instance, const Variant* in) {
+		if (!field || !instance || !in)
+			return false;
+		if (field->setFn) {
+			field->setFn(instance, in);
+			return true;
+		}
+		if (!field->addrFn || !field->fieldType || in->GetTypeId() != field->fieldType->name)
+			return false;
+		void* at = field->addrFn(instance);
+		const VariantVTable* vtable = VariantDispatch::Lookup(field->fieldType->name);
+		if (!at || !vtable)
+			return false;
+		vtable->destroy(at);
+		vtable->copy(at, in->GetData());
 		return true;
 	}
 
@@ -161,7 +195,7 @@ namespace Shalltear {
 		if (!instance || !type || !in)
 			return false;
 		const FieldInfo* field = FindField(type, fieldName);
-		if (!field || !field->setFn)
+		if (!field || !field->fieldType || (!field->setFn && !field->addrFn))
 			return false;
 
 		if (in->GetTypeId() != field->fieldType->name) {
@@ -171,8 +205,10 @@ namespace Shalltear {
 			}
 		}
 
-		field->setFn(instance, in);
-		return true;
+		SyncFieldsBeforeRead(instance, type);
+		const bool written = SetFieldValue(field, instance, in);
+		SyncFieldsAfterWrite(instance, type);
+		return written;
 	}
 
 	bool InvokeMethod(void* instance, const TypeInfo* type, StringHash methodName, const Variant* args, u32 argCount, Variant* outReturn) {

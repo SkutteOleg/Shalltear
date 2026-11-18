@@ -24,7 +24,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpImpl::ScriptRuntime::IsAttached,
 		&CSharpImpl::ScriptRuntime::GetManaged,
 		&CSharpImpl::ScriptRuntime::UnloadUserAssemblies,
-		&CSharpImpl::ManagedTypes::GetHookCrossings,
+		&CSharpImpl::ManagedTypes::GetCounters,
 		&CSharpImpl::ManagedTypes::GetOwnerToken,
 		&CSharpEditor::InstallComponentMenu,
 		&CSharpImpl::BindingProbe::TakeRecords,

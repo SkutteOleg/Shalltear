@@ -19,6 +19,7 @@ namespace Shalltear {
 
 		static EditTarget PrefabRow(const Guid& prefabId, u64 rowKey);
 
+		// after a write call NotifyWritten before another Resolve
 		Object* Resolve() const;
 
 		void NotifyWritten() const;
@@ -26,6 +27,8 @@ namespace Shalltear {
 		bool IsPrefabRow() const { return _rowKey != 0; }
 		bool operator==(const EditTarget& other) const;
 	private:
+		Object* Find() const;
+
 		u64 _liveId = 0;
 		Guid _prefabId{};
 		u64 _rowKey = 0;

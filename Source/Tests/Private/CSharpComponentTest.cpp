@@ -77,23 +77,23 @@ TEST_F(CSharpComponentFixture, HooksMatchNativeBehavior) {
 }
 
 TEST_F(CSharpComponentFixture, OnlyOverriddenHooksCross) {
-	const u64 before = _hooks->getHookCrossings();
+	const u64 before = _hooks->getCounters().hookCrossings;
 	Handle<Component> component = Add("UpdateOnly");
 	ASSERT_TRUE(component.IsValid());
-	EXPECT_EQ(_hooks->getHookCrossings(), before);
+	EXPECT_EQ(_hooks->getCounters().hookCrossings, before);
 
 	CSharpScenarios::RunFrames(3);
-	EXPECT_EQ(_hooks->getHookCrossings(), before + 3);
+	EXPECT_EQ(_hooks->getCounters().hookCrossings, before + 3);
 
 	component->SetEnabled(false);
 	SceneSystem::Destroy(component);
 	SceneSystem::EndFrame();
-	EXPECT_EQ(_hooks->getHookCrossings(), before + 3);
+	EXPECT_EQ(_hooks->getCounters().hookCrossings, before + 3);
 
 	Handle<Component> silent = Add("Silent");
 	ASSERT_TRUE(silent.IsValid());
 	CSharpScenarios::RunFrames(2);
-	EXPECT_EQ(_hooks->getHookCrossings(), before + 3);
+	EXPECT_EQ(_hooks->getCounters().hookCrossings, before + 3);
 }
 
 TEST_F(CSharpComponentFixture, EditModeMatchesNativeBehavior) {

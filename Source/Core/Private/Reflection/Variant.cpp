@@ -109,6 +109,18 @@ namespace Shalltear {
 		DestroyPayload();
 	}
 
+	bool Variant::CopyFromRaw(Variant& out, StringHash typeId, const void* source) {
+		const VariantVTable* vtable = VariantDispatch::Lookup(typeId);
+		if (!vtable || !source) {
+			return false;
+		}
+		out.Clear();
+		void* storage = out.AllocateStorage(vtable->size, vtable->alignment);
+		vtable->copy(storage, source);
+		out._typeId = typeId;
+		return true;
+	}
+
 	void* Variant::GetData() noexcept {
 		return IsEmpty() ? nullptr : GetStoragePtr();
 	}

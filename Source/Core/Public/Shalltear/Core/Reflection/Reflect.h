@@ -26,6 +26,7 @@ namespace Shalltear {
 		void SetDestructor(void (*fn)(void*));
 		void SetCreateFn(Object* (*fn)(MemTag));
 		void SetCreateTypedFn(Object* (*fn)(const TypeInfo*, MemTag));
+		void SetFieldSyncFn(void (*fn)(void*, FieldSync));
 		// static storage only
 		void SetDisplayName(const char* literal);
 

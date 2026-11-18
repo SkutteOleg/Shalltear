@@ -2,6 +2,7 @@
 
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
+#include "Shalltear/Core/Reflection/Walk.h"
 
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
@@ -18,19 +19,30 @@ namespace Shalltear {
 		return target;
 	}
 
-	Object* EditTarget::Resolve() const {
+	Object* EditTarget::Find() const {
 		if (_rowKey != 0) {
 			return EditorSceneOps::ResolvePrefabRow(_prefabId, _rowKey);
 		}
 		return _liveId != 0 ? ObjectRegistry::Resolve(_liveId) : nullptr;
 	}
 
+	Object* EditTarget::Resolve() const {
+		Object* object = Find();
+		if (object) {
+			SyncFieldsBeforeRead(object, object->GetType());
+		}
+		return object;
+	}
+
 	void EditTarget::NotifyWritten() const {
+		Object* object = Find();
+		if (object) {
+			SyncFieldsAfterWrite(object, object->GetType());
+		}
 		if (_rowKey != 0) {
 			EditorSceneOps::MarkPrefabPreviewEdited(_prefabId);
 			return;
 		}
-		Object* object = Resolve();
 		if (object && TypeRegistry::IsDerivedFrom(object->GetType(), Asset::GetReflectType())) {
 			EditorAssetOps::MarkDirty(Handle<Asset>(static_cast<Asset*>(object)));
 		}

@@ -91,12 +91,12 @@ int Shalltear::TestHelpers::RunCSharpAOTComponents(const char* library) {
 	std::printf("SCRIPT %s\n", CSharpScenarios::Join(CSharpImpl::BindingProbe::TakeRecords()).c_str());
 
 	Handle<Scene> world = SceneSystem::CreateScene("World");
-	const u64 before = CSharpImpl::ManagedTypes::GetHookCrossings();
+	const u64 before = CSharpImpl::ManagedTypes::GetCounters().hookCrossings;
 	Handle<Component> only = SceneSystem::CreateObject("Only", world)->AddComponent(script("UpdateOnly"));
 	Handle<Component> silent = SceneSystem::CreateObject("Silent", world)->AddComponent(script("Silent"));
 	CSharpScenarios::RunFrames(3);
 	std::printf("CROSSINGS %d %d %llu\n", only.IsValid(), silent.IsValid(),
-				static_cast<unsigned long long>(CSharpImpl::ManagedTypes::GetHookCrossings() - before));
+				static_cast<unsigned long long>(CSharpImpl::ManagedTypes::GetCounters().hookCrossings - before));
 
 	for (const char* name : {"HookRecorder", "UpdateOnly", "Silent", "LateReporter", "HolderOfInt"}) {
 		Handle<Component> component = SceneSystem::CreateObject(name, world)->AddComponent(script(name));

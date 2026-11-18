@@ -584,6 +584,7 @@ namespace Shalltear {
 				const TypeInfo* type = typeIt->second;
 				const FieldInfo* field = nullptr;
 				bool walkOk = true;
+				SyncFieldsBeforeRead(target, typeIt->second);
 				for (size_t segment = 0; segment < op.fieldPath.size(); ++segment) {
 					field = FindField(type, op.fieldPath[segment]);
 					if (!field || !field->addrFn) {
@@ -621,9 +622,10 @@ namespace Shalltear {
 						resolved = HandleResolver::ToHandle(guid, op.value.handlePointee);
 					}
 					*reinterpret_cast<u64*>(fieldPtr) = resolved;
-				} else if (field->setFn) {
-					field->setFn(instance, &op.value.direct);
+				} else {
+					SetFieldValue(field, instance, &op.value.direct);
 				}
+				SyncFieldsAfterWrite(target, typeIt->second);
 			}
 		}
 
@@ -807,9 +809,9 @@ namespace Shalltear {
 				op.value.handleGuid = handleGuid;
 				op.value.handlePointee = handlePointee;
 				op.value.liveTarget = Handle<Object>(ObjectRegistry::Resolve(liveTargetId));
-			} else if (field->getFn) {
+			} else {
 				Variant boxed;
-				field->getFn(liveInstance, &boxed);
+				GetFieldValue(field, liveInstance, &boxed);
 				op.value.direct = std::move(boxed);
 			}
 			if (sink && sink->out) {
@@ -822,8 +824,8 @@ namespace Shalltear {
 				property.isHandle = isHandleValue;
 				if (isHandleValue) {
 					property.baseHandleId = baseHandleId;
-				} else if (field->getFn) {
-					field->getFn(stagingInstance, &property.base);
+				} else {
+					GetFieldValue(field, stagingInstance, &property.base);
 				}
 				sink->out->properties.push_back(std::move(property));
 			}
@@ -1026,6 +1028,8 @@ namespace Shalltear {
 				const TypeInfo* type = stagingCtx.keyTypeInfos[key];
 				std::vector<StringHash> fieldPath;
 				DiffSink rowSink{sink, liveObject};
+				SyncFieldsBeforeRead(liveObject, type);
+				SyncFieldsBeforeRead(stagingObject, type);
 				DiffInstanceFields(liveObject, stagingObject, type, path, fieldPath, maps, fresh, sink ? &rowSink : nullptr);
 			}
 

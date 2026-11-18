@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ManagedTypes.h"
 #include "ScriptBridge.h"
 
 #include "Shalltear/Core/Types.h"
@@ -19,7 +20,7 @@ namespace Shalltear::CSharpImpl {
 		bool (*isAttached)();
 		const SltManagedAPI& (*getManaged)();
 		i32 (*unloadUserAssemblies)();
-		u64 (*getHookCrossings)();
+		ManagedTypes::Counters& (*getCounters)();
 		const void* (*getOwnerToken)();
 		void (*installComponentMenu)();
 		std::vector<str> (*takeRecords)();

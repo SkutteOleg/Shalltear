@@ -38,6 +38,7 @@ namespace Shalltear {
 		void (*destructor)(void*) = nullptr;
 		Object* (*createFn)(MemTag) = nullptr;
 		Object* (*createTypedFn)(const TypeInfo*, MemTag) = nullptr;
+		void (*fieldSyncFn)(void*, FieldSync) = nullptr;
 		const char* displayName = nullptr;
 
 		std::vector<FieldInfo> fields;
@@ -83,6 +84,10 @@ namespace Shalltear {
 
 	void ReflectBuilder::SetCreateTypedFn(Object* (*fn)(const TypeInfo*, MemTag)) {
 		_impl->createTypedFn = fn;
+	}
+
+	void ReflectBuilder::SetFieldSyncFn(void (*fn)(void*, FieldSync)) {
+		_impl->fieldSyncFn = fn;
 	}
 
 	void ReflectBuilder::SetDisplayName(const char* literal) {
@@ -223,6 +228,7 @@ namespace Shalltear {
 		info->constructor = _impl->constructor;
 		info->destructor = _impl->destructor;
 		info->createFn = _impl->createTypedFn ? reinterpret_cast<Object* (*)(MemTag)>(_impl->createTypedFn) : _impl->createFn;
+		info->fieldSyncFn = _impl->fieldSyncFn;
 		info->ownerModule = nullptr;
 		info->displayName = _impl->displayName;
 

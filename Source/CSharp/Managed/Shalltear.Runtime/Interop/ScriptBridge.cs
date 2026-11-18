@@ -12,6 +12,19 @@ internal unsafe struct SltString {
 }
 
 [StructLayout(LayoutKind.Sequential)]
+internal unsafe struct SltFieldDesc {
+	public SltString name;
+	public ulong nameHash;
+	public int kind;
+	public uint flags;
+	public float rangeMin;
+	public float rangeMax;
+	public SltString tooltip;
+	public SltString header;
+	public int offset;
+}
+
+[StructLayout(LayoutKind.Sequential)]
 internal unsafe struct SltTypeDesc {
 	public SltString name;
 	public ulong nameHash;
@@ -20,6 +33,8 @@ internal unsafe struct SltTypeDesc {
 	public uint flags;
 	public uint hookMask;
 	public uint tickMask;
+	public SltFieldDesc* fields;
+	public int fieldCount;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -43,6 +58,8 @@ internal unsafe struct SltManagedAPI {
 	public delegate* unmanaged<int, ulong, nint> createInstance;
 	public delegate* unmanaged<nint, void> destroyInstance;
 	public delegate* unmanaged<nint, int, void> invokeHook;
+	public delegate* unmanaged<nint, byte*, void> pushFields;
+	public delegate* unmanaged<nint, byte*, ulong, void> pullFields;
 	public delegate* unmanaged<int> getConformanceTestCount;
 	public delegate* unmanaged<int, SltString*, int> getConformanceTestName;
 	public delegate* unmanaged<int, SltString*, int> runConformanceTest;

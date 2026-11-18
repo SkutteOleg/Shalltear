@@ -8,6 +8,7 @@
 
 namespace Shalltear::CSharpImpl {
 
+	// serialized fields mirrored in memory past this object (shadow)
 	class ManagedBehavior final : public Behavior {
 	public:
 		explicit ManagedBehavior(ManagedType& type);
@@ -17,8 +18,13 @@ namespace Shalltear::CSharpImpl {
 
 		void ReleaseInstance();
 
+		static void SyncFields(void* instance, FieldSync phase);
+		void Pull();
+
 		ManagedBehavior* previous = nullptr;
 		ManagedBehavior* next = nullptr;
+		ManagedBehavior* dirtyPrevious = nullptr;
+		ManagedBehavior* dirtyNext = nullptr;
 	protected:
 		void OnAttach() override { Invoke(SLT_HOOK_ATTACH); }
 		void OnDetach() override { Invoke(SLT_HOOK_DETACH); }
@@ -30,9 +36,11 @@ namespace Shalltear::CSharpImpl {
 		void OnLateUpdate() override { Invoke(SLT_HOOK_LATE_UPDATE); }
 	private:
 		void Invoke(i32 hook);
+		void Push();
 
 		ManagedType& _type;
 		intptr_t _instance = 0;
+		bool _dirty = false;
 	};
 
 } // namespace Shalltear::CSharpImpl

@@ -57,6 +57,11 @@ namespace Shalltear {
 		MethodFlagScriptBindable = 1u << 2,
 	};
 
+	enum class FieldSync : u8 {
+		BeforeRead,
+		AfterWrite,
+	};
+
 	enum FieldWalkFlag : u32 {
 		FieldWalkFlagNone = 0,
 		FieldWalkFlagIncludeInherited = 1u << 0,
@@ -174,6 +179,8 @@ namespace Shalltear {
 
 		const EnumConstantInfo* enumConstants;
 		u32 enumConstantCount;
+
+		void (*fieldSyncFn)(void* instance, FieldSync phase);
 	};
 
 } // namespace Shalltear

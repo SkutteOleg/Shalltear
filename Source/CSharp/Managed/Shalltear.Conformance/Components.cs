@@ -72,8 +72,12 @@ sealed class LateReporter : EnableCounter {
 }
 
 class Holder<T> : Behavior {
+	public T held = default!;
+	[Reflect]
+	T spare = default!;
+
 	protected override void OnFixedUpdate() {
-		BindingProbe.Record("generic fixed update");
+		BindingProbe.Record($"generic fixed update {held} {spare}");
 	}
 }
 
@@ -111,17 +115,17 @@ static class ComponentProbe {
 
 	[ConformanceTest]
 	internal static void RegistersATakenName() {
-		ScriptTypes.Register("SceneObject", Hash("SceneObject"), 0UL, false, 0u, 0u, static () => new Silent());
+		ScriptTypes.Register("SceneObject", Hash("SceneObject"), 0UL, false, 0u, 0u, static () => new Silent(), default, default, null, null);
 	}
 
 	[ConformanceTest]
 	internal static void RegistersAWrongHash() {
-		ScriptTypes.Register("Shalltear.Conformance.Misnamed", Hash("Shalltear.Conformance.Other"), 0UL, false, 0u, 0u, static () => new Silent());
+		ScriptTypes.Register("Shalltear.Conformance.Misnamed", Hash("Shalltear.Conformance.Other"), 0UL, false, 0u, 0u, static () => new Silent(), default, default, null, null);
 	}
 
 	[ConformanceTest]
 	internal static void RegistersAnUnknownParent() {
 		ScriptTypes.Register("Shalltear.Conformance.Orphan", Hash("Shalltear.Conformance.Orphan"), Hash("SceneObject"), false, 0u, 0u,
-							 static () => new Silent());
+							 static () => new Silent(), default, default, null, null);
 	}
 }

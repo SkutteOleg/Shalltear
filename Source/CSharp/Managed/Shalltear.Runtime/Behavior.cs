@@ -12,6 +12,8 @@ public abstract class Behavior : Component {
 	const int HOOK_FIXED_UPDATE = 6;
 	const int HOOK_LATE_UPDATE = 7;
 
+	internal Interop.ScriptType? _scriptType;
+
 	/// <summary>Runs in edit mode too (keep it free of game logic).</summary>
 	protected Behavior() {}
 

@@ -44,6 +44,22 @@ namespace Shalltear {
 		const TypeInfo* type,
 		StringHash fieldName);
 
+	// instance = field's direct holder (a nested value for a nested field)
+	SHALLTEAR_CORE_API bool GetFieldValue(const FieldInfo* field, const void* instance, Variant* out);
+	SHALLTEAR_CORE_API bool SetFieldValue(const FieldInfo* field, void* instance, const Variant* in);
+
+	inline void SyncFieldsBeforeRead(const void* instance, const TypeInfo* type) {
+		if (type && type->fieldSyncFn && instance) {
+			type->fieldSyncFn(const_cast<void*>(instance), FieldSync::BeforeRead);
+		}
+	}
+
+	inline void SyncFieldsAfterWrite(void* instance, const TypeInfo* type) {
+		if (type && type->fieldSyncFn && instance) {
+			type->fieldSyncFn(instance, FieldSync::AfterWrite);
+		}
+	}
+
 	SHALLTEAR_CORE_API const MethodInfo* FindMethod(
 		const TypeInfo* type,
 		StringHash methodName);
