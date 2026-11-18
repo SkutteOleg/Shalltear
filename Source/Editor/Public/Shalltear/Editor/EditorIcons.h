@@ -58,6 +58,7 @@ namespace Shalltear::EditorIcons {
 
 		inline constexpr Icon AssetGeneric{"\uf15b"};
 		inline constexpr Icon AssetText{"\uf15c"};
+		inline constexpr Icon AssetScript{"\uf70e"};
 		inline constexpr Icon AssetShader{"\uf1c9"};
 		inline constexpr Icon AssetTexture{"\uf03e"};
 		inline constexpr Icon AssetMesh{"\uf1b2"};
