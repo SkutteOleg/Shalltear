@@ -3,7 +3,9 @@
 """
 
 import argparse
+import filecmp
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -67,21 +69,23 @@ VULKANRT_VERSION = "1.4.321.0"
 VULKANRT_URL = f"https://sdk.lunarg.com/sdk/download/{VULKANRT_VERSION}/windows/vulkan-runtime-components.zip"
 VULKANRT_SHA256 = "f8ba79303face4b72a2f302f1a46e8c918995b54fbf24c0c9fc6c3d3ef525dca"
 
+DOTNET_PIN_PATH = ROOT_DIR / "Source" / "CSharp" / "DotNetPin.json"
+
 
 ARCHIVES_DIR = None
 
 
-def file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
+def file_digest(path: Path, algorithm: str) -> str:
+    digest = hashlib.new(algorithm)
     with open(path, "rb") as source:
         for block in iter(lambda: source.read(1 << 20), b""):
             digest.update(block)
     return digest.hexdigest()
 
 
-def download_verified(url: str, expected_sha256: str, dest: Path) -> None:
+def download_verified(url: str, expected: str, dest: Path, algorithm: str = "sha256") -> None:
     kept = ARCHIVES_DIR / dest.name if ARCHIVES_DIR else None
-    if kept and kept.is_file() and file_sha256(kept) == expected_sha256:
+    if kept and kept.is_file() and file_digest(kept, algorithm) == expected:
         print(f"  using {kept}")
         if kept != dest:
             shutil.copyfile(kept, dest)
@@ -91,13 +95,13 @@ def download_verified(url: str, expected_sha256: str, dest: Path) -> None:
     request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Shalltear fetch_prebuilt)"})
     with urllib.request.urlopen(request) as response, open(dest, "wb") as out:
         shutil.copyfileobj(response, out)
-    digest = file_sha256(dest)
-    if digest != expected_sha256:
+    digest = file_digest(dest, algorithm)
+    if digest != expected:
         dest.unlink(missing_ok=True)
         raise RuntimeError(
-            f"SHA-256 mismatch for {url}\n  expected {expected_sha256}\n  got      {digest}"
+            f"SHA-{algorithm[3:]} mismatch for {url}\n  expected {expected}\n  got      {digest}"
         )
-    print(f"  sha256 verified ({digest[:12]}...)")
+    print(f"  {algorithm} verified ({digest[:12]}...)")
     if kept and kept != dest:
         shutil.copyfile(dest, kept)
 
@@ -428,12 +432,52 @@ def fetch_ninja() -> None:
     print(f"ninja -> {target}")
 
 
+def stage_lld_link(lld: Path) -> None:
+    link = lld.with_name("lld-link.exe")
+    if link.exists() and filecmp.cmp(lld, link, shallow=False):
+        return
+    print(f"  copying {lld.name} -> {link.name}")
+    shutil.copyfile(lld, link)
+
+
+def fetch_dotnet() -> None:
+    pin = json.loads(DOTNET_PIN_PATH.read_text(encoding="utf-8"))
+    version = pin["sdkVersion"]
+    host = pin["sdk"]["win-x64" if HOST_IS_WINDOWS else "linux-x64"]
+    lld = PREBUILT_DIR / "llvm-mingw" / "bin" / "ld.lld.exe"
+    if HOST_IS_WINDOWS and not lld.exists():
+        raise RuntimeError(f"{lld} is absent. Run python Scripts/fetch_prebuilt.py --toolchain")
+    target = PREBUILT_DIR / "dotnet" / version
+    if is_current(target, version):
+        print(f".NET SDK {version} already fetched. Skipping")
+    else:
+        print(f"fetching .NET SDK {version} (~300 MB)")
+        with tempfile.TemporaryDirectory() as tmp:
+            archive = Path(tmp) / host["url"].rsplit("/", 1)[-1]
+            download_verified(host["url"], host["sha512"], archive, "sha512")
+            if target.parent.exists():
+                shutil.rmtree(target.parent)
+            target.mkdir(parents=True)
+            if HOST_IS_WINDOWS:
+                with zipfile.ZipFile(archive) as zf:
+                    zf.extractall(target)
+            else:
+                extract_tar(archive, target, "")
+        if not (target / ("dotnet.exe" if HOST_IS_WINDOWS else "dotnet")).exists():
+            raise RuntimeError("dotnet not found in the SDK archive. Layout changed?")
+        write_marker(target, version)
+        print(f".NET SDK -> {target}")
+    if HOST_IS_WINDOWS:
+        stage_lld_link(lld)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lavapipe", action="store_true", help="also fetch the CI software Vulkan driver + loader")
     parser.add_argument("--skip-dxc", action="store_true", help="skip the DXC fetch")
     parser.add_argument("--toolchain", action="store_true", help="also fetch llvm-mingw/cmake/ninja (what the SDK bundles)")
     parser.add_argument("--linux", action="store_true", help="also build the Linux target pack (sysroot + C++ runtime). Needs --toolchain once")
+    parser.add_argument("--dotnet", action="store_true", help="also fetch the pinned .NET SDK (C# scripting)")
     parser.add_argument("--archives", type=Path, help="keep downloaded archives in this directory and reuse them")
     args = parser.parse_args()
 
@@ -462,6 +506,8 @@ def main() -> int:
             fetch_ninja_linux()
     if args.linux or (args.toolchain and not HOST_IS_WINDOWS):
         fetch_linux_pack()
+    if args.dotnet:
+        fetch_dotnet()
     return 0
 
 

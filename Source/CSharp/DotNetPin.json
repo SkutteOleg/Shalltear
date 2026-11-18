@@ -1,0 +1,26 @@
+{
+	"channel": "10.0",
+	"sdkVersion": "10.0.404",
+	"runtimeVersion": "10.0.15",
+	"targetFramework": "net10.0",
+	"sdk": {
+		"linux-x64": {
+			"url": "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.404/dotnet-sdk-10.0.404-linux-x64.tar.gz",
+			"sha512": "577d0eb17fec33d029104c5c63a1ab0accc3e28776274abef2218dbac5af18d2109b5406d26b31d76f5c245215e3ba0926a94c20246c672c41847c9e1eb1dc50"
+		},
+		"win-x64": {
+			"url": "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.404/dotnet-sdk-10.0.404-win-x64.zip",
+			"sha512": "330ddd2665b43cd2e428216a0d8ea1ac7bb19b5434fdc530e62010dc3b52823a620bf95489d628e1ed6f5122401793ee4887cca4a019122361a1231497f632ee"
+		}
+	},
+	"packs": {
+		"microsoft.dotnet.ilcompiler/10.0.15": "71934b7fa3f06c7ad739a6d6cdda89e7713f92e0cda1a07457f54fead93bf4a04f447f7741132c08f24c3f5f2a6fbd555b63ef6d058820700990875f49b9fd8a",
+		"microsoft.net.illink.tasks/10.0.15": "abf72e6718bc5cfc1ae1da4afbbcbdb772a82fb4faa90654b48aaa37de982b1d4a720aff6e10f42b753e39a2e5ad6567e91db752bb04afc14046a29856e13766",
+		"microsoft.netcore.app.runtime.linux-x64/10.0.15": "024eb2dc412ac0d4ff64be56100a066e3c63bbc322b17a67471611ca74627e8b5a28469d8615a4e7fcf6293bcd6e747202f32aadb376d534a7258e0dc594a1c5",
+		"microsoft.netcore.app.runtime.nativeaot.linux-x64/10.0.15": "988fc2d67953713b6b538ee9f830e026fe067b14122f9a366db878c6a104211dc189bcca9fc20b652236ae5dfbee25c1c7cb50544561350198fdbfa2c2cb97d1",
+		"microsoft.netcore.app.runtime.nativeaot.win-x64/10.0.15": "e92191555ad41f4c53a07117ca670d9ecbdaa2366e9d84d8345666464d7f7982cb4c3d77df36c2010c590b31cb0088ca4b80043109a8afcc03a2eb8d968c91fc",
+		"microsoft.netcore.app.runtime.win-x64/10.0.15": "304180911187ac05d8036b7f2e8d260f11fefcee4d2ea8164dc561ef488e6494e9a0e08bfe329f3a00ea6280e2dd6f56727be22f80e1325fb99560bc731b6d4b",
+		"runtime.linux-x64.microsoft.dotnet.ilcompiler/10.0.15": "74246e3b731c21802d7afc1351adac6c2c40bb472404712531e918d20c9ee3cef56bbff3c922c3da53f6a5454732f092bd3f569e0235e2e2960e41b045056c49",
+		"runtime.win-x64.microsoft.dotnet.ilcompiler/10.0.15": "e0d85bf6e60cfaab9bc398f03451309d884a50c279730d8ecbc6e8c6942a4d4d89257cfde7233e790e50adcdf63062a35bad1f6f8b3fef60138816b2f13b3815"
+	}
+}
