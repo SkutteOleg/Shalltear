@@ -109,7 +109,7 @@ TEST(CSharpPackageTest, LoadsAndUnloads) {
 		}
 		return count;
 	};
-	EXPECT_EQ(scriptSteps(), 4u);
+	EXPECT_EQ(scriptSteps(), 5u);
 	ModuleSystem::Unload(package);
 	EXPECT_FALSE(ModuleSystem::IsLoaded(package));
 	EXPECT_EQ(AssetImporterRegistry::Find(StringHash("CSharpScriptAsset")), nullptr);

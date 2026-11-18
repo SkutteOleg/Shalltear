@@ -921,6 +921,17 @@ namespace TestPlatform {
 		RunCommand("chmod -R u+w \"" + directory + "\"", exitCode);
 	}
 
+	bool DenyFileReads(const str& file) {
+		int exitCode = 0;
+		RunCommand("chmod a-r \"" + file + "\"", exitCode);
+		return exitCode == 0;
+	}
+
+	void AllowFileReads(const str& file) {
+		int exitCode = 0;
+		RunCommand("chmod u+r \"" + file + "\"", exitCode);
+	}
+
 	bool OpenFileRefusesDelete() {
 		return false;
 	}

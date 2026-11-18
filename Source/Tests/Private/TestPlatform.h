@@ -56,6 +56,8 @@ namespace TestPlatform {
 	bool StaticModulesShareTypeInfo();
 	bool DenyDirectoryWrites(const str& directory);
 	void AllowDirectoryWrites(const str& directory);
+	bool DenyFileReads(const str& file);
+	void AllowFileReads(const str& file);
 	bool FileNamesFoldCase();
 	const char* GetCommonImportName();
 	str MakeCompilerAlias(const str& compilerPath, const str& directory);

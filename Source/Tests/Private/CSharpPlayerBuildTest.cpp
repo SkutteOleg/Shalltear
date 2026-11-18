@@ -327,6 +327,21 @@ TEST_F(CSharpPlayerBuildTest, CSharpTypesRegisteredBeforeBootScene) {
 	EXPECT_EQ(log.find("unloaded type"), str::npos) << log;
 }
 
+TEST_F(CSharpPlayerBuildTest, CSharpPlayerShipsNoIL) {
+	const str& log = _suite->buildLog;
+	const size_t compiled = log.find("C# scripts compiled in");
+	const size_t gated = log.find(" staged file(s) have no managed code");
+	ASSERT_NE(compiled, str::npos) << log;
+	ASSERT_NE(gated, str::npos) << log;
+	EXPECT_LT(compiled, gated);
+	u32 files = 0;
+	std::error_code ec;
+	for (const fs::directory_entry& entry : fs::recursive_directory_iterator(Staging("Windows"), ec)) {
+		files += entry.is_regular_file(ec) ? 1u : 0u;
+	}
+	EXPECT_NE(log.find(std::format(": {} staged file(s) have no managed code", files)), str::npos) << log;
+}
+
 TEST_F(CSharpPlayerBuildTest, BatchBuildLeavesNoBuildServer) {
 	if (_suite->serverImages.empty() || _suite->serverRanBefore) {
 		GTEST_SKIP() << "pinned .NET SDK is elsewhere, or one of its build servers ran before the build";
@@ -469,21 +484,26 @@ TEST_F(CSharpBuildStepsTest, StepsJoinAtLoadLeaveWithExtensions) {
 	const BuildStepDesc* load = Find(steps, "csharp-load");
 	const BuildStepDesc* compile = Find(steps, "csharp-compile");
 	const BuildStepDesc* stage = Find(steps, "csharp-stage");
-	ASSERT_TRUE(validate && load && compile && stage);
+	const BuildStepDesc* gate = Find(steps, "csharp-no-il");
+	ASSERT_TRUE(validate && load && compile && stage && gate);
 	EXPECT_EQ(validate->phase, BuildPhase::Validate);
 	EXPECT_EQ(load->phase, BuildPhase::PreBuild);
 	EXPECT_EQ(compile->phase, BuildPhase::Compile);
 	EXPECT_EQ(stage->phase, BuildPhase::Stage);
+	EXPECT_EQ(gate->phase, BuildPhase::PostBuild);
 	EXPECT_LT(IndexOf(steps, "validate"), IndexOf(steps, "csharp-validate"));
 	EXPECT_LT(IndexOf(steps, "csharp-load"), IndexOf(steps, "cook-content"));
 	EXPECT_LT(IndexOf(steps, "csharp-compile"), IndexOf(steps, "csharp-stage"));
+	EXPECT_LT(IndexOf(steps, "post-build-command"), IndexOf(steps, "csharp-no-il"));
+	EXPECT_EQ(IndexOf(steps, "csharp-no-il"), steps.size() - 1);
 
 	const void* owner = validate->owner;
 	ASSERT_NE(owner, nullptr);
 	EXPECT_EQ(owner, ModuleSystem::GetNativeHandle(_package));
-	EXPECT_GE(EditorExtensions::Unload(owner), 4u);
+	EXPECT_EQ(gate->owner, owner);
+	EXPECT_GE(EditorExtensions::Unload(owner), 5u);
 	BuildStepRegistry::GetSteps(steps);
-	for (const char* name : {"csharp-validate", "csharp-load", "csharp-compile", "csharp-stage"}) {
+	for (const char* name : {"csharp-validate", "csharp-load", "csharp-compile", "csharp-stage", "csharp-no-il"}) {
 		EXPECT_EQ(Find(steps, name), nullptr) << name;
 	}
 	EXPECT_NE(Find(steps, "cook-content"), nullptr);
@@ -582,6 +602,60 @@ TEST_F(CSharpBuildStepsTest, StageWithoutLibraryFailsWithPath) {
 	std::ofstream(publish / LIBRARY, std::ios::binary) << "library built again";
 	EXPECT_EQ(stage->fn(staged), BuildStepStatus::Succeeded);
 	EXPECT_EQ(ReadBytes(root / "Builds" / "Empty" / LIBRARY), "library built again");
+	fs::remove_all(root, ec);
+}
+
+TEST_F(CSharpBuildStepsTest, ManagedFileInStagingFailsTheBuild) {
+	Vector<BuildStepDesc> steps{GetMemoryResource(MemTag::Debug)};
+	BuildStepRegistry::GetSteps(steps);
+	const BuildStepDesc* gate = Find(steps, "csharp-no-il");
+	ASSERT_NE(gate, nullptr);
+	const fs::path root = fs::temp_directory_path() / ("slt_cs_gate_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+	const fs::path staging = root / "Builds" / "Gated";
+	fs::create_directories(staging / "Data");
+	std::ofstream(staging / "Game.exe", std::ios::binary) << "player";
+	std::ofstream(staging / "GameScripts.pdb", std::ios::binary) << "symbols";
+	ResolvedProfile profile;
+	profile.name = "Gated";
+	const auto run = [&](const char* configuration, BuildContext& context) {
+		context.profile = &profile;
+		context.target = BuildTargetRegistry::Find("Windows");
+		context.stagingDir = staging.generic_string();
+		context.configuration = configuration;
+		BuildStepStatus status = BuildStepStatus::Running;
+		for (u32 pump = 0; pump < 64 && status == BuildStepStatus::Running; ++pump) {
+			status = gate->fn(context);
+		}
+		return status;
+	};
+
+	BuildContext development;
+	EXPECT_EQ(run("Debug", development), BuildStepStatus::Succeeded);
+	EXPECT_TRUE(development.GetIssues().empty());
+	EXPECT_EQ(_log.Delivered().Count("2 staged file(s) have no managed code"), 1u) << _log.Delivered().Joined();
+
+	BuildContext release;
+	EXPECT_EQ(run("Release", release), BuildStepStatus::Failed);
+	ASSERT_EQ(release.GetIssues().size(), 1u);
+	EXPECT_EQ(release.GetIssues()[0].severity, BuildIssueSeverity::Error);
+	EXPECT_EQ(release.GetIssues()[0].message, "'GameScripts.pdb' has debug symbols (not for Release). Remove it from build output");
+
+	std::error_code ec;
+	fs::remove(staging / "GameScripts.pdb", ec);
+	const fs::path managed = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp";
+	fs::copy_file(managed / "Shalltear.Runtime.dll", staging / "Data" / "Mod.dll", ec);
+	fs::copy_file(managed / "Shalltear.Generators.dll", staging / "Data" / "Tool.bin", ec);
+	BuildContext planted;
+	EXPECT_EQ(run("Release", planted), BuildStepStatus::Failed);
+	ASSERT_EQ(planted.GetIssues().size(), 2u);
+	EXPECT_EQ(planted.GetIssues()[0].message, "'Data/Mod.dll' has managed code. Remove it from build output");
+	EXPECT_EQ(planted.GetIssues()[1].message, "'Data/Tool.bin' has managed code. Remove it from build output");
+	EXPECT_EQ(_log.Delivered().Count("have no managed code"), 1u);
+
+	fs::remove_all(staging / "Data", ec);
+	BuildContext clean;
+	EXPECT_EQ(run("Release", clean), BuildStepStatus::Succeeded);
+	EXPECT_EQ(_log.Delivered().Count("1 staged file(s) have no managed code"), 1u) << _log.Delivered().Joined();
 	fs::remove_all(root, ec);
 }
 

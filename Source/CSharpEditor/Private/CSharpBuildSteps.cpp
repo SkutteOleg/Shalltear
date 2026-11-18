@@ -7,6 +7,7 @@
 #include "CSharpSettings.h"
 #include "CSharpSetup.h"
 #include "DotNetToolchain.h"
+#include "ManagedCodeGate.h"
 #include "NativeAOTHost.h"
 #include "ScriptLog.h"
 
@@ -38,6 +39,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		constexpr std::string_view CommonArguments =
 			" -nologo -v:q -tl:off -clp:NoSummary -nodeReuse:false -p:UseSharedCompilation=false -p:GenerateFullPaths=true";
 		constexpr size_t UNPARSED_LINE_CAP = 30;
+		constexpr u64 GATE_BYTES_PER_PUMP = u64{32} << 20;
 
 		enum class Stage : u8 {
 			Idle = 0,
@@ -53,8 +55,10 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		struct State {
 			ChildProcess child;
+			ManagedCodeGate::Scanner gate;
 			Stage stage = Stage::Idle;
 			Loading loading = Loading::Idle;
+			bool gating = false;
 			const void* owner = nullptr;
 			str sdkRoot;
 			str root;
@@ -277,6 +281,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			State& state = GetState();
 			state.child.Kill();
 			state.stage = Stage::Idle;
+			state.gating = false;
 			EndLoad(state, BuildStepStatus::Succeeded);
 			if (RuntimeIdentifierOf(context.target->GetId()).empty()) {
 				context.AddIssue(BuildIssueSeverity::Error, "target",
@@ -351,6 +356,31 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Succeeded;
 		}
 
+		BuildStepStatus GateStep(BuildContext& context) {
+			State& state = GetState();
+			if (context.IsCancelRequested()) {
+				state.gating = false;
+				return BuildStepStatus::Failed;
+			}
+			if (!state.gating) {
+				state.gate.Begin(context.stagingDir, context.configuration == "Release");
+				state.gating = true;
+			}
+			state.gate.Advance(GATE_BYTES_PER_PUMP);
+			if (!state.gate.IsDone()) {
+				return BuildStepStatus::Running;
+			}
+			state.gating = false;
+			for (const ManagedCodeGate::Finding& finding : state.gate.GetFindings()) {
+				context.AddIssue(BuildIssueSeverity::Error, "", finding.message);
+			}
+			if (!state.gate.GetFindings().empty()) {
+				return BuildStepStatus::Failed;
+			}
+			context.Log(std::format("{} staged file(s) have no managed code", state.gate.GetFileCount()));
+			return BuildStepStatus::Succeeded;
+		}
+
 	} // anonymous namespace
 
 	void Register(const void* owner) {
@@ -359,6 +389,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		BuildStepRegistry::Register("csharp-load", BuildPhase::PreBuild, &LoadStep, owner);
 		BuildStepRegistry::Register("csharp-compile", BuildPhase::Compile, &CompileStep, owner);
 		BuildStepRegistry::Register("csharp-stage", BuildPhase::Stage, &StageStep, owner);
+		BuildStepRegistry::Register("csharp-no-il", BuildPhase::PostBuild, &GateStep, owner);
 	}
 
 	void Shutdown() {

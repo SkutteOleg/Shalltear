@@ -440,6 +440,17 @@ namespace TestPlatform {
 		RunCommand("icacls \"" + directory + "\" /remove:d \"*S-1-1-0\" /T /C", exitCode);
 	}
 
+	bool DenyFileReads(const str& file) {
+		int exitCode = 0;
+		RunCommand("icacls \"" + file + "\" /deny \"*S-1-1-0:(RD)\"", exitCode);
+		return exitCode == 0;
+	}
+
+	void AllowFileReads(const str& file) {
+		int exitCode = 0;
+		RunCommand("icacls \"" + file + "\" /remove:d \"*S-1-1-0\"", exitCode);
+	}
+
 	bool OpenFileRefusesDelete() {
 		return true;
 	}

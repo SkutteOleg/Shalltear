@@ -10,6 +10,7 @@
 #include "CSharpSetup.h"
 #include "DotNetAcquire.h"
 #include "DotNetToolchain.h"
+#include "ManagedCodeGate.h"
 
 #include "Shalltear/Core/Types.h"
 
@@ -70,6 +71,7 @@ namespace Shalltear::CSharpEditor {
 		const TypeInfo* (*resolveScriptComponent)(const Guid& script);
 		bool (*isValidScriptName)(std::string_view name);
 		Guid (*createScript)(const Path& virtualDir, const str& name, CSharpScripts::Template kind);
+		u32 (*scanForManagedFiles)(const str& directory, bool release, u64 sliceBytes, Vector<ManagedCodeGate::Finding>& outFindings);
 		const char* muxerName;
 		const char* hostLibraryName;
 	};
