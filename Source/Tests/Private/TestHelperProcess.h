@@ -50,6 +50,8 @@ namespace Shalltear::TestHelpers {
 
 	inline constexpr const char* PRINT_ENVIRONMENT_FLAG = "--shalltear-print-environment";
 
+	inline constexpr const char* EXIT_FLAG = "--shalltear-exit";
+
 	inline constexpr const char* REFLECTION_STARTUP_FLAG = "--shalltear-reflection-startup";
 
 	enum ReflectionStartupResult : int {

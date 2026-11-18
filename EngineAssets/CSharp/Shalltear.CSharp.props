@@ -1,0 +1,21 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<OutputType>Library</OutputType>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<IsAotCompatible>true</IsAotCompatible>
+		<InvariantGlobalization>$(ShalltearInvariantGlobalization)</InvariantGlobalization>
+		<AllowUnsafeBlocks>$(ShalltearAllowUnsafeBlocks)</AllowUnsafeBlocks>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<Deterministic>true</Deterministic>
+		<DebugType>portable</DebugType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<RestoreAdditionalProjectFallbackFolders Condition="Exists('$(ShalltearPackagesRoot)')">$(RestoreAdditionalProjectFallbackFolders);$(ShalltearPackagesRoot)</RestoreAdditionalProjectFallbackFolders>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedDir)Shalltear.Runtime.dll" Private="false" />
+		<Analyzer Include="$(ShalltearManagedDir)Shalltear.Generators.dll" />
+	</ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+{{GENERATED_MARK}}
+{
+	"sdk": {
+		"version": "{{DOTNET_SDK_VERSION}}",
+		"rollForward": "disable",
+		"paths": ["{{DOTNET_ROOT}}", "$host$"],
+		"errorMessage": "Open this project in the Shalltear editor once (downloads the .NET SDK this project is pinned to)."
+	}
+}

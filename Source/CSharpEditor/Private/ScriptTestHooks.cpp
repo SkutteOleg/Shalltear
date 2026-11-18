@@ -5,6 +5,7 @@
 #include "BindingProbe.h"
 #include "CSharpComponentMenu.h"
 #include "CoreCLRHost.h"
+#include "DotNetPin.generated.h"
 #include "DotNetToolchain.h"
 #include "ManagedTypes.h"
 #include "ScriptRuntime.h"
@@ -28,7 +29,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpImpl::ManagedTypes::GetOwnerToken,
 		&CSharpEditor::InstallComponentMenu,
 		&CSharpImpl::BindingProbe::TakeRecords,
-		SLT_DOTNET_RUNTIME_VERSION,
+		CSharpEditor::DotNetPinData::RUNTIME_VERSION,
 	};
 	return &HOOKS;
 }

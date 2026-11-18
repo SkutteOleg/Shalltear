@@ -10,4 +10,8 @@ namespace Shalltear::CSharpEditor::HostFxr {
 
 	std::string_view GetLibraryName();
 
+	std::string_view GetMuxerName();
+
+	char GetSearchPathSeparator();
+
 } // namespace Shalltear::CSharpEditor::HostFxr

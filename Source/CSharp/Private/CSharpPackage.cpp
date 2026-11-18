@@ -1,5 +1,9 @@
 #include "ScriptRuntime.h"
 
+#ifdef SLT_WITH_EDITOR
+#include "CSharpSetup.h"
+#endif
+
 #include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
 
@@ -18,6 +22,9 @@ namespace Shalltear::CSharpImpl {
 	}
 
 	void ShutdownPackage() {
+#ifdef SLT_WITH_EDITOR
+		CSharpEditor::CSharpSetup::Shutdown();
+#endif
 		ScriptRuntime::Detach();
 	}
 

@@ -9,6 +9,10 @@
 #include "Graphs.h"
 #include "NodeShader.h"
 
+#include <chrono>
+#include <cstdlib>
+#include <thread>
+
 namespace {
 
 	const int _IMPORT_PIPELINE_TOKEN = 0;
@@ -44,6 +48,14 @@ int main(int argc, char** argv) {
 				std::printf("%s=%s\n", argv[name], TestPlatform::GetEnvironment(argv[name]).c_str());
 			}
 			return 0;
+		}
+		if (std::strcmp(argv[arg], Shalltear::TestHelpers::EXIT_FLAG) == 0) {
+			if (arg + 3 < argc) {
+				std::printf("%s\n", argv[arg + 3]);
+				std::fflush(stdout);
+			}
+			std::this_thread::sleep_for(std::chrono::seconds(arg + 2 < argc ? std::atoi(argv[arg + 2]) : 0));
+			return arg + 1 < argc ? std::atoi(argv[arg + 1]) : 0;
 		}
 		if (std::strcmp(argv[arg], Shalltear::TestHelpers::REFLECTION_STARTUP_FLAG) == 0) {
 			return Shalltear::TestHelpers::RunReflectionStartupProbe();

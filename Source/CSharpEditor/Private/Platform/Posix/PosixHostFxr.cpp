@@ -34,4 +34,12 @@ namespace Shalltear::CSharpEditor::HostFxr {
 		return "libhostfxr.so";
 	}
 
+	std::string_view GetMuxerName() {
+		return "dotnet";
+	}
+
+	char GetSearchPathSeparator() {
+		return ':';
+	}
+
 } // namespace Shalltear::CSharpEditor::HostFxr

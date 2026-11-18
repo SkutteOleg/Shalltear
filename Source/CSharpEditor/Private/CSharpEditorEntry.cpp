@@ -1,43 +1,27 @@
 #include "CSharpComponentMenu.h"
-#include "CoreCLRHost.h"
-#include "DotNetToolchain.h"
-#include "ScriptRuntime.h"
+#include "CSharpSettings.h"
+#include "CSharpSetup.h"
 
-#include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Frame/FrameStages.h"
 
 #include "Shalltear/Editor/EditorExtensions.h"
-
-#include <chrono>
-#include <format>
 
 namespace Shalltear::CSharpEditor {
 
 	namespace {
 
-		bool StartRuntime(str& outError) {
-			const str sdkRoot = DotNetToolchain::FindSDKRoot();
-			if (sdkRoot.empty()) {
-				outError = std::format(".NET SDK {} was not found. Run python Scripts/fetch_prebuilt.py --dotnet", SLT_DOTNET_SDK_VERSION);
-				return false;
-			}
-			const SltInitializeFn entry =
-				CoreCLRHost::Start(sdkRoot, SLT_DOTNET_RUNTIME_VERSION, DotNetToolchain::GetRuntimeAssemblyPath(), outError);
-			return entry && CSharpImpl::ScriptRuntime::Attach(entry, outError);
+		void PumpStage(const FrameStageArgs&, void*) {
+			CSharpSetup::Pump();
 		}
 
 	} // anonymous namespace
 
 	void RegisterEditorExtensions(const void* owner) {
-		(void)owner;
+		CSharpSettings::Declare();
+		CSharpSettings::RegisterPage(owner);
 		InstallComponentMenu();
-		const auto begin = std::chrono::steady_clock::now();
-		str error;
-		if (!StartRuntime(error)) {
-			SLT_LOG_ERROR("C#", "{}", error);
-			return;
-		}
-		SLT_LOG_INFO("C#", "C# runtime ready in {:.0f} ms",
-					 std::chrono::duration<f64, std::milli>(std::chrono::steady_clock::now() - begin).count());
+		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Normal, &PumpStage, nullptr, owner);
+		CSharpSetup::Begin(CSharpSetup::GetDefaultOptions(), owner);
 	}
 
 } // namespace Shalltear::CSharpEditor
