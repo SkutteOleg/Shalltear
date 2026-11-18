@@ -20,7 +20,7 @@ include(GoogleTest)
 file(GLOB_RECURSE TEST_SOURCES "Private/*.cpp" "Private/*.h")
 shalltear_select_platform_sources(TEST_SOURCES)
 if(NOT TARGET CSharp)
-    list(FILTER TEST_SOURCES EXCLUDE REGEX "/CSharp[^/]*$")
+    list(FILTER TEST_SOURCES EXCLUDE REGEX "/(CSharp|ManagedCodeGate)[^/]*$")
 endif()
 
 add_executable(ShalltearTests ${TEST_SOURCES})
