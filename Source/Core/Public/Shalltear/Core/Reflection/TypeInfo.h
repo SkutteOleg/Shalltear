@@ -46,6 +46,8 @@ namespace Shalltear {
 		TypeFlagHeapMetadata = 1u << 7,
 
 		TypeFlagEnum = 1u << 8,
+
+		TypeFlagTypedCreate = 1u << 9,
 	};
 
 	enum MethodFlag : u32 {
@@ -163,6 +165,7 @@ namespace Shalltear {
 
 		u32 flags;
 
+		// called with (type, tag) when TypeFlagTypedCreate is set
 		Object* (*createFn)(MemTag tag);
 
 		const void* ownerModule;

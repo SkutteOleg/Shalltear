@@ -7,6 +7,7 @@
 
 #include <span>
 #include <string_view>
+#include <vector>
 
 namespace Shalltear::CSharpImpl::BindingProbe {
 
@@ -32,5 +33,8 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	bool IsPositive(f32 value);
 	void Throw();
 	i32 SumBytes(std::string_view text);
+
+	void Record(std::string_view text);
+	std::vector<str> TakeRecords();
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

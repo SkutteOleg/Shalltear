@@ -161,6 +161,14 @@
 			"csharp": { "member": "Throw", "kind": "method" }
 		},
 		{
+			"id": "Record",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::Record(text)",
+			"returns": "void",
+			"params": [{ "name": "text", "type": "string" }],
+			"thread": "any",
+			"csharp": { "member": "Record", "kind": "method" }
+		},
+		{
 			"id": "SumBytes",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::SumBytes(text)",
 			"returns": "i32",

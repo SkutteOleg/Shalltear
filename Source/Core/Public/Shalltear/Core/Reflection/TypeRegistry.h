@@ -18,6 +18,9 @@ namespace Shalltear {
 	public:
 		static const TypeInfo* Register(TypeInfo* typeInfo, const void* ownerHint = nullptr);
 
+		// null when name is taken
+		static const TypeInfo* RegisterOwned(TypeInfo* typeInfo, const void* ownerToken);
+
 		// never frees the metadata (statics may cache the pointer)
 		static void Unregister(StringHash name);
 
@@ -44,6 +47,8 @@ namespace Shalltear {
 		static u32 UnlinkPendingRegistrationsIn(const void* imageBase);
 
 		static void InitializePrimitives();
+	private:
+		static const TypeInfo* RegisterAs(TypeInfo* typeInfo, const void* owner, bool ownerIsToken);
 	};
 
 	struct FieldRef {

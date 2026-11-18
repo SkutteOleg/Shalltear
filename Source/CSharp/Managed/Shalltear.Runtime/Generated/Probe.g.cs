@@ -154,6 +154,15 @@ internal static unsafe partial class BindingProbe {
 	}
 
 	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static void Record(string text) {
+		using UTF8Scratch textText = new(text, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		int status = Bindings.table.probeRecord(textText.Text);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
+
+	[System.Runtime.CompilerServices.SkipLocalsInit]
 	internal static int SumBytes(string text) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.SumBytes");

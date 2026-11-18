@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xdad7f075e0ce4b97ull
-#define SLT_BINDINGS_INPUT_DIGEST 0x70cb4df062bcde48ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xbaff74d32ac71ccaull
+#define SLT_BINDINGS_INPUT_DIGEST 0xa29a4d4c3891a833ull
 
 typedef struct SltString SltString;
 
@@ -44,6 +44,7 @@ typedef struct SltBindings {
 	int32_t (*probeSumGuarded)(float firstX, float firstY, float firstZ, float secondX, float secondY, float secondZ, float secondW, ::Shalltear::Vec3* outResult);
 	int32_t (*probeIsPositive)(float value, uint8_t* outResult);
 	int32_t (*probeThrow)(void);
+	int32_t (*probeRecord)(SltString text);
 	int32_t (*probeSumBytes)(SltString text, int32_t* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);

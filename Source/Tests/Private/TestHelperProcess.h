@@ -62,6 +62,10 @@ namespace Shalltear::TestHelpers {
 
 	int RunCSharpAOTHost(const char* library);
 
+	inline constexpr const char* CSHARP_AOT_COMPONENTS_FLAG = "--shalltear-csharp-aot-components";
+
+	int RunCSharpAOTComponents(const char* library);
+
 	void RestoreNodeShader();
 
 } // namespace Shalltear::TestHelpers

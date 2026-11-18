@@ -4,6 +4,8 @@
 
 #include "Shalltear/Core/Types.h"
 
+#include <vector>
+
 namespace Shalltear::CSharpImpl {
 
 	struct ScriptTestHooks {
@@ -16,6 +18,11 @@ namespace Shalltear::CSharpImpl {
 		void (*detach)();
 		bool (*isAttached)();
 		const SltManagedAPI& (*getManaged)();
+		i32 (*unloadUserAssemblies)();
+		u64 (*getHookCrossings)();
+		const void* (*getOwnerToken)();
+		void (*installComponentMenu)();
+		std::vector<str> (*takeRecords)();
 		const char* runtimeVersion;
 	};
 

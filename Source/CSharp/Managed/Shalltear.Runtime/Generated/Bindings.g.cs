@@ -32,6 +32,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<float, float, float, float, float, float, float, Vec3*, int> probeSumGuarded;
 	public delegate* unmanaged<float, byte*, int> probeIsPositive;
 	public delegate* unmanaged<int> probeThrow;
+	public delegate* unmanaged<SltString, int> probeRecord;
 	public delegate* unmanaged<SltString, int*, int> probeSumBytes;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
@@ -44,7 +45,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xdad7f075e0ce4b97;
+	internal const ulong LAYOUT_HASH = 0xbaff74d32ac71cca;
 
 	internal static SltBindings table;
 

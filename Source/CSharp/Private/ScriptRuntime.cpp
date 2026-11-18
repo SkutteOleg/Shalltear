@@ -1,5 +1,7 @@
 #include "ScriptRuntime.h"
 
+#include "ManagedTypes.h"
+
 #include "Shalltear/Core/Log.h"
 
 #include <algorithm>
@@ -35,6 +37,12 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 			}
 		}
 
+		int32_t RegisterManagedType(const SltTypeDesc* type) noexcept {
+			int32_t result = SLT_ERR_REFUSED;
+			const int32_t guarded = Guard([&] { result = ManagedTypes::Register(*type); });
+			return guarded == SLT_OK ? result : guarded;
+		}
+
 		void GetLastError(SltString* outText) noexcept {
 			*outText = SltString{_lastError.data(), static_cast<int32_t>(_lastError.size())};
 		}
@@ -59,6 +67,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		engine.reportException = &ReportException;
 		engine.log = &Log;
 		engine.getLastError = &GetLastError;
+		engine.registerManagedType = &RegisterManagedType;
 #ifdef SLT_CSHARP_TEST_HOOKS
 		engine.throwForTest = &ThrowForTest;
 #endif
@@ -89,12 +98,18 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		if (!_attached) {
 			return;
 		}
-		if (_managed.unloadUserAssemblies) {
-			_managed.unloadUserAssemblies();
-		}
+		UnloadUserAssemblies();
 		_managed.shutdown();
 		_managed = {};
 		_attached = false;
+	}
+
+	i32 UnloadUserAssemblies() {
+		if (!_attached) {
+			return SLT_OK;
+		}
+		ManagedTypes::ReleaseAll();
+		return _managed.unloadUserAssemblies ? _managed.unloadUserAssemblies() : SLT_OK;
 	}
 
 	bool IsAttached() {

@@ -82,6 +82,7 @@ internal static unsafe class UserAssemblies {
 		Context? context = _context;
 		_context = null;
 		ConformanceRegistry.Clear();
+		ScriptTypes.Clear();
 		if (context == null) {
 			return new WeakReference(null);
 		}

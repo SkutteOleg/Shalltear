@@ -145,16 +145,26 @@ namespace Shalltear {
 		SLT_CORE_ASSERT_MSG(typeInfo != nullptr, "TypeRegistry::Register: null TypeInfo");
 		if (!typeInfo)
 			return nullptr;
+		return RegisterAs(typeInfo, ownerHint ? ownerHint : __builtin_return_address(0), false);
+	}
 
+	const TypeInfo* TypeRegistry::RegisterOwned(TypeInfo* typeInfo, const void* ownerToken) {
+		SLT_CORE_ASSERT_MSG(typeInfo != nullptr && ownerToken != nullptr, "TypeRegistry::RegisterOwned: null argument");
+		if (!typeInfo || !ownerToken)
+			return nullptr;
+		return RegisterAs(typeInfo, ownerToken, true);
+	}
+
+	const TypeInfo* TypeRegistry::RegisterAs(TypeInfo* typeInfo, const void* owner, bool ownerIsToken) {
 		auto& data = GetData();
 		std::unique_lock lock(data.mutex);
 
 		auto existing = data.byName.find(typeInfo->name);
 		if (existing != data.byName.end()) {
-			return existing->second;
+			return ownerIsToken ? nullptr : existing->second;
 		}
 
-		typeInfo->ownerModule = Platform::ImageBaseOf(ownerHint ? ownerHint : __builtin_return_address(0));
+		typeInfo->ownerModule = ownerIsToken ? owner : Platform::ImageBaseOf(owner);
 
 		typeInfo->moduleEpoch = data.epoch.load(std::memory_order_relaxed);
 
@@ -344,6 +354,9 @@ namespace Shalltear {
 	Object* TypeRegistry::CreateObjectInstance(const TypeInfo* type, MemTag tag) {
 		if (!type || (type->flags & TypeFlagAbstract) || !type->createFn) {
 			return nullptr;
+		}
+		if (type->flags & TypeFlagTypedCreate) {
+			return reinterpret_cast<Object* (*)(const TypeInfo*, MemTag)>(type->createFn)(type, tag);
 		}
 		return type->createFn(tag);
 	}

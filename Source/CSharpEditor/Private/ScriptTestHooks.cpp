@@ -2,8 +2,11 @@
 
 #include "ScriptTestHooks.h"
 
+#include "BindingProbe.h"
+#include "CSharpComponentMenu.h"
 #include "CoreCLRHost.h"
 #include "DotNetToolchain.h"
+#include "ManagedTypes.h"
 #include "ScriptRuntime.h"
 
 #include "Shalltear/Core/Export.h"
@@ -20,6 +23,11 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpImpl::ScriptRuntime::Detach,
 		&CSharpImpl::ScriptRuntime::IsAttached,
 		&CSharpImpl::ScriptRuntime::GetManaged,
+		&CSharpImpl::ScriptRuntime::UnloadUserAssemblies,
+		&CSharpImpl::ManagedTypes::GetHookCrossings,
+		&CSharpImpl::ManagedTypes::GetOwnerToken,
+		&CSharpEditor::InstallComponentMenu,
+		&CSharpImpl::BindingProbe::TakeRecords,
 		SLT_DOTNET_RUNTIME_VERSION,
 	};
 	return &HOOKS;

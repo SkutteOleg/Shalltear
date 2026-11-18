@@ -121,6 +121,13 @@ namespace Shalltear::CSharpImpl::Generated {
 			});
 		}
 
+		int32_t ProbeRecord(SltString textIn) noexcept {
+			return ScriptRuntime::Guard([&] {
+				const std::string_view text = View(textIn);
+				::Shalltear::CSharpImpl::BindingProbe::Record(text);
+			});
+		}
+
 		int32_t ProbeSumBytes(SltString textIn, int32_t* outResult) noexcept {
 			return ScriptRuntime::Guard([&] {
 				const std::string_view text = View(textIn);
@@ -149,6 +156,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeSumGuarded = &ProbeSumGuarded;
 		table.probeIsPositive = &ProbeIsPositive;
 		table.probeThrow = &ProbeThrow;
+		table.probeRecord = &ProbeRecord;
 		table.probeSumBytes = &ProbeSumBytes;
 	}
 

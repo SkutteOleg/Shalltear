@@ -25,6 +25,7 @@ namespace Shalltear {
 		void SetConstructor(void (*fn)(void*));
 		void SetDestructor(void (*fn)(void*));
 		void SetCreateFn(Object* (*fn)(MemTag));
+		void SetCreateTypedFn(Object* (*fn)(const TypeInfo*, MemTag));
 		// static storage only
 		void SetDisplayName(const char* literal);
 
@@ -63,7 +64,12 @@ namespace Shalltear {
 		void AddAttribute(StringHash key, Variant value);
 
 		const TypeInfo* Finalize();
+
+		// null when name is taken
+		const TypeInfo* FinalizeOwned(const void* ownerToken);
 	private:
+		const TypeInfo* FinalizeWith(const void* owner, bool owned);
+
 		struct Impl;
 		Impl* _impl;
 	};

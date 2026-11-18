@@ -1,3 +1,4 @@
+#include "CSharpComponentMenu.h"
 #include "CoreCLRHost.h"
 #include "DotNetToolchain.h"
 #include "ScriptRuntime.h"
@@ -28,6 +29,7 @@ namespace Shalltear::CSharpEditor {
 
 	void RegisterEditorExtensions(const void* owner) {
 		(void)owner;
+		InstallComponentMenu();
 		const auto begin = std::chrono::steady_clock::now();
 		str error;
 		if (!StartRuntime(error)) {

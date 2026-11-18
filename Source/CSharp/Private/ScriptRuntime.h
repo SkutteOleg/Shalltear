@@ -15,6 +15,8 @@ namespace Shalltear::CSharpImpl {
 
 		void Detach();
 
+		i32 UnloadUserAssemblies();
+
 		bool IsAttached();
 
 		// valid while attached

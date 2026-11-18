@@ -37,6 +37,7 @@ namespace Shalltear {
 		void (*constructor)(void*) = nullptr;
 		void (*destructor)(void*) = nullptr;
 		Object* (*createFn)(MemTag) = nullptr;
+		Object* (*createTypedFn)(const TypeInfo*, MemTag) = nullptr;
 		const char* displayName = nullptr;
 
 		std::vector<FieldInfo> fields;
@@ -78,6 +79,10 @@ namespace Shalltear {
 
 	void ReflectBuilder::SetCreateFn(Object* (*fn)(MemTag)) {
 		_impl->createFn = fn;
+	}
+
+	void ReflectBuilder::SetCreateTypedFn(Object* (*fn)(const TypeInfo*, MemTag)) {
+		_impl->createTypedFn = fn;
 	}
 
 	void ReflectBuilder::SetDisplayName(const char* literal) {
@@ -197,6 +202,15 @@ namespace Shalltear {
 	}
 
 	const TypeInfo* ReflectBuilder::Finalize() {
+		// return address in the defining image = ownership fingerprint
+		return FinalizeWith(__builtin_return_address(0), false);
+	}
+
+	const TypeInfo* ReflectBuilder::FinalizeOwned(const void* ownerToken) {
+		return FinalizeWith(ownerToken, true);
+	}
+
+	const TypeInfo* ReflectBuilder::FinalizeWith(const void* owner, bool owned) {
 		SLT_CORE_ASSERT_MSG(_impl != nullptr, "ReflectBuilder::Finalize called twice");
 
 		TypeInfo* info = New<TypeInfo>(MemTag::Core);
@@ -208,11 +222,11 @@ namespace Shalltear {
 		info->moduleEpoch = 0;
 		info->constructor = _impl->constructor;
 		info->destructor = _impl->destructor;
-		info->createFn = _impl->createFn;
+		info->createFn = _impl->createTypedFn ? reinterpret_cast<Object* (*)(MemTag)>(_impl->createTypedFn) : _impl->createFn;
 		info->ownerModule = nullptr;
 		info->displayName = _impl->displayName;
 
-		info->flags = _impl->flags | TypeFlagHeapMetadata;
+		info->flags = _impl->flags | TypeFlagHeapMetadata | (_impl->createTypedFn ? TypeFlagTypedCreate : 0u);
 		info->fields = nullptr;
 		info->fieldCount = 0;
 		info->methods = nullptr;
@@ -290,8 +304,7 @@ namespace Shalltear {
 		}
 		info->layoutHash = hash;
 
-		// return address in the defining image = ownership fingerprint
-		const TypeInfo* registered = TypeRegistry::Register(info, __builtin_return_address(0));
+		const TypeInfo* registered = owned ? TypeRegistry::RegisterOwned(info, owner) : TypeRegistry::Register(info, owner);
 
 		// AttributeInfo holds a Variant (destructors before the bulk free)
 		if (registered != info) {

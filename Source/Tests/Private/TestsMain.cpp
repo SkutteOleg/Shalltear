@@ -46,6 +46,9 @@ int main(int argc, char** argv) {
 		if (std::strcmp(argv[arg], Shalltear::TestHelpers::CSHARP_AOT_HOST_FLAG) == 0) {
 			return Shalltear::TestHelpers::RunCSharpAOTHost(arg + 1 < argc ? argv[arg + 1] : nullptr);
 		}
+		if (std::strcmp(argv[arg], Shalltear::TestHelpers::CSHARP_AOT_COMPONENTS_FLAG) == 0) {
+			return Shalltear::TestHelpers::RunCSharpAOTComponents(arg + 1 < argc ? argv[arg + 1] : nullptr);
+		}
 #endif
 	}
 	int helperExitCode = 0;

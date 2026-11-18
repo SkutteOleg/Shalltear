@@ -5,6 +5,7 @@
 #include "Shalltear/Core/Math/MathUtil.h"
 
 #include <iterator>
+#include <mutex>
 #include <stdexcept>
 
 namespace Shalltear::CSharpImpl::BindingProbe {
@@ -184,6 +185,9 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 			{"Color.Equals", 8, 1, [](const f32* in, f32* out) { Put(out, ReadColor(in) == ReadColor(in + 4)); }},
 		};
 
+		std::mutex _recordsMutex;
+		std::vector<str> _records;
+
 	} // anonymous namespace
 
 	i32 GetMathCaseCount() noexcept {
@@ -267,6 +271,18 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 			sum += static_cast<u8>(character);
 		}
 		return sum;
+	}
+
+	void Record(std::string_view text) {
+		const std::lock_guard lock(_recordsMutex);
+		_records.emplace_back(text);
+	}
+
+	std::vector<str> TakeRecords() {
+		const std::lock_guard lock(_recordsMutex);
+		std::vector<str> taken;
+		taken.swap(_records);
+		return taken;
 	}
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

@@ -2,10 +2,13 @@
 
 #ifdef SLT_TEST_CSHARP_AOT
 
+#include "CSharpComponentScenarios.h"
 #include "CSharpConformance.h"
 #include "TestHelperProcess.h"
 #include "TestPlatform.h"
 
+#include "BindingProbe.h"
+#include "ManagedTypes.h"
 #include "NativeAOTHost.h"
 #include "ScriptRuntime.h"
 
@@ -14,6 +17,8 @@
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Reflection.h"
+#include "Shalltear/Core/Scene.h"
 
 #include <cstdio>
 #include <filesystem>
@@ -36,10 +41,9 @@ namespace {
 		bool Has(std::string_view text) const { return output.find(text) != str::npos; }
 	};
 
-	HostRun RunHost(const std::filesystem::path& library) {
+	HostRun RunHost(const std::filesystem::path& library, const char* flag = TestHelpers::CSHARP_AOT_HOST_FLAG) {
 		HostRun run;
-		const str commandLine = "\"" + FileSystem::GetExecutablePath().ToString() + "\" " + TestHelpers::CSHARP_AOT_HOST_FLAG + " \"" +
-								library.generic_string() + "\"";
+		const str commandLine = "\"" + FileSystem::GetExecutablePath().ToString() + "\" " + flag + " \"" + library.generic_string() + "\"";
 		run.output = TestPlatform::RunCommand(commandLine, run.exitCode);
 		size_t start = 0;
 		while (start < run.output.size()) {
@@ -65,10 +69,62 @@ namespace {
 
 } // namespace
 
+int Shalltear::TestHelpers::RunCSharpAOTComponents(const char* library) {
+	JobSystem::Initialize();
+	LogManager::Initialize({true, false});
+	TypeRegistry::RegisterPendingTypes();
+	SceneSystem::Initialize();
+	str error;
+	if (!library || !CSharpImpl::NativeAOTHost::Start(library, error)) {
+		std::printf("START FAILED %s\n", error.c_str());
+		SceneSystem::Terminate();
+		LogManager::Terminate();
+		JobSystem::Terminate();
+		return 2;
+	}
+	const auto script = [](const char* name) { return TypeRegistry::FindType(StringHash(str("Shalltear.Conformance.") + name)); };
+
+	CSharpScenarios::RunLifecycle(CSharpScenarios::GetTwinType());
+	std::printf("TWIN %s\n", CSharpScenarios::Join(CSharpScenarios::TakeTwinRecords()).c_str());
+	CSharpImpl::BindingProbe::TakeRecords();
+	CSharpScenarios::RunLifecycle(script("HookRecorder"));
+	std::printf("SCRIPT %s\n", CSharpScenarios::Join(CSharpImpl::BindingProbe::TakeRecords()).c_str());
+
+	Handle<Scene> world = SceneSystem::CreateScene("World");
+	const u64 before = CSharpImpl::ManagedTypes::GetHookCrossings();
+	Handle<Component> only = SceneSystem::CreateObject("Only", world)->AddComponent(script("UpdateOnly"));
+	Handle<Component> silent = SceneSystem::CreateObject("Silent", world)->AddComponent(script("Silent"));
+	CSharpScenarios::RunFrames(3);
+	std::printf("CROSSINGS %d %d %llu\n", only.IsValid(), silent.IsValid(),
+				static_cast<unsigned long long>(CSharpImpl::ManagedTypes::GetHookCrossings() - before));
+
+	for (const char* name : {"HookRecorder", "UpdateOnly", "Silent", "LateReporter", "HolderOfInt"}) {
+		Handle<Component> component = SceneSystem::CreateObject(name, world)->AddComponent(script(name));
+		std::printf("TICKS %s %d\n", name, component.IsValid() ? static_cast<int>(static_cast<Behavior*>(component.Get())->GetTickMask()) : -1);
+	}
+	const TypeInfo* parent = script("EnableCounter");
+	const TypeInfo* child = script("LateReporter");
+	std::printf("PARENT %d %d\n", parent && child && child->parent == parent, parent && (parent->flags & TypeFlagAbstract) != 0);
+
+	CSharpImpl::BindingProbe::TakeRecords();
+	Handle<Component> thrower = SceneSystem::CreateObject("Thrower", world)->AddComponent(script("ThrowsInConstructor"));
+	CSharpScenarios::RunFrames(1);
+	std::printf("INERT %d\n", thrower.IsValid());
+	std::fflush(stdout);
+
+	SceneSystem::Terminate();
+	CSharpImpl::ScriptRuntime::Detach();
+	LogManager::Terminate();
+	JobSystem::Terminate();
+	std::printf("DONE\n");
+	return 0;
+}
+
 int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	JobSystem::Initialize();
 	LogManager::Initialize({true, false});
 	LogManager::SetGlobalLevel(LogLevel::Trace);
+	TypeRegistry::RegisterPendingTypes();
 	str error;
 	if (!library || !CSharpImpl::NativeAOTHost::Start(library, error)) {
 		std::printf("START FAILED %s\n", error.c_str());
@@ -163,6 +219,43 @@ TEST(CSharpNativeAOTTest, ReleaseLibraryDropsThreadChecks) {
 #else
 	EXPECT_EQ(run.cases.at("FeatureProbe.ReportsThreadChecks").second, "thread checks on");
 #endif
+}
+
+TEST(CSharpNativeAOTTest, ComponentsRunTheirHooks) {
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll", TestHelpers::CSHARP_AOT_COMPONENTS_FLAG);
+	ASSERT_EQ(run.exitCode, 0) << run.output;
+	ASSERT_TRUE(run.Has("\nDONE")) << run.output;
+
+	const str output = "\n" + run.output;
+	const auto line = [&output](std::string_view prefix) {
+		const size_t at = output.find(str("\n") + str(prefix));
+		if (at == str::npos) {
+			return str();
+		}
+		const size_t begin = at + 1 + prefix.size();
+		size_t end = output.find('\n', begin);
+		end = end == str::npos ? output.size() : end;
+		str text = output.substr(begin, end - begin);
+		while (!text.empty() && (text.back() == '\r' || text.back() == ' ')) {
+			text.pop_back();
+		}
+		return text;
+	};
+	const str twin = line("TWIN ");
+	EXPECT_FALSE(twin.empty()) << run.output;
+	EXPECT_EQ(line("SCRIPT "), twin) << run.output;
+	EXPECT_NE(twin.find("late update"), str::npos) << twin;
+	EXPECT_NE(twin.find("destroy"), str::npos) << twin;
+
+	EXPECT_EQ(line("CROSSINGS "), "1 1 3") << run.output;
+	EXPECT_EQ(line("TICKS HookRecorder "), "7") << run.output;
+	EXPECT_EQ(line("TICKS UpdateOnly "), "1") << run.output;
+	EXPECT_EQ(line("TICKS Silent "), "0") << run.output;
+	EXPECT_EQ(line("TICKS LateReporter "), "4") << run.output;
+	EXPECT_EQ(line("TICKS HolderOfInt "), "2") << run.output;
+	EXPECT_EQ(line("PARENT "), "1 1") << run.output;
+	EXPECT_EQ(line("INERT "), "1") << run.output;
+	EXPECT_TRUE(run.Has("System.InvalidOperationException: thrown by a constructor")) << run.output;
 }
 
 TEST(CSharpNativeAOTTest, MissingLibraryNamesTheFile) {
