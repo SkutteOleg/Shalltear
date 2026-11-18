@@ -12,5 +12,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<InternalsVisibleTo Include="Shalltear.Conformance" />
+		<InternalsVisibleTo Include="Shalltear.ConformanceAOT" />
 	</ItemGroup>
 </Project>

@@ -14,6 +14,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${sltPinFile}")
 file(READ "${sltPinFile}" sltPin)
 string(JSON sltSDKVersion GET "${sltPin}" sdkVersion)
 string(JSON sltRuntimeVersion GET "${sltPin}" runtimeVersion)
+string(JSON sltTargetFramework GET "${sltPin}" targetFramework)
 
 set(sltDotNetRoot "${CMAKE_SOURCE_DIR}/External/Prebuilt/dotnet/${sltSDKVersion}")
 if(CMAKE_HOST_WIN32)
@@ -62,6 +63,69 @@ add_custom_command(
 	VERBATIM)
 add_custom_target(CSharpManaged DEPENDS "${sltManagedStamp}")
 
+if(WIN32)
+	get_filename_component(sltToolchainBin "${CMAKE_CXX_COMPILER}" DIRECTORY)
+	get_filename_component(sltToolchainRoot "${sltToolchainBin}" DIRECTORY)
+	set(sltNativeDir "${sltManagedOutput}/native")
+	set(sltShimSource "${CMAKE_CURRENT_SOURCE_DIR}/Native/CRTShim.cpp")
+	set(sltShim "${sltNativeDir}/CRTShim.obj")
+	add_custom_command(
+		OUTPUT "${sltShim}"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${sltNativeDir}"
+		COMMAND "${sltToolchainBin}/clang++" --target=x86_64-pc-windows-msvc -std=c++20 -O2 -fno-exceptions -fno-rtti
+			-fms-extensions -fno-stack-protector -fno-builtin -c "${sltShimSource}" -o "${sltShim}"
+		DEPENDS "${sltShimSource}"
+		COMMENT "Compiling C# link shim"
+		VERBATIM)
+
+	file(GLOB sltBuiltins "${sltToolchainRoot}/lib/clang/*/lib/windows/libclang_rt.builtins-x86_64.a")
+	if(NOT sltBuiltins)
+		message(FATAL_ERROR
+			"libclang_rt.builtins-x86_64.a was not found under ${sltToolchainRoot}/lib/clang. "
+			"Run python Scripts/fetch_prebuilt.py --toolchain")
+	endif()
+	list(GET sltBuiltins 0 sltBuiltins)
+	set(sltNativeLibs "${sltNativeDir}/libs/clang_rt.builtins-x86_64.lib")
+	set(sltNativeLibCopies COMMAND ${CMAKE_COMMAND} -E copy_if_different "${sltBuiltins}" "${sltNativeLibs}")
+	foreach(sltName advapi32 bcrypt crypt32 iphlpapi kernel32 mswsock ncrypt normaliz ntdll ole32 oleaut32 secur32 user32 version ws2_32 ucrt)
+		list(APPEND sltNativeLibs "${sltNativeDir}/libs/${sltName}.lib")
+		list(APPEND sltNativeLibCopies COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${sltToolchainRoot}/x86_64-w64-mingw32/lib/lib${sltName}.a" "${sltNativeDir}/libs/${sltName}.lib")
+	endforeach()
+	add_custom_command(
+		OUTPUT ${sltNativeLibs}
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${sltNativeDir}/libs"
+		${sltNativeLibCopies}
+		COMMENT "Staging import libs for C# links"
+		VERBATIM)
+	add_custom_target(CSharpNative DEPENDS "${sltShim}" ${sltNativeLibs})
+
+	if(SHALLTEAR_BUILD_TESTS AND NOT SHALLTEAR_BUILD_SHARED)
+		set(sltAOTProject "${sltManagedDir}/Shalltear.ConformanceAOT/Shalltear.ConformanceAOT.csproj")
+		set(sltAOTLibrary "${sltManagedOutput}/aot/Shalltear.ConformanceAOT.dll")
+		set(sltAOTInputs "${sltManagedOutput}/aot/Shalltear.ConformanceAOT.rsp")
+		set(sltAOTNative "${sltManagedRoot}/obj/${sltSDKVersion}/Shalltear.ConformanceAOT/${sltManagedConfig}/${sltTargetFramework}/win-x64/native")
+		add_custom_command(
+			OUTPUT "${sltAOTLibrary}" "${sltAOTInputs}"
+			COMMAND ${CMAKE_COMMAND} -E env
+				"DOTNET_ROOT=${sltDotNetRoot}" DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_CLI_UI_LANGUAGE=en-us
+				"${sltDotNet}" msbuild "${sltAOTProject}" -restore -t:Publish
+				-nologo -v:q -tl:off -clp:NoSummary -warnaserror -nodeReuse:false
+				-p:Configuration=${sltManagedConfig} -p:UseSharedCompilation=false -p:RuntimeIdentifier=win-x64
+				"-p:ShalltearManagedRoot=${sltManagedRoot}/" "-p:ShalltearManagedOutput=${sltManagedOutput}/"
+				"-p:ShalltearLinkerDir=${sltToolchainBin}/" "-p:ShalltearNativeDir=${sltNativeDir}/"
+				"-p:PublishDir=${sltManagedRoot}/aot-publish/"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				"${sltManagedRoot}/aot-publish/Shalltear.ConformanceAOT.dll" "${sltAOTLibrary}"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${sltAOTNative}/link.rsp" "${sltAOTInputs}"
+			DEPENDS "${sltManagedStamp}" "${sltShim}" ${sltNativeLibs} "${sltAOTProject}"
+				"${CMAKE_SOURCE_DIR}/EngineAssets/CSharp/Shalltear.CSharp.targets"
+			COMMENT "Publishing C# conformance suite as a native lib"
+			VERBATIM)
+		add_custom_target(CSharpConformanceAOT DEPENDS "${sltAOTLibrary}")
+	endif()
+endif()
+
 file(GLOB_RECURSE CSHARP_SOURCES "Private/*.cpp" "Private/*.h")
 shalltear_select_platform_sources(CSHARP_SOURCES)
 
@@ -69,6 +133,9 @@ shalltear_add_package(CSharp SOURCES ${CSHARP_SOURCES})
 
 target_include_directories(CSharp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 add_dependencies(CSharp CSharpManaged)
+if(TARGET CSharpNative)
+	add_dependencies(CSharp CSharpNative)
+endif()
 if(NOT WIN32)
 	target_link_libraries(CSharp PRIVATE ${CMAKE_DL_LIBS})
 endif()

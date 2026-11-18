@@ -58,6 +58,10 @@ namespace Shalltear::TestHelpers {
 
 	int RunReflectionStartupProbe();
 
+	inline constexpr const char* CSHARP_AOT_HOST_FLAG = "--shalltear-csharp-aot-host";
+
+	int RunCSharpAOTHost(const char* library);
+
 	void RestoreNodeShader();
 
 } // namespace Shalltear::TestHelpers

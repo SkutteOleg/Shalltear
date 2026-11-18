@@ -10,6 +10,7 @@
 		<ShalltearManagedRoot Condition="'$(ShalltearManagedRoot)' == ''">$(ShalltearRepoRoot)build/CSharp/IDE/</ShalltearManagedRoot>
 		<ShalltearManagedOutput Condition="'$(ShalltearManagedOutput)' == ''">$(ShalltearManagedRoot)bin/</ShalltearManagedOutput>
 		<BaseIntermediateOutputPath>$(ShalltearManagedRoot)obj/$(ShalltearSDKVersion)/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+		<BaseOutputPath>$(ShalltearManagedRoot)out/$(MSBuildProjectName)/</BaseOutputPath>
 		<OutDir>$(ShalltearManagedOutput)</OutDir>
 		<RestorePackagesPath>$(ShalltearRepoRoot)External/Prebuilt/nuget/</RestorePackagesPath>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

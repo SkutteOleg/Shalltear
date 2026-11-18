@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<RootNamespace>Shalltear.Generated</RootNamespace>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ShalltearPlayerBuild>true</ShalltearPlayerBuild>
+		<OutDir>$(ShalltearManagedRoot)aot/</OutDir>
+		<RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedOutput)Shalltear.Runtime.dll" />
+		<Reference Include="Shalltear.Conformance" HintPath="$(ShalltearManagedOutput)Shalltear.Conformance.dll" />
+	</ItemGroup>
+	<Import Project="$(ShalltearRepoRoot)EngineAssets/CSharp/Shalltear.CSharp.targets" />
+</Project>

@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 using Shalltear.Interop;
@@ -7,16 +6,8 @@ using Shalltear.Interop;
 namespace Shalltear.Conformance;
 
 static class BridgeTests {
-	[ModuleInitializer]
-	internal static void Register() {
-		ConformanceRegistry.Add("Bridge.NativeThrowBecomesEngineException", NativeThrowBecomesEngineException);
-		ConformanceRegistry.Add("Bridge.FailureCarriesItsMessage", FailureCarriesItsMessage);
-		ConformanceRegistry.Add("Probe.Fails", Fails);
-		ConformanceRegistry.Add("Probe.ThrowsOnCallingThread", ThrowsOnCallingThread);
-		ConformanceRegistry.Add("Probe.ThrowsOnStartedThread", ThrowsOnStartedThread);
-	}
-
-	static void NativeThrowBecomesEngineException() {
+	[ConformanceTest]
+	internal static void NativeThrowBecomesEngineException() {
 		try {
 			Bridge.ThrowForTest();
 		} catch (EngineException exception) {
@@ -26,7 +17,8 @@ static class BridgeTests {
 		Check.Fail("no EngineException");
 	}
 
-	static void FailureCarriesItsMessage() {
+	[ConformanceTest]
+	internal static void FailureCarriesItsMessage() {
 		try {
 			Check.Equal(1, 2);
 		} catch (ConformanceFailure failure) {
@@ -35,16 +27,21 @@ static class BridgeTests {
 		}
 		Check.Fail("no ConformanceFailure");
 	}
+}
 
-	static void Fails() {
+static class Probe {
+	[ConformanceTest]
+	internal static void Fails() {
 		Check.Fail("failed as asked");
 	}
 
-	static void ThrowsOnCallingThread() {
+	[ConformanceTest]
+	internal static void ThrowsOnCallingThread() {
 		throw new InvalidOperationException("thrown on the calling thread");
 	}
 
-	static void ThrowsOnStartedThread() {
+	[ConformanceTest]
+	internal static void ThrowsOnStartedThread() {
 		Thread thread = new(static () => throw new InvalidOperationException("thrown on a started thread"));
 		thread.Start();
 		thread.Join();

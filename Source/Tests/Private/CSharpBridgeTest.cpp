@@ -169,7 +169,7 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 		EXPECT_EQ(managed.runConformanceTest(index, &message), SLT_OK) << caseName << ": " << View(message);
 		++ran;
 	}
-	EXPECT_GE(ran, 2);
+	EXPECT_GE(ran, 12);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);
@@ -187,7 +187,7 @@ TEST_F(CSharpRuntimeFixture, SecondLoadIsRefused) {
 	EXPECT_EQ(_hooks->getManaged().getConformanceTestCount(), count);
 
 	str message;
-	EXPECT_EQ(Run("Bridge.FailureCarriesItsMessage", message), SLT_OK) << message;
+	EXPECT_EQ(Run("BridgeTests.FailureCarriesItsMessage", message), SLT_OK) << message;
 }
 
 TEST_F(CSharpRuntimeFixture, FailedCaseCarriesItsMessage) {
@@ -209,7 +209,7 @@ TEST_F(CSharpRuntimeFixture, ManagedExceptionIsReported) {
 	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown on the calling thread"), 1u) << _log.Delivered().Joined();
 	EXPECT_EQ(_log.Delivered().Count("ThrowsOnCallingThread"), 1u) << _log.Delivered().Joined();
 
-	EXPECT_EQ(Run("Bridge.FailureCarriesItsMessage", message), SLT_OK) << message;
+	EXPECT_EQ(Run("BridgeTests.FailureCarriesItsMessage", message), SLT_OK) << message;
 }
 
 TEST_F(CSharpRuntimeFixture, ThreadExceptionIsReported) {
@@ -220,7 +220,7 @@ TEST_F(CSharpRuntimeFixture, ThreadExceptionIsReported) {
 	EXPECT_EQ(Run("Probe.ThrowsOnStartedThread", message), SLT_OK) << message;
 	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown on a started thread"), 1u) << _log.Delivered().Joined();
 
-	EXPECT_EQ(Run("Bridge.FailureCarriesItsMessage", message), SLT_OK) << message;
+	EXPECT_EQ(Run("BridgeTests.FailureCarriesItsMessage", message), SLT_OK) << message;
 }
 
 TEST_F(CSharpRuntimeFixture, NativeExceptionBecomesErrorCode) {
@@ -235,7 +235,7 @@ TEST_F(CSharpRuntimeFixture, NativeExceptionBecomesErrorCode) {
 	EXPECT_EQ(View(text), "thrown for a test");
 
 	str message;
-	EXPECT_EQ(Run("Bridge.NativeThrowBecomesEngineException", message), SLT_OK) << message;
+	EXPECT_EQ(Run("BridgeTests.NativeThrowBecomesEngineException", message), SLT_OK) << message;
 }
 
 TEST_F(CSharpRuntimeFixture, MissingAssemblyIsReported) {

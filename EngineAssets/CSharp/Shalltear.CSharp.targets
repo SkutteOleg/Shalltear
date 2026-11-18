@@ -1,0 +1,42 @@
+<Project>
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
+		<PublishAot>true</PublishAot>
+		<NativeLib>Shared</NativeLib>
+		<SelfContained>true</SelfContained>
+		<DisableTransitiveFrameworkReferenceDownloads>true</DisableTransitiveFrameworkReferenceDownloads>
+		<InvariantGlobalization Condition="'$(InvariantGlobalization)' == ''">true</InvariantGlobalization>
+		<EnableSourceLink>false</EnableSourceLink>
+		<DebuggerSupport>false</DebuggerSupport>
+		<EventSourceSupport>false</EventSourceSupport>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<UseSystemResourceKeys>true</UseSystemResourceKeys>
+		<TrimmerSingleWarn>false</TrimmerSingleWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(Configuration)' == 'Release'">
+		<StackTraceSupport>false</StackTraceSupport>
+		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('win')) and '$(ShalltearWindowsLinker)' != 'VisualStudio'">
+		<ShalltearBundledLinker>true</ShalltearBundledLinker>
+		<IlcUseEnvironmentalTools>true</IlcUseEnvironmentalTools>
+	</PropertyGroup>
+
+	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true'">
+		<Error Condition="!Exists('$(ShalltearLinkerDir)lld-link.exe')" Text="lld-link.exe was not found in '$(ShalltearLinkerDir)'. Set ShalltearLinkerDir (or ShalltearWindowsLinker=VisualStudio)" />
+		<Error Condition="!Exists('$(ShalltearNativeDir)CRTShim.obj')" Text="CRTShim.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />
+		<PropertyGroup>
+			<CppLinker>$(ShalltearLinkerDir)lld-link.exe</CppLinker>
+		</PropertyGroup>
+		<ItemGroup>
+			<LinkerArg Include="/LIBPATH:&quot;$(ShalltearNativeDir)libs&quot;" />
+			<LinkerArg Include="/NODEFAULTLIB" />
+			<LinkerArg Include="ucrt.lib" />
+			<LinkerArg Include="clang_rt.builtins-x86_64.lib" />
+			<LinkerArg Include="&quot;$(ShalltearNativeDir)CRTShim.obj&quot;" />
+			<LinkerArg Include="/PDBALTPATH:%25_PDB%25" />
+			<LinkerArg Include="/Brepro" />
+		</ItemGroup>
+	</Target>
+</Project>
