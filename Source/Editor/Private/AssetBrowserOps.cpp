@@ -26,6 +26,7 @@
 #include <string>
 #include <system_error>
 #include <unordered_map>
+#include <vector>
 
 #include "Platform/EditorPlatform.h"
 
@@ -493,8 +494,68 @@ namespace Shalltear::AssetBrowserOps {
 		return desiredName;
 	}
 
+	namespace {
+
+		struct NamedCreateEntry {
+			str label;
+			str defaultName;
+			CreateEntryFn create;
+			const void* owner = nullptr;
+		};
+
+		std::vector<NamedCreateEntry> _namedCreateEntries;
+
+	} // anonymous namespace
+
+	bool RegisterCreateEntry(std::string_view label, std::string_view defaultName, CreateEntryFn create, const void* owner) {
+		if (label.empty() || defaultName.empty() || !create) {
+			return false;
+		}
+		if (!owner) {
+			SLT_LOG_WARN("Editor", "ignoring create entry '{}' with no owner to sweep it with", label);
+			return false;
+		}
+		for (const NamedCreateEntry& entry : _namedCreateEntries) {
+			if (entry.label == label) {
+				SLT_LOG_WARN("Editor", "ignoring create entry '{}': its label is registered already", label);
+				return false;
+			}
+		}
+		_namedCreateEntries.push_back({str(label), str(defaultName), std::move(create), owner});
+		return true;
+	}
+
+	u32 UnregisterCreateEntriesOwnedBy(const void* owner) {
+		if (!owner) {
+			return 0;
+		}
+		return static_cast<u32>(std::erase_if(_namedCreateEntries, [owner](const NamedCreateEntry& entry) { return entry.owner == owner; }));
+	}
+
+	Guid RunCreateEntry(std::string_view label, const Path& virtualDir, const str& name, str* outRelPath) {
+		for (const NamedCreateEntry& entry : _namedCreateEntries) {
+			if (entry.label != label) {
+				continue;
+			}
+			const CreateEntryFn create = entry.create;
+			const Guid guid = create(virtualDir, name);
+			if (guid.IsValid() && outRelPath) {
+				*outRelPath = RelativeOf(AssetDatabase::LookupPath(guid).ToString());
+			}
+			return guid;
+		}
+		return Guid{};
+	}
+
 	void GetCreateMenuEntries(Vector<CreateMenuEntry>& out) {
 		out.clear();
+		for (const NamedCreateEntry& named : _namedCreateEntries) {
+			CreateMenuEntry entry;
+			entry.label = named.label;
+			entry.fileName = named.defaultName;
+			entry.asksName = true;
+			out.push_back(std::move(entry));
+		}
 		AssetImporterRegistry::ForEachImporter([&out](StringHash typeId, IAssetImporter* importer, std::string_view) {
 			if (!importer) {
 				return;

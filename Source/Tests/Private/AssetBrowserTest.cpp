@@ -3182,6 +3182,124 @@ TEST_F(AssetBrowserPanelTest, CreateMenuNestsTypesUnderCategory) {
 	EXPECT_TRUE(std::filesystem::exists(_root / "Assets" / "New UI Document.slxml"));
 }
 
+TEST_F(AssetBrowserPanelTest, NamedCreateEntryAsksTheNameFirst) {
+	static char owner = 0;
+	u32 calls = 0;
+	str askedFolder;
+	ASSERT_TRUE(AssetBrowserOps::RegisterCreateEntry(
+		"Scripting/Probe", "NewProbe",
+		[&](const Path& virtualDir, const str& name) {
+			++calls;
+			askedFolder = virtualDir.ToString();
+			if (name == "Refused") {
+				return Guid{};
+			}
+			const Path written(virtualDir.ToString() + "/" + name + ".txt");
+			FileSystem::WriteTextFile(written, "probe");
+			AssetDatabase::ScanProjectDirectory();
+			return AssetDatabase::LookupGuid(written);
+		},
+		&owner));
+	EXPECT_FALSE(AssetBrowserOps::RegisterCreateEntry("Scripting/Probe", "Other", [](const Path&, const str&) { return Guid{}; }, &owner));
+	EXPECT_FALSE(AssetBrowserOps::RegisterCreateEntry("Scripting/Unowned", "Other", [](const Path&, const str&) { return Guid{}; }, nullptr));
+	EXPECT_FALSE(AssetBrowserOps::RegisterCreateEntry("Scripting/Silent", "Other", {}, &owner));
+	EXPECT_FALSE(AssetBrowserOps::RegisterCreateEntry("Scripting/Nameless", "", [](const Path&, const str&) { return Guid{}; }, &owner));
+	Vector<AssetBrowserOps::CreateMenuEntry> listed{GetMemoryResource(MemTag::Debug)};
+	AssetBrowserOps::GetCreateMenuEntries(listed);
+	const auto registered = std::find_if(listed.begin(), listed.end(), [](const AssetBrowserOps::CreateMenuEntry& entry) { return entry.label == "Scripting/Probe"; });
+	ASSERT_NE(registered, listed.end());
+	EXPECT_TRUE(registered->asksName);
+	EXPECT_EQ(registered->fileName, "NewProbe");
+
+	Handle<EditorPanel> panel = OpenBrowser();
+	ASSERT_TRUE(panel.IsValid());
+	PanelBuild build{BrowserContextDesc()};
+	BuildAndSettle(*panel.Get(), build);
+
+	UI::ElementHandle add = ControlWearing(build.context, build.root, EditorIcons::GetGlyph(EditorIcons::Glyph::Add), StringHash("slt-button"));
+	ASSERT_TRUE(build.context.IsAlive(add));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, add));
+	UI::ElementHandle create = MenuRowNamed(build.context, build.context.GetOpenPopup(0), "Create");
+	ASSERT_TRUE(build.context.IsAlive(create));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, create));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 2u);
+	UI::ElementHandle group = MenuRowNamed(build.context, build.context.GetOpenPopup(1), "Scripting");
+	ASSERT_TRUE(build.context.IsAlive(group));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, group));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 3u);
+	UI::ElementHandle probe = MenuRowNamed(build.context, build.context.GetOpenPopup(2), "Probe");
+	ASSERT_TRUE(build.context.IsAlive(probe));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, probe));
+
+	EXPECT_EQ(calls, 0u);
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 1u);
+	UI::ElementHandle card = build.context.GetOpenPopup(0);
+	EXPECT_TRUE(HasText(build.context, card, "New Probe"));
+	for (char32_t ch : std::u32string_view(U"Mover")) {
+		build.context.InjectInput(TextChar(ch));
+	}
+	build.context.Update();
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, ButtonNamed(build.context, card, "OK")));
+	panel.Get()->OnTick(0.016f);
+	build.context.Update();
+
+	EXPECT_EQ(calls, 1u);
+	EXPECT_EQ(askedFolder, "project://Assets");
+	EXPECT_TRUE(std::filesystem::exists(_root / "Assets" / "Mover.txt"));
+	EXPECT_TRUE(FindFileRow(build.context, build.root, "Mover.txt").IsValid());
+	EXPECT_EQ(EditorSelection::GetAssetSelectionCount(), 1u);
+
+	add = ControlWearing(build.context, build.root, EditorIcons::GetGlyph(EditorIcons::Glyph::Add), StringHash("slt-button"));
+	ASSERT_TRUE(build.context.IsAlive(add));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, add));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, MenuRowNamed(build.context, build.context.GetOpenPopup(0), "Create")));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 2u);
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, MenuRowNamed(build.context, build.context.GetOpenPopup(1), "Scripting")));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 3u);
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, MenuRowNamed(build.context, build.context.GetOpenPopup(2), "Probe")));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 1u);
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, ButtonNamed(build.context, build.context.GetOpenPopup(0), "OK")));
+	panel.Get()->OnTick(0.016f);
+	build.context.Update();
+	EXPECT_EQ(calls, 2u);
+	EXPECT_TRUE(std::filesystem::exists(_root / "Assets" / "NewProbe.txt"));
+	const Guid kept = AssetDatabase::LookupGuid(Path("project://Assets/NewProbe.txt"));
+	ASSERT_EQ(EditorSelection::GetAssetSelectionCount(), 1u);
+	EXPECT_EQ(EditorSelection::GetSelectedAsset(), kept);
+
+	add = ControlWearing(build.context, build.root, EditorIcons::GetGlyph(EditorIcons::Glyph::Add), StringHash("slt-button"));
+	ASSERT_TRUE(build.context.IsAlive(add));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, add));
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, MenuRowNamed(build.context, build.context.GetOpenPopup(0), "Create")));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 2u);
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, MenuRowNamed(build.context, build.context.GetOpenPopup(1), "Scripting")));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 3u);
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, MenuRowNamed(build.context, build.context.GetOpenPopup(2), "Probe")));
+	ASSERT_EQ(build.context.GetOpenPopupCount(), 1u);
+	for (char32_t ch : std::u32string_view(U"Refused")) {
+		build.context.InjectInput(TextChar(ch));
+	}
+	build.context.Update();
+	ClickAt(build.context, *panel.Get(), CenterOf(build.context, ButtonNamed(build.context, build.context.GetOpenPopup(0), "OK")));
+	panel.Get()->OnTick(0.016f);
+	build.context.Update();
+	EXPECT_EQ(calls, 3u);
+	ASSERT_EQ(EditorSelection::GetAssetSelectionCount(), 1u);
+	EXPECT_EQ(EditorSelection::GetSelectedAsset(), kept);
+
+	EXPECT_FALSE(AssetBrowserOps::RunCreateEntry("Scripting/Gone", Path("project://Assets"), "Other").IsValid());
+	EXPECT_EQ(calls, 3u);
+	EXPECT_EQ(EditorExtensions::Unload(&owner), 1u);
+	Vector<AssetBrowserOps::CreateMenuEntry> entries{GetMemoryResource(MemTag::Debug)};
+	AssetBrowserOps::GetCreateMenuEntries(entries);
+	for (const AssetBrowserOps::CreateMenuEntry& entry : entries) {
+		EXPECT_NE(entry.label, "Scripting/Probe");
+		EXPECT_FALSE(entry.asksName);
+	}
+	EXPECT_FALSE(AssetBrowserOps::RunCreateEntry("Scripting/Probe", Path("project://Assets"), "Late").IsValid());
+	EXPECT_EQ(calls, 3u);
+}
+
 TEST_F(AssetBrowserPanelTest, ImportNewAssetCopiesIntoShownFolder) {
 	const std::filesystem::path outside = _root.parent_path() / ("shalltear_pick_" + _root.filename().string());
 	std::filesystem::create_directories(outside);

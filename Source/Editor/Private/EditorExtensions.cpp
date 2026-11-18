@@ -4,6 +4,7 @@
 #include "Shalltear/Core/Module/ModuleSystem.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
 
+#include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/AssetOpeners.h"
 #include "Shalltear/Editor/AuthoringDefaults.h"
 #include "Shalltear/Editor/MaterialInspectorOps.h"
@@ -67,6 +68,7 @@ namespace Shalltear::EditorExtensions {
 		removed += SceneViewOverlays::UnregisterOwnedBy(moduleBase);
 		removed += ProfilerModules::UnregisterOwnedBy(moduleBase);
 		removed += AssetOpeners::UnregisterOwnedBy(moduleBase);
+		removed += AssetBrowserOps::UnregisterCreateEntriesOwnedBy(moduleBase);
 		removed += MaterialInspectorOps::UnregisterShaderSourcesOwnedBy(moduleBase);
 		removed += EditorDocuments::UnregisterOwnedBy(moduleBase);
 		removed += ChildEnvironment::UnregisterOwnedBy(moduleBase);

@@ -1802,7 +1802,20 @@ namespace Shalltear {
 			const StringHash typeId = entry.typeId;
 			const str fileName = entry.fileName;
 			const u32 templateIndex = entry.templateIndex;
-			item.onSelect = [this, typeId, fileName, templateIndex]() { CreateAssetInSelectedFolder(typeId, fileName, templateIndex); };
+			if (entry.asksName) {
+				item.onSelect = [this, contextPtr, label = entry.label, title = str(rest), fileName]() {
+					SceneFileFlows::OpenTextInputPopup(*contextPtr, "New " + title, fileName, [this, label](const str& name) {
+						str relPath;
+						if (!AssetBrowserOps::RunCreateEntry(label, SelectedFolderVirtual(), name, &relPath).IsValid()) {
+							return;
+						}
+						Rescan();
+						SelectOnlyFile(relPath);
+					});
+				};
+			} else {
+				item.onSelect = [this, typeId, fileName, templateIndex]() { CreateAssetInSelectedFolder(typeId, fileName, templateIndex); };
+			}
 			level->push_back(std::move(item));
 		}
 		create.children = std::move(children);

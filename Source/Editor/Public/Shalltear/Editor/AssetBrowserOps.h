@@ -122,9 +122,19 @@ namespace Shalltear::AssetBrowserOps {
 		StringHash typeId;
 		str fileName;
 		u32 templateIndex = 0;
+		bool asksName = false;
 	};
 
 	SHALLTEAR_EDITOR_API void GetCreateMenuEntries(Vector<CreateMenuEntry>& out);
+
+	using CreateEntryFn = std::function<Guid(const Path& virtualDir, const str& name)>;
+
+	// name passed to create as typed (no extension, not made unique)
+	SHALLTEAR_EDITOR_API bool RegisterCreateEntry(std::string_view label, std::string_view defaultName, CreateEntryFn create, const void* owner);
+
+	SHALLTEAR_EDITOR_API u32 UnregisterCreateEntriesOwnedBy(const void* owner);
+
+	SHALLTEAR_EDITOR_API Guid RunCreateEntry(std::string_view label, const Path& virtualDir, const str& name, str* outRelPath = nullptr);
 
 	SHALLTEAR_EDITOR_API Guid CreatePrefabFromObject(Handle<SceneObject> root, const Path& virtualDir,
 													 str* outRelPath = nullptr);
