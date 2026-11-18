@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<RuntimeFrameworkVersion>$(ShalltearRuntimeVersion)</RuntimeFrameworkVersion>
+		<RollForward>Disable</RollForward>
+		<UseAppHost>false</UseAppHost>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<OutDir>$(ShalltearManagedOutput)Renamer/</OutDir>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Mono.Cecil" Version="0.11.6" />
+	</ItemGroup>
+</Project>

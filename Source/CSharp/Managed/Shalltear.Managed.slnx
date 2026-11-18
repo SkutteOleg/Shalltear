@@ -2,4 +2,5 @@
 	<Project Path="Shalltear.Runtime/Shalltear.Runtime.csproj" />
 	<Project Path="Shalltear.Generators/Shalltear.Generators.csproj" />
 	<Project Path="Shalltear.Conformance/Shalltear.Conformance.csproj" />
+	<Project Path="Shalltear.Renamer/Shalltear.Renamer.csproj" />
 </Solution>

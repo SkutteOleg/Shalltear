@@ -10,17 +10,20 @@ namespace Shalltear.Conformance;
 
 #pragma warning disable CS0169, CS0414, CS0649
 
+[KeepName]
 enum Pace {
 	Idle,
 	Walk,
 	Run = 10,
 }
 
+[KeepName]
 enum Tiny : byte {
 	Off,
 	On = 200,
 }
 
+[KeepName]
 enum Reach : long {
 	Near = -5,
 	Far = 5_000_000_000,

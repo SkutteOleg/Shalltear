@@ -517,6 +517,17 @@ COMPONENTS: tuple[Component, ...] = (
 		text=lambda: read("External/Prebuilt/ninja/COPYING"),
 	),
 	Component(
+		name="Mono.Cecil (bundled in CSharp/Renamer)",
+		scope="editor",
+		license="MIT",
+		where="script assembly rewriting for Release players (renamed script "
+			  "names). Shipped as 4 libraries",
+		version=lambda: "Mono.Cecil " + capture(
+			"Source/CSharp/Managed/Shalltear.Renamer/Shalltear.Renamer.csproj", r'Include="Mono\.Cecil" Version="([^"]+)"'
+		)[0],
+		text=lambda: read("Source/CSharp/Managed/Shalltear.Renamer/ThirdParty/Mono.Cecil/LICENSE.txt"),
+	),
+	Component(
 		name="Source Code Pro",
 		scope="editor",
 		license="SIL Open Font License 1.1",

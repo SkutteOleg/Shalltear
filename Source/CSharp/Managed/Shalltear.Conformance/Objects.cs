@@ -9,6 +9,7 @@ interface ILabeled {
 	string Label { get; }
 }
 
+[KeepName]
 sealed class Carrier : Behavior, ILabeled {
 	internal static readonly List<Carrier> created = new();
 

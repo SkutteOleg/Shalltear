@@ -4,12 +4,15 @@
 		<RootNamespace>Shalltear.Generated</RootNamespace>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ShalltearPlayerBuild>true</ShalltearPlayerBuild>
+		<ShalltearRenameScripts>true</ShalltearRenameScripts>
+		<ShalltearRenamerPath>$(ShalltearManagedOutput)Renamer/Shalltear.Renamer.dll</ShalltearRenamerPath>
 		<OutDir>$(ShalltearManagedRoot)aot/</OutDir>
 		<RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedOutput)Shalltear.Runtime.dll" />
 		<Reference Include="Shalltear.Conformance" HintPath="$(ShalltearManagedOutput)Shalltear.Conformance.dll" />
+		<ShalltearRenameAssembly Include="Shalltear.Conformance" />
 	</ItemGroup>
 	<Import Project="$(ShalltearRepoRoot)EngineAssets/CSharp/Shalltear.CSharp.targets" />
 </Project>

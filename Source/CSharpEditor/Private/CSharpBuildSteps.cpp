@@ -15,6 +15,7 @@
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/Time.h"
 
 #include "Shalltear/Editor/BuildPipeline.h"
@@ -36,6 +37,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		constexpr std::string_view ScriptsFolder = "scripts";
 		constexpr std::string_view PublishFolder = "publish";
 		constexpr std::string_view SymbolsFolder = "symbols";
+		constexpr std::string_view RenameFolder = "obj/rename";
+		constexpr std::string_view NameMap = "GameScripts.map";
 		constexpr std::string_view CommonArguments =
 			" -nologo -v:q -tl:off -clp:NoSummary -nodeReuse:false -p:UseSharedCompilation=false -p:GenerateFullPaths=true";
 		constexpr size_t UNPARSED_LINE_CAP = 30;
@@ -99,7 +102,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		bool RenderShell(const State& state, const str& assembly) {
 			Vector<ScriptProjectOps::TemplateToken> tokens{GetMemoryResource(MemTag::Editor)};
-			tokens.push_back({"SCRIPT_REFERENCES", std::format("\t\t<Reference Include=\"{0}\" HintPath=\"{1}/bin/{0}.dll\" Aliases=\"Scripts0\" />\n",
+			tokens.push_back({"SCRIPT_REFERENCES", std::format("\t\t<Reference Include=\"{0}\" HintPath=\"{1}/bin/{0}.dll\" Aliases=\"Scripts0\" />\n"
+															   "\t\t<ShalltearRenameAssembly Include=\"{0}\" />\n",
 															   assembly, ScriptsFolder)});
 			tokens.push_back({"SCRIPT_ALIASES", "extern alias Scripts0;\n"});
 			tokens.push_back({"SCRIPT_CALLS", "\t\tScripts0::Shalltear.Generated.TypeTable.Register();\n"});
@@ -201,6 +205,11 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 										RuntimeIdentifierOf(context.target->GetId()));
 			const str native = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path().generic_string() + "/native/";
 			arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native);
+			std::error_code ec;
+			fs::remove_all(fs::path(state.root) / RenameFolder, ec);
+			if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
+				arguments += " -p:ShalltearRenameScripts=true";
+			}
 			if (CSharpSettings::GetProject().windowsLinker == WindowsLinker::VisualStudio) {
 				arguments += " -p:ShalltearWindowsLinker=VisualStudio";
 			} else {
@@ -329,6 +338,16 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			}
 			context.Log(std::format("C# scripts compiled in {:.1f} s",
 									static_cast<f64>(Time::GetTicks() - state.startTicks) / static_cast<f64>(Time::GetTicksPerSecond())));
+			std::error_code ec;
+			const fs::path report = fs::path(state.root) / RenameFolder / "report.txt";
+			if (fs::is_regular_file(report, ec)) {
+				for (const str& line : StringUtil::Split(FileSystem::ReadTextFile(Path(report.generic_string()), MemTag::Editor), "\n")) {
+					const str trimmed = StringUtil::Trim(line);
+					if (!trimmed.empty()) {
+						context.Log(trimmed);
+					}
+				}
+			}
 			return BuildStepStatus::Succeeded;
 		}
 
@@ -343,9 +362,13 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", library.generic_string(), ec.message()));
 				return BuildStepStatus::Failed;
 			}
-			const fs::path symbols = fs::path(library).replace_extension(".pdb");
-			if (fs::is_regular_file(symbols, ec)) {
-				const fs::path kept = fs::path(context.intermediateDir) / SymbolsFolder;
+			const fs::path kept = fs::path(context.intermediateDir) / SymbolsFolder;
+			const fs::path map = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / RenameFolder / NameMap;
+			fs::remove(kept / NameMap, ec);
+			for (const fs::path& symbols : {fs::path(library).replace_extension(".pdb"), map}) {
+				if (!fs::is_regular_file(symbols, ec)) {
+					continue;
+				}
 				fs::create_directories(kept, ec);
 				ec.clear();
 				fs::copy_file(symbols, kept / symbols.filename(), fs::copy_options::overwrite_existing, ec);

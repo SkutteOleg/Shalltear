@@ -34,6 +34,36 @@
 		<LinkerArg Include="/PDBALTPATH:%25_PDB%25" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
+		<ShalltearRenamerPath Condition="'$(ShalltearRenamerPath)' == ''">$(ShalltearManagedDir)Renamer/Shalltear.Renamer.dll</ShalltearRenamerPath>
+		<ShalltearRenameRoot Condition="'$(ShalltearRenameRoot)' == ''">$(BaseIntermediateOutputPath)rename/</ShalltearRenameRoot>
+	</PropertyGroup>
+
+	<Target Name="ShalltearRenameScripts" BeforeTargets="WriteIlcRspFileForCompilation"
+			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearRenameScripts)' == 'true'">
+		<Error Condition="!Exists('$(ShalltearRenamerPath)')" Text="Shalltear.Renamer.dll was not found at '$(ShalltearRenamerPath)'. Set ShalltearRenamerPath (or ShalltearRenameScripts=false)" />
+		<ItemGroup>
+			<_ShalltearRenameInput Include="@(IlcCompileInput)" />
+		</ItemGroup>
+		<RemoveDir Directories="$(ShalltearRenameRoot)" />
+		<MakeDir Directories="$(ShalltearRenameRoot)" />
+		<WriteLinesToFile File="$(ShalltearRenameRoot)references.txt" Lines="@(IlcReference)" Overwrite="true" />
+		<Exec Command="&quot;$(DOTNET_HOST_PATH)&quot; &quot;$(ShalltearRenamerPath)&quot; --out &quot;$(ShalltearRenameRoot)assemblies&quot; --map &quot;$(ShalltearRenameRoot)GameScripts.map&quot; --report &quot;$(ShalltearRenameRoot)report.txt&quot; --refs-file &quot;$(ShalltearRenameRoot)references.txt&quot; --replaced &quot;$(ShalltearRenameRoot)replaced.txt&quot; --copies &quot;$(ShalltearRenameRoot)copies.txt&quot; @(ShalltearRenameAssembly->'--rename &quot;%(Identity)&quot;', ' ') @(_ShalltearRenameInput->'&quot;%(FullPath)&quot;', ' ')"
+			  StandardOutputImportance="low" />
+		<ReadLinesFromFile File="$(ShalltearRenameRoot)replaced.txt">
+			<Output TaskParameter="Lines" ItemName="_ShalltearRenameReplaced" />
+		</ReadLinesFromFile>
+		<ReadLinesFromFile File="$(ShalltearRenameRoot)copies.txt">
+			<Output TaskParameter="Lines" ItemName="_ShalltearRenameCopies" />
+		</ReadLinesFromFile>
+		<ItemGroup>
+			<IlcCompileInput Remove="@(IlcCompileInput)" />
+			<IlcCompileInput Include="@(_ShalltearRenameInput->'$(ShalltearRenameRoot)assemblies/%(Filename)%(Extension)')" />
+			<IlcReference Remove="@(_ShalltearRenameReplaced)" />
+			<IlcReference Include="@(_ShalltearRenameCopies)" />
+		</ItemGroup>
+	</Target>
+
 	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true'">
 		<Error Condition="!Exists('$(ShalltearLinkerDir)lld-link.exe')" Text="lld-link.exe was not found in '$(ShalltearLinkerDir)'. Set ShalltearLinkerDir (or ShalltearWindowsLinker=VisualStudio)" />
 		<Error Condition="!Exists('$(ShalltearNativeDir)CRTShim.obj')" Text="CRTShim.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />

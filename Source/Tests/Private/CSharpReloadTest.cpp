@@ -7,6 +7,7 @@
 #include "CSharpSettings.h"
 #include "EditorTestHooks.h"
 #include "ScopedSettingsStore.h"
+#include "TestPlatform.h"
 
 #include "Shalltear/Core/Event.h"
 #include "Shalltear/Core/FileSystem.h"
@@ -29,6 +30,7 @@
 #include "Shalltear/Editor/UndoSystem.h"
 
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -56,6 +58,34 @@ namespace {
 
 	constexpr const char* BOOT_REFUSED = "namespace Space_Game;\n\nstatic class Boot {\n\t[System.Runtime.CompilerServices.ModuleInitializer]\n"
 										 "\tinternal static void Start() {\n\t\tthrow new System.InvalidOperationException(\"boot refused\");\n\t}\n}\n";
+
+	constexpr const char* SAVER = "using Shalltear;\n\nnamespace Space_Game;\n\n[KeepName]\npublic enum SaveSlot {\n\tFirst,\n\tSecond,\n}\n\n"
+								  "public sealed class Saver : Behavior {\n\tprotected override void OnEnable() {\n\t\tLog.Info(\"Game\", SaveSlot.Second.ToString());\n"
+								  "\t}\n}\n";
+
+	str ReadAll(const fs::path& file) {
+		std::ifstream stream(file, std::ios::binary);
+		return str(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+	}
+
+	bool HoldsWord(const str& bytes, std::string_view word) {
+		str wide;
+		for (const char c : word) {
+			wide.push_back(c);
+			wide.push_back('\0');
+		}
+		for (const str& needle : {str(word), wide}) {
+			const size_t step = needle.size() == word.size() ? 1 : 2;
+			for (size_t at = bytes.find(needle); at != str::npos; at = bytes.find(needle, at + 1)) {
+				const size_t end = at + needle.size();
+				const auto joined = [&](size_t index) { return std::isalnum(static_cast<unsigned char>(bytes[index])) || bytes[index] == '_'; };
+				if (!(at >= step && joined(at - step)) && !(end < bytes.size() && joined(end))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	constexpr const char* GREETER = "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Greeter : Behavior {\n"
 									"\tprotected override void OnEnable() {\n\t\tLog.Info(\"Game\", \"greeter on \" + Owner.Name);\n\t}\n}\n";
@@ -1041,7 +1071,9 @@ namespace {
 			context.profile = &_profile;
 			context.target = BuildTargetRegistry::Find("Windows");
 			context.projectRoot = _project.generic_string();
-			context.configuration = "Debug";
+			if (context.configuration.empty()) {
+				context.configuration = "Debug";
+			}
 			BuildStepStatus status = BuildStepStatus::Running;
 			const auto deadline = std::chrono::steady_clock::now() + std::chrono::duration<f64>(seconds);
 			while (status == BuildStepStatus::Running && std::chrono::steady_clock::now() < deadline) {
@@ -1420,6 +1452,76 @@ TEST_F(CSharpSessionTest, PlayerBuildRefusesStaleScripts) {
 	EXPECT_TRUE(fixed.GetIssues().empty());
 	EXPECT_EQ(_editor->getReloadCount(), 4u);
 	EXPECT_NE(FindField(Type("Spinner"), "bonus"_hash), nullptr);
+}
+
+TEST_F(CSharpSessionTest, ReleasePlayerCompileRenamesScriptNames) {
+	if (!TestPlatform::BuildsCSharpPlayers()) {
+		GTEST_SKIP() << "C# players build for Windows only";
+	}
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Put("Assets/Scripts/Saver.cs", SAVER);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	BuildContext context;
+	context.configuration = "Release";
+	context.intermediateDir = (_project / "Library" / "Player" / "Windows").generic_string();
+	context.stagingDir = (_project / "Builds" / "Windows").generic_string();
+	ASSERT_EQ(RunStep("csharp-validate", context, 10.0), BuildStepStatus::Succeeded);
+	ASSERT_EQ(RunStep("csharp-compile", context, 300.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+	ASSERT_EQ(RunStep("csharp-stage", context, 10.0), BuildStepStatus::Succeeded);
+	const str library = ReadAll(_project / "Builds" / "Windows" / "GameScripts.dll");
+	ASSERT_FALSE(library.empty());
+	EXPECT_FALSE(HoldsWord(library, "Spinner"));
+	EXPECT_FALSE(HoldsWord(library, "Saver"));
+	EXPECT_TRUE(HoldsWord(library, "SaveSlot"));
+	EXPECT_EQ(_log.Delivered().Count("C# script names renamed: "), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_log.Delivered().Count("C# script name kept: type 'Space_Game.SaveSlot' ([KeepName])"), 1u) << _log.Delivered().Joined();
+	const str map = ReadAll(_project / "Library" / "Player" / "Windows" / "symbols" / "GameScripts.map");
+	EXPECT_NE(map.find("type Space_Game.Scripts Space_Game.Spinner -> "), str::npos) << map;
+
+	BuildContext development;
+	development.configuration = "Debug";
+	development.intermediateDir = context.intermediateDir;
+	development.stagingDir = context.stagingDir;
+	ASSERT_EQ(RunStep("csharp-validate", development, 10.0), BuildStepStatus::Succeeded);
+	ASSERT_EQ(RunStep("csharp-compile", development, 300.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+	ASSERT_EQ(RunStep("csharp-stage", development, 10.0), BuildStepStatus::Succeeded);
+	EXPECT_TRUE(HoldsWord(ReadAll(_project / "Builds" / "Windows" / "GameScripts.dll"), "Spinner"));
+	EXPECT_EQ(_log.Delivered().Count("C# script names renamed: "), 1u) << _log.Delivered().Joined();
+	EXPECT_FALSE(fs::exists(_project / "Library" / "Player" / "Windows" / "symbols" / "GameScripts.map"));
+}
+
+TEST_F(CSharpSessionTest, SettingOffShipsTheNamesAsWritten) {
+	if (!TestPlatform::BuildsCSharpPlayers()) {
+		GTEST_SKIP() << "C# players build for Windows only";
+	}
+	fs::create_directories(_root / "store");
+	std::ofstream(_root / "store" / "ProjectSettings.ini", std::ios::binary) << "[C#]\nrenameScriptNames = false\n";
+	ScopedSettingsStore store{_root / "store"};
+	if (!Prepare()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	Put("Assets/Scripts/Spinner.cs", SPINNER_FIRST);
+	Put("Assets/Scripts/Saver.cs", SAVER);
+	Begin();
+	ASSERT_TRUE(PumpUntilReloads(1, 180.0)) << _log.Delivered().Joined();
+
+	const fs::path player = _project / "Library" / "CSharp" / "Player" / "Windows";
+	for (const char* configuration : {"Release", "Debug"}) {
+		BuildContext context;
+		context.configuration = configuration;
+		ASSERT_EQ(RunStep("csharp-validate", context, 10.0), BuildStepStatus::Succeeded);
+		ASSERT_EQ(RunStep("csharp-compile", context, 300.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
+		const str library = ReadAll(player / "publish" / "GameScripts.dll");
+		EXPECT_TRUE(HoldsWord(library, "Spinner")) << configuration;
+		EXPECT_TRUE(HoldsWord(library, "Saver")) << configuration;
+		EXPECT_FALSE(fs::exists(player / "obj" / "rename")) << configuration;
+	}
+	EXPECT_EQ(_log.Delivered().Count("C# script names renamed: "), 0u) << _log.Delivered().Joined();
 }
 
 TEST_F(CSharpSessionTest, PlayerCompileFailureNamesLinePerBuild) {

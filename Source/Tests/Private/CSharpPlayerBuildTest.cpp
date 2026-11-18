@@ -18,6 +18,7 @@
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
@@ -98,6 +99,20 @@ namespace {
 
 	bool Holds(const str& bytes, std::string_view text) {
 		return bytes.find(text) != str::npos || bytes.find(Wide(text)) != str::npos;
+	}
+
+	bool HoldsWord(const str& bytes, std::string_view word) {
+		for (const str& needle : {str(word), Wide(word)}) {
+			const size_t step = needle.size() == word.size() ? 1 : 2;
+			const auto joined = [&](size_t index) { return std::isalnum(static_cast<unsigned char>(bytes[index])) || bytes[index] == '_'; };
+			for (size_t at = bytes.find(needle); at != str::npos; at = bytes.find(needle, at + 1)) {
+				const size_t end = at + needle.size();
+				if (!(at >= step && joined(at - step)) && !(end < bytes.size() && joined(end)) && bytes.compare(end, step * 3, step == 1 ? ".cs" : Wide(".cs")) != 0) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	str ReadCacheValue(const fs::path& tree, std::string_view key) {
@@ -430,6 +445,34 @@ TEST_F(CSharpPlayerBuildTest, CSharpPlayerCarriesNoSourceOrPath) {
 	EXPECT_GT(files, 3u);
 	EXPECT_TRUE(literal);
 	EXPECT_TRUE(fs::is_regular_file(_suite->project / "Library" / "Player" / "Windows" / "symbols" / "GameScripts.pdb"));
+}
+
+TEST_F(CSharpPlayerBuildTest, CSharpReleasePlayerCarriesNoScriptNames) {
+	if (_suite->config != "Release") {
+		GTEST_SKIP() << "only Release trees build a Release player";
+	}
+	const str library = ReadBytes(Library("Windows"));
+	ASSERT_FALSE(library.empty());
+	for (const char* name : {"Scripted", "Talker", "Tuning", "Gear", "Notice"}) {
+		EXPECT_FALSE(HoldsWord(library, name)) << name;
+	}
+	EXPECT_TRUE(Holds(library, "Talker.cs"));
+	EXPECT_NE(_suite->buildLog.find("C# script names renamed: "), str::npos) << _suite->buildLog;
+	const str map = ReadBytes(_suite->project / "Library" / "Player" / "Windows" / "symbols" / "GameScripts.map");
+	EXPECT_NE(map.find("type ScriptedGame.Scripts Scripted.Talker -> "), str::npos) << map;
+}
+
+TEST_F(CSharpPlayerBuildTest, CSharpDevelopmentPlayerKeepsNames) {
+	if (_suite->config == "Release") {
+		GTEST_SKIP() << "only Debug trees build a Development player";
+	}
+	const str library = ReadBytes(Library("Windows"));
+	for (const char* name : {"Scripted", "Talker", "Tuning", "Gear"}) {
+		EXPECT_TRUE(HoldsWord(library, name)) << name;
+	}
+	EXPECT_EQ(_suite->buildLog.find("C# script names renamed: "), str::npos) << _suite->buildLog;
+	std::error_code ec;
+	EXPECT_FALSE(fs::exists(_suite->project / "Library" / "Player" / "Windows" / "symbols" / "GameScripts.map", ec));
 }
 
 TEST_F(CSharpPlayerBuildTest, CSharpRebuildRepeatsTheLibrary) {

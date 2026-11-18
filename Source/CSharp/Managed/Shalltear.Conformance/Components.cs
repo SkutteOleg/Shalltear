@@ -55,6 +55,7 @@ sealed class UpdateOnly : Behavior {
 	}
 }
 
+[KeepName]
 sealed class Silent : Behavior {}
 
 abstract class EnableCounter : Behavior {
@@ -71,6 +72,7 @@ sealed class LateReporter : EnableCounter {
 	}
 }
 
+[KeepName]
 class Holder<T> : Behavior {
 	public T held = default!;
 	[Reflect]

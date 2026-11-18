@@ -119,6 +119,10 @@ CSHARP_CASES = (
 	('Shalltear.Runtime.xml', build_sdk.SHIP),
 	('Shalltear.Runtime.runtimeconfig.json', build_sdk.SHIP),
 	('Shalltear.Generators.dll', build_sdk.SHIP),
+	('Renamer/Shalltear.Renamer.dll', build_sdk.SHIP),
+	('Renamer/Shalltear.Renamer.runtimeconfig.json', build_sdk.SHIP),
+	('Renamer/Mono.Cecil.dll', build_sdk.SHIP),
+	('Renamer/Mono.Cecil.Rocks.dll', build_sdk.SHIP),
 	('native/CRTShim.obj', build_sdk.SHIP),
 	('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.SHIP),
 	('native/libs/kernel32.lib', build_sdk.SHIP),
@@ -127,6 +131,8 @@ CSHARP_CASES = (
 
 CSHARP_UNGOVERNED = (
 	'Mono.Cecil.dll',
+	'Renamer/Shalltear.Renamer.pdb',
+	'Renamer/Shalltear.Renamer.deps.json',
 	'Microsoft.CodeAnalysis.dll',
 	'Shalltear.Runtime.deps.json',
 	'Shalltear.Runtime.pdb',
@@ -136,7 +142,7 @@ CSHARP_UNGOVERNED = (
 	'aot/Shalltear.ConformanceAOT.dll',
 )
 
-CSHARP_LICENSES = (build_sdk.ENGINE_LICENSE, build_sdk.LLVM_LICENSE, build_sdk.MINGW_RUNTIME_LICENSE)
+CSHARP_LICENSES = (build_sdk.ENGINE_LICENSE, build_sdk.LLVM_LICENSE, build_sdk.MINGW_RUNTIME_LICENSE, build_sdk.MONO_CECIL_LICENSE)
 
 
 def check_csharp_rules(fail):

@@ -23,6 +23,7 @@ DIST_DIR = os.path.join(ROOT_DIR, 'Dist')
 LLVM_LICENSE = "Apache-2.0 WITH LLVM-exception"
 MINGW_HEADERS_LICENSE = "public domain and ZPL-2.1, with LGPL-2.1+ DirectX/DDK headers and GCC's GPLv2+ stdarg.h"
 MINGW_RUNTIME_LICENSE = "public domain and ZPL-2.1, plus MIT for winpthreads and winstorecompat"
+MONO_CECIL_LICENSE = "MIT"
 
 SHIP, DROP = True, False
 
@@ -134,6 +135,10 @@ CSHARP_RULES = (
 		 SHIP, ENGINE_LICENSE, 'C# runtime the editor hosts + script projects reference'),
 	Rule(('Shalltear.Generators.dll',), SHIP, ENGINE_LICENSE,
 		 'source generator a script compile loads'),
+	Rule(('Renamer/Shalltear.Renamer.dll', 'Renamer/Shalltear.Renamer.runtimeconfig.json'), SHIP, ENGINE_LICENSE,
+		 "renamer a Release player's script compile runs"),
+	Rule(('Renamer/Mono.Cecil*.dll',), SHIP, MONO_CECIL_LICENSE,
+		 'assembly reader/writer the renamer loads'),
 	Rule(('native/CRTShim.obj',), SHIP, ENGINE_LICENSE,
 		 "startup shim a game's script library links"),
 	Rule(('native/libs/clang_rt.builtins-x86_64.lib',), SHIP, LLVM_LICENSE,

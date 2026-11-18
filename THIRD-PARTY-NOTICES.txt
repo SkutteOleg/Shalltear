@@ -52,8 +52,9 @@ CONTENTS
   26. winstorecompat
   27. CMake (bundled in Toolchain/CMake)
   28. Ninja (bundled in Toolchain/Ninja)
-  29. Source Code Pro
-  30. Font Awesome Free (icons)
+  29. Mono.Cecil (bundled in CSharp/Renamer)
+  30. Source Code Pro
+  31. Font Awesome Free (icons)
 
 ============================================================================
 1. FreeType -> 2.14.3
@@ -4238,7 +4239,38 @@ Where: the build tool CMake generates for. Shipped as 1 executable
    limitations under the License.
 
 ============================================================================
-29. Source Code Pro -> vendored unmodified (static Regular instance)
+29. Mono.Cecil (bundled in CSharp/Renamer) -> Mono.Cecil 0.11.6
+============================================================================
+
+License: MIT
+
+Where: script assembly rewriting for Release players (renamed script
+       names). Shipped as 4 libraries
+
+Copyright (c) 2008 - 2015 Jb Evain
+Copyright (c) 2008 - 2011 Novell, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+============================================================================
+30. Source Code Pro -> vendored unmodified (static Regular instance)
 ============================================================================
 
 License: SIL Open Font License 1.1
@@ -4343,7 +4375,7 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 
 ============================================================================
-30. Font Awesome Free (icons) -> 7.3.1
+31. Font Awesome Free (icons) -> 7.3.1
 ============================================================================
 
 License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)

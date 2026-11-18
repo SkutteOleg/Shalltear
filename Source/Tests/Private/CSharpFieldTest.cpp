@@ -353,6 +353,57 @@ TEST_F(CSharpGeneratorTest, NullOperatorsOnEngineObjectsWarn) {
 	EXPECT_TRUE(warned(15, "is null", "EngineObject")) << output;
 }
 
+TEST_F(CSharpGeneratorTest, NamesReadAtRunTimeWarn) {
+	const str source = "using System;\nusing System.Globalization;\nusing Shalltear;\nnamespace Scratch;\n"
+					   "public enum Gear { Low, High }\n"
+					   "[KeepName] public enum Slot { First }\n"
+					   "public record Point(int X, int Y);\n"
+					   "public sealed class Named { public override string ToString() => \"named\"; }\n"
+					   "public sealed class Plain { }\n"
+					   "public static class Reader {\n"
+					   "\tpublic static string A(Gear gear) => gear.ToString();\n"
+					   "\tpublic static string B(Gear gear) => $\"{gear}\";\n"
+					   "\tpublic static string C(Gear gear) => \"gear \" + gear;\n"
+					   "\tpublic static bool D(string text) => Enum.TryParse<Gear>(text, out _);\n"
+					   "\tpublic static string E() => typeof(Plain).Name;\n"
+					   "\tpublic static string F(Point point) => point.ToString();\n"
+					   "\tpublic static string G(Plain plain) => plain.GetType().FullName ?? \"\";\n"
+					   "\tpublic static string H(Gear? gear) => $\"{gear}\";\n"
+					   "\tpublic static string I(Gear gear) => string.Create(CultureInfo.InvariantCulture, $\"{gear}\");\n"
+					   "\tpublic static string J(Slot slot, Named named) => slot.ToString() + named + nameof(Gear) + typeof(int).Name + $\"{slot}\" + RotationOrder.XYZ;\n"
+					   "}\n";
+
+	int exitCode = 0;
+	const str output = Build(source, exitCode);
+	EXPECT_EQ(exitCode, 0) << output;
+	const auto warned = [&output](u32 line, std::string_view used, std::string_view type) {
+		const str position = std::format("Scripts.cs({},", line);
+		const str message = std::format("warning SLT2003: '{}' differs in Release players ('{}' renamed). Add [KeepName] to '{}'.", used, type, type);
+		for (size_t at = output.find(position); at != str::npos; at = output.find(position, at + 1)) {
+			const size_t end = output.find('\n', at);
+			if (std::string_view(output).substr(at, end - at).find(message) != std::string_view::npos) {
+				return true;
+			}
+		}
+		return false;
+	};
+	EXPECT_TRUE(warned(11, "gear.ToString()", "Gear")) << output;
+	EXPECT_TRUE(warned(12, "{gear}", "Gear")) << output;
+	EXPECT_TRUE(warned(13, "gear", "Gear")) << output;
+	EXPECT_TRUE(warned(14, "Enum.TryParse<Gear>(text, out _)", "Gear")) << output;
+	EXPECT_TRUE(warned(15, "typeof(Plain).Name", "Plain")) << output;
+	EXPECT_TRUE(warned(16, "point.ToString()", "Point")) << output;
+	EXPECT_TRUE(warned(17, "plain.GetType().FullName", "Plain")) << output;
+	EXPECT_TRUE(warned(18, "{gear}", "Gear")) << output;
+	EXPECT_TRUE(warned(19, "{gear}", "Gear")) << output;
+	EXPECT_EQ(output.find("Scripts.cs(20,"), str::npos) << output;
+	size_t count = 0;
+	for (size_t at = output.find("SLT2003"); at != str::npos; at = output.find("SLT2003", at + 1)) {
+		++count;
+	}
+	EXPECT_EQ(count, 9u) << output;
+}
+
 TEST_F(CSharpGeneratorTest, PublicFieldsOfUnsupportedTypesSkipped) {
 	const str source =
 		"using System;\n"

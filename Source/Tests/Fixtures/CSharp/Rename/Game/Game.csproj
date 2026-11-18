@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<AssemblyName>ZqGame.Scripts</AssemblyName>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NoWarn>$(NoWarn);CS0414</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedDir)Shalltear.Runtime.dll" />
+	</ItemGroup>
+</Project>
