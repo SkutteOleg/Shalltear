@@ -20,6 +20,7 @@
 #include "Shalltear/Core/UI/VectorIcon.h"
 #include "Shalltear/Core/UI/Widgets.h"
 
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/EditorIcons.h"
 #include "Shalltear/Editor/EditorCommands.h"
 #include "Shalltear/Editor/EditorDragData.h"
@@ -128,7 +129,8 @@ namespace Shalltear {
 		events.onPressDrag = [this, contextPtr](Vec2 point) { OnViewportDrag(*contextPtr, point); };
 		events.onPressEnd = [this]() { OnViewportRelease(); };
 		events.onDragOver = [](const UI::DragPayload& payload) {
-			return DroppedPrefab(payload, DropTargetScene()).IsValid() || SceneAssetDrops::Accepts(payload, DropTargetScene());
+			return ComponentDrops::Accepts(payload) || DroppedPrefab(payload, DropTargetScene()).IsValid() ||
+				   SceneAssetDrops::Accepts(payload, DropTargetScene());
 		};
 		events.onDrop = [this, contextPtr](const UI::DragPayload& payload, Vec2 point) {
 			OnViewportDrop(*contextPtr, payload, point);
@@ -1150,6 +1152,10 @@ namespace Shalltear {
 	}
 
 	void SceneViewPanel::OnViewportDrop(UI::Context& context, const UI::DragPayload& payload, Vec2 contextPx) {
+		if (ComponentDrops::Accepts(payload)) {
+			ComponentDrops::Drop(payload, Ops::PickObject(RayAt(context, contextPx)));
+			return;
+		}
 		Handle<Scene> scene = DropTargetScene();
 		Guid prefab = DroppedPrefab(payload, scene);
 		const bool made = !prefab.IsValid() && SceneAssetDrops::Accepts(payload, scene);

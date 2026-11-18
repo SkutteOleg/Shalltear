@@ -11,6 +11,7 @@
 #include "Shalltear/Core/UI/Widgets.h"
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/EditorCommands.h"
 #include "Shalltear/Editor/EditorDragData.h"
 #include "Shalltear/Editor/EditorIcons.h"
@@ -1109,6 +1110,9 @@ namespace Shalltear {
 		};
 		desc.onDragOver = [objectHandle, this](const UI::DragPayload& payload) {
 			SceneObject* host = objectHandle.Get();
+			if (host && ComponentDrops::Accepts(payload)) {
+				return true;
+			}
 			if (host && (PayloadPrefab(payload, host->GetScene()).IsValid() || SceneAssetDrops::Accepts(payload, host->GetScene()))) {
 				return true;
 			}
@@ -1130,6 +1134,10 @@ namespace Shalltear {
 		};
 		desc.onDrop = [this, objectHandle, id](const UI::DragPayload& payload, Vec2) {
 			SceneObject* host = objectHandle.Get();
+			if (host && ComponentDrops::Accepts(payload)) {
+				ComponentDrops::Drop(payload, objectHandle);
+				return;
+			}
 			if (Guid prefab = host ? PayloadPrefab(payload, host->GetScene()) : Guid{}; prefab.IsValid()) {
 				_expanded.insert(id);
 				UndoSystem::Push(MakeUnique<InstantiatePrefabCommand>(prefab, host->GetScene(), objectHandle));

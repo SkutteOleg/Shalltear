@@ -26,6 +26,7 @@
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/CompileStatus.h"
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/ComponentMenu.h"
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorCommands.h"
@@ -2118,6 +2119,41 @@ TEST_F(InspectorTest, ComponentDropMovesState) {
 	EXPECT_EQ(target.Get()->GetComponentCount(), 0u);
 }
 
+TEST_F(InspectorTest, ComponentAssetOnInspectorJoinsShownObject) {
+	static char owner = 0;
+	Handle<SceneObject> target = SceneSystem::CreateObject("Target", _scene);
+	EditorSelection::Select(Handle<Object>(target.Get()));
+	ASSERT_TRUE(ComponentDrops::Register(StringHash("ProbeScript"), [](const Guid&) { return InspTestComponent::GetReflectType(); }, &owner));
+	AssetDragData data;
+	data.guid = Guid{3, 9};
+	data.assetTypeHash = StringHash("ProbeScript").GetValue();
+	UI::DragPayload payload;
+	payload.type = "Asset"_hash;
+	payload.data = Variant(data);
+
+	Handle<EditorPanel> panel = OpenInspector();
+	MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {500, 900};
+	UI::Context context(desc, &fonts);
+	UI::ElementHandle root = context.CreateElement();
+	context.AppendChild(context.GetRoot(), root);
+	panel.Get()->BuildContent(context, root);
+	context.Update();
+
+	ASSERT_TRUE(context.DeliverDrop(payload, CenterOfElement(context, root)));
+	SceneSystem::EndFrame();
+	ASSERT_EQ(target.Get()->GetComponentCount(), 1u);
+	EXPECT_TRUE(target.Get()->GetComponent<InspTestComponent>().IsValid());
+	UndoSystem::Undo();
+	SceneSystem::EndFrame();
+	EXPECT_EQ(target.Get()->GetComponentCount(), 0u);
+
+	EXPECT_EQ(ComponentDrops::UnregisterOwnedBy(&owner), 1u);
+	EXPECT_FALSE(context.DeliverDrop(payload, CenterOfElement(context, root)));
+	EXPECT_EQ(target.Get()->GetComponentCount(), 0u);
+}
+
 TEST_F(InspectorTest, MissingComponentRowIsInert) {
 	std::filesystem::path root = std::filesystem::temp_directory_path() /
 								 ("shalltear_inspmissing_" + std::to_string(reinterpret_cast<uintptr_t>(this)));
@@ -2654,6 +2690,34 @@ TEST_F(PrefabInspectorTest, RenamingTheSelectedAssetRedrawsItsName) {
 
 	EXPECT_TRUE(ContainsText(texts, "uno.txt"));
 	EXPECT_FALSE(ContainsText(texts, "one.txt"));
+}
+
+TEST_F(PrefabInspectorTest, ComponentAssetOverShownAssetRefused) {
+	static char owner = 0;
+	Guid one, two;
+	WriteTwoAssets(one, two);
+	ASSERT_TRUE(ComponentDrops::Register(StringHash("ProbeScript"), [](const Guid&) { return InspTestComponent::GetReflectType(); }, &owner));
+	AssetDragData data;
+	data.guid = Guid{3, 9};
+	data.assetTypeHash = StringHash("ProbeScript").GetValue();
+	UI::DragPayload payload;
+	payload.type = "Asset"_hash;
+	payload.data = Variant(data);
+
+	EditorSelection::SelectAsset(one);
+	Handle<EditorPanel> panel = OpenInspector();
+	ASSERT_TRUE(panel.IsValid());
+	MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {500, 900};
+	UI::Context context(desc, &fonts);
+	UI::ElementHandle root = context.CreateElement();
+	context.AppendChild(context.GetRoot(), root);
+	panel.Get()->BuildContent(context, root);
+	context.Update();
+	EXPECT_TRUE(ComponentDrops::Accepts(payload));
+	EXPECT_FALSE(context.DeliverDrop(payload, CenterOfElement(context, root)));
+	EXPECT_EQ(ComponentDrops::UnregisterOwnedBy(&owner), 1u);
 }
 
 TEST_F(PrefabInspectorTest, LockHoldsAsset) {

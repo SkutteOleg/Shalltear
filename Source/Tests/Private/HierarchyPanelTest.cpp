@@ -12,6 +12,7 @@
 #include <array>
 
 #include "Shalltear/Core/Graphics/Light.h"
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/EditorEvents.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/EditorSelection.h"
@@ -2027,6 +2028,32 @@ TEST_F(HierarchyAssetDropTest, NewSceneHeaderShowsFileName) {
 	UI::ElementHandle label = NextSibling(rig.context, RowGlyph(rig.context, sceneRow));
 	ASSERT_TRUE(rig.context.IsAlive(label));
 	EXPECT_EQ(rig.context.GetTextString(label), "New Scene");
+}
+
+TEST_F(HierarchyAssetDropTest, ComponentAssetDroppedOnRowJoinsObject) {
+	static char owner = 0;
+	Handle<SceneObject> target = SceneSystem::CreateObject("Target", _scene);
+	ASSERT_TRUE(ComponentDrops::Register(StringHash("ProbeScript"), [](const Guid&) { return Light::GetReflectType(); }, &owner));
+	AssetDragData data;
+	data.guid = Guid{3, 9};
+	data.assetTypeHash = StringHash("ProbeScript").GetValue();
+	const u32 rootsBefore = _scene->GetRootCount();
+
+	PanelRig rig(PanelDesc());
+	UI::ElementHandle row = RowNamed(rig.context, rig.root, "Target");
+	ASSERT_TRUE(row.IsValid());
+	ASSERT_TRUE(rig.context.DeliverDrop(AssetPayload(data), CenterOf(rig.context, row)));
+	ASSERT_EQ(target->GetComponentCount(), 1u);
+	EXPECT_EQ(target->GetComponentAt(0)->GetType(), Light::GetReflectType());
+	EXPECT_EQ(target->GetChildCount(), 0u);
+	EXPECT_EQ(_scene->GetRootCount(), rootsBefore);
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	SceneSystem::EndFrame();
+	EXPECT_EQ(target->GetComponentCount(), 0u);
+	EXPECT_EQ(ComponentDrops::UnregisterOwnedBy(&owner), 1u);
+	EXPECT_FALSE(rig.context.DeliverDrop(AssetPayload(data), CenterOf(rig.context, row)));
+	EXPECT_EQ(target->GetComponentCount(), 0u);
 }
 
 TEST_F(HierarchyAssetDropTest, SceneDropLoadsAdditively) {

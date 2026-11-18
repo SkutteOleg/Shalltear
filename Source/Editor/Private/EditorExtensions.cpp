@@ -11,6 +11,7 @@
 #include "Shalltear/Editor/BuildTarget.h"
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileStatus.h"
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/ComponentMenu.h"
 #include "Shalltear/Editor/EditorDocuments.h"
 #include "Shalltear/Editor/EditorGizmos.h"
@@ -61,6 +62,7 @@ namespace Shalltear::EditorExtensions {
 		removed += RuntimeViewToolbar::UnregisterOwnedBy(moduleBase);
 		removed += SceneViewEffects::UnregisterOwnedBy(moduleBase);
 		removed += SceneAssetDrops::UnregisterOwnedBy(moduleBase);
+		removed += ComponentDrops::UnregisterOwnedBy(moduleBase);
 		removed += EditorSceneOps::UnregisterCreateEntriesOwnedBy(moduleBase);
 		removed += SceneViewOverlays::UnregisterOwnedBy(moduleBase);
 		removed += ProfilerModules::UnregisterOwnedBy(moduleBase);

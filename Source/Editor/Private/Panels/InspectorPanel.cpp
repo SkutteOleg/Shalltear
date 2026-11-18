@@ -20,6 +20,7 @@
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/CompileStatus.h"
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/ComponentMenu.h"
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorCommands.h"
@@ -1081,10 +1082,17 @@ namespace Shalltear {
 
 		Handle<SceneObject> dropTarget = ResolveDropTarget();
 		context.Events(_viewport).onDragOver = [dropTarget](const UI::DragPayload& payload) {
+			if (dropTarget.IsValid() && ComponentDrops::Accepts(payload)) {
+				return true;
+			}
 			return EditorSceneOps::ClassifyComponentDrop(PayloadComponent(payload), dropTarget) ==
 				   EditorSceneOps::ComponentDropKind::Move;
 		};
 		context.Events(_viewport).onDrop = [dropTarget](const UI::DragPayload& payload, Vec2) {
+			if (ComponentDrops::Accepts(payload)) {
+				ComponentDrops::Drop(payload, dropTarget);
+				return;
+			}
 			Handle<Component> dragged = PayloadComponent(payload);
 			if (EditorSceneOps::ClassifyComponentDrop(dragged, dropTarget) ==
 				EditorSceneOps::ComponentDropKind::Move) {

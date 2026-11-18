@@ -11,6 +11,7 @@
 #include "Shalltear/Editor/AssetOpeners.h"
 #include "Shalltear/Editor/MaterialInspectorOps.h"
 #include "Shalltear/Editor/CompileStatus.h"
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Core/Localization.h"
 #include "Shalltear/Editor/EditorAssetWatch.h"
@@ -415,6 +416,7 @@ namespace Shalltear {
 		RuntimeViewToolbar::Terminate();
 		SceneViewEffects::Terminate();
 		SceneAssetDrops::Terminate();
+		ComponentDrops::Terminate();
 		SceneViewOverlays::Terminate();
 		ProfilerModules::Terminate();
 		EditorConsole::Terminate();

@@ -11,6 +11,7 @@
 #include "Shalltear/Core/UI/UIDocument.h"
 #include "Shalltear/Core/UI/UIPanelRenderer.h"
 
+#include "Shalltear/Editor/ComponentDrops.h"
 #include "Shalltear/Editor/EditorDragData.h"
 #include "Shalltear/Editor/EditorGizmos.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
@@ -252,6 +253,39 @@ TEST_F(SceneViewDropTest, DropLandsOnObject) {
 	EXPECT_NEAR(world.y, 1.0f, 1e-3f);
 
 	SceneSystem::Destroy(floorBox);
+	SceneSystem::EndFrame();
+	Delete(mesh);
+}
+
+TEST_F(SceneViewDropTest, ComponentAssetJoinsObjectUnderCursor) {
+	static char owner = 0;
+	MeshAsset* mesh = New<MeshAsset>(MemTag::Asset);
+	BuildPrimitiveMesh(PrimitiveShape::Cube, *mesh);
+	Handle<SceneObject> box = SceneSystem::CreateObject("Box", _scene);
+	box.Get()->SetLocalPosition(Vec3(0.0f, 0.5f, 0.0f));
+	box.Get()->AddComponent<MeshRenderer>().Get()->SetMesh(Handle<MeshAsset>(mesh));
+	ASSERT_TRUE(ComponentDrops::Register(StringHash("ProbeScript"), [](const Guid&) { return Light::GetReflectType(); }, &owner));
+	AssetDragData data;
+	data.guid = Guid{3, 9};
+	data.assetTypeHash = StringHash("ProbeScript").GetValue();
+
+	SceneViewRig rig(Vec3(0.0f, 5.0f, 0.0f));
+	const UI::Rect& area = rig.context.GetLayout(rig.DropTarget()).borderBox;
+	ASSERT_TRUE(rig.context.DeliverDrop(AssetPayload(data), {area.x + 4.0f, area.y + area.h - 4.0f}));
+	EXPECT_EQ(box.Get()->GetComponentCount(), 1u);
+	EXPECT_EQ(RootCount(_scene), 1u);
+
+	ASSERT_TRUE(rig.context.DeliverDrop(AssetPayload(data), rig.CenterOfTarget()));
+	ASSERT_EQ(box.Get()->GetComponentCount(), 2u);
+	EXPECT_TRUE(box.Get()->GetComponent<Light>().IsValid());
+	EXPECT_EQ(RootCount(_scene), 1u);
+	ASSERT_TRUE(UndoSystem::Undo());
+	SceneSystem::EndFrame();
+	EXPECT_EQ(box.Get()->GetComponentCount(), 1u);
+
+	EXPECT_EQ(ComponentDrops::UnregisterOwnedBy(&owner), 1u);
+	EXPECT_FALSE(rig.context.DeliverDrop(AssetPayload(data), rig.CenterOfTarget()));
+	SceneSystem::Destroy(box);
 	SceneSystem::EndFrame();
 	Delete(mesh);
 }
