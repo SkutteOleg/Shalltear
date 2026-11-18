@@ -113,10 +113,11 @@ namespace Shalltear {
 		if (!type) {
 			return nullptr;
 		}
+		const StringHash hash(name);
 		for (u32 i = 0; i < type->enumConstantCount; ++i) {
-			const char* candidate = type->enumConstants[i].displayName;
-			if (candidate && name == candidate) {
-				return &type->enumConstants[i];
+			const EnumConstantInfo& constant = type->enumConstants[i];
+			if (constant.displayName ? name == constant.displayName : constant.name == hash) {
+				return &constant;
 			}
 		}
 		return nullptr;

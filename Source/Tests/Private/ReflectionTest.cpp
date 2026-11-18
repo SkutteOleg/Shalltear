@@ -925,6 +925,23 @@ namespace {
 
 } // anonymous namespace
 
+TEST(ReflectionTest, EnumConstantWithoutDisplayNameMatchesHash) {
+	const EnumConstantInfo constants[] = {
+		{StringHash("Slow"), "Slow", 3},
+		{StringHash("Fast"), nullptr, 7},
+	};
+	TypeInfo type{};
+	type.size = 4;
+	type.enumConstants = constants;
+	type.enumConstantCount = 2;
+
+	EXPECT_EQ(FindEnumConstantByName(&type, "Slow"), &constants[0]);
+	EXPECT_EQ(FindEnumConstantByName(&type, "Fast"), &constants[1]);
+	EXPECT_EQ(FindEnumConstantByName(&type, "Sideways"), nullptr);
+	EXPECT_EQ(FindEnumConstantByName(&type, ""), nullptr);
+	EXPECT_EQ(FindEnumConstantByName(nullptr, "Slow"), nullptr);
+}
+
 TEST(ReflectionTest, VisitorMayAskUnregisteredType) {
 	TypeRegistry::RegisterPendingTypes();
 	ASSERT_EQ(TypeRegistry::FindType(StringHash("LateRegisteredSpecimen")), nullptr);
