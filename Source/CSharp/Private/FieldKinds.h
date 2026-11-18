@@ -14,6 +14,9 @@ namespace Shalltear::CSharpImpl {
 	namespace FieldKinds {
 
 		const FieldKindInfo* Find(i32 kind);
+		const FieldKindInfo& GetText();
+
+		const TypeInfo* FindEngineHandle(u64 pointeeHash);
 
 	} // namespace FieldKinds
 

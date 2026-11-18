@@ -13,6 +13,12 @@ namespace Shalltear::CSharpImpl::Generated {
 			return static_cast<uint8_t>((::Shalltear::CSharpImpl::ObjectBindings::IsAlive(id)) ? 1 : 0);
 		}
 
+		int32_t ObjectIsA(uint64_t id, uint64_t typeHash, uint8_t* outResult) noexcept {
+			return ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint8_t>((::Shalltear::CSharpImpl::ObjectBindings::IsA(id, typeHash)) ? 1 : 0);
+			});
+		}
+
 		int32_t ObjectAreAlive(const uint64_t* idsData, int32_t idsCount, uint32_t* aliveData, int32_t aliveCount) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				const std::span<const uint64_t> ids(idsData, static_cast<size_t>(idsCount));
@@ -68,6 +74,7 @@ namespace Shalltear::CSharpImpl::Generated {
 
 	void FillObjectBindings(SltBindings& table) {
 		table.objectIsAlive = &ObjectIsAlive;
+		table.objectIsA = &ObjectIsA;
 		table.objectAreAlive = &ObjectAreAlive;
 		table.objectFindScript = &ObjectFindScript;
 		table.objectFindScripts = &ObjectFindScripts;

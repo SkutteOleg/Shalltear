@@ -13,6 +13,7 @@ public abstract class Behavior : Component {
 	const int HOOK_LATE_UPDATE = 7;
 
 	internal Interop.ScriptType? _scriptType;
+	internal string?[]? _texts;
 
 	/// <summary>Runs in edit mode too (keep it free of game logic).</summary>
 	protected Behavior() {}

@@ -83,7 +83,7 @@ class BindingsTest(unittest.TestCase):
 		broken["params"][2]["type"] = "Vec5"
 		message = self.refusal([GETTER, broken])
 		self.assertTrue(message.startswith("Game.json: Describe: unknown type 'Vec5'. Use bool, i32,"), message)
-		self.assertTrue(message.endswith(", SceneObject, Component, string, span<T>"), message)
+		self.assertTrue(message.endswith(", SceneObject, Component, TextAsset, string, span<T>"), message)
 
 	def test_unknown_return_is_refused(self):
 		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, Vec2, Vec3, Vec4, Quat, Color, SceneObject, string"
@@ -235,7 +235,7 @@ class BindingsTest(unittest.TestCase):
 		self.assertIn("\tpublic SceneObject? Attach(SceneObject target, int slot, SceneObject? parent, string member) {\n", managed)
 		self.assertIn("\t\t\tBridge.ThrowOffMainThread(member);\n", managed)
 		self.assertIn("\t\t\tthrow Bridge.Failure(status, member);\n", managed)
-		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component", self.refusal([LABEL], instance="Widget"))
+		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component, TextAsset", self.refusal([LABEL], instance="Widget"))
 		self.assertEqual("Game.json: GetLabel: 'relay' needs a method",
 						 self.refusal([dict(LABEL, csharp={"member": "Label", "kind": "getter", "relay": True})], instance="SceneObject"))
 

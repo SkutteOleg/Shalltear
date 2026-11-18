@@ -29,12 +29,28 @@ namespace {
 
 	SLT_REGISTER_TYPE(CSharpTwinRecorder)
 
+	class CSharpFilledTwin : public Behavior {
+	public:
+		SLT_REFLECT_COMPONENT(CSharpFilledTwin, Behavior)
+		SLT_END_REFLECT()
+
+		CSharpFilledTwin() { std::fill(std::begin(fill), std::end(fill), 0x0101010101010101ull); }
+
+		u64 fill[32];
+	};
+
+	SLT_REGISTER_TYPE(CSharpFilledTwin)
+
 } // anonymous namespace
 
 namespace Shalltear::CSharpScenarios {
 
 	const TypeInfo* GetTwinType() {
 		return CSharpTwinRecorder::GetReflectType();
+	}
+
+	const TypeInfo* GetFilledTwinType() {
+		return CSharpFilledTwin::GetReflectType();
 	}
 
 	std::vector<str> TakeTwinRecords() {

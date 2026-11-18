@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 5
+#define SLT_BRIDGE_ABI_VERSION 6
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -27,6 +27,7 @@ extern "C" {
 #define SLT_HOOK_LATE_UPDATE 7
 
 #define SLT_TYPE_ABSTRACT 1u
+#define SLT_TYPE_NORMALIZE 2u
 
 // must match ComponentGenerator.cs
 typedef enum SltFieldKind {
@@ -46,6 +47,10 @@ typedef enum SltFieldKind {
 	SLT_KIND_VEC4,
 	SLT_KIND_QUAT,
 	SLT_KIND_COLOR,
+	SLT_KIND_STRING,
+	SLT_KIND_ENUM,
+	SLT_KIND_OBJECT,
+	SLT_KIND_VALUE,
 	SLT_KIND_COUNT
 } SltFieldKind;
 
@@ -53,6 +58,7 @@ typedef enum SltFieldKind {
 #define SLT_FIELD_READ_ONLY 2u
 #define SLT_FIELD_TRANSIENT 4u
 #define SLT_FIELD_RANGED 8u
+#define SLT_FIELD_LIST 16u
 
 // 8 byte slots per component type, must match ComponentGenerator.cs
 #define SLT_FIELD_SLOT_LIMIT 960
@@ -72,9 +78,32 @@ typedef struct SltFieldDesc {
 	float rangeMax;
 	SltString tooltip;
 	SltString header;
-	// written by engine, bytes from instance start
+	uint64_t typeHash;
+	// written by engine, bytes from instance (or value) start
 	int32_t offset;
 } SltFieldDesc;
+
+typedef struct SltEnumConstant {
+	SltString name;
+	int64_t value;
+} SltEnumConstant;
+
+typedef struct SltEnumDesc {
+	SltString name;
+	uint64_t nameHash;
+	int32_t size;
+	const SltEnumConstant* constants;
+	int32_t constantCount;
+} SltEnumDesc;
+
+typedef struct SltValueDesc {
+	SltString name;
+	uint64_t nameHash;
+	SltFieldDesc* fields;
+	int32_t fieldCount;
+	// written by engine
+	int32_t size;
+} SltValueDesc;
 
 typedef struct SltTypeDesc {
 	SltString name;
@@ -92,11 +121,21 @@ typedef struct SltTypeDesc {
 typedef struct SltEngineAPI {
 	uint32_t abiVersion;
 	uint64_t layoutHash;
+	int32_t textSize;
 	void (*reportException)(SltString type, SltString message, SltString stackTrace);
 	void (*log)(int32_t level, SltString message);
 	// valid until next engine call on this thread
 	void (*getLastError)(SltString* outText);
 	int32_t (*registerManagedType)(const SltTypeDesc* type);
+	int32_t (*registerManagedEnum)(const SltEnumDesc* type);
+	int32_t (*registerManagedValue)(SltValueDesc* type);
+	void (*stringAssign)(void* field, SltString text);
+	// valid until field changes
+	void (*stringRead)(const void* field, SltString* outText);
+	// valid until next listResize of this list
+	void* (*listResize)(void* field, int32_t count);
+	void* (*listData)(const void* field, int32_t* outCount);
+	intptr_t (*scriptOf)(uint64_t id);
 	int32_t (*throwForTest)(void);
 	SltBindings bindings;
 } SltEngineAPI;

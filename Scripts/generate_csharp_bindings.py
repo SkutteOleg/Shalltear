@@ -34,6 +34,7 @@ VALUE_HEADERS = ("Shalltear/Core/Math/Color.h", "Shalltear/Core/Math/Quat.h", "S
 OBJECTS = {
 	"SceneObject": "::Shalltear::SceneObject",
 	"Component": "::Shalltear::Component",
+	"TextAsset": "::Shalltear::TextAsset",
 }
 WRAPPERS = {"SceneObject": "ObjectCache.SceneObject"}
 # bump when a type's C signature changes

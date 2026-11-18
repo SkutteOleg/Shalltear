@@ -21,7 +21,32 @@ internal unsafe struct SltFieldDesc {
 	public float rangeMax;
 	public SltString tooltip;
 	public SltString header;
+	public ulong typeHash;
 	public int offset;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal unsafe struct SltEnumConstant {
+	public SltString name;
+	public long value;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal unsafe struct SltEnumDesc {
+	public SltString name;
+	public ulong nameHash;
+	public int size;
+	public SltEnumConstant* constants;
+	public int constantCount;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal unsafe struct SltValueDesc {
+	public SltString name;
+	public ulong nameHash;
+	public SltFieldDesc* fields;
+	public int fieldCount;
+	public int size;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -41,10 +66,18 @@ internal unsafe struct SltTypeDesc {
 internal unsafe struct SltEngineAPI {
 	public uint abiVersion;
 	public ulong layoutHash;
+	public int textSize;
 	public delegate* unmanaged<SltString, SltString, SltString, void> reportException;
 	public delegate* unmanaged<int, SltString, void> log;
 	public delegate* unmanaged<SltString*, void> getLastError;
 	public delegate* unmanaged<SltTypeDesc*, int> registerManagedType;
+	public delegate* unmanaged<SltEnumDesc*, int> registerManagedEnum;
+	public delegate* unmanaged<SltValueDesc*, int> registerManagedValue;
+	public delegate* unmanaged<void*, SltString, void> stringAssign;
+	public delegate* unmanaged<void*, SltString*, void> stringRead;
+	public delegate* unmanaged<void*, int, void*> listResize;
+	public delegate* unmanaged<void*, int*, void*> listData;
+	public delegate* unmanaged<ulong, nint> scriptOf;
 	public delegate* unmanaged<int> throwForTest;
 	public SltBindings bindings;
 }

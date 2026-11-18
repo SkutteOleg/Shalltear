@@ -14,6 +14,17 @@
 			"csharp": { "member": "IsAlive", "kind": "method" }
 		},
 		{
+			"id": "IsA",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::IsA(id, typeHash)",
+			"returns": "bool",
+			"params": [
+				{ "name": "id", "type": "u64" },
+				{ "name": "typeHash", "type": "u64" }
+			],
+			"thread": "any",
+			"csharp": { "member": "IsA", "kind": "method" }
+		},
+		{
 			"id": "AreAlive",
 			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::AreAlive(ids, alive)",
 			"returns": "void",

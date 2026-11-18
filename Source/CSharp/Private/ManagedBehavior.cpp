@@ -7,16 +7,21 @@ namespace Shalltear::CSharpImpl {
 	ManagedBehavior::ManagedBehavior(ManagedType& type) : _type(type) {
 		ManagedTypes::Link(*this);
 		++_type.liveCount;
+		ShadowStorage::Construct(this, _type.inits);
 		if (ScriptRuntime::IsAttached()) {
 			_instance = ScriptRuntime::GetManaged().createInstance(type.managedTypeId, GetInstanceId());
 		}
 		if (_instance && _type.hasFields) {
 			Push();
+			if (_type.normalizes) {
+				ScriptRuntime::GetManaged().pullFields(_instance, this, GetInstanceId());
+			}
 		}
 	}
 
 	ManagedBehavior::~ManagedBehavior() {
 		ReleaseInstance();
+		ShadowStorage::Destroy(this, _type.inits);
 		--_type.liveCount;
 		ManagedTypes::Unlink(*this);
 	}

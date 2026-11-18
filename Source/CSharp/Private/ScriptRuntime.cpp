@@ -1,8 +1,11 @@
 #include "ScriptRuntime.h"
 
+#include "ManagedBehavior.h"
 #include "ManagedTypes.h"
+#include "ShadowStorage.h"
 
 #include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Object.h"
 
 #include <algorithm>
 #include <format>
@@ -44,6 +47,47 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 			return guarded == SLT_OK ? result : guarded;
 		}
 
+		int32_t RegisterManagedEnum(const SltEnumDesc* type) noexcept {
+			int32_t result = SLT_ERR_REFUSED;
+			const int32_t guarded = Guard([&] { result = ManagedTypes::RegisterEnum(*type); });
+			return guarded == SLT_OK ? result : guarded;
+		}
+
+		int32_t RegisterManagedValue(SltValueDesc* type) noexcept {
+			int32_t result = SLT_ERR_REFUSED;
+			const int32_t guarded = Guard([&] { result = ManagedTypes::RegisterValue(*type); });
+			return guarded == SLT_OK ? result : guarded;
+		}
+
+		void StringAssign(void* field, SltString text) noexcept {
+#ifdef SLT_CSHARP_TEST_HOOKS
+			++ManagedTypes::GetCounters().textAssigns;
+#endif
+			Guard([&] { static_cast<str*>(field)->assign(View(text)); });
+		}
+
+		void StringRead(const void* field, SltString* outText) noexcept {
+			const str& text = *static_cast<const str*>(field);
+			*outText = SltString{text.data(), static_cast<int32_t>(text.size())};
+		}
+
+		void* ListResize(void* field, int32_t count) noexcept {
+			void* data = nullptr;
+			Guard([&] { data = ShadowStorage::Resize(*static_cast<ShadowList*>(field), static_cast<size_t>(std::max(count, 0))); });
+			return data;
+		}
+
+		void* ListData(const void* field, int32_t* outCount) noexcept {
+			const ShadowList& list = *static_cast<const ShadowList*>(field);
+			*outCount = static_cast<int32_t>(list.count);
+			return list.data;
+		}
+
+		intptr_t ScriptOf(uint64_t id) noexcept {
+			Object* object = ObjectRegistry::Resolve(id);
+			return object && object->GetType()->ownerModule == ManagedTypes::GetOwnerToken() ? static_cast<ManagedBehavior*>(object)->GetInstance() : 0;
+		}
+
 		void GetLastError(SltString* outText) noexcept {
 			*outText = SltString{_lastError.data(), static_cast<int32_t>(_lastError.size())};
 		}
@@ -79,7 +123,15 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		engine.reportException = &ReportException;
 		engine.log = &Log;
 		engine.getLastError = &GetLastError;
+		engine.textSize = static_cast<int32_t>(sizeof(str));
 		engine.registerManagedType = &RegisterManagedType;
+		engine.registerManagedEnum = &RegisterManagedEnum;
+		engine.registerManagedValue = &RegisterManagedValue;
+		engine.stringAssign = &StringAssign;
+		engine.stringRead = &StringRead;
+		engine.listResize = &ListResize;
+		engine.listData = &ListData;
+		engine.scriptOf = &ScriptOf;
 #ifdef SLT_CSHARP_TEST_HOOKS
 		engine.throwForTest = &ThrowForTest;
 #endif

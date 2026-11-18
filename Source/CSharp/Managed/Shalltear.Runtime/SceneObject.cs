@@ -9,7 +9,9 @@ using Shalltear.Interop;
 namespace Shalltear;
 
 /// <summary>Object in a scene.</summary>
+[EngineType(ENGINE_TYPE)]
 public sealed partial class SceneObject : EngineObject {
+	internal const string ENGINE_TYPE = "SceneObject";
 	const int STACK_HANDLES = 32;
 	const int EVERY_SCRIPT = 0;
 

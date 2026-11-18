@@ -5,7 +5,7 @@ namespace Shalltear.Interop;
 
 /// <summary>Called by generated code.</summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public static unsafe class ShadowFields {
+public static unsafe partial class ShadowFields {
 #pragma warning disable CS1591
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void Write(nint field, bool value) => *(byte*)field = value ? (byte)1 : (byte)0;

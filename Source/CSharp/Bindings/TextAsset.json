@@ -1,0 +1,16 @@
+{
+	"area": "TextAsset",
+	"include": "Shalltear/Core/Asset/TextAsset.h",
+	"class": "Shalltear.TextAsset",
+	"instance": "TextAsset",
+	"functions": [
+		{
+			"id": "GetText",
+			"cpp": "std::string_view(self->content)",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" },
+			"doc": "File's text."
+		}
+	]
+}

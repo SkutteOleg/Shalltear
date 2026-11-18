@@ -170,6 +170,12 @@ namespace Shalltear {
 		if (!field->addrFn || !field->fieldType)
 			return false;
 		const void* at = field->addrFn(const_cast<void*>(instance));
+		if (at && (field->flags & FieldFlagEnum) && field->size <= sizeof(u64)) {
+			u64 bits = 0;
+			std::memcpy(&bits, at, field->size);
+			*out = static_cast<i64>(bits);
+			return true;
+		}
 		return at && Variant::CopyFromRaw(*out, field->fieldType->name, at);
 	}
 
@@ -180,9 +186,16 @@ namespace Shalltear {
 			field->setFn(instance, in);
 			return true;
 		}
-		if (!field->addrFn || !field->fieldType || in->GetTypeId() != field->fieldType->name)
+		if (!field->addrFn || !field->fieldType)
 			return false;
 		void* at = field->addrFn(instance);
+		if (at && (field->flags & FieldFlagEnum) && field->size <= sizeof(u64) && in->Is<i64>()) {
+			const u64 bits = EnumValueToBits(field->fieldType, in->As<i64>());
+			std::memcpy(at, &bits, field->size);
+			return true;
+		}
+		if (in->GetTypeId() != field->fieldType->name)
+			return false;
 		const VariantVTable* vtable = VariantDispatch::Lookup(field->fieldType->name);
 		if (!at || !vtable)
 			return false;

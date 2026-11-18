@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 5;
+	internal const uint ABI_VERSION = 6;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -75,6 +75,49 @@ internal static unsafe class Bridge {
 
 	internal static bool RegisterManagedType(SltTypeDesc* type) {
 		return _engine.registerManagedType(type) == OK;
+	}
+
+	internal static bool RegisterManagedEnum(SltEnumDesc* type) {
+		return _engine.registerManagedEnum(type) == OK;
+	}
+
+	internal static bool RegisterManagedValue(SltValueDesc* type) {
+		return _engine.registerManagedValue(type) == OK;
+	}
+
+	internal static int TextSize => _engine.textSize;
+
+	internal static void StringAssign(nint field, SltString text) {
+		_engine.stringAssign((void*)field, text);
+	}
+
+	internal static SltString StringRead(nint field) {
+		SltString text;
+		_engine.stringRead((void*)field, &text);
+		return text;
+	}
+
+	internal static nint ListResize(nint field, int count) {
+		return (nint)_engine.listResize((void*)field, count);
+	}
+
+	internal static nint ListData(nint field, out int count) {
+		int found;
+		nint data = (nint)_engine.listData((void*)field, &found);
+		count = found;
+		return data;
+	}
+
+	internal static nint ScriptOf(ulong id) {
+		return _engine.scriptOf(id);
+	}
+
+	internal static ulong HashOf(string name) {
+		ulong hash = 0xcbf29ce484222325UL;
+		foreach (byte value in Encoding.UTF8.GetBytes(name)) {
+			hash = (hash ^ value) * 0x00000100000001b3UL;
+		}
+		return hash;
 	}
 
 	internal static bool OffMainThread {

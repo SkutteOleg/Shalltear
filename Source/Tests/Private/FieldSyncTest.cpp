@@ -28,6 +28,20 @@
 
 using namespace Shalltear;
 
+namespace FieldSyncFixture {
+
+	enum class Mode : u8 {
+		Idle = 0,
+		Busy = 200,
+	};
+
+} // namespace FieldSyncFixture
+
+SLT_REFLECT_ENUM(::FieldSyncFixture::Mode)
+SLT_ENUM_VALUE(Idle)
+SLT_ENUM_VALUE(Busy)
+SLT_END_ENUM()
+
 namespace {
 
 	char _syncToken = 0;
@@ -395,6 +409,42 @@ TEST_F(FieldSyncTest, HandleFieldIsPulledAfterFixups) {
 	SceneSystem::Terminate();
 	SceneSystem::Initialize();
 	JobSystem::Terminate();
+}
+
+TEST_F(FieldSyncTest, EnumFieldWithoutAccessorsBoxesAsInteger) {
+	using FieldSyncFixture::Mode;
+	struct Holder {
+		Mode mode = Mode::Busy;
+		u8 neighbor = 0x5A;
+	};
+	static char token = 0;
+	ReflectBuilder builder(StringHash("SyncEnumHolder"), sizeof(Holder), alignof(Holder));
+	builder.AddField(
+		StringHash("mode"), "mode", GetStaticType<Mode>(), sizeof(Mode), alignof(Mode), nullptr, nullptr,
+		+[](void* instance) -> void* { return &static_cast<Holder*>(instance)->mode; }, FieldFlagDefault, {});
+	const TypeInfo* type = builder.FinalizeOwned(&token);
+	ASSERT_NE(type, nullptr);
+
+	Holder holder;
+	Variant boxed;
+	ASSERT_TRUE(GetField(&holder, type, "mode"_hash, &boxed));
+	ASSERT_TRUE(boxed.Is<i64>());
+	EXPECT_EQ(boxed.As<i64>(), 200);
+
+	const Variant idle(static_cast<i64>(0));
+	ASSERT_TRUE(SetField(&holder, type, "mode"_hash, &idle));
+	EXPECT_EQ(holder.mode, Mode::Idle);
+	EXPECT_EQ(holder.neighbor, 0x5A);
+
+	const Variant wide(static_cast<i64>(0x1C8));
+	ASSERT_TRUE(SetField(&holder, type, "mode"_hash, &wide));
+	EXPECT_EQ(holder.mode, Mode::Busy);
+	EXPECT_EQ(holder.neighbor, 0x5A);
+
+	const Variant wrong(1.5f);
+	EXPECT_FALSE(SetField(&holder, type, "mode"_hash, &wrong));
+	EXPECT_EQ(holder.mode, Mode::Busy);
+	TypeRegistry::UnregisterOwnedBy(&token);
 }
 
 #ifndef SHALLTEAR_SHARED

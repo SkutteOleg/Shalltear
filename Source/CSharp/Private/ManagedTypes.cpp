@@ -8,9 +8,13 @@
 #include "Shalltear/Core/Reflection/Primitives.h"
 #include "Shalltear/Core/Reflection/Reflect.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
+#include "Shalltear/Core/Reflection/VariantDispatch.h"
 
+#include <algorithm>
 #include <array>
 #include <cstring>
+#include <initializer_list>
+#include <map>
 #include <new>
 #include <span>
 #include <unordered_map>
@@ -42,10 +46,61 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		// no offset passed to addrFn -> 1 function per slot
 		constexpr auto SlotThunks = MakeThunks(std::make_index_sequence<THUNK_COUNT>{});
 
+		constexpr VariantVTable HandleVTable = {
+			[](void* dst, const void* src) { std::memcpy(dst, src, sizeof(u64)); },
+			[](void* dst, void* src) { std::memcpy(dst, src, sizeof(u64)); },
+			[](void*) {},
+			sizeof(u64),
+			alignof(u64)};
+
+		struct ManagedEnum {
+			TypeInfo info{};
+			str displayName;
+			std::deque<str> names;
+			std::vector<EnumConstantInfo> constants;
+		};
+
+		struct ManagedValue {
+			const TypeInfo* info = nullptr;
+			str name;
+			std::deque<str> fieldNames;
+			std::vector<ShadowInit> inits;
+			u32 size = 0;
+			u32 alignment = 0;
+		};
+
+		struct HandleType {
+			TypeInfo info{};
+			bool registered = false;
+		};
+
+		struct ListType {
+			ContainerInfo container{};
+			ElementOps ops;
+		};
+
+		struct Element {
+			const TypeInfo* type = nullptr;
+			u32 size = 0;
+			u32 alignment = 0;
+			u32 flags = 0;
+			bool text = false;
+			const std::vector<ShadowInit>* inits = nullptr;
+		};
+
+		struct Laid {
+			Element element;
+			const ContainerInfo* container = nullptr;
+		};
+
 		std::vector<ManagedType*> _types;
 		std::vector<ManagedType*> _byIndex;
 		std::vector<ManagedType*> _retired;
 		std::unordered_map<const TypeInfo*, ManagedType*> _byInfo;
+		std::unordered_map<u64, ManagedEnum*> _enums;
+		std::unordered_map<u64, ManagedValue*> _values;
+		std::unordered_map<u64, HandleType*> _handles;
+		std::map<std::pair<i32, u64>, ListType*> _lists;
 		ManagedBehavior* _live = nullptr;
 		TypeObserver _observer;
 		Counters _counters;
@@ -53,6 +108,20 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 		std::string_view View(SltString text) {
 			return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};
+		}
+
+		const char* ShortName(const str& fullName) {
+			const size_t dot = fullName.rfind('.');
+			return fullName.c_str() + (dot == str::npos ? 0 : dot + 1);
+		}
+
+		bool NameMatches(std::string_view kind, std::string_view name, u64 nameHash) {
+			const StringHash hash(name);
+			if (!name.empty() && hash.GetValue() == nameHash) {
+				return true;
+			}
+			SLT_LOG_ERROR("C#", "C# {} '{}' has name hash {:016x}, engine computes {:016x}. Rebuild the scripts", kind, name, nameHash, hash.GetValue());
+			return false;
 		}
 
 		Object* Create(const TypeInfo* info, MemTag tag) {
@@ -65,7 +134,114 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			return new (memory) ManagedBehavior(*found->second);
 		}
 
-		void AddField(ReflectBuilder& builder, const SltFieldDesc& field, const FieldKindInfo& kind, const char* displayName) {
+		const TypeInfo* HandleFor(u64 pointeeHash) {
+			if (const TypeInfo* engine = FieldKinds::FindEngineHandle(pointeeHash)) {
+				return engine;
+			}
+			HandleType*& slot = _handles[pointeeHash];
+			if (!slot) {
+				slot = New<HandleType>(MemTag::Scripting);
+				TypeInfo pointee{};
+				pointee.name = StringHash(pointeeHash);
+				slot->info.name = HandlePointeeName(pointee);
+				slot->info.size = sizeof(u64);
+				slot->info.alignment = alignof(u64);
+				slot->info.flags = TypeFlagPrimitive | TypeFlagHandle | TypeFlagTriviallyCopyable;
+				slot->registered = TypeRegistry::RegisterOwned(&slot->info, &_TOKEN) != nullptr;
+				if (slot->registered) {
+					VariantDispatch::Register(slot->info.name, &HandleVTable);
+				}
+			}
+			return &slot->info;
+		}
+
+		bool Describe(std::string_view owner, const SltFieldDesc& field, Element& out) {
+			if (const FieldKindInfo* plain = FieldKinds::Find(field.kind)) {
+				out = {plain->type, plain->size, plain->alignment};
+				return true;
+			}
+			switch (field.kind) {
+			case SLT_KIND_STRING: {
+				const FieldKindInfo& text = FieldKinds::GetText();
+				out = {text.type, text.size, text.alignment};
+				out.text = true;
+				return true;
+			}
+			case SLT_KIND_ENUM:
+				if (const auto found = _enums.find(field.typeHash); found != _enums.end()) {
+					const TypeInfo& type = found->second->info;
+					out = {&type, static_cast<u32>(type.size), static_cast<u32>(type.alignment)};
+					return true;
+				}
+				break;
+			case SLT_KIND_OBJECT:
+				out = {HandleFor(field.typeHash), sizeof(u64), alignof(u64)};
+				return true;
+			case SLT_KIND_VALUE:
+				if (const auto found = _values.find(field.typeHash); found != _values.end()) {
+					const ManagedValue& value = *found->second;
+					out = {value.info, value.size, value.alignment, FieldFlagSubobject, false, &value.inits};
+					return true;
+				}
+				break;
+			default:
+				break;
+			}
+			SLT_LOG_ERROR("C#", "C# type '{}' has a field of unknown kind {} (type {:016x}). Rebuild the scripts", owner, field.kind, field.typeHash);
+			return false;
+		}
+
+		const ListType& ListFor(const SltFieldDesc& field, const Element& element) {
+			ListType*& slot = _lists[{field.kind, field.kind < SLT_KIND_ENUM ? 0 : field.typeHash}];
+			if (!slot) {
+				slot = New<ListType>(MemTag::Scripting);
+				slot->ops.size = element.size;
+				slot->ops.alignment = element.alignment;
+				slot->ops.text = element.text;
+				if (element.inits) {
+					slot->ops.inits = *element.inits;
+				}
+				ShadowStorage::FillContainer(slot->container, element.type, element.size);
+			}
+			return *slot;
+		}
+
+		bool LayOut(std::string_view owner, SltFieldDesc* fields, i32 count, u32& slot, u32& alignment, std::vector<ShadowInit>& inits,
+					std::vector<Laid>& laid) {
+			for (i32 index = 0; index < count; ++index) {
+				SltFieldDesc& field = fields[index];
+				Laid entry;
+				if (!Describe(owner, field, entry.element)) {
+					return false;
+				}
+				const bool list = (field.flags & SLT_FIELD_LIST) != 0;
+				const u32 size = list ? static_cast<u32>(sizeof(ShadowList)) : entry.element.size;
+				const u32 fieldAlignment = list ? static_cast<u32>(alignof(ShadowList)) : entry.element.alignment;
+				slot += fieldAlignment > SLOT_BYTES ? slot & 1u : 0u;
+				const u32 offset = static_cast<u32>(slot * SLOT_BYTES);
+				field.offset = static_cast<int32_t>(offset);
+				slot += static_cast<u32>((size + SLOT_BYTES - 1) / SLOT_BYTES);
+				alignment = std::max(alignment, fieldAlignment);
+				if (list) {
+					const ListType& type = ListFor(field, entry.element);
+					entry.container = &type.container;
+					inits.push_back({offset, &type.ops});
+				} else {
+					if (entry.element.text) {
+						inits.push_back({offset, nullptr});
+					}
+					if (entry.element.inits) {
+						for (const ShadowInit& init : *entry.element.inits) {
+							inits.push_back({offset + init.offset, init.list});
+						}
+					}
+				}
+				laid.push_back(entry);
+			}
+			return true;
+		}
+
+		void AddField(ReflectBuilder& builder, const SltFieldDesc& field, const Laid& laid, const char* displayName) {
 			u32 flags = FieldFlagDefault;
 			if (field.flags & SLT_FIELD_HIDDEN) {
 				flags &= ~FieldFlagEditorVisible;
@@ -91,21 +267,27 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 			const StringHash name(field.nameHash);
 			void* (*const address)(void*) = SlotThunks[static_cast<size_t>(field.offset) / SLOT_BYTES];
+			const auto add = [&](std::initializer_list<AttributeInfo> list) {
+				if (laid.container) {
+					builder.AddContainerField(name, displayName, sizeof(ShadowList), alignof(ShadowList), address, flags, laid.container, list);
+				} else {
+					builder.AddField(name, displayName, laid.element.type, laid.element.size, laid.element.alignment, nullptr, nullptr, address,
+									 flags | laid.element.flags, list);
+				}
+			};
 			// initializer_list can't be built from a runtime count
 			switch (count) {
 			case 0:
-				builder.AddField(name, displayName, kind.type, kind.size, kind.alignment, nullptr, nullptr, address, flags, {});
+				add({});
 				break;
 			case 1:
-				builder.AddField(name, displayName, kind.type, kind.size, kind.alignment, nullptr, nullptr, address, flags, {attributes[0]});
+				add({attributes[0]});
 				break;
 			case 2:
-				builder.AddField(name, displayName, kind.type, kind.size, kind.alignment, nullptr, nullptr, address, flags,
-								 {attributes[0], attributes[1]});
+				add({attributes[0], attributes[1]});
 				break;
 			default:
-				builder.AddField(name, displayName, kind.type, kind.size, kind.alignment, nullptr, nullptr, address, flags,
-								 {attributes[0], attributes[1], attributes[2]});
+				add({attributes[0], attributes[1], attributes[2]});
 				break;
 			}
 		}
@@ -116,13 +298,9 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 	i32 Register(const SltTypeDesc& desc) {
 		const std::string_view name = View(desc.name);
-		const StringHash hash(name);
-		if (name.empty() || hash.GetValue() != desc.nameHash) {
-			SLT_LOG_ERROR("C#", "C# type '{}' has name hash {:016x}, engine computes {:016x}. Rebuild the scripts", name, desc.nameHash,
-						  hash.GetValue());
+		if (!NameMatches("type", name, desc.nameHash)) {
 			return SLT_ERR_REFUSED;
 		}
-
 		if (desc.managedTypeId < 0) {
 			SLT_LOG_ERROR("C#", "C# type '{}' has id {}. Rebuild the scripts", name, desc.managedTypeId);
 			return SLT_ERR_REFUSED;
@@ -140,33 +318,33 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			managedParent = found->second;
 		}
 
+		ManagedType* type = New<ManagedType>(MemTag::Scripting);
+		if (managedParent) {
+			type->inits = managedParent->inits;
+		}
 		u32 slot = managedParent ? managedParent->slotEnd : FIRST_SLOT;
-		for (i32 index = 0; index < desc.fieldCount; ++index) {
-			SltFieldDesc& field = desc.fields[index];
-			const FieldKindInfo* kind = FieldKinds::Find(field.kind);
-			if (!kind) {
-				SLT_LOG_ERROR("C#", "C# type '{}' has a field of unknown kind {}. Rebuild the scripts", name, field.kind);
-				return SLT_ERR_REFUSED;
-			}
-			slot += kind->alignment > SLOT_BYTES ? slot & 1u : 0u;
-			field.offset = static_cast<int32_t>(slot * SLOT_BYTES);
-			slot += static_cast<u32>((kind->size + SLOT_BYTES - 1) / SLOT_BYTES);
+		u32 alignment = 16;
+		std::vector<Laid> laid;
+		if (!LayOut(name, desc.fields, desc.fieldCount, slot, alignment, type->inits, laid)) {
+			Delete(type);
+			return SLT_ERR_REFUSED;
 		}
 		if (slot > FIRST_SLOT + SLT_FIELD_SLOT_LIMIT) {
 			SLT_LOG_ERROR("C#", "C# type '{}' has too many serialized fields ({} slot(s), max {}). Remove some", name, slot - FIRST_SLOT,
 						  SLT_FIELD_SLOT_LIMIT);
+			Delete(type);
 			return SLT_ERR_REFUSED;
 		}
 
-		ManagedType* type = New<ManagedType>(MemTag::Scripting);
 		type->name = name;
 		type->parent = managedParent;
 		type->managedTypeId = desc.managedTypeId;
 		type->hookMask = desc.hookMask;
 		type->slotEnd = slot;
 		type->hasFields = desc.fieldCount > 0 || (managedParent && managedParent->hasFields);
+		type->normalizes = (desc.flags & SLT_TYPE_NORMALIZE) != 0 || (managedParent && managedParent->normalizes);
 
-		const size_t dot = type->name.rfind('.');
+		const StringHash hash(name);
 		ReflectBuilder builder(hash, (static_cast<size_t>(slot) * SLOT_BYTES + 15) / 16 * 16, 16);
 		builder.SetParent(parent);
 		builder.SetFlags(TypeFlagComponent | ((desc.flags & SLT_TYPE_ABSTRACT) ? TypeFlagAbstract : 0u));
@@ -174,12 +352,12 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		if (type->hasFields) {
 			builder.SetFieldSyncFn(&ManagedBehavior::SyncFields);
 		}
-		builder.SetDisplayName(type->name.c_str() + (dot == str::npos ? 0 : dot + 1));
+		builder.SetDisplayName(ShortName(type->name));
 		builder.AddAttribute(BehaviorTicksAttribute, Variant(static_cast<i64>(desc.tickMask)));
 		for (i32 index = 0; index < desc.fieldCount; ++index) {
 			const SltFieldDesc& field = desc.fields[index];
 			const std::string_view fieldName = View(field.name);
-			AddField(builder, field, *FieldKinds::Find(field.kind), fieldName.empty() ? nullptr : type->fieldNames.emplace_back(fieldName).c_str());
+			AddField(builder, field, laid[static_cast<size_t>(index)], fieldName.empty() ? nullptr : type->fieldNames.emplace_back(fieldName).c_str());
 		}
 		type->info = builder.FinalizeOwned(&_TOKEN);
 		if (!type->info) {
@@ -200,6 +378,80 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		return SLT_OK;
 	}
 
+	i32 RegisterEnum(const SltEnumDesc& desc) {
+		const std::string_view name = View(desc.name);
+		if (!NameMatches("enum", name, desc.nameHash)) {
+			return SLT_ERR_REFUSED;
+		}
+		if (desc.size != 1 && desc.size != 2 && desc.size != 4 && desc.size != 8) {
+			SLT_LOG_ERROR("C#", "C# enum '{}' has size {}. Rebuild the scripts", name, desc.size);
+			return SLT_ERR_REFUSED;
+		}
+
+		ManagedEnum* made = New<ManagedEnum>(MemTag::Scripting);
+		made->displayName = name;
+		made->constants.reserve(static_cast<size_t>(std::max(desc.constantCount, 0)));
+		for (i32 index = 0; index < desc.constantCount; ++index) {
+			const str& constant = made->names.emplace_back(View(desc.constants[index].name));
+			made->constants.push_back({StringHash(constant), constant.c_str(), desc.constants[index].value});
+		}
+		made->info.name = StringHash(name);
+		made->info.size = static_cast<size_t>(desc.size);
+		made->info.alignment = static_cast<size_t>(desc.size);
+		made->info.flags = TypeFlagPrimitive | TypeFlagEnum | TypeFlagTriviallyCopyable;
+		made->info.displayName = ShortName(made->displayName);
+		made->info.enumConstants = made->constants.data();
+		made->info.enumConstantCount = static_cast<u32>(made->constants.size());
+		if (!TypeRegistry::RegisterOwned(&made->info, &_TOKEN)) {
+			SLT_LOG_ERROR("C#", "C# enum '{}' has a name already used by engine. Rename the enum (or give it a namespace)", name);
+			Delete(made);
+			return SLT_ERR_REFUSED;
+		}
+		_enums[desc.nameHash] = made;
+		return SLT_OK;
+	}
+
+	i32 RegisterValue(SltValueDesc& desc) {
+		const std::string_view name = View(desc.name);
+		if (!NameMatches("value", name, desc.nameHash)) {
+			return SLT_ERR_REFUSED;
+		}
+
+		ManagedValue* made = New<ManagedValue>(MemTag::Scripting);
+		made->name = name;
+		u32 slot = 0;
+		u32 alignment = SLOT_BYTES;
+		std::vector<Laid> laid;
+		if (!LayOut(name, desc.fields, desc.fieldCount, slot, alignment, made->inits, laid)) {
+			Delete(made);
+			return SLT_ERR_REFUSED;
+		}
+		if (slot == 0 || slot > SLT_FIELD_SLOT_LIMIT) {
+			SLT_LOG_ERROR("C#", "C# value '{}' has {} slot(s) of serialized fields (1-{} allowed)", name, slot, SLT_FIELD_SLOT_LIMIT);
+			Delete(made);
+			return SLT_ERR_REFUSED;
+		}
+		made->alignment = alignment;
+		made->size = static_cast<u32>((slot * SLOT_BYTES + alignment - 1) / alignment * alignment);
+
+		ReflectBuilder builder(StringHash(name), made->size, made->alignment);
+		builder.SetDisplayName(ShortName(made->name));
+		for (i32 index = 0; index < desc.fieldCount; ++index) {
+			const SltFieldDesc& field = desc.fields[index];
+			const std::string_view fieldName = View(field.name);
+			AddField(builder, field, laid[static_cast<size_t>(index)], fieldName.empty() ? nullptr : made->fieldNames.emplace_back(fieldName).c_str());
+		}
+		made->info = builder.FinalizeOwned(&_TOKEN);
+		if (!made->info) {
+			SLT_LOG_ERROR("C#", "C# type '{}' has a name already used by engine. Rename it (or give it a namespace)", name);
+			Delete(made);
+			return SLT_ERR_REFUSED;
+		}
+		desc.size = static_cast<int32_t>(made->size);
+		_values[desc.nameHash] = made;
+		return SLT_OK;
+	}
+
 	void ReleaseAll() {
 		u32 orphans = 0;
 		for (ManagedBehavior* proxy = _live; proxy; proxy = proxy->next) {
@@ -216,15 +468,44 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 				_retired.push_back(type);
 			}
 		}
+		if (orphans > 0) {
+			// still read as field types of kept TypeInfos
+			for (const auto& [hash, value] : _values) {
+				TypeRegistry::Unregister(value->info->name);
+			}
+		}
 		TypeRegistry::UnregisterOwnedBy(&_TOKEN);
 		for (ManagedType* type : _types) {
 			if (type->liveCount == 0) {
 				Delete(type);
 			}
 		}
+		for (const auto& [hash, handle] : _handles) {
+			if (handle->registered) {
+				VariantDispatch::Unregister(handle->info.name);
+			}
+		}
+		if (orphans == 0) {
+			for (const auto& [hash, made] : _enums) {
+				Delete(made);
+			}
+			for (const auto& [hash, made] : _values) {
+				Delete(made);
+			}
+			for (const auto& [hash, made] : _handles) {
+				Delete(made);
+			}
+			for (const auto& [key, made] : _lists) {
+				Delete(made);
+			}
+		}
 		_types.clear();
 		_byIndex.clear();
 		_byInfo.clear();
+		_enums.clear();
+		_values.clear();
+		_handles.clear();
+		_lists.clear();
 		if (orphans > 0) {
 			SLT_LOG_ERROR("C#", "{} C# component(s) alive at script unload (hooks stopped)", orphans);
 		}

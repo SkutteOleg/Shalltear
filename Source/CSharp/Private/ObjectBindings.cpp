@@ -4,6 +4,7 @@
 #include "ManagedTypes.h"
 
 #include "Shalltear/Core/Object.h"
+#include "Shalltear/Core/Reflection/TypeRegistry.h"
 #include "Shalltear/Core/Scene/Scene.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
 
@@ -53,6 +54,12 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 		++ManagedTypes::GetCounters().aliveChecks;
 #endif
 		return ObjectRegistry::Resolve(id) != nullptr;
+	}
+
+	bool IsA(u64 id, u64 typeHash) {
+		const Object* object = ObjectRegistry::Resolve(id);
+		const TypeInfo* type = TypeRegistry::FindType(StringHash(typeHash));
+		return object && type && TypeRegistry::IsDerivedFrom(object->GetType(), type);
 	}
 
 	void AreAlive(std::span<const u64> ids, std::span<u32> alive) {

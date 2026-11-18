@@ -42,6 +42,10 @@ namespace {
 			}
 			ADD_FAILURE() << "no scenario " << name;
 		}
+
+		bool Logged(const char* text) {
+			return _log.Delivered().Count(text) > 0;
+		}
 	};
 
 	class CSharpGeneratorTest : public CSharpRuntimeFixture {
@@ -168,6 +172,76 @@ TEST_F(CSharpGeneratorTest, NullOperatorsOnEngineObjectsWarn) {
 	EXPECT_TRUE(warned(15, "is null", "EngineObject")) << output;
 }
 
+TEST_F(CSharpGeneratorTest, PublicFieldsOfUnsupportedTypesSkipped) {
+	const str source =
+		"using System;\n"
+		"using System.Collections.Generic;\n"
+		"using Shalltear;\n"
+		"namespace Scratch;\n"
+		"[Serializable] public sealed class Node { public int id; public Node? next; }\n"
+		"[Serializable] public struct Bare { int kept; public Bare(int value) { kept = value; } public readonly int Kept => kept; }\n"
+		"public enum Mood { Calm, Loud }\n"
+		"public sealed class Mixed : Behavior {\n"
+		"\tpublic Dictionary<int, int>? map;\n"
+		"\tpublic List<List<int>>? nested;\n"
+		"\tpublic int[,]? grid;\n"
+		"\tpublic Bare bare;\n"
+		"\tpublic Action? callback;\n"
+		"\tpublic object? anything;\n"
+		"\t[NonSerialized] public int ignored;\n"
+		"\tpublic static int shared;\n"
+		"\tpublic readonly int frozen = 2;\n"
+		"\tpublic const int FIXED = 3;\n"
+		"\tpublic Node? chain;\n"
+		"\tpublic List<Mood>? moods;\n"
+		"\tpublic string? title;\n"
+		"}\n";
+
+	int exitCode = 0;
+	const str output = Build(source, exitCode);
+	EXPECT_EQ(exitCode, 0) << output;
+	EXPECT_EQ(output.find("SLT1002"), str::npos) << output;
+	EXPECT_EQ(output.find("warning"), str::npos) << output;
+}
+
+TEST_F(CSharpGeneratorTest, ReflectOnUnsupportedTypeFailsCompile) {
+	const str source =
+		"using System;\n"
+		"using System.Collections.Generic;\n"
+		"using Shalltear;\n"
+		"namespace Scratch;\n"
+		"[Serializable] public sealed class Node { public int id; public Node? next; }\n"
+		"[Serializable] public struct Bare { int kept; public Bare(int value) { kept = value; } public readonly int Kept => kept; }\n"
+		"public enum Mood { Calm, Loud }\n"
+		"public sealed class Mixed : Behavior {\n"
+		"\t[Reflect] Dictionary<int, int>? wanted;\n"
+		"\t[Reflect] Action? callback;\n"
+		"\t[Reflect] List<List<int>>? nested;\n"
+		"\t[Reflect] string? fine;\n"
+		"\tpublic int Use() => (wanted?.Count ?? 0) + (callback == null ? 0 : 1) + (nested?.Count ?? 0) + (fine?.Length ?? 0);\n"
+		"}\n";
+
+	int exitCode = 0;
+	const str output = Build(source, exitCode);
+	EXPECT_NE(exitCode, 0) << output;
+	const auto refused = [&output](u32 line, std::string_view field, std::string_view type) {
+		const str position = std::format("Scripts.cs({},", line);
+		const str message = std::format("error SLT1002: '{}' has [Reflect] but type '{}' can't be serialized. Use a supported type (or remove [Reflect]).",
+										field, type);
+		for (size_t at = output.find(position); at != str::npos; at = output.find(position, at + 1)) {
+			const size_t end = output.find('\n', at);
+			if (std::string_view(output).substr(at, end - at).find(message) != std::string_view::npos) {
+				return true;
+			}
+		}
+		return false;
+	};
+	EXPECT_TRUE(refused(9, "Scratch.Mixed.wanted", "Dictionary<int, int>?")) << output;
+	EXPECT_TRUE(refused(10, "Scratch.Mixed.callback", "Action?")) << output;
+	EXPECT_TRUE(refused(11, "Scratch.Mixed.nested", "List<List<int>>?")) << output;
+	EXPECT_EQ(output.find("'Scratch.Mixed.fine'"), str::npos) << output;
+}
+
 #elif defined(SLT_TEST_CSHARP_AOT)
 
 #include "CSharpConformance.h"
@@ -240,6 +314,10 @@ namespace {
 			ASSERT_NE(output.find("\nEXIT 0\n"), str::npos) << output;
 			EXPECT_NE(output.find("\nSCENARIO " + str(name) + " ok"), str::npos) << output;
 		}
+
+		bool Logged(const char* text) {
+			return Output().find(text) != str::npos;
+		}
 	};
 
 } // anonymous namespace
@@ -298,6 +376,77 @@ TEST_F(CSharpFieldTest, InspectorRowsEditScriptFields) {
 
 TEST_F(CSharpFieldTest, PlaySnapshotKeepsValues) {
 	RunScenario("PlaySnapshotKeepsValues");
+}
+
+TEST_F(CSharpFieldTest, DescribeHolder) {
+	RunScenario("DescribeHolder");
+}
+
+TEST_F(CSharpFieldTest, KindDefaultsReachBothSides) {
+	RunScenario("KindDefaultsReachBothSides");
+}
+
+TEST_F(CSharpFieldTest, KindsSurviveSaveAndLoad) {
+	RunScenario("KindsSurviveSaveAndLoad");
+}
+
+TEST_F(CSharpFieldTest, KindsSurviveInstantiate) {
+	RunScenario("KindsSurviveInstantiate");
+}
+
+TEST_F(CSharpFieldTest, EditorWritesReachEveryKind) {
+	RunScenario("EditorWritesReachEveryKind");
+}
+
+TEST_F(CSharpFieldTest, UnchangedStringIsNotPushed) {
+	RunScenario("UnchangedStringIsNotPushed");
+}
+
+TEST_F(CSharpFieldTest, InheritedTextFieldsSyncApart) {
+	RunScenario("InheritedTextFieldsSyncApart");
+}
+
+TEST_F(CSharpFieldTest, NullClassValueIsReplaced) {
+	RunScenario("NullClassValueIsReplaced");
+}
+
+TEST_F(CSharpFieldTest, WideValueStaysAlignedInAList) {
+	RunScenario("WideValueStaysAlignedInAList");
+}
+
+TEST_F(CSharpFieldTest, WrongComponentTypePullsNull) {
+	RunScenario("WrongComponentTypePullsNull");
+	EXPECT_TRUE(Logged("'Shalltear.Conformance.Pointer.aimed' got Silent (read as null). Assign a Carrier"));
+	EXPECT_TRUE(Logged("'Shalltear.Conformance.Pointer.aimed' got another object (read as null). Assign a Carrier"));
+	EXPECT_TRUE(Logged("'Shalltear.Conformance.Pointer.many' got Silent (read as null). Assign a Carrier"));
+}
+
+TEST_F(CSharpFieldTest, ReferenceToDestroyedObjectReadsNull) {
+	RunScenario("ReferenceToDestroyedObjectReadsNull");
+}
+
+TEST_F(CSharpFieldTest, KindOverridesSurvivePrefabReload) {
+	RunScenario("KindOverridesSurvivePrefabReload");
+}
+
+TEST_F(CSharpFieldTest, InspectorDrawsEveryKind) {
+	RunScenario("InspectorDrawsEveryKind");
+}
+
+TEST_F(CSharpFieldTest, EnumShowsConstantNames) {
+	RunScenario("EnumShowsConstantNames");
+}
+
+TEST_F(CSharpFieldTest, ReferencesArePickedInInspector) {
+	RunScenario("ReferencesArePickedInInspector");
+}
+
+TEST_F(CSharpFieldTest, ListResizesFromInspector) {
+	RunScenario("ListResizesFromInspector");
+}
+
+TEST_F(CSharpFieldTest, NestedValueRoundTrip) {
+	RunScenario("NestedValueRoundTrip");
 }
 
 #ifndef SHALLTEAR_SHARED

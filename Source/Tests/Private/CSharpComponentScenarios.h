@@ -8,6 +8,7 @@
 namespace Shalltear::CSharpScenarios {
 
 	const TypeInfo* GetTwinType();
+	const TypeInfo* GetFilledTwinType();
 	std::vector<str> TakeTwinRecords();
 
 	void RunFrames(u32 count);

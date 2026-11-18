@@ -19,6 +19,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<SltString, SltString, int> logWarn;
 	public delegate* unmanaged<SltString, SltString, int> logError;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
+	public delegate* unmanaged<ulong, ulong, byte*, int> objectIsA;
 	public delegate* unmanaged<ulong*, int, uint*, int, int> objectAreAlive;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int> objectFindScript;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int, int*, int> objectFindScripts;
@@ -75,6 +76,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, Vec3*, int> sceneObjectGetLossyScale;
 	public delegate* unmanaged<ulong, ulong, ulong*, int> sceneSystemInstantiate;
 	public delegate* unmanaged<SltString, ulong*, int> sceneSystemFindObjectByName;
+	public delegate* unmanaged<ulong, SltString*, int> textAssetGetText;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetFixedDeltaTime;
@@ -86,7 +88,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0x3323a33453dc2b36;
+	internal const ulong LAYOUT_HASH = 0x0a25d5797fde799c;
 
 	internal static SltBindings table;
 

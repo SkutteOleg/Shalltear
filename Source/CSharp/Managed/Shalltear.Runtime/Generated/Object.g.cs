@@ -11,6 +11,15 @@ internal static unsafe partial class ObjectBindings {
 		return Bindings.table.objectIsAlive(id) != 0;
 	}
 
+	internal static bool IsA(ulong id, ulong typeHash) {
+		byte result;
+		int status = Bindings.table.objectIsA(id, typeHash, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result != 0;
+	}
+
 	internal static void AreAlive(ReadOnlySpan<ulong> ids, Span<uint> alive) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("ObjectBindings.AreAlive");

@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x3323a33453dc2b36ull
-#define SLT_BINDINGS_INPUT_DIGEST 0x43afea6b4df25bcaull
+#define SLT_BRIDGE_LAYOUT_HASH 0x0a25d5797fde799cull
+#define SLT_BINDINGS_INPUT_DIGEST 0x0b362eed42c5c77dull
 
 typedef struct SltString SltString;
 
@@ -31,6 +31,7 @@ typedef struct SltBindings {
 	int32_t (*logWarn)(SltString category, SltString message);
 	int32_t (*logError)(SltString category, SltString message);
 	uint8_t (*objectIsAlive)(uint64_t id);
+	int32_t (*objectIsA)(uint64_t id, uint64_t typeHash, uint8_t* outResult);
 	int32_t (*objectAreAlive)(const uint64_t* ids, int32_t idsCount, uint32_t* alive, int32_t aliveCount);
 	int32_t (*objectFindScript)(uint64_t self, int32_t scriptIndex, int64_t* outResult);
 	int32_t (*objectFindScripts)(uint64_t self, int32_t scriptIndex, int64_t* handles, int32_t handlesCount, int32_t* outResult);
@@ -87,6 +88,7 @@ typedef struct SltBindings {
 	int32_t (*sceneObjectGetLossyScale)(uint64_t self, ::Shalltear::Vec3* outResult);
 	int32_t (*sceneSystemInstantiate)(uint64_t source, uint64_t parent, uint64_t* outResult);
 	int32_t (*sceneSystemFindObjectByName)(SltString name, uint64_t* outResult);
+	int32_t (*textAssetGetText)(uint64_t self, SltString* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);
 	float (*timeGetFixedDeltaTime)(void);

@@ -12,6 +12,7 @@
 namespace Shalltear::CSharpImpl::ObjectBindings {
 
 	bool IsAlive(u64 id) noexcept;
+	bool IsA(u64 id, u64 typeHash);
 
 	// ids[N] alive -> bit N % 32 of alive[N / 32]
 	void AreAlive(std::span<const u64> ids, std::span<u32> alive);

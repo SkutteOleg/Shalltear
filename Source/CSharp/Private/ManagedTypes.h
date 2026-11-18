@@ -1,12 +1,14 @@
 #pragma once
 
 #include "ScriptBridge.h"
+#include "ShadowStorage.h"
 
 #include "Shalltear/Core/Reflection/TypeInfo.h"
 #include "Shalltear/Core/Types.h"
 
 #include <deque>
 #include <string_view>
+#include <vector>
 
 namespace Shalltear::CSharpImpl {
 
@@ -17,11 +19,13 @@ namespace Shalltear::CSharpImpl {
 		const ManagedType* parent = nullptr;
 		str name;
 		std::deque<str> fieldNames;
+		std::vector<ShadowInit> inits;
 		i32 managedTypeId = 0;
 		u32 hookMask = 0;
 		u32 liveCount = 0;
 		u32 slotEnd = 0;
 		bool hasFields = false;
+		bool normalizes = false;
 	};
 
 	namespace ManagedTypes {
@@ -32,6 +36,8 @@ namespace Shalltear::CSharpImpl {
 		};
 
 		i32 Register(const SltTypeDesc& desc);
+		i32 RegisterEnum(const SltEnumDesc& desc);
+		i32 RegisterValue(SltValueDesc& desc);
 
 		void ReleaseAll();
 
@@ -59,6 +65,7 @@ namespace Shalltear::CSharpImpl {
 			u64 pushes = 0;
 			u64 pulls = 0;
 			u64 aliveChecks = 0;
+			u64 textAssigns = 0;
 		};
 		Counters& GetCounters();
 
