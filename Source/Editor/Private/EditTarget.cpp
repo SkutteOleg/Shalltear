@@ -7,7 +7,38 @@
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorSceneOps.h"
 
+#include <algorithm>
+#include <vector>
+
 namespace Shalltear {
+
+	namespace {
+
+		u32 _readScopes = 0;
+		std::vector<u64> _syncedInScope;
+
+	} // anonymous namespace
+
+	EditTarget::ReadScope::ReadScope() {
+		++_readScopes;
+	}
+
+	EditTarget::ReadScope::~ReadScope() {
+		if (--_readScopes == 0) {
+			_syncedInScope.clear();
+		}
+	}
+
+	void EditTarget::SyncForRead(Object& object) {
+		if (_readScopes > 0) {
+			const u64 id = object.GetInstanceId();
+			if (std::find(_syncedInScope.begin(), _syncedInScope.end(), id) != _syncedInScope.end()) {
+				return;
+			}
+			_syncedInScope.push_back(id);
+		}
+		SyncFieldsBeforeRead(&object, object.GetType());
+	}
 
 	EditTarget EditTarget::PrefabRow(const Guid& prefabId, u64 rowKey) {
 		EditTarget target;
@@ -29,7 +60,7 @@ namespace Shalltear {
 	Object* EditTarget::Resolve() const {
 		Object* object = Find();
 		if (object) {
-			SyncFieldsBeforeRead(object, object->GetType());
+			SyncForRead(*object);
 		}
 		return object;
 	}

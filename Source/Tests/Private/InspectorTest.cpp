@@ -6735,3 +6735,467 @@ TEST_F(InspectorDefaultSkyFixture, EnvironmentResetRestoresSky) {
 	EXPECT_EQ(environment->GetSkyMode(), SkyMode::Gradient);
 	EXPECT_FALSE(environment->GetSkyMaterial().IsValid());
 }
+
+namespace InspListFixture {
+
+	enum class Gait : u8 {
+		Walk = 0,
+		Trot = 1,
+		Gallop = 5,
+	};
+
+} // namespace InspListFixture
+
+SLT_REFLECT_ENUM(::InspListFixture::Gait)
+SLT_ENUM_VALUE(Walk)
+SLT_ENUM_VALUE(Trot)
+SLT_ENUM_VALUE(Gallop)
+SLT_END_ENUM()
+
+namespace {
+
+	using InspListFixture::Gait;
+
+	struct InspListFrame {
+		Vec3 offset{1.25f, 2.5f, 3.75f};
+		Quat turn = Quat::FromEuler(0.0f, 90.0f, 0.0f);
+		Color tint{0.2f, 0.4f, 0.6f, 1.0f};
+		Vec2I cell{14, 16};
+		Vector<f32> weights{GetMemoryResource(MemTag::Scene)};
+
+		SLT_REFLECT_VALUE(InspListFrame)
+		SLT_REFLECT_FIELD(offset)
+		SLT_REFLECT_FIELD(turn)
+		SLT_REFLECT_FIELD(tint)
+		SLT_REFLECT_FIELD(cell)
+		SLT_REFLECT_ARRAY(weights)
+		SLT_END_REFLECT()
+	};
+
+	class InspListComponent : public Component {
+	public:
+		SLT_REFLECT_COMPONENT(InspListComponent, Component)
+		SLT_REFLECT_ARRAY(counts)
+		SLT_REFLECT_ARRAY(labels)
+		SLT_REFLECT_ARRAY(gaits)
+		SLT_REFLECT_ARRAY(points)
+		SLT_REFLECT_SUBOBJECT(frame)
+		SLT_END_REFLECT()
+
+		InspListComponent() {
+			counts = {31, 47};
+			labels = {"north", "south", "west"};
+			gaits = {Gait::Trot};
+			points = {Vec3{7.5f, 8.5f, 9.5f}, Vec3{10.5f, 11.5f, 12.5f}};
+			frame.weights = {0.625f};
+		}
+
+		Vector<i32> counts{GetMemoryResource(MemTag::Scene)};
+		Vector<str> labels{GetMemoryResource(MemTag::Scene)};
+		Vector<Gait> gaits{GetMemoryResource(MemTag::Scene)};
+		Vector<Vec3> points{GetMemoryResource(MemTag::Scene)};
+		InspListFrame frame;
+	};
+
+	class InspectorListTest : public InspectorTest {
+	protected:
+		MockFontSystem _fonts;
+		UniquePtr<UI::Context> _context;
+		InspListComponent* _lists = nullptr;
+		UI::ElementHandle _root;
+
+		void SetUp() override {
+			InspectorTest::SetUp();
+			TypeRegistry::Register(const_cast<TypeInfo*>(InspListComponent::GetReflectType()));
+			UI::ContextDesc desc;
+			desc.sizePx = {500, 2400};
+			_context = MakeUnique<UI::Context>(desc, &_fonts);
+			Handle<SceneObject> object = SceneSystem::CreateObject("Lists", _scene);
+			_lists = object->AddComponent<InspListComponent>().Get();
+			EditorSelection::Select(Handle<Object>(object.Get()));
+			Handle<EditorPanel> panel = OpenInspector();
+			ASSERT_TRUE(panel.IsValid());
+			_root = _context->CreateElement();
+			_context->AppendChild(_context->GetRoot(), _root);
+			panel.Get()->BuildContent(*_context, _root);
+			_context->Update();
+		}
+
+		void TearDown() override {
+			_context.reset();
+			InspectorTest::TearDown();
+		}
+
+		void Settle() {
+			PanelManager::TickAll(1.0f / 60.0f);
+			_context->Update();
+		}
+
+		Vector<str> Texts() {
+			Vector<str> texts{GetMemoryResource(MemTag::Editor)};
+			CollectTexts(*_context, _root, texts);
+			return texts;
+		}
+
+		void Retype(std::string_view from, std::string_view to) {
+			UI::ElementHandle field = FindElementByText(*_context, _root, from);
+			ASSERT_TRUE(_context->IsAlive(field)) << from << "'";
+			PressAndRelease(*_context, field);
+			ASSERT_EQ(_context->GetFocused(), field);
+			_context->InjectInput(InspectorKeyPress(Key::A, KeyMod::Ctrl));
+			for (char c : to) {
+				_context->InjectInput(InspectorTextChar(static_cast<char32_t>(c)));
+			}
+			_context->Update();
+			PressAway(*_context, _root);
+		}
+
+		UI::ElementHandle RemoveButtonFor(std::string_view text) {
+			UI::ElementHandle at = FindElementByText(*_context, _root, text);
+			while (_context->IsAlive(at) && !(at == _root)) {
+				UI::ElementHandle button = FindButtonNamed(*_context, at, "-");
+				if (button.IsValid()) {
+					return button;
+				}
+				at = _context->MakeHandle(_context->GetElement(at)->parent);
+			}
+			return {};
+		}
+	};
+
+	char _inspSyncToken = 0;
+
+	class InspSyncedList final : public Component {
+	public:
+		const TypeInfo* GetType() const override { return type; }
+
+		const TypeInfo* type = nullptr;
+		Vector<i32> source{GetMemoryResource(MemTag::Scene)};
+		Vector<i32> shadow{GetMemoryResource(MemTag::Scene)};
+	};
+
+	u32 _inspSyncReads = 0;
+
+	void SyncInspList(void* instance, FieldSync phase) {
+		InspSyncedList& list = *static_cast<InspSyncedList*>(instance);
+		if (phase == FieldSync::BeforeRead) {
+			++_inspSyncReads;
+			list.shadow = list.source;
+		} else {
+			list.source = list.shadow;
+		}
+	}
+
+	Object* CreateInspSyncedList(const TypeInfo* type, MemTag tag) {
+		InspSyncedList* list = New<InspSyncedList>(tag);
+		list->type = type;
+		return list;
+	}
+
+	const TypeInfo* RegisterInspSyncedList() {
+		static const ContainerInfo container = []() {
+			ContainerInfo info{};
+			info.elementType = GetStaticType<i32>();
+			info.elementFlags = ContainerElementFlags(info.elementType);
+			info.elementSize = sizeof(i32);
+			info.sizeFn = +[](const void* at) -> size_t { return static_cast<const Vector<i32>*>(at)->size(); };
+			info.resizeFn = +[](void* at, size_t count) { static_cast<Vector<i32>*>(at)->resize(count); };
+			info.atFn = +[](void* at, size_t index) -> void* { return &(*static_cast<Vector<i32>*>(at))[index]; };
+			return info;
+		}();
+		ReflectBuilder builder(StringHash("InspSyncedList"), sizeof(InspSyncedList), alignof(InspSyncedList));
+		builder.SetDisplayName("InspSyncedList");
+		builder.SetParent(Component::GetReflectType());
+		builder.SetFlags(TypeFlagComponent);
+		builder.SetCreateTypedFn(&CreateInspSyncedList);
+		builder.SetFieldSyncFn(&SyncInspList);
+		builder.AddContainerField(
+			StringHash("values"), "values", sizeof(Vector<i32>), alignof(Vector<i32>),
+			+[](void* instance) -> void* { return &static_cast<InspSyncedList*>(instance)->shadow; },
+			FieldFlagDefault, &container, {});
+		return builder.FinalizeOwned(&_inspSyncToken);
+	}
+
+	class InspectorSyncedListTest : public InspectorTest {
+	protected:
+		const TypeInfo* _type = nullptr;
+
+		void SetUp() override {
+			InspectorTest::SetUp();
+			_type = RegisterInspSyncedList();
+		}
+
+		void TearDown() override {
+			InspectorTest::TearDown();
+			TypeRegistry::UnregisterOwnedBy(&_inspSyncToken);
+		}
+	};
+
+} // anonymous namespace
+
+TEST_F(InspectorListTest, ListsAndNestedMathDrawRows) {
+	const Vector<str> texts = Texts();
+	for (const char* expected : {"counts", "31", "47", "labels", "north", "south", "west", "gaits", "Trot", "points", "7.5", "12.5",
+								 "offset", "2.5", "turn", "90", "tint", "102", "cell", "14", "weights", "0.625"}) {
+		EXPECT_TRUE(ExactText(texts, expected)) << expected << "'";
+	}
+	EXPECT_FALSE(ContainsText(texts, "no drawer"));
+	EXPECT_EQ(std::count(texts.begin(), texts.end(), str("Add Element")), 5);
+}
+
+TEST_F(InspectorListTest, NumberElementCommitsAndUndoes) {
+	Retype("47", "52");
+	ASSERT_EQ(_lists->counts.size(), 2u);
+	EXPECT_EQ(_lists->counts[0], 31);
+	EXPECT_EQ(_lists->counts[1], 52);
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->counts[1], 47);
+}
+
+TEST_F(InspectorListTest, TextElementCommitsAndUndoes) {
+	Retype("south", "east");
+	ASSERT_EQ(_lists->labels.size(), 3u);
+	EXPECT_EQ(_lists->labels[0], "north");
+	EXPECT_EQ(_lists->labels[1], "east");
+	EXPECT_EQ(_lists->labels[2], "west");
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->labels[1], "south");
+}
+
+TEST_F(InspectorListTest, EnumElementPicksNamedConstant) {
+	UI::ElementHandle picker = FindByClass(*_context, _root, StringHash("slt-dropdown"), 0);
+	ASSERT_TRUE(_context->IsAlive(picker));
+	EXPECT_EQ(_context->GetTextString(NthChildOf(*_context, picker, 0)), "Trot");
+
+	ClickElement(*_context, picker);
+	ASSERT_EQ(_context->GetOpenPopupCount(), 1u);
+	ClickElement(*_context, NthChildOf(*_context, _context->GetOpenPopup(0), 2));
+	ASSERT_EQ(_lists->gaits.size(), 1u);
+	EXPECT_EQ(_lists->gaits[0], Gait::Gallop);
+	Settle();
+	picker = FindByClass(*_context, _root, StringHash("slt-dropdown"), 0);
+	EXPECT_EQ(_context->GetTextString(NthChildOf(*_context, picker, 0)), "Gallop");
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->gaits[0], Gait::Trot);
+	Settle();
+	picker = FindByClass(*_context, _root, StringHash("slt-dropdown"), 0);
+	EXPECT_EQ(_context->GetTextString(NthChildOf(*_context, picker, 0)), "Trot");
+}
+
+TEST_F(InspectorListTest, VectorElementCommitsAndUndoes) {
+	Retype("11.5", "4.25");
+	ASSERT_EQ(_lists->points.size(), 2u);
+	EXPECT_EQ(_lists->points[0], (Vec3{7.5f, 8.5f, 9.5f}));
+	EXPECT_EQ(_lists->points[1], (Vec3{10.5f, 4.25f, 12.5f}));
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->points[1], (Vec3{10.5f, 11.5f, 12.5f}));
+}
+
+TEST_F(InspectorListTest, AddElementGrowsListInOneStep) {
+	UI::ElementHandle add = FindButtonNamed(*_context, _root, "Add Element");
+	ASSERT_TRUE(add.IsValid());
+	PressAndRelease(*_context, add);
+	Settle();
+	ASSERT_EQ(_lists->counts.size(), 3u);
+	EXPECT_EQ(_lists->counts[1], 47);
+	EXPECT_EQ(_lists->counts[2], 0);
+	EXPECT_TRUE(ExactText(Texts(), "Element 2"));
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	Settle();
+	EXPECT_EQ(_lists->counts.size(), 2u);
+	EXPECT_FALSE(UndoSystem::CanUndo());
+}
+
+TEST_F(InspectorListTest, RemovingATextElementShiftsTheRest) {
+	UI::ElementHandle remove = RemoveButtonFor("north");
+	ASSERT_TRUE(remove.IsValid());
+	PressAndRelease(*_context, remove);
+	Settle();
+	ASSERT_EQ(_lists->labels.size(), 2u);
+	EXPECT_EQ(_lists->labels[0], "south");
+	EXPECT_EQ(_lists->labels[1], "west");
+	EXPECT_FALSE(ExactText(Texts(), "north"));
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	ASSERT_EQ(_lists->labels.size(), 3u);
+	EXPECT_EQ(_lists->labels[0], "north");
+	EXPECT_EQ(_lists->labels[2], "west");
+}
+
+TEST_F(InspectorListTest, RemovingAVectorElementShiftsTheRest) {
+	UI::ElementHandle remove = RemoveButtonFor("7.5");
+	ASSERT_TRUE(remove.IsValid());
+	PressAndRelease(*_context, remove);
+	Settle();
+	ASSERT_EQ(_lists->points.size(), 1u);
+	EXPECT_EQ(_lists->points[0], (Vec3{10.5f, 11.5f, 12.5f}));
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	ASSERT_EQ(_lists->points.size(), 2u);
+	EXPECT_EQ(_lists->points[0], (Vec3{7.5f, 8.5f, 9.5f}));
+}
+
+TEST_F(InspectorListTest, MathFieldsInStructCommitAndUndo) {
+	Retype("2.5", "6.5");
+	EXPECT_EQ(_lists->frame.offset, (Vec3{1.25f, 6.5f, 3.75f}));
+	Retype("16", "21");
+	EXPECT_EQ(_lists->frame.cell, (Vec2I{14, 21}));
+	Retype("90", "45");
+	EXPECT_NEAR(EditorSceneOps::EulerForDisplay(_lists->frame.turn).y, 45.0f, 0.01f);
+	Retype("102", "204");
+	EXPECT_NEAR(_lists->frame.tint.g, 0.8f, 0.001f);
+	EXPECT_NEAR(_lists->frame.tint.r, 0.2f, 0.001f);
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_NEAR(_lists->frame.tint.g, 0.4f, 0.001f);
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_NEAR(EditorSceneOps::EulerForDisplay(_lists->frame.turn).y, 90.0f, 0.01f);
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->frame.cell, (Vec2I{14, 16}));
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->frame.offset, (Vec3{1.25f, 2.5f, 3.75f}));
+	EXPECT_FALSE(UndoSystem::CanUndo());
+}
+
+TEST_F(InspectorListTest, ListInsideAStructEditsItsElements) {
+	Retype("0.625", "0.875");
+	ASSERT_EQ(_lists->frame.weights.size(), 1u);
+	EXPECT_FLOAT_EQ(_lists->frame.weights[0], 0.875f);
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_FLOAT_EQ(_lists->frame.weights[0], 0.625f);
+}
+
+TEST_F(InspectorListTest, RowsFollowValuesChangedElsewhere) {
+	_lists->counts[0] = 64;
+	_lists->labels[2] = "up";
+	_lists->gaits[0] = Gait::Walk;
+	_lists->points[0].x = 1.5f;
+	_lists->frame.offset.z = 8.25f;
+	_lists->frame.cell.x = 19;
+	_lists->frame.turn = Quat::FromEuler(0.0f, 30.0f, 0.0f);
+	_lists->frame.tint.g = 1.0f;
+	_lists->frame.weights[0] = 0.125f;
+	Settle();
+
+	const Vector<str> texts = Texts();
+	for (const char* expected : {"64", "up", "Walk", "1.5", "8.25", "19", "30", "0.125"}) {
+		EXPECT_TRUE(ExactText(texts, expected)) << expected << "'";
+	}
+	for (const char* stale : {"31", "west", "Trot", "7.5", "3.75", "14", "90", "102", "0.625"}) {
+		EXPECT_FALSE(ExactText(texts, stale)) << stale << "'";
+	}
+}
+
+TEST_F(InspectorListTest, ElementResetRestoresTextAndVectors) {
+	EditTarget target{Handle<Object>(_lists)};
+	using Step = EditorSceneOps::ValueStep;
+	const Step second[] = {{1, {}}};
+	const Step fourth[] = {{3, {}}};
+	ASSERT_FALSE(EditorSceneOps::DiffersFromDefault(target, "labels"_hash, second));
+	ASSERT_FALSE(EditorSceneOps::DiffersFromDefault(target, "points"_hash, second));
+
+	_lists->labels[1] = "east";
+	_lists->points[1].y = 4.25f;
+	_lists->labels.push_back("extra");
+	ASSERT_TRUE(EditorSceneOps::DiffersFromDefault(target, "labels"_hash, second));
+	ASSERT_TRUE(EditorSceneOps::ResetToDefault(target, "labels"_hash, second, "Reset Element 1"));
+	EXPECT_EQ(_lists->labels[1], "south");
+	EXPECT_EQ(_lists->labels[0], "north");
+	ASSERT_TRUE(EditorSceneOps::ResetToDefault(target, "points"_hash, second, "Reset Element 1"));
+	EXPECT_EQ(_lists->points[1], (Vec3{10.5f, 11.5f, 12.5f}));
+	ASSERT_TRUE(EditorSceneOps::ResetToDefault(target, "labels"_hash, fourth, "Reset Element 3"));
+	EXPECT_EQ(_lists->labels[3], "");
+	EXPECT_EQ(_lists->labels.size(), 4u);
+
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->labels[3], "extra");
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->points[1], (Vec3{10.5f, 4.25f, 12.5f}));
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(_lists->labels[1], "east");
+}
+
+TEST_F(InspectorSyncedListTest, ElementResetReachesSyncedStorage) {
+	ASSERT_NE(_type, nullptr);
+	Handle<SceneObject> object = SceneSystem::CreateObject("Synced", _scene);
+	InspSyncedList* list = static_cast<InspSyncedList*>(object->AddComponent(_type).Get());
+	ASSERT_NE(list, nullptr);
+	list->source = {73};
+	EditTarget target{Handle<Object>(list)};
+	const EditorSceneOps::ValueStep first[] = {{0, {}}};
+
+	ASSERT_TRUE(EditorSceneOps::ResetToDefault(target, "values"_hash, first, "Reset Element 0"));
+	ASSERT_EQ(list->source.size(), 1u);
+	EXPECT_EQ(list->source[0], 0);
+	ASSERT_TRUE(UndoSystem::Undo());
+	EXPECT_EQ(list->source[0], 73);
+}
+
+TEST_F(InspectorSyncedListTest, ATickSyncsAnObjectOnce) {
+	ASSERT_NE(_type, nullptr);
+	Handle<SceneObject> object = SceneSystem::CreateObject("Synced", _scene);
+	InspSyncedList* list = static_cast<InspSyncedList*>(object->AddComponent(_type).Get());
+	ASSERT_NE(list, nullptr);
+	list->source = {4, 5, 6};
+	EditorSelection::Select(Handle<Object>(object.Get()));
+	Handle<EditorPanel> panel = OpenInspector();
+	ASSERT_TRUE(panel.IsValid());
+	MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {500, 900};
+	UI::Context context(desc, &fonts);
+	UI::ElementHandle root = context.CreateElement();
+	context.AppendChild(context.GetRoot(), root);
+	panel.Get()->BuildContent(context, root);
+	context.Update();
+	PanelManager::TickAll(1.0f / 60.0f);
+	context.Update();
+	ASSERT_TRUE(context.IsAlive(FindElementByText(context, root, "6")));
+
+	_inspSyncReads = 0;
+	PanelManager::TickAll(1.0f / 60.0f);
+	EXPECT_EQ(_inspSyncReads, 1u);
+	list->source[1] = 77;
+	PanelManager::TickAll(1.0f / 60.0f);
+	context.Update();
+	EXPECT_EQ(_inspSyncReads, 2u);
+	EXPECT_TRUE(context.IsAlive(FindElementByText(context, root, "77")));
+}
+
+TEST_F(InspectorSyncedListTest, ListGrownBehindFieldSyncGetsRows) {
+	ASSERT_NE(_type, nullptr);
+	Handle<SceneObject> object = SceneSystem::CreateObject("Synced", _scene);
+	InspSyncedList* list = static_cast<InspSyncedList*>(object->AddComponent(_type).Get());
+	ASSERT_NE(list, nullptr);
+	EditorSelection::Select(Handle<Object>(object.Get()));
+	Handle<EditorPanel> panel = OpenInspector();
+	ASSERT_TRUE(panel.IsValid());
+	MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {500, 900};
+	UI::Context context(desc, &fonts);
+	UI::ElementHandle root = context.CreateElement();
+	context.AppendChild(context.GetRoot(), root);
+	panel.Get()->BuildContent(context, root);
+	context.Update();
+	ASSERT_TRUE(AnyTextContains(context, root, "values"));
+	ASSERT_FALSE(AnyTextContains(context, root, "Element 0"));
+
+	list->source = {73};
+	PanelManager::TickAll(1.0f / 60.0f);
+	context.Update();
+	UI::ElementHandle field = FindElementByText(context, root, "73");
+	ASSERT_TRUE(context.IsAlive(field));
+
+	PressAndRelease(context, field);
+	ASSERT_EQ(context.GetFocused(), field);
+	context.InjectInput(InspectorKeyPress(Key::A, KeyMod::Ctrl));
+	context.InjectInput(InspectorTextChar(U'8'));
+	context.InjectInput(InspectorTextChar(U'8'));
+	context.Update();
+	PressAway(context, root);
+	ASSERT_EQ(list->source.size(), 1u);
+	EXPECT_EQ(list->source[0], 88);
+}

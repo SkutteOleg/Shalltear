@@ -38,6 +38,8 @@ namespace Shalltear {
 			std::function<void()> endGesture;
 
 			bool readOnly = false;
+			// address = 1 element, field = its container
+			bool element = false;
 		};
 
 		struct ScalarRow {

@@ -34,6 +34,33 @@ namespace Shalltear {
 				return type && type->enumConstants != nullptr && type->enumConstantCount > 0;
 			}
 
+			struct ValueShape {
+				const TypeInfo* type = nullptr;
+				size_t size = 0;
+			};
+
+			ValueShape ShapeOf(const FieldInfo& field, bool element) {
+				if (!element) {
+					return {field.fieldType, field.size};
+				}
+				const ContainerInfo* container = (field.flags & FieldFlagContainer) != 0 ? field.container : nullptr;
+				return container ? ValueShape{container->elementType, container->elementSize} : ValueShape{};
+			}
+
+			bool IsScalarShape(const ValueShape& shape) {
+				const TypeInfo* type = shape.type;
+				return NameIs(type, "bool") || NameIs(type, "str") || IsNumeric(type) || (IsEnum(type) && shape.size <= 8);
+			}
+
+			u64 ReadBits(const ValueShape& shape, const void* address) {
+				if (shape.size > 8 || !address) {
+					return 0;
+				}
+				u64 bits = 0;
+				std::memcpy(&bits, address, shape.size);
+				return bits;
+			}
+
 			void CollectEnumLabels(const TypeInfo& enumType, u64 rawBits,
 								   Vector<std::string_view>& labels, u32& selected) {
 				labels.clear();
@@ -135,8 +162,7 @@ namespace Shalltear {
 			if ((field.flags & FieldFlagContainer) != 0 || !field.addrFn) {
 				return false;
 			}
-			const TypeInfo* type = field.fieldType;
-			return NameIs(type, "bool") || NameIs(type, "str") || IsNumeric(type) || (IsEnum(type) && field.size <= 8);
+			return IsScalarShape(ShapeOf(field, false));
 		}
 
 		str FieldLabel(const FieldInfo& field) {
@@ -160,10 +186,11 @@ namespace Shalltear {
 			if (!info) {
 				return built;
 			}
-			const TypeInfo* type = info->fieldType;
+			const ValueShape shape = ShapeOf(*info, access.element);
+			const TypeInfo* type = shape.type;
 			const bool readOnly = access.readOnly || (info->flags & FieldFlagReadOnly) != 0;
 			void* address = access.address ? access.address() : nullptr;
-			if (!readOnly && (!address || !IsScalarField(*info))) {
+			if (!readOnly && (!address || !(access.element ? IsScalarShape(shape) : IsScalarField(*info)))) {
 				return built;
 			}
 
@@ -277,7 +304,7 @@ namespace Shalltear {
 			if (IsEnum(type)) {
 				Vector<std::string_view> labels{GetMemoryResource(MemTag::Editor)};
 				u32 selected = 0;
-				CollectEnumLabels(*type, ReadRawBits(*info, address), labels, selected);
+				CollectEnumLabels(*type, ReadBits(shape, address), labels, selected);
 
 				UI::Widgets::DropdownDesc desc;
 				desc.items = {labels.data(), labels.size()};
@@ -288,11 +315,12 @@ namespace Shalltear {
 				desc.onSelect = [held, ref](u32 index) mutable {
 					const FieldInfo* live = ref.Resolve();
 					void* liveAddress = held->address ? held->address() : nullptr;
-					if (!live || !live->fieldType || !liveAddress || index >= live->fieldType->enumConstantCount) {
+					const ValueShape liveShape = live ? ShapeOf(*live, held->element) : ValueShape{};
+					if (!liveShape.type || !liveAddress || index >= liveShape.type->enumConstantCount) {
 						return;
 					}
-					u64 before = ReadRawBits(*live, liveAddress);
-					u64 after = EnumValueToBits(live->fieldType, live->fieldType->enumConstants[index].value);
+					u64 before = ReadBits(liveShape, liveAddress);
+					u64 after = EnumValueToBits(liveShape.type, liveShape.type->enumConstants[index].value);
 					if (before == after) {
 						return;
 					}
@@ -378,7 +406,8 @@ namespace Shalltear {
 			if (!info) {
 				return;
 			}
-			const TypeInfo* type = info->fieldType;
+			const ValueShape shape = ShapeOf(*info, row.access->element);
+			const TypeInfo* type = shape.type;
 			UI::ElementHandle focused = context.GetFocused();
 
 			switch (row.kind) {
@@ -392,7 +421,7 @@ namespace Shalltear {
 				} else if (NameIs(type, "bool")) {
 					text = *static_cast<const bool*>(address) ? "true" : "false";
 				} else if (IsEnum(type)) {
-					const EnumConstantInfo* constant = FindEnumConstantByValue(type, ReadRawBits(*info, address));
+					const EnumConstantInfo* constant = FindEnumConstantByValue(type, ReadBits(shape, address));
 					text = constant && constant->displayName ? str(constant->displayName) : str();
 				} else if (ReadNumber(type, address, value)) {
 					text = std::format("{:.3f}", value);
@@ -435,7 +464,7 @@ namespace Shalltear {
 				}
 				Vector<std::string_view> labels{GetMemoryResource(MemTag::Editor)};
 				u32 selected = 0;
-				CollectEnumLabels(*type, ReadRawBits(*info, address), labels, selected);
+				CollectEnumLabels(*type, ReadBits(shape, address), labels, selected);
 				UI::Widgets::SetDropdownSelection(context, row.dropdown, {labels.data(), labels.size()}, selected);
 				return;
 			}

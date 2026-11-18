@@ -172,6 +172,10 @@ namespace Shalltear {
 								 const FieldInfo& field, u32 depth);
 		void BuildNestedList(UI::Context& context, UI::ElementHandle header, UI::ElementHandle parent,
 							 const NestedPath& path, const ContainerInfo& container, u32 depth);
+		void BuildNestedElementRow(UI::Context& context, UI::ElementHandle row, SharedPtr<NestedPath> path,
+								   FieldRef list, const TypeInfo* type, const str& label);
+		bool BuildNestedMathRow(UI::Context& context, UI::ElementHandle row, SharedPtr<NestedPath> path,
+								const TypeInfo* type, const str& label);
 		u64 NestedFoldKey(const NestedPath& path) const;
 
 		void OpenHandlePickerPopup(UI::Context& context, HandleSlot slot, StringHash pointeeName, str label,

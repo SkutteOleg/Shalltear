@@ -330,6 +330,7 @@ namespace Shalltear {
 			if (before.empty() || !mutate(at)) {
 				return;
 			}
+			path.target.NotifyWritten();
 			str after = CaptureFieldState(*object, top->name);
 			if (after == before) {
 				return;
@@ -337,7 +338,7 @@ namespace Shalltear {
 			UndoSystem::Push(MakeUnique<SetFieldStateCommand>(path.target, top->name, std::move(before), std::move(after), label));
 		}
 
-		bool WriteCommitted(const FieldInfo& field, void* at, const PropertyRows::CommittedValue& value) {
+		bool WriteCommitted(const TypeInfo* type, size_t size, void* at, const PropertyRows::CommittedValue& value) {
 			switch (value.kind) {
 			case PropertyRows::CommittedValue::Kind::Bool: {
 				bool& current = *static_cast<bool*>(at);
@@ -349,10 +350,10 @@ namespace Shalltear {
 			}
 			case PropertyRows::CommittedValue::Kind::Number: {
 				f64 before = 0.0;
-				if (!PropertyRows::ReadNumber(field.fieldType, at, before) || before == value.number) {
+				if (!PropertyRows::ReadNumber(type, at, before) || before == value.number) {
 					return false;
 				}
-				return PropertyRows::WriteNumber(field.fieldType, at, value.number);
+				return PropertyRows::WriteNumber(type, at, value.number);
 			}
 			case PropertyRows::CommittedValue::Kind::Text: {
 				str& current = *static_cast<str*>(at);
@@ -363,14 +364,114 @@ namespace Shalltear {
 				return true;
 			}
 			case PropertyRows::CommittedValue::Kind::RawBits: {
-				if (field.size > 8 || std::memcmp(at, &value.rawBits, field.size) == 0) {
+				if (size > 8 || std::memcmp(at, &value.rawBits, size) == 0) {
 					return false;
 				}
-				std::memcpy(at, &value.rawBits, field.size);
+				std::memcpy(at, &value.rawBits, size);
 				return true;
 			}
 			}
 			return false;
+		}
+
+		struct MathShape {
+			enum class Kind : u8 {
+				None,
+				Floats,
+				Ints,
+				Euler,
+				Color
+			};
+			Kind kind = Kind::None;
+			u32 count = 0;
+		};
+
+		MathShape MathShapeOf(const TypeInfo* type) {
+			struct Entry {
+				const char* name;
+				MathShape shape;
+			};
+			static constexpr Entry MATH_SHAPES[] = {
+				{"Vec2", {MathShape::Kind::Floats, 2}},
+				{"Vec3", {MathShape::Kind::Floats, 3}},
+				{"Vec4", {MathShape::Kind::Floats, 4}},
+				{"RectF", {MathShape::Kind::Floats, 4}},
+				{"Vec2I", {MathShape::Kind::Ints, 2}},
+				{"Vec3I", {MathShape::Kind::Ints, 3}},
+				{"Vec4I", {MathShape::Kind::Ints, 4}},
+				{"Quat", {MathShape::Kind::Euler, 3}},
+				{"Color", {MathShape::Kind::Color, 4}},
+			};
+			for (const Entry& entry : MATH_SHAPES) {
+				if (NameIs(type, entry.name)) {
+					return entry.shape;
+				}
+			}
+			return {};
+		}
+
+		bool ReadMath(const MathShape& shape, const void* at, f64* out) {
+			switch (shape.kind) {
+			case MathShape::Kind::Floats: {
+				f32 values[4] = {};
+				std::memcpy(values, at, shape.count * sizeof(f32));
+				std::copy_n(values, shape.count, out);
+				return true;
+			}
+			case MathShape::Kind::Ints: {
+				i32 values[4] = {};
+				std::memcpy(values, at, shape.count * sizeof(i32));
+				std::copy_n(values, shape.count, out);
+				return true;
+			}
+			case MathShape::Kind::Euler: {
+				Quat rotation;
+				std::memcpy(&rotation, at, sizeof(Quat));
+				const Vec3 angles = EditorSceneOps::EulerForDisplay(rotation);
+				out[0] = angles.x;
+				out[1] = angles.y;
+				out[2] = angles.z;
+				return true;
+			}
+			default:
+				return false;
+			}
+		}
+
+		template <typename T>
+		bool WriteComponent(void* at, u32 component, T next) {
+			u8* slot = static_cast<u8*>(at) + component * sizeof(T);
+			if (std::memcmp(slot, &next, sizeof(T)) == 0) {
+				return false;
+			}
+			std::memcpy(slot, &next, sizeof(T));
+			return true;
+		}
+
+		bool WriteMath(const MathShape& shape, void* at, u32 component, f64 next) {
+			if (component >= shape.count) {
+				return false;
+			}
+			switch (shape.kind) {
+			case MathShape::Kind::Floats:
+				return WriteComponent(at, component, static_cast<f32>(next));
+			case MathShape::Kind::Ints:
+				return WriteComponent(at, component, static_cast<i32>(next < 0.0 ? next - 0.5 : next + 0.5));
+			case MathShape::Kind::Euler: {
+				Quat before;
+				std::memcpy(&before, at, sizeof(Quat));
+				Vec3 angles = EditorSceneOps::EulerForDisplay(before);
+				angles[component] = static_cast<f32>(next);
+				const Quat after = Quat::FromEuler(angles);
+				if (after == before) {
+					return false;
+				}
+				std::memcpy(at, &after, sizeof(Quat));
+				return true;
+			}
+			default:
+				return false;
+			}
 		}
 
 		bool RemoveElement(const ContainerInfo& container, void* sequence, size_t index) {
@@ -379,7 +480,9 @@ namespace Shalltear {
 			}
 			const size_t count = container.sizeFn(sequence);
 			const bool structs = (container.elementFlags & FieldFlagSubobject) != 0 && container.elementType;
-			if (index >= count || (!structs && container.elementSize > 8)) {
+			const bool text = NameIs(container.elementType, "str");
+			const bool bytes = container.elementSize <= 8 || (container.elementFlags & FieldFlagTriviallyCopyable) != 0;
+			if (index >= count || (!structs && !text && !bytes)) {
 				return false;
 			}
 			for (size_t i = index; i + 1 < count; ++i) {
@@ -388,6 +491,8 @@ namespace Shalltear {
 				if (structs) {
 					ScopedLiveHandles live;
 					TextSerializer::Deserialize(dest, container.elementType, TextSerializer::Serialize(source, container.elementType));
+				} else if (text) {
+					*static_cast<str*>(dest) = std::move(*static_cast<str*>(source));
 				} else {
 					std::memcpy(dest, source, container.elementSize);
 				}
@@ -843,6 +948,9 @@ namespace Shalltear {
 			}
 		};
 		auto mixRowInputs = [&mix, &mixNestedLengths](Object* instance) {
+			if (instance) {
+				EditTarget::SyncForRead(*instance);
+			}
 			for (const TypeInfo* walk = instance ? instance->GetType() : nullptr; walk; walk = walk->parent) {
 				for (u32 i = 0; i < walk->fieldCount; ++i) {
 					const FieldInfo& field = walk->fields[i];
@@ -935,6 +1043,7 @@ namespace Shalltear {
 				}
 			}
 		}
+		const EditTarget::ReadScope reads;
 		u64 version = ComputeVersion();
 		if (version != _lastVersion || _forceRebuild) {
 			_forceRebuild = false;
@@ -2026,8 +2135,7 @@ namespace Shalltear {
 		const bool hasTooltip = tooltip && tooltip->value.Is<str>();
 
 		const ContainerInfo* container = (field.flags & FieldFlagContainer) != 0 ? field.container : nullptr;
-		const bool list = container && container->elementType &&
-						  (container->elementFlags & (FieldFlagSubobject | FieldFlagHandle)) != 0;
+		const bool list = container && container->elementType;
 		const bool structField = (field.flags & FieldFlagSubobject) != 0 && field.fieldType;
 		const RowValue value = ValueAt(sub);
 		const RowValue* resettable = (field.flags & FieldFlagReadOnly) == 0 ? &value : nullptr;
@@ -2066,7 +2174,9 @@ namespace Shalltear {
 				if (!info) {
 					return;
 				}
-				CommitNested(*shared, undoLabel, [info, &value](void* at) { return WriteCommitted(*info, at, value); });
+				CommitNested(*shared, undoLabel, [info, &value](void* at) {
+					return WriteCommitted(info->fieldType, info->size, at, value);
+				});
 			};
 			PropertyRows::ScalarRow scalar = PropertyRows::Build(context, row, RefTo(field), std::move(access));
 			if (scalar.kind != PropertyRows::ScalarRow::Kind::None) {
@@ -2090,9 +2200,109 @@ namespace Shalltear {
 			return;
 		}
 
+		if (BuildNestedMathRow(context, row, shared, field.fieldType, label)) {
+			return;
+		}
+
 		UI::ElementHandle unsupported = context.CreateElement();
 		context.AppendChild(row, unsupported);
 		context.SetText(unsupported, UISystem::GetDefaultFont(), FieldFont(), TextDim(), "(" + TypeLabel(field.fieldType) + ", no drawer)");
+	}
+
+	bool InspectorPanel::BuildNestedMathRow(UI::Context& context, UI::ElementHandle row, SharedPtr<NestedPath> path,
+											const TypeInfo* type, const str& label) {
+		const MathShape shape = MathShapeOf(type);
+		void* at = ResolveNested(*path);
+		if (shape.kind == MathShape::Kind::None || !at) {
+			return false;
+		}
+		Handle<FontAsset> font = UISystem::GetDefaultFont();
+		const str undoLabel = "Set " + label;
+		Binding binding;
+		binding.target = path->target;
+		binding.field = path->top;
+		binding.nested = path;
+
+		if (shape.kind == MathShape::Kind::Color) {
+			Color value;
+			std::memcpy(&value, at, sizeof(Color));
+			binding.kind = Binding::Kind::ColorField;
+			binding.color = UI::Widgets::ColorSwatchField(
+				context, row, value, font, FieldFont(),
+				[path, undoLabel](Color next) {
+					CommitNested(*path, undoLabel, [&next](void* live) {
+						if (std::memcmp(live, &next, sizeof(Color)) == 0) {
+							return false;
+						}
+						std::memcpy(live, &next, sizeof(Color));
+						return true;
+					});
+				},
+				[]() { UndoSystem::BeginGroup("Edit Color"); },
+				[]() { UndoSystem::EndGroup(); });
+			_bindings.push_back(std::move(binding));
+			return true;
+		}
+
+		static constexpr const char* RECT_LABELS[4] = {"X", "Y", "W", "H"};
+		UI::Widgets::VectorFieldDesc desc;
+		desc.componentCount = shape.count;
+		ReadMath(shape, at, desc.values);
+		if (NameIs(type, "RectF")) {
+			std::copy_n(RECT_LABELS, 4, desc.labels);
+		}
+		if (shape.kind == MathShape::Kind::Ints) {
+			desc.decimals = 0;
+		}
+		desc.font = font;
+		desc.fontSizePx = FieldFont();
+		desc.onEditBegin = []() { UndoSystem::BeginGroup("Edit Property"); };
+		desc.onEditEnd = []() { UndoSystem::EndGroup(); };
+		desc.onChange = [path, shape, undoLabel](u32 component, f64 next) {
+			CommitNested(*path, undoLabel, [&](void* live) { return WriteMath(shape, live, component, next); });
+		};
+		binding.kind = Binding::Kind::VectorField;
+		binding.vector = UI::Widgets::VectorField(context, row, desc);
+		binding.componentCount = shape.count;
+		_bindings.push_back(std::move(binding));
+		return true;
+	}
+
+	void InspectorPanel::BuildNestedElementRow(UI::Context& context, UI::ElementHandle row, SharedPtr<NestedPath> path,
+											   FieldRef list, const TypeInfo* type, const str& label) {
+		PropertyRows::ValueAccess access;
+		access.element = true;
+		access.address = [path]() -> void* { return ResolveNested(*path); };
+		access.beginGesture = []() { UndoSystem::BeginGroup("Edit Property"); };
+		access.endGesture = []() { UndoSystem::EndGroup(); };
+		const str undoLabel = "Set " + label;
+		access.commit = [path, list, undoLabel](const PropertyRows::CommittedValue& value) mutable {
+			const FieldInfo* info = list.Resolve();
+			const ContainerInfo* container = info && (info->flags & FieldFlagContainer) != 0 ? info->container : nullptr;
+			if (!container) {
+				return;
+			}
+			CommitNested(*path, undoLabel, [container, &value](void* at) {
+				return WriteCommitted(container->elementType, container->elementSize, at, value);
+			});
+		};
+		PropertyRows::ScalarRow scalar = PropertyRows::Build(context, row, list, std::move(access));
+		if (scalar.kind != PropertyRows::ScalarRow::Kind::None) {
+			Binding binding;
+			binding.kind = Binding::Kind::Scalar;
+			binding.target = path->target;
+			binding.field = list;
+			binding.scalar = std::move(scalar);
+			binding.nested = path;
+			_bindings.push_back(std::move(binding));
+			return;
+		}
+		if (BuildNestedMathRow(context, row, path, type, label)) {
+			return;
+		}
+		UI::ElementHandle unsupported = context.CreateElement();
+		context.AppendChild(row, unsupported);
+		context.SetText(unsupported, UISystem::GetDefaultFont(), FieldFont(), TextDim(), "(" + TypeLabel(type) + ", no drawer)");
 	}
 
 	void InspectorPanel::BuildNestedList(UI::Context& context, UI::ElementHandle header, UI::ElementHandle parent,
@@ -2114,8 +2324,10 @@ namespace Shalltear {
 		}
 
 		const bool structs = (container.elementFlags & FieldFlagSubobject) != 0;
-		const TypeInfo* pointee = structs ? nullptr : TypeRegistry::FindType(HandlePointeeName(*container.elementType));
+		const bool handles = !structs && (container.elementFlags & FieldFlagHandle) != 0;
+		const TypeInfo* pointee = handles ? TypeRegistry::FindType(HandlePointeeName(*container.elementType)) : nullptr;
 		SharedPtr<NestedPath> list = MakeShared<NestedPath>(path);
+		const FieldRef listField = path.steps.empty() ? path.top : path.steps.back().field;
 
 		for (u32 index = 0; index < count; ++index) {
 			NestedPath element = path;
@@ -2134,12 +2346,15 @@ namespace Shalltear {
 				fold.onToggle = [this, key]() { ToggleSection(key); };
 				row = MakeRow(context, body, elementLabel, nullptr, &fold, &value);
 				expanded = !fold.collapsed;
-			} else {
+			} else if (handles) {
 				row = MakeRow(context, body, elementLabel, nullptr, nullptr, &value);
 				HandleSlot slot;
 				slot.target = path.target;
 				slot.nested = MakeShared<NestedPath>(element);
 				BuildHandleSlotRow(context, row, std::move(slot), pointee ? pointee->name : StringHash{}, elementLabel);
+			} else {
+				row = MakeRow(context, body, elementLabel, nullptr, nullptr, &value);
+				BuildNestedElementRow(context, row, MakeShared<NestedPath>(element), listField, container.elementType, elementLabel);
 			}
 
 			UI::Widgets::ButtonDesc remove;
@@ -2166,7 +2381,7 @@ namespace Shalltear {
 		buttonRowStyle.flexDirection = UI::FlexDirection::Row;
 		buttonRowStyle.justifyContent = UI::Align::Center;
 		context.SetStyle(buttonRow, buttonRowStyle);
-		const str addLabel = "Add " + TypeLabel(structs ? container.elementType : pointee);
+		const str addLabel = structs || handles ? "Add " + TypeLabel(structs ? container.elementType : pointee) : str("Add Element");
 		UI::Widgets::ButtonDesc add;
 		add.label = addLabel;
 		add.font = UISystem::GetDefaultFont();
@@ -2262,10 +2477,10 @@ namespace Shalltear {
 
 		const PropertyDrawerFn* custom = CustomDrawerFor(field);
 
-		const bool structList = (field.flags & FieldFlagContainer) != 0 && field.container &&
-								(field.container->elementFlags & FieldFlagSubobject) != 0 && field.container->elementType;
+		const bool valueList = (field.flags & FieldFlagContainer) != 0 && field.container &&
+							   (field.container->elementFlags & FieldFlagHandle) == 0 && field.container->elementType;
 		const bool subobject = (field.flags & FieldFlagSubobject) != 0 && field.fieldType;
-		if (!custom && (structList || subobject)) {
+		if (!custom && (valueList || subobject)) {
 			NestedPath path;
 			path.target = target;
 			path.top = RefTo(field);
@@ -2277,7 +2492,7 @@ namespace Shalltear {
 			if (const AttributeInfo* tooltip = FindFieldAttribute(&field, "Tooltip"_hash); tooltip && tooltip->value.Is<str>()) {
 				context.SetTooltip(header, tooltip->value.As<str>());
 			}
-			if (structList) {
+			if (valueList) {
 				BuildNestedList(context, header, fold.collapsed ? UI::ElementHandle{} : parent, path, *field.container, 0);
 			} else if (!fold.collapsed) {
 				BuildNestedStructRows(context, parent, path, field.fieldType, 0);
@@ -3289,7 +3504,7 @@ namespace Shalltear {
 					break;
 				}
 				Variant current;
-				if (GetField(object, type, binding.field.field, &current) && current.Is<str>()) {
+				if (GetFieldValue(FindField(type, binding.field.field), object, &current) && current.Is<str>()) {
 					if (context.GetTextString(binding.element) != current.As<str>()) {
 						context.SetTextString(binding.element, current.As<str>());
 					}
@@ -3304,8 +3519,19 @@ namespace Shalltear {
 				if (editing) {
 					break;
 				}
+				if (binding.nested) {
+					const TypeInfo* valueType = nullptr;
+					void* at = ResolveNested(*binding.nested, &valueType);
+					const MathShape shape = MathShapeOf(valueType);
+					f64 nestedValues[4] = {};
+					if (at && ReadMath(shape, at, nestedValues)) {
+						UI::Widgets::SetVectorFieldValues(context, binding.vector, binding.componentCount, nestedValues,
+														  shape.kind == MathShape::Kind::Ints ? 0 : UI::Widgets::DEFAULT_DECIMALS);
+					}
+					break;
+				}
 				Variant current;
-				if (!GetField(object, type, binding.field.field, &current)) {
+				if (!GetFieldValue(FindField(type, binding.field.field), object, &current)) {
 					break;
 				}
 				f64 values[4] = {};
@@ -3375,8 +3601,17 @@ namespace Shalltear {
 				if (editing) {
 					break;
 				}
+				if (binding.nested) {
+					const TypeInfo* valueType = nullptr;
+					if (void* at = ResolveNested(*binding.nested, &valueType); at && NameIs(valueType, "Color")) {
+						Color nestedColor;
+						std::memcpy(&nestedColor, at, sizeof(Color));
+						UI::Widgets::SetColorSwatchFieldValue(context, binding.color, nestedColor);
+					}
+					break;
+				}
 				Variant current;
-				if (GetField(object, type, binding.field.field, &current) && current.Is<Color>()) {
+				if (GetFieldValue(FindField(type, binding.field.field), object, &current) && current.Is<Color>()) {
 					UI::Widgets::SetColorSwatchFieldValue(context, binding.color, current.As<Color>());
 				}
 				break;

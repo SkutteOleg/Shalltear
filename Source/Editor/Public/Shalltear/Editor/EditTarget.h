@@ -24,6 +24,17 @@ namespace Shalltear {
 
 		void NotifyWritten() const;
 
+		// each object synced once while a scope is alive
+		class SHALLTEAR_EDITOR_API ReadScope {
+		public:
+			ReadScope();
+			~ReadScope();
+			ReadScope(const ReadScope&) = delete;
+			ReadScope& operator=(const ReadScope&) = delete;
+		};
+
+		static void SyncForRead(Object& object);
+
 		bool IsPrefabRow() const { return _rowKey != 0; }
 		bool operator==(const EditTarget& other) const;
 	private:

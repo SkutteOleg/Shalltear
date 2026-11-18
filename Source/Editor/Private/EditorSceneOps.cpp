@@ -1502,6 +1502,10 @@ namespace Shalltear {
 			return false;
 		}
 
+		bool HoldsText(const ContainerInfo& container) {
+			return container.elementType && container.elementType->name == GetStaticType<str>()->name;
+		}
+
 		str PlaceState(const ValuePlace& place) {
 			if (place.member) {
 				return CaptureFieldState(place.holder, place.holderType, place.member->name);
@@ -1512,12 +1516,17 @@ namespace Shalltear {
 				ScopedLiveHandles live;
 				return TextSerializer::Serialize(element, container.elementType);
 			}
-			if (container.elementSize > 8) {
+			if (HoldsText(container)) {
+				return "s" + *static_cast<const str*>(element);
+			}
+			if (container.elementSize > 8 && (container.elementFlags & FieldFlagTriviallyCopyable) == 0) {
 				return {};
 			}
-			u64 bits = 0;
-			std::memcpy(&bits, element, container.elementSize);
-			return std::format("{:x}", bits);
+			str bytes;
+			for (u32 i = 0; i < container.elementSize; ++i) {
+				bytes += std::format("{:02x}", static_cast<const u8*>(element)[i]);
+			}
+			return bytes;
 		}
 
 		void CopyPlace(const ValuePlace& from, const ValuePlace& to) {
@@ -1531,6 +1540,10 @@ namespace Shalltear {
 			const void* source = from.container->atFn(from.holder, from.element);
 			if ((container.elementFlags & FieldFlagSubobject) != 0 && container.elementType) {
 				TextSerializer::Deserialize(dest, container.elementType, TextSerializer::Serialize(source, container.elementType));
+				return;
+			}
+			if (HoldsText(container)) {
+				*static_cast<str*>(dest) = *static_cast<const str*>(source);
 				return;
 			}
 			std::memcpy(dest, source, container.elementSize);
@@ -1563,6 +1576,7 @@ namespace Shalltear {
 			}
 			str before = CaptureFieldState(live, field);
 			CopyPlace(wanted, current);
+			target.NotifyWritten();
 			str after = CaptureFieldState(live, field);
 			if (before.empty() || after == before) {
 				return false;
