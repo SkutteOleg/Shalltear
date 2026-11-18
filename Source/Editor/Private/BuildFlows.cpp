@@ -11,7 +11,7 @@
 #include "Shalltear/Editor/EditorSceneOps.h"
 #include "Shalltear/Editor/ProjectOps.h"
 
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "EditorConfig.h"
 #include "SceneFileFlows.h"
 

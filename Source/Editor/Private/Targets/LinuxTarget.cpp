@@ -3,7 +3,7 @@
 #include "Shalltear/Editor/BuildPipeline.h"
 
 #include "BuildIcon.h"
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "Platform/EditorPlatform.h"
 
 namespace Shalltear {

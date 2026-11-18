@@ -17,7 +17,7 @@
 #include "Shalltear/Editor/SettingsOps.h"
 
 #include "BuildIcon.h"
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 
 #include <chrono>
 #include <ctime>

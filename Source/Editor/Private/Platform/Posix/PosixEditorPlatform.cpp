@@ -1,5 +1,6 @@
 #include "Platform/Posix/PosixSpawn.h"
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <mutex>
@@ -144,11 +145,19 @@ namespace Shalltear::EditorPlatform {
 		}
 		argv.push_back(nullptr);
 
+		std::vector<str> set;
+		set.reserve(options.setVariables.size());
 		std::vector<char*> environment;
 		for (char** entry = environ; entry && *entry; ++entry) {
-			if (!IsHidden(*entry, options.hiddenVariables)) {
+			const bool replaced = std::any_of(options.setVariables.begin(), options.setVariables.end(), [entry](const SpawnOptions::Variable& variable) {
+				return std::strncmp(*entry, variable.name.c_str(), variable.name.size()) == 0 && (*entry)[variable.name.size()] == '=';
+			});
+			if (!replaced && !IsHidden(*entry, options.hiddenVariables)) {
 				environment.push_back(*entry);
 			}
+		}
+		for (const SpawnOptions::Variable& variable : options.setVariables) {
+			environment.push_back(set.emplace_back(variable.name + "=" + variable.value).data());
 		}
 		environment.push_back(nullptr);
 

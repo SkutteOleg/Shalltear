@@ -3,17 +3,20 @@
 #include "Shalltear/Core/Containers.h"
 #include "Shalltear/Core/Types.h"
 
+#include "Shalltear/Editor/EditorAPI.h"
+
 #include <deque>
 #include <mutex>
+#include <string_view>
 #include <thread>
 
 namespace Shalltear {
 
-	str QuoteCommandArgument(const str& value);
+	SHALLTEAR_EDITOR_API str QuoteCommandArgument(const str& value);
 
-	bool StartDetachedProcess(const str& commandLine, const str& workingDirectory);
+	SHALLTEAR_EDITOR_API bool StartDetachedProcess(const str& commandLine, const str& workingDirectory);
 
-	class ChildProcess {
+	class SHALLTEAR_EDITOR_API ChildProcess {
 	public:
 		ChildProcess() = default;
 		~ChildProcess();
@@ -45,5 +48,16 @@ namespace Shalltear {
 		str _partial;
 		u64 _droppedLines = 0;
 	};
+
+	namespace ChildEnvironment {
+
+		// applied to children started later, until owner is swept
+		SHALLTEAR_EDITOR_API void Set(std::string_view name, std::string_view value, const void* owner);
+
+		SHALLTEAR_EDITOR_API void PrependSearchPath(std::string_view directory, const void* owner);
+
+		SHALLTEAR_EDITOR_API u32 UnregisterOwnedBy(const void* owner);
+
+	} // namespace ChildEnvironment
 
 } // namespace Shalltear

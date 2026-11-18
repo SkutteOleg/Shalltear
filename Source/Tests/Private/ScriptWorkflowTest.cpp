@@ -12,6 +12,7 @@
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
 #include "Shalltear/Editor/BuildProfile.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/CppToolchain.h"
 #include "Shalltear/Editor/PackageOps.h"
@@ -855,6 +856,24 @@ TEST_F(ScriptWorkflowFixture, LaunchStripsVariablesThatRedefineChildProgram) {
 	ASSERT_NE(seen.find('\n'), str::npos) << seen;
 	EXPECT_EQ(seen.find("[1]"), str::npos) << seen;
 	EXPECT_NE(seen.find(unset), str::npos) << seen;
+}
+
+TEST_F(ScriptWorkflowFixture, LaunchCarriesContributedVariables) {
+	static char owner = 0;
+	std::filesystem::path receipt = _root / "child-saw.txt";
+	str unset;
+	const str command = TestPlatform::GetEnvironmentProbeCommand("SLT_TEST_EDITOR_TOOLCHAIN", receipt.generic_string(), unset);
+
+	ChildEnvironment::Set("SLT_TEST_EDITOR_TOOLCHAIN", "pinned", &owner);
+	EXPECT_TRUE(ScriptProjectOps::OpenInExternalEditor(Root(), command, {}, 0, 0));
+	EXPECT_EQ(ChildEnvironment::UnregisterOwnedBy(&owner), 1u);
+
+	str seen = Read("child-saw.txt");
+	for (int attempt = 0; attempt < 100 && seen.find('\n') == str::npos; ++attempt) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		seen = Read("child-saw.txt");
+	}
+	EXPECT_NE(seen.find("[pinned]"), str::npos) << seen;
 }
 
 TEST(ScriptClassNameTest, ValidatesCppIdentifiers) {

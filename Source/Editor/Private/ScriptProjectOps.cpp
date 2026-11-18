@@ -704,9 +704,12 @@ namespace Shalltear::ScriptProjectOps {
 		command = StringUtil::Replace(command, "{line}", std::to_string(line == 0 ? 1u : line));
 		command = StringUtil::Replace(command, "{column}", std::to_string(column == 0 ? 1u : column));
 
+		Vector<EditorPlatform::SpawnOptions::Variable> environment{GetMemoryResource(MemTag::Editor)};
+		EditorPlatform::CollectChildEnvironment(environment);
 		EditorPlatform::SpawnOptions options;
 		options.workingDirectory = projectPath;
 		options.hiddenVariables = HostileChildVariables;
+		options.setVariables = environment;
 		EditorPlatform::SpawnedProcess spawned;
 		str error;
 		if (!EditorPlatform::SpawnProcess(command, options, spawned, error)) {

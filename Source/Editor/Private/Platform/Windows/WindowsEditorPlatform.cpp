@@ -34,7 +34,18 @@ namespace Shalltear::EditorPlatform {
 			return false;
 		}
 
-		Vector<wchar_t> BuildEnvironment(std::span<const std::string_view> hiddenVariables) {
+		bool IsSet(const wchar_t* entry, std::span<const SpawnOptions::Variable> setVariables) {
+			for (const SpawnOptions::Variable& variable : setVariables) {
+				std::wstring prefix = StringUtil::UTF8ToWide(variable.name);
+				prefix.push_back(L'=');
+				if (::_wcsnicmp(entry, prefix.c_str(), prefix.size()) == 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		Vector<wchar_t> BuildEnvironment(std::span<const std::string_view> hiddenVariables, std::span<const SpawnOptions::Variable> setVariables) {
 			Vector<wchar_t> block{GetMemoryResource(MemTag::Editor)};
 			wchar_t* strings = ::GetEnvironmentStringsW();
 			if (strings == nullptr) {
@@ -42,12 +53,16 @@ namespace Shalltear::EditorPlatform {
 			}
 			for (const wchar_t* entry = strings; *entry != L'\0';) {
 				size_t length = std::wcslen(entry);
-				if (!IsHidden(entry, hiddenVariables)) {
+				if (!IsHidden(entry, hiddenVariables) && !IsSet(entry, setVariables)) {
 					block.insert(block.end(), entry, entry + length + 1);
 				}
 				entry += length + 1;
 			}
 			::FreeEnvironmentStringsW(strings);
+			for (const SpawnOptions::Variable& variable : setVariables) {
+				const std::wstring entry = StringUtil::UTF8ToWide(variable.name + "=" + variable.value);
+				block.insert(block.end(), entry.c_str(), entry.c_str() + entry.size() + 1);
+			}
 			block.push_back(L'\0');
 			return block;
 		}
@@ -84,8 +99,8 @@ namespace Shalltear::EditorPlatform {
 		}
 
 		Vector<wchar_t> environment{GetMemoryResource(MemTag::Editor)};
-		if (!options.hiddenVariables.empty()) {
-			environment = BuildEnvironment(options.hiddenVariables);
+		if (!options.hiddenVariables.empty() || !options.setVariables.empty()) {
+			environment = BuildEnvironment(options.hiddenVariables, options.setVariables);
 			if (!environment.empty()) {
 				flags |= CREATE_UNICODE_ENVIRONMENT;
 			}

@@ -9,7 +9,7 @@
 
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "CompilerOutputSink.h"
 
 #include <algorithm>

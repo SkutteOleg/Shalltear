@@ -48,6 +48,8 @@ namespace Shalltear::TestHelpers {
 
 	int RunDataAssetReloadProbe(const char* projectRoot);
 
+	inline constexpr const char* PRINT_ENVIRONMENT_FLAG = "--shalltear-print-environment";
+
 	inline constexpr const char* REFLECTION_STARTUP_FLAG = "--shalltear-reflection-startup";
 
 	enum ReflectionStartupResult : int {

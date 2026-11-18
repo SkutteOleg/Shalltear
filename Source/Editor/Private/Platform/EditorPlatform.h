@@ -20,7 +20,14 @@ namespace Shalltear::EditorPlatform {
 		bool captureOutput = false;
 		// variable names kept out of child's environment
 		std::span<const std::string_view> hiddenVariables;
+		struct Variable {
+			str name;
+			str value;
+		};
+		std::span<const Variable> setVariables;
 	};
+
+	void CollectChildEnvironment(Vector<SpawnOptions::Variable>& out);
 
 	struct SpawnedProcess {
 		void* process = nullptr;

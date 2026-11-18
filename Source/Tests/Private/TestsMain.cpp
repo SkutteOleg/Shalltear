@@ -39,6 +39,12 @@ void Shalltear::TestHelpers::RestoreNodeShader() {
 
 int main(int argc, char** argv) {
 	for (int arg = 1; arg < argc; ++arg) {
+		if (std::strcmp(argv[arg], Shalltear::TestHelpers::PRINT_ENVIRONMENT_FLAG) == 0) {
+			for (int name = arg + 1; name < argc; ++name) {
+				std::printf("%s=%s\n", argv[name], TestPlatform::GetEnvironment(argv[name]).c_str());
+			}
+			return 0;
+		}
 		if (std::strcmp(argv[arg], Shalltear::TestHelpers::REFLECTION_STARTUP_FLAG) == 0) {
 			return Shalltear::TestHelpers::RunReflectionStartupProbe();
 		}

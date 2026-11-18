@@ -1,10 +1,13 @@
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 
 #include "Platform/EditorPlatform.h"
 
 #include "Shalltear/Core/Log.h"
 
+#include <algorithm>
+#include <cstdlib>
 #include <format>
+#include <vector>
 
 namespace Shalltear {
 
@@ -14,15 +17,80 @@ namespace Shalltear {
 
 		constexpr size_t READ_CHUNK = 4096;
 
+		struct Contribution {
+			str name;
+			str value;
+			const void* owner = nullptr;
+			bool searchPath = false;
+		};
+
+		std::mutex _contributionMutex;
+		std::vector<Contribution> _contributions;
+
 	} // anonymous namespace
+
+	namespace ChildEnvironment {
+
+		void Set(std::string_view name, std::string_view value, const void* owner) {
+			std::lock_guard lock(_contributionMutex);
+			for (Contribution& contribution : _contributions) {
+				if (!contribution.searchPath && contribution.owner == owner && contribution.name == name) {
+					contribution.value = value;
+					return;
+				}
+			}
+			_contributions.push_back({str(name), str(value), owner, false});
+		}
+
+		void PrependSearchPath(std::string_view directory, const void* owner) {
+			std::lock_guard lock(_contributionMutex);
+			for (const Contribution& contribution : _contributions) {
+				if (contribution.searchPath && contribution.owner == owner && contribution.value == directory) {
+					return;
+				}
+			}
+			_contributions.push_back({str(), str(directory), owner, true});
+		}
+
+		u32 UnregisterOwnedBy(const void* owner) {
+			std::lock_guard lock(_contributionMutex);
+			return static_cast<u32>(std::erase_if(_contributions, [owner](const Contribution& contribution) { return contribution.owner == owner; }));
+		}
+
+	} // namespace ChildEnvironment
+
+	void EditorPlatform::CollectChildEnvironment(Vector<SpawnOptions::Variable>& out) {
+		std::lock_guard lock(_contributionMutex);
+		str searchPath;
+		for (const Contribution& contribution : _contributions) {
+			if (contribution.searchPath) {
+				searchPath += contribution.value;
+				searchPath.push_back(GetSearchPathSeparator());
+				continue;
+			}
+			const auto same = std::find_if(out.begin(), out.end(), [&](const SpawnOptions::Variable& variable) { return variable.name == contribution.name; });
+			if (same != out.end()) {
+				same->value = contribution.value;
+			} else {
+				out.push_back({contribution.name, contribution.value});
+			}
+		}
+		if (!searchPath.empty()) {
+			const char* inherited = std::getenv("PATH");
+			out.push_back({"PATH", searchPath + (inherited ? inherited : "")});
+		}
+	}
 
 	str QuoteCommandArgument(const str& value) {
 		return "\"" + value + "\"";
 	}
 
 	bool StartDetachedProcess(const str& commandLine, const str& workingDirectory) {
+		Vector<EditorPlatform::SpawnOptions::Variable> environment{GetMemoryResource(MemTag::Editor)};
+		EditorPlatform::CollectChildEnvironment(environment);
 		EditorPlatform::SpawnOptions options;
 		options.workingDirectory = workingDirectory;
+		options.setVariables = environment;
 		EditorPlatform::SpawnedProcess spawned;
 		str error;
 		if (!EditorPlatform::SpawnProcess(commandLine, options, spawned, error)) {
@@ -42,9 +110,12 @@ namespace Shalltear {
 			return false;
 		}
 
+		Vector<EditorPlatform::SpawnOptions::Variable> environment{GetMemoryResource(MemTag::Editor)};
+		EditorPlatform::CollectChildEnvironment(environment);
 		EditorPlatform::SpawnOptions options;
 		options.workingDirectory = workingDirectory;
 		options.captureOutput = true;
+		options.setVariables = environment;
 		EditorPlatform::SpawnedProcess spawned;
 		str error;
 		if (!EditorPlatform::SpawnProcess(commandLine, options, spawned, error)) {

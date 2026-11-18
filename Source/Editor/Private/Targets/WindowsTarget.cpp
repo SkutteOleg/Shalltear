@@ -4,7 +4,7 @@
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include "BuildIcon.h"
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "Platform/EditorPlatform.h"
 
 namespace Shalltear {

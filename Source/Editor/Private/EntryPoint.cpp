@@ -25,7 +25,7 @@
 #include "Shalltear/Editor/SettingsOps.h"
 
 #include "BatchBuild.h"
-#include "ChildProcess.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "EditorApplication.h"
 #include "EditorGrid.h"
 
