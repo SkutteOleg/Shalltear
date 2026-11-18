@@ -1,3 +1,5 @@
+#include "ScriptRuntime.h"
+
 #include "Shalltear/Core/Module/ModuleAPI.h"
 
 namespace Shalltear::CSharpImpl {
@@ -6,6 +8,10 @@ namespace Shalltear::CSharpImpl {
 		(void)owner;
 	}
 
+	void ShutdownPackage() {
+		ScriptRuntime::Detach();
+	}
+
 } // namespace Shalltear::CSharpImpl
 
-SLT_IMPLEMENT_PACKAGE(CSharp, &Shalltear::CSharpImpl::RegisterPackage)
+SLT_IMPLEMENT_PACKAGE_WITH_SHUTDOWN(CSharp, &Shalltear::CSharpImpl::RegisterPackage, &Shalltear::CSharpImpl::ShutdownPackage)

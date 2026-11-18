@@ -1,0 +1,100 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
+using System.Text;
+
+namespace Shalltear.Interop;
+
+[RequiresUnreferencedCode("Editor runtime only")]
+[RequiresDynamicCode("Editor runtime only")]
+internal static unsafe class UserAssemblies {
+	[RequiresUnreferencedCode("Editor runtime only")]
+	[RequiresDynamicCode("Editor runtime only")]
+	sealed class Context : AssemblyLoadContext {
+		readonly string _directory;
+
+		public Context(string directory) : base("Shalltear.Scripts", isCollectible: true) {
+			_directory = directory;
+		}
+
+		protected override Assembly? Load(AssemblyName name) {
+			Assembly runtime = typeof(Bridge).Assembly;
+			if (name.Name == runtime.GetName().Name) {
+				return runtime;
+			}
+			string candidate = Path.Combine(_directory, name.Name + ".dll");
+			return File.Exists(candidate) ? LoadUnlocked(candidate) : null;
+		}
+
+		public Assembly LoadUnlocked(string path) {
+			return LoadFromStream(new MemoryStream(File.ReadAllBytes(path)));
+		}
+	}
+
+	static Context? _context;
+
+	[UnmanagedCallersOnly]
+	internal static int Load(SltString* paths, int count) {
+		try {
+			if (_context != null) {
+				throw new InvalidOperationException("user assemblies are already loaded");
+			}
+			if (count <= 0) {
+				return Bridge.OK;
+			}
+			string first = Encoding.UTF8.GetString(paths[0].ptr, paths[0].length);
+			Context context = new(Path.GetDirectoryName(Path.GetFullPath(first)) ?? "");
+			_context = context;
+			try {
+				for (int index = 0; index < count; ++index) {
+					string path = Encoding.UTF8.GetString(paths[index].ptr, paths[index].length);
+					Assembly assembly = context.LoadUnlocked(Path.GetFullPath(path));
+					RuntimeHelpers.RunModuleConstructor(assembly.ManifestModule.ModuleHandle);
+				}
+			} catch {
+				Release();
+				throw;
+			}
+			return Bridge.OK;
+		} catch (Exception exception) {
+			Bridge.Report(exception);
+			return Bridge.FAILED;
+		}
+	}
+
+	[UnmanagedCallersOnly]
+	internal static int Unload() {
+		try {
+			return Release();
+		} catch (Exception exception) {
+			Bridge.Report(exception);
+			return Bridge.FAILED;
+		}
+	}
+
+	// context must leave this frame's stack before collection
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	static WeakReference Detach() {
+		Context? context = _context;
+		_context = null;
+		ConformanceRegistry.Clear();
+		if (context == null) {
+			return new WeakReference(null);
+		}
+		context.Unload();
+		return new WeakReference(context);
+	}
+
+	static int Release() {
+		WeakReference alive = Detach();
+		for (int attempt = 0; attempt < 10 && alive.IsAlive; ++attempt) {
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+		}
+		return alive.IsAlive ? 1 : Bridge.OK;
+	}
+}

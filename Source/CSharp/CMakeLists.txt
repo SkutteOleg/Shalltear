@@ -13,6 +13,7 @@ set(sltPinFile "${CMAKE_CURRENT_SOURCE_DIR}/DotNetPin.json")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${sltPinFile}")
 file(READ "${sltPinFile}" sltPin)
 string(JSON sltSDKVersion GET "${sltPin}" sdkVersion)
+string(JSON sltRuntimeVersion GET "${sltPin}" runtimeVersion)
 
 set(sltDotNetRoot "${CMAKE_SOURCE_DIR}/External/Prebuilt/dotnet/${sltSDKVersion}")
 if(CMAKE_HOST_WIN32)
@@ -62,22 +63,33 @@ add_custom_command(
 add_custom_target(CSharpManaged DEPENDS "${sltManagedStamp}")
 
 file(GLOB_RECURSE CSHARP_SOURCES "Private/*.cpp" "Private/*.h")
+shalltear_select_platform_sources(CSHARP_SOURCES)
 
 shalltear_add_package(CSharp SOURCES ${CSHARP_SOURCES})
 
 target_include_directories(CSharp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 add_dependencies(CSharp CSharpManaged)
+if(NOT WIN32)
+	target_link_libraries(CSharp PRIVATE ${CMAKE_DL_LIBS})
+endif()
+if(SHALLTEAR_BUILD_TESTS)
+	target_compile_definitions(CSharp PRIVATE SLT_CSHARP_TEST_HOOKS)
+endif()
 
 if(SHALLTEAR_BUILD_SHARED)
 	file(GLOB_RECURSE CSHARP_EDITOR_SOURCES
 		"${CMAKE_CURRENT_SOURCE_DIR}/../CSharpEditor/Private/*.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/../CSharpEditor/Private/*.h")
+	shalltear_select_platform_sources(CSHARP_EDITOR_SOURCES)
 	if(NOT CSHARP_EDITOR_SOURCES)
 		message(FATAL_ERROR "Source/CSharpEditor/Private has no sources (package's editor half is missing).")
 	endif()
 	target_sources(CSharp PRIVATE ${CSHARP_EDITOR_SOURCES})
 	target_link_libraries(CSharp PRIVATE ShalltearEditor)
-	target_compile_definitions(CSharp PRIVATE SLT_WITH_EDITOR)
+	target_compile_definitions(CSharp PRIVATE
+		SLT_WITH_EDITOR
+		SLT_DOTNET_SDK_VERSION="${sltSDKVersion}"
+		SLT_DOTNET_RUNTIME_VERSION="${sltRuntimeVersion}")
 
 	target_include_directories(CSharp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../CSharpEditor/Private)
 endif()

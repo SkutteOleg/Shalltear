@@ -132,6 +132,7 @@ if(TARGET CSharp)
     else()
         target_link_libraries(ShalltearTests PRIVATE CSharp)
     endif()
+    target_include_directories(ShalltearTests PRIVATE ${CMAKE_SOURCE_DIR}/Source/CSharp/Private)
 endif()
 
 if(TARGET ShalltearSampleModule)

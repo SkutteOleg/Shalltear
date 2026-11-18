@@ -1,0 +1,133 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace Shalltear.Interop;
+
+internal static unsafe class Bridge {
+	internal const uint ABI_VERSION = 1;
+	internal const ulong LAYOUT_HASH = 0;
+
+	internal const int OK = 0;
+	internal const int FAILED = -1;
+	const int ABI_MISMATCH = 1;
+	const int LAYOUT_MISMATCH = 2;
+
+	static SltEngineAPI _engine;
+	static volatile bool _attached;
+	static bool _handlerInstalled;
+
+	[UnmanagedCallersOnly]
+	[UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Editor runtime only")]
+	[UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Editor runtime only")]
+	static int Initialize(SltEngineAPI* engine, SltManagedAPI* managed) {
+		int result = Attach(engine, managed);
+		if (result == OK) {
+			managed->loadUserAssemblies = &UserAssemblies.Load;
+			managed->unloadUserAssemblies = &UserAssemblies.Unload;
+		}
+		return result;
+	}
+
+	internal static int Attach(SltEngineAPI* engine, SltManagedAPI* managed) {
+		managed->abiVersion = ABI_VERSION;
+		if (engine->abiVersion != ABI_VERSION) {
+			return ABI_MISMATCH;
+		}
+		managed->layoutHash = LAYOUT_HASH;
+		if (engine->layoutHash != LAYOUT_HASH) {
+			return LAYOUT_MISMATCH;
+		}
+
+		_engine = *engine;
+		_attached = true;
+		managed->loadUserAssemblies = null;
+		managed->unloadUserAssemblies = null;
+		managed->getConformanceTestCount = &GetConformanceTestCount;
+		managed->getConformanceTestName = &GetConformanceTestName;
+		managed->runConformanceTest = &RunConformanceTest;
+		managed->shutdown = &Shutdown;
+
+		if (!_handlerInstalled) {
+			_handlerInstalled = true;
+			ExceptionHandling.SetUnhandledExceptionHandler(static exception => {
+				Report(exception);
+				return true;
+			});
+		}
+		return OK;
+	}
+
+	internal static void Report(Exception exception) {
+		if (!_attached) {
+			return;
+		}
+		byte[] type = Encoding.UTF8.GetBytes(exception.GetType().FullName ?? exception.GetType().Name);
+		byte[] message = Encoding.UTF8.GetBytes(exception.Message);
+		byte[] trace = Encoding.UTF8.GetBytes(exception.StackTrace ?? "");
+		fixed (byte* typePtr = type, messagePtr = message, tracePtr = trace) {
+			_engine.reportException(
+				new SltString { ptr = typePtr, length = type.Length },
+				new SltString { ptr = messagePtr, length = message.Length },
+				new SltString { ptr = tracePtr, length = trace.Length });
+		}
+	}
+
+	internal static void Log(int level, string text) {
+		if (!_attached) {
+			return;
+		}
+		byte[] bytes = Encoding.UTF8.GetBytes(text);
+		fixed (byte* ptr = bytes) {
+			_engine.log(level, new SltString { ptr = ptr, length = bytes.Length });
+		}
+	}
+
+	internal static EngineException LastError() {
+		SltString text;
+		_engine.getLastError(&text);
+		return new EngineException(text.length > 0 ? Encoding.UTF8.GetString(text.ptr, text.length) : "engine call failed");
+	}
+
+	internal static void ThrowForTest() {
+		if (_engine.throwForTest == null) {
+			throw new InvalidOperationException("engine built without test hooks");
+		}
+		if (_engine.throwForTest() != OK) {
+			throw LastError();
+		}
+	}
+
+	[UnmanagedCallersOnly]
+	static int GetConformanceTestCount() {
+		return ConformanceRegistry.Count;
+	}
+
+	[UnmanagedCallersOnly]
+	static int GetConformanceTestName(int index, SltString* outName) {
+		try {
+			ConformanceRegistry.GetName(index, outName);
+			return OK;
+		} catch (Exception exception) {
+			Report(exception);
+			return FAILED;
+		}
+	}
+
+	[UnmanagedCallersOnly]
+	static int RunConformanceTest(int index, SltString* outMessage) {
+		try {
+			return ConformanceRegistry.Run(index, outMessage);
+		} catch (Exception exception) {
+			Report(exception);
+			return FAILED;
+		}
+	}
+
+	[UnmanagedCallersOnly]
+	static void Shutdown() {
+		_attached = false;
+	}
+}

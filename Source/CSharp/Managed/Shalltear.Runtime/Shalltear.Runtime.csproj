@@ -10,4 +10,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Shalltear.Conformance" />
+	</ItemGroup>
 </Project>

@@ -4,6 +4,7 @@
 		<RootNamespace>Shalltear.Conformance</RootNamespace>
 		<IsAotCompatible>true</IsAotCompatible>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<NoWarn>$(NoWarn);CA2255</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="../Shalltear.Runtime/Shalltear.Runtime.csproj" Private="false" />
