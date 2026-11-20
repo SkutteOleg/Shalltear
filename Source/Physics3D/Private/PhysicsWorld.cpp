@@ -849,6 +849,45 @@ namespace Shalltear {
 		return nullptr;
 	}
 
+	namespace {
+
+		PhysicsListenerResolver _listenerResolvers[Physics::MAX_LISTENER_RESOLVERS] = {};
+		u32 _listenerResolverCount = 0;
+
+		PhysicsListener* FindListener(Component* component) {
+			if (!component) {
+				return nullptr;
+			}
+			if (PhysicsListener* listener = dynamic_cast<PhysicsListener*>(component)) {
+				return listener;
+			}
+			for (u32 index = 0; index < _listenerResolverCount; ++index) {
+				if (PhysicsListener* listener = _listenerResolvers[index](*component)) {
+					return listener;
+				}
+			}
+			return nullptr;
+		}
+
+	} // anonymous namespace
+
+	void Physics::AddListenerResolver(PhysicsListenerResolver resolver) {
+		RemoveListenerResolver(resolver);
+		SLT_CORE_ASSERT_MSG(_listenerResolverCount < MAX_LISTENER_RESOLVERS, "too many physics listener resolvers");
+		if (resolver && _listenerResolverCount < MAX_LISTENER_RESOLVERS) {
+			_listenerResolvers[_listenerResolverCount++] = resolver;
+		}
+	}
+
+	void Physics::RemoveListenerResolver(PhysicsListenerResolver resolver) {
+		for (u32 index = 0; index < _listenerResolverCount; ++index) {
+			if (_listenerResolvers[index] == resolver) {
+				_listenerResolvers[index] = _listenerResolvers[--_listenerResolverCount];
+				return;
+			}
+		}
+	}
+
 	u32 PhysicsWorld::CollectListeners(SceneObject& object) {
 		_listenerScratch.clear();
 		const u32 count = object.GetComponentCount();
@@ -858,7 +897,7 @@ namespace Shalltear {
 			if (!component || component->IsPendingDestroy()) {
 				continue;
 			}
-			if (dynamic_cast<PhysicsListener*>(component)) {
+			if (FindListener(component)) {
 				_listenerScratch.push_back(handle);
 			}
 		}
@@ -883,7 +922,7 @@ namespace Shalltear {
 					break;
 				}
 				Component* component = _listenerScratch[index].Get();
-				PhysicsListener* listener = component ? dynamic_cast<PhysicsListener*>(component) : nullptr;
+				PhysicsListener* listener = FindListener(component);
 				if (!listener) {
 					continue;
 				}
@@ -933,7 +972,7 @@ namespace Shalltear {
 				break;
 			}
 			Component* component = _listenerScratch[index].Get();
-			PhysicsListener* listener = component ? dynamic_cast<PhysicsListener*>(component) : nullptr;
+			PhysicsListener* listener = FindListener(component);
 			if (!listener) {
 				continue;
 			}
@@ -1796,7 +1835,7 @@ namespace Shalltear {
 				const u32 count = CollectListeners(*owningObject);
 				for (u32 listenerIndex = 0; listenerIndex < count; ++listenerIndex) {
 					Component* component = _listenerScratch[listenerIndex].Get();
-					if (auto* listener = dynamic_cast<PhysicsListener*>(component)) {
+					if (PhysicsListener* listener = FindListener(component)) {
 						listener->OnJointBreak(force);
 					}
 				}
@@ -2244,7 +2283,7 @@ namespace Shalltear {
 				if (!component || component->IsPendingDestroy()) {
 					continue;
 				}
-				if (auto* listener = dynamic_cast<PhysicsListener*>(component)) {
+				if (PhysicsListener* listener = FindListener(component)) {
 					listener->OnControllerColliderHit(hit);
 				}
 			}

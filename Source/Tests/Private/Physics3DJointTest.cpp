@@ -583,6 +583,27 @@ TEST_F(Physics3DJointFixture, JointSceneRoundTrips) {
 	EXPECT_NE(first.find("-45"), str::npos);
 }
 
+TEST_F(Physics3DJointFixture, ResolvedComponentHearsJointBreak) {
+#ifndef SHALLTEAR_SHARED
+	GTEST_SKIP() << "listener module registers with its copy of Physics 3D in a static tree";
+#endif
+	const TypeInfo* resolved = TypeRegistry::FindType(StringHash("ResolvedProbe"));
+	ASSERT_NE(resolved, nullptr);
+	Handle<Component> joint;
+	Handle<SceneObject> object = MakeJointed("hanging", Vec3{0.0f, -1.0f, 0.0f}, _fixedType, joint, false, 1.0f);
+	ASSERT_TRUE(object.IsValid());
+	Handle<Component> probe = object->AddComponent(resolved);
+	ASSERT_TRUE(probe.IsValid());
+	ASSERT_TRUE(WriteField(_hingeType, joint.Get(), "_breakForce", GRAVITY * 0.5f));
+	Activate(object);
+
+	RunFixedSteps(4);
+
+	i32 breaks = -1;
+	ASSERT_TRUE(ReadField(resolved, probe.Get(), "jointBreak", breaks));
+	EXPECT_EQ(breaks, 1);
+}
+
 TEST_F(Physics3DJointFixture, JointBreaksAtThresholdAndReportsForce) {
 	Handle<Component> joint;
 	Handle<SceneObject> object = MakeJointed("hanging", Vec3{0.0f, -1.0f, 0.0f}, _fixedType, joint,

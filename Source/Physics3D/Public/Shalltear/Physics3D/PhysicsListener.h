@@ -11,6 +11,7 @@
 
 namespace Shalltear {
 
+	class Component;
 	class SceneObject;
 
 	struct PhysicsContactPoint {
@@ -65,5 +66,17 @@ namespace Shalltear {
 		// once per collider per Move, after the move
 		virtual void OnControllerColliderHit(const ControllerColliderHit& hit) { (void)hit; }
 	};
+
+	// result valid until next resolver call
+	using PhysicsListenerResolver = PhysicsListener* (*)(Component& component);
+
+	namespace Physics {
+
+		inline constexpr u32 MAX_LISTENER_RESOLVERS = 4;
+
+		SHALLTEAR_PHYSICS3D_API void AddListenerResolver(PhysicsListenerResolver resolver);
+		SHALLTEAR_PHYSICS3D_API void RemoveListenerResolver(PhysicsListenerResolver resolver);
+
+	} // namespace Physics
 
 } // namespace Shalltear

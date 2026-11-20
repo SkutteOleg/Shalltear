@@ -442,6 +442,45 @@ TEST_F(Physics3DContactFixture, TriggerReportsBothSidesAndNoCollision) {
 	EXPECT_EQ(CountOn(visitor, "triggerExit"), 1);
 }
 
+TEST_F(Physics3DContactFixture, ResolverSpeaksForOtherComponents) {
+#ifndef SHALLTEAR_SHARED
+	GTEST_SKIP() << "listener module registers with its copy of Physics 3D in a static tree";
+#endif
+	const TypeInfo* resolved = TypeRegistry::FindType(StringHash("ResolvedProbe"));
+	ASSERT_NE(resolved, nullptr);
+	const auto count = [resolved](const Handle<Component>& probe, std::string_view field) {
+		i32 value = -1;
+		ReadField(resolved, probe.Get(), field, value);
+		return value;
+	};
+
+	Handle<SceneObject> floor = MakeSphere("Floor", Vec3{}, 0.5f, false, false);
+	Handle<SceneObject> box = MakeSphere("Box", Vec3{0.0f, 0.6f, 0.0f}, 0.5f, true, false);
+	ASSERT_TRUE(floor.IsValid());
+	ASSERT_TRUE(box.IsValid());
+	Handle<Component> probe = box->AddComponent(resolved);
+	ASSERT_TRUE(probe.IsValid());
+
+	RunFixedSteps(3);
+	EXPECT_EQ(count(probe, "collisionEnter"), 1);
+	EXPECT_EQ(count(probe, "collisionStay"), 2);
+
+	box->SetWorldPosition(Vec3{0.0f, 20.0f, 0.0f});
+	RunFixedSteps(2);
+	EXPECT_EQ(count(probe, "collisionExit"), 1);
+
+	Handle<SceneObject> volume = MakeSphere("Volume", Vec3{10.0f, 0.0f, 0.0f}, 0.5f, false, false, true);
+	Handle<SceneObject> visitor = MakeSphere("Visitor", Vec3{10.0f, 0.4f, 0.0f}, 0.5f, true, false);
+	ASSERT_TRUE(volume.IsValid());
+	ASSERT_TRUE(visitor.IsValid());
+	Handle<Component> heard = volume->AddComponent(resolved);
+	ASSERT_TRUE(heard.IsValid());
+	RunFixedSteps(1);
+	EXPECT_EQ(count(heard, "triggerEnter"), 1);
+	EXPECT_EQ(count(heard, "collisionEnter"), 0);
+	EXPECT_EQ(count(probe, "triggerEnter"), 0);
+}
+
 TEST_F(Physics3DContactFixture, TriggerHearsVisitorThatIsNotListening) {
 	Handle<SceneObject> volume = MakeSphere("Volume", Vec3{}, 0.5f, false, true, true);
 	Handle<SceneObject> visitor = MakeSphere("Visitor", Vec3{0.0f, 0.4f, 0.0f}, 0.5f, true, false);
