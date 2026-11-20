@@ -20,8 +20,9 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 
 		SltManagedAPI _managed{};
 		bool _attached = false;
-		thread_local str _lastError;
-		thread_local str _keptString;
+		// glibc won't unmap a library holding live thread_local destructors
+		[[clang::no_destroy]] thread_local str _lastError;
+		[[clang::no_destroy]] thread_local str _keptString;
 
 		std::string_view View(SltString text) {
 			return text.ptr && text.length > 0 ? std::string_view(text.ptr, static_cast<size_t>(text.length)) : std::string_view{};

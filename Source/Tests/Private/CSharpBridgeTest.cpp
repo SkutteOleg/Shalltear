@@ -50,6 +50,31 @@ TEST_F(CSharpRuntimeFixture, MissingSDKNamesTheLibrary) {
 	ASSERT_TRUE(Attach()) << _error;
 }
 
+TEST_F(CSharpRuntimeFixture, PackageUnloadsAfterStringsCross) {
+	SceneSystem::Initialize();
+	SceneSystem::CreateScene("World");
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	{
+		const Time::FrameScope frame(CSharpConformance::MakeFrame());
+		str message;
+		ASSERT_EQ(Run("ObjectTests.InstantiateCopiesFields", message), SLT_OK) << message;
+		ASSERT_EQ(Run("BindingTests.NativeThrowCarriesItsMessage", message), SLT_OK) << message;
+	}
+	SceneSystem::Terminate();
+	_hooks->detach();
+	ModuleSystem::Terminate();
+
+	ModuleSystem::Initialize();
+	_package = ModuleSystem::Load(Path(str("CSharp") + SLT_TEST_DLL_SUFFIX), ModuleLoadPolicy::InPlace);
+	ASSERT_TRUE(ModuleSystem::IsLoaded(_package));
+	const auto get = reinterpret_cast<CSharpImpl::GetScriptTestHooksFn>(
+		ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_package), CSharpImpl::SCRIPT_TEST_HOOKS_SYMBOL));
+	ASSERT_NE(get, nullptr);
+	_hooks = get();
+	EXPECT_EQ(_hooks->getHostEntry(), nullptr);
+}
+
 TEST_F(CSharpRuntimeFixture, MismatchedLayoutNamesBothSides) {
 	const SltInitializeFn entry = Host();
 	ASSERT_NE(entry, nullptr) << _error;
