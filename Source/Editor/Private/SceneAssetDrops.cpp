@@ -93,7 +93,9 @@ namespace Shalltear {
 				Component* held = live->GetComponentAt(index).Get();
 				if (held && TypeRegistry::IsDerivedFrom(held->GetType(), type)) {
 					const u64 bits = loaded->GetInstanceId();
+					SyncFieldsBeforeRead(held, held->GetType());
 					std::memcpy(field->addrFn(held), &bits, sizeof(bits));
+					SyncFieldsAfterWrite(held, held->GetType());
 					return;
 				}
 			}

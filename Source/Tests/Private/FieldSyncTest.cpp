@@ -1,6 +1,7 @@
 #include "TestsPCH.h"
 
 #include "Shalltear/Core/Asset.h"
+#include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Math.h"
@@ -8,15 +9,22 @@
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 #include "Shalltear/Core/Serialization/TextSerializer.h"
+#include "Shalltear/Core/UI/DragDrop.h"
+#include "Shalltear/Core/UI/UIDocument.h"
 
 #include "Shalltear/Editor/EditTarget.h"
 #include "Shalltear/Editor/EditorCommands.h"
+#include "Shalltear/Editor/EditorDragData.h"
+#include "Shalltear/Editor/EditorSceneOps.h"
+#include "Shalltear/Editor/EditorSelection.h"
+#include "Shalltear/Editor/SceneAssetDrops.h"
 #include "Shalltear/Editor/UndoSystem.h"
 
 #include <atomic>
 #include <chrono>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <thread>
 #include <vector>
 
@@ -51,6 +59,7 @@ namespace {
 		i32 count = 3;
 		Vec3 offset{1.0f, 2.0f, 3.0f};
 		u64 target = 0;
+		u64 document = 0;
 	};
 
 	class SyncProbe;
@@ -67,6 +76,7 @@ namespace {
 			shadowCount = mirror.count;
 			shadowOffset = mirror.offset;
 			shadowTarget = Handle<SceneObject>(static_cast<SceneObject*>(ObjectRegistry::Resolve(mirror.target)));
+			shadowDocument = Handle<UIDocumentAsset>(static_cast<UIDocumentAsset*>(ObjectRegistry::Resolve(mirror.document)));
 			++pushes;
 		}
 
@@ -75,6 +85,7 @@ namespace {
 			mirror.count = shadowCount;
 			mirror.offset = shadowOffset;
 			mirror.target = shadowTarget.GetInstanceId();
+			mirror.document = shadowDocument.GetInstanceId();
 			dirty = false;
 			++pulls;
 		}
@@ -85,6 +96,7 @@ namespace {
 		i32 shadowCount = 0;
 		Vec3 shadowOffset;
 		Handle<SceneObject> shadowTarget;
+		Handle<UIDocumentAsset> shadowDocument;
 		bool dirty = false;
 		u32 pushes = 0;
 		u32 pulls = 0;
@@ -122,8 +134,8 @@ namespace {
 	}
 
 	template <typename T>
-	void AddShadowField(ReflectBuilder& builder, const char* name, void* (*address)(void*)) {
-		builder.AddField(StringHash(name), name, GetStaticType<T>(), sizeof(T), alignof(T), nullptr, nullptr, address, FieldFlagDefault, {});
+	void AddShadowField(ReflectBuilder& builder, const char* name, void* (*address)(void*), u32 flags = FieldFlagDefault) {
+		builder.AddField(StringHash(name), name, GetStaticType<T>(), sizeof(T), alignof(T), nullptr, nullptr, address, flags, {});
 	}
 
 	const TypeInfo* RegisterSyncProbe() {
@@ -137,6 +149,9 @@ namespace {
 		AddShadowField<i32>(builder, "count", +[](void* instance) -> void* { return &static_cast<SyncProbe*>(instance)->shadowCount; });
 		AddShadowField<Vec3>(builder, "offset", +[](void* instance) -> void* { return &static_cast<SyncProbe*>(instance)->shadowOffset; });
 		AddShadowField<Handle<SceneObject>>(builder, "target", +[](void* instance) -> void* { return &static_cast<SyncProbe*>(instance)->shadowTarget; });
+		AddShadowField<Handle<UIDocumentAsset>>(
+			builder, "document", +[](void* instance) -> void* { return &static_cast<SyncProbe*>(instance)->shadowDocument; },
+			FieldFlagDefault | FieldFlagHandle);
 		return builder.FinalizeOwned(&_syncToken);
 	}
 
@@ -325,6 +340,46 @@ TEST_F(FieldSyncTest, BoxedAccessReachesAFieldWithoutAccessors) {
 		},
 		FieldWalkFlagNone);
 	EXPECT_EQ(boxed, 1u);
+}
+
+TEST_F(FieldSyncTest, DroppedAssetSyncsAroundItsWrite) {
+	EditorSceneOps::Initialize();
+	EditorSelection::Initialize();
+	UndoSystem::Initialize();
+	std::filesystem::create_directories(_root / "Assets");
+	{
+		std::ofstream file(_root / "Assets" / "Hud.slxml", std::ios::binary);
+		file << "<ui version=\"1\">\n\t<panel id=\"root\"/>\n</ui>\n";
+	}
+	AssetDatabase::ScanProjectDirectory();
+	AssetDragData data;
+	data.guid = AssetDatabase::LookupGuid(Path("project://Assets/Hud.slxml"));
+	IAssetImporter* importer = AssetImporterRegistry::FindByExtension(".slxml");
+	data.assetTypeHash = importer ? importer->GetAssetType().GetValue() : 0;
+	ASSERT_TRUE(data.guid.IsValid());
+	UI::DragPayload payload;
+	payload.type = "Asset"_hash;
+	payload.data = Variant(data);
+	char owner = 0;
+	ASSERT_TRUE(SceneAssetDrops::Register(StringHash("UIDocumentAsset"), StringHash("SyncProbe"), StringHash("document"), &owner));
+
+	const Handle<SceneObject> made = SceneAssetDrops::Drop(payload, _scene, {});
+	ASSERT_TRUE(made.IsValid());
+	SyncProbe* probe = ProbeOf(_scene, "Hud");
+	ASSERT_NE(probe, nullptr);
+	const u64 dropped = probe->shadowDocument.GetInstanceId();
+	EXPECT_NE(dropped, 0u);
+	EXPECT_NE(probe->calls.find("rw"), str::npos) << probe->calls;
+	FlushProbes();
+	EXPECT_EQ(probe->mirror.document, dropped);
+	TextSerializer::Serialize(probe, _type);
+	EXPECT_EQ(probe->shadowDocument.GetInstanceId(), dropped);
+
+	EXPECT_EQ(SceneAssetDrops::UnregisterOwnedBy(&owner), 1u);
+	SceneAssetDrops::Terminate();
+	UndoSystem::Terminate();
+	EditorSelection::Terminate();
+	EditorSceneOps::Terminate();
 }
 
 TEST_F(FieldSyncTest, PrefabOverrideReachesAFieldWithoutAccessors) {
