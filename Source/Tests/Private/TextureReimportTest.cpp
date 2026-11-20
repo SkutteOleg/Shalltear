@@ -1,5 +1,6 @@
 #include "TestsPCH.h"
 
+#include "ScopedImportCostThreshold.h"
 #include "ShadingHarness.h"
 #include "TestImages.h"
 
@@ -48,6 +49,7 @@ TEST_F(TextureReimportFixture, HeldTextureTakesRewrittenFileInPlace) {
 }
 
 TEST_F(TextureReimportFixture, RewriteToSameBytesRefillsNothing) {
+	ScopedImportCostThreshold noCache{ScopedImportCostThreshold::CACHE_NOTHING};
 	TestImages::WriteTGA(_root / "Map.tga", red);
 	Asset* held = AssetDatabase::LoadAsset(Path("project://Map.tga"));
 	ASSERT_NE(held, nullptr);

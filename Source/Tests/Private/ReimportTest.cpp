@@ -1,5 +1,7 @@
 #include "TestsPCH.h"
 
+#include "ScopedImportCostThreshold.h"
+
 #include "Shalltear/Core/Asset.h"
 #include "Shalltear/Core/Serialization/JSON.h"
 
@@ -235,6 +237,7 @@ TEST_F(ReimportFixture, ReimportNeedsDatabaseAsset) {
 }
 
 TEST_F(ReimportFixture, SiblingHeldProductAllowsReimport) {
+	ScopedImportCostThreshold noCache{ScopedImportCostThreshold::CACHE_NOTHING};
 	WriteSource("project://Assets/rig.linked", "content");
 	Asset* source = AssetDatabase::LoadAsset(Path("project://Assets/rig.linked"));
 	ASSERT_NE(source, nullptr);
