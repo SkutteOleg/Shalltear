@@ -3,6 +3,7 @@ import contextlib
 import importlib.util
 import io
 import hashlib
+import json
 import os
 import re
 import shutil
@@ -379,6 +380,44 @@ def check_local_constants(check):
 	return 1
 
 
+def check_lint_units(check):
+	lint = codemod.lint
+	root = os.path.dirname(os.path.dirname(os.path.abspath(lint.__file__)))
+	tmp = tempfile.mkdtemp(dir=root)
+	try:
+		header = os.path.join(tmp, "cmake_pch.hxx")
+		binary = header + ".pch"
+		unit = os.path.join(tmp, "Unit.cpp")
+		for path in (header, binary):
+			with open(path, "wb") as f:
+				f.write(b"")
+		entry = {"file": unit,
+				 "arguments": ["clang++", "-std=c++20", "-Xclang", "-include-pch", "-Xclang", binary,
+							   "-Xclang", "-include", "-Xclang", header, "-c", unit]}
+		check("LINT drops a built precompiled header", lint.compile_args(entry),
+			  ["-std=c++20", "-Xclang", "-include", "-Xclang", header])
+
+		missing = os.path.join(root, "Source", "NamingLintMissingUnit.cpp")
+		with open(os.path.join(tmp, "compile_commands.json"), "wb") as f:
+			f.write(json.dumps([{"file": missing, "arguments": ["clang++", "-c", missing]}]).encode("utf-8"))
+		ledger = os.path.join(tmp, "ledger.txt")
+		argv = sys.argv
+		sys.argv = ["naming_lint.py", "--build", tmp, "--ledger", ledger]
+		try:
+			with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+				code = lint.main()
+		except Exception:
+			print("SKIPPED: the lint run check needs a loadable libclang")
+			return 1
+		finally:
+			sys.argv = argv
+		check("LINT fails on a unit that doesn't parse", code, 1)
+		check("LINT writes no ledger after a parse failure", os.path.exists(ledger), False)
+	finally:
+		shutil.rmtree(tmp, ignore_errors=True)
+	return 3
+
+
 def check_ledger_freshness(check):
 	here = os.path.dirname(os.path.abspath(__file__))
 	ledger = os.path.join(here, "naming-ledger.txt")
@@ -487,6 +526,7 @@ def main():
 	total += check_ledger_freshness(check)
 	total += check_system_include_casing(check)
 	if codemod is not None:
+		total += check_lint_units(check)
 		total += check_merge(check)
 		total += check_traversal(check)
 		total += check_anon_scope(check)

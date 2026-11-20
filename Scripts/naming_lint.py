@@ -106,7 +106,7 @@ def compile_args(entry):
 		if a == "-Xclang" and i + 3 < len(cmd) and cmd[i + 1] in ("-include-pch", "-include") \
 				and cmd[i + 2] == "-Xclang":
 			path = cmd[i + 3]
-			if not os.path.exists(path):
+			if cmd[i + 1] == "-include-pch" or not os.path.exists(path):
 				i += 4
 				continue
 			out.extend(cmd[i:i + 4])
@@ -447,6 +447,8 @@ def main():
 		print("\n==== TUs THAT FAILED TO PARSE ====")
 		for f, err in failed[:10]:
 			print("  %s: %s" % (f, err.splitlines()[0] if err else "?"))
+		print("\n%d translation unit(s) failed to parse, nothing written" % len(failed))
+		return 1
 
 	if args.ledger:
 		write_ledger(args.ledger, findings, unresolved, stats, unmapped, len(tus) - len(failed), failed, dictionary_sha)
