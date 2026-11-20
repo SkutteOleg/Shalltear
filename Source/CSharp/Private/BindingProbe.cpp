@@ -11,7 +11,9 @@
 #include "Shalltear/Core/Graphics/PrimitiveMesh.h"
 #include "Shalltear/Core/Graphics/SkeletonAsset.h"
 #include "Shalltear/Core/Math/MathUtil.h"
+#include "Shalltear/Core/Input/InputEvent.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
+#include "Shalltear/Core/UI/Context.h"
 
 #include <algorithm>
 #include <format>
@@ -376,6 +378,37 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		}
 		_made.push_back(mesh->GetInstanceId());
 		return mesh->GetInstanceId();
+	}
+
+	void ClickElement(UIPanelRenderer& panel, u64 element) {
+		UI::Context* context = panel.GetContext();
+		const UI::ElementHandle handle = context ? context->MakeHandle(static_cast<u32>(element)) : UI::ElementHandle{};
+		if (!context || handle.generation != static_cast<u32>(element >> 32) || !context->IsAlive(handle)) {
+			throw std::runtime_error("no UI element to click");
+		}
+		context->Update();
+		const UI::Rect rect = context->GetLayout(handle).borderBox;
+		const Vec2I point{static_cast<i32>(rect.x + rect.w * 0.5f), static_cast<i32>(rect.y + rect.h * 0.5f)};
+		for (const InputEventType type : {InputEventType::MouseMove, InputEventType::MouseDown, InputEventType::MouseUp}) {
+			InputEvent event{};
+			event.type = type;
+			event.button = MouseButton::Left;
+			event.mousePosPx = point;
+			context->InjectInput(event);
+		}
+		context->Update();
+	}
+
+	bool HasClickHandler(UIPanelRenderer& panel, u64 element) {
+		UI::Context* context = panel.GetContext();
+		const UI::ElementHandle handle = context ? context->MakeHandle(static_cast<u32>(element)) : UI::ElementHandle{};
+		return context && context->IsAlive(handle) && context->HasEvents(handle) && static_cast<bool>(context->Events(handle).onClick);
+	}
+
+	void UpdateUI(UIPanelRenderer& panel) {
+		if (UI::Context* context = panel.GetContext()) {
+			context->Update();
+		}
 	}
 
 	void FreeAsset(u64 id) {

@@ -28,6 +28,16 @@ namespace Shalltear::CSharpConformance {
 ]
 })";
 
+		constexpr const char* MENU = R"(<?xml version="1.0" encoding="UTF-8"?>
+<ui version="1">
+	<panel id="screen" style="width: 100%; height: 100%; flex-direction: column">
+		<panel id="title" class="big">Coins: 0</panel>
+		<button id="play" style="width: 200px; height: 40px" text="Play"/>
+		<checkbox id="sound"/>
+	</panel>
+</ui>
+)";
+
 		constexpr const char* GLOW = R"({"shader": "0000000000000000-0000000000000000", "floats": {}, "colors": {}, "textures": {}})";
 
 		str Controller(const Guid& clip) {
@@ -89,6 +99,9 @@ namespace Shalltear::CSharpConformance {
 			AssetDatabase::ScanProjectDirectory();
 			const Guid walk = AssetDatabase::LookupGuid(Path("project://Assets/Walk.anim"));
 			_staged = walk.IsValid() && FileSystem::WriteTextFile(Path("project://Assets/Hero.controller"), Controller(walk)) && _staged;
+		}
+		if (AssetImporterRegistry::FindByExtension(".slxml")) {
+			_staged = FileSystem::WriteTextFile(Path("project://Assets/Menu.slxml"), MENU) && _staged;
 		}
 		if (AssetImporterRegistry::FindByExtension(".mat")) {
 			_staged = FileSystem::WriteTextFile(Path("project://Assets/Glow.mat"), GLOW) && _staged;

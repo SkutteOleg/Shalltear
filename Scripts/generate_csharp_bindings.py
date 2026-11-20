@@ -193,6 +193,12 @@ def check_keys(found, allowed, required, path, where):
 		raise SchemaError(f"{path.name}: {where}: '{missing[0]}' is missing")
 
 
+def camel_case(name):
+	run = re.match(r"[A-Z]*", name).end()
+	head = run - 1 if run > 1 and name[run:run + 1].islower() else run
+	return name[:head].lower() + name[head:]
+
+
 def parse_function(raw, area, path, catalog):
 	where = raw.get("id", "function") if isinstance(raw, dict) else "function"
 	if not isinstance(raw, dict):
@@ -273,7 +279,7 @@ def parse_function(raw, area, path, catalog):
 	if function.leaf and function.return_kind == "string":
 		raise SchemaError(f"{path.name}: {where}: 'leaf' can't return a string")
 	function.guarded = not function.leaf or function.has_objects or function.return_kind == "object"
-	function.table_member = area.name[0].lower() + area.name[1:] + function.id
+	function.table_member = camel_case(area.name) + function.id
 	function.thunk = area.name + function.id
 	return function
 

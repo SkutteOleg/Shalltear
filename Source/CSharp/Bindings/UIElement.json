@@ -1,0 +1,443 @@
+{
+	"area": "UIElement",
+	"include": "UIBindings.h",
+	"class": "Shalltear.Interop.UIElementBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "IsAlive",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::IsAlive(*panel, element)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "IsAlive", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetParent",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetParent(*panel, element)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetParent", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetFirstChild",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetFirstChild(*panel, element)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetFirstChild", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetNextSibling",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetNextSibling(*panel, element)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetNextSibling", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetIdHash",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetIdHash(*panel, element)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetIdHash", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetVisible",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetVisible(*panel, element)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetVisible", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetVisible",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetVisible(*panel, element, visible)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "visible", "type": "bool" }
+			],
+			"csharp": { "member": "SetVisible", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetHoverable",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetHoverable(*panel, element)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetHoverable", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetHoverable",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetHoverable(*panel, element, hoverable)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "hoverable", "type": "bool" }
+			],
+			"csharp": { "member": "SetHoverable", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetFocusable",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetFocusable(*panel, element)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetFocusable", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetFocusable",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetFocusable(*panel, element, focusable)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "focusable", "type": "bool" }
+			],
+			"csharp": { "member": "SetFocusable", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetTint",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetTint(*panel, element)",
+			"returns": "Color",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetTint", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetTint",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetTint(*panel, element, tint)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "tint", "type": "Color" }
+			],
+			"csharp": { "member": "SetTint", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "AddClass",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::AddClass(*panel, element, name)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "AddClass", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "RemoveClass",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::RemoveClass(*panel, element, name)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "RemoveClass", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "HasClass",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::HasClass(*panel, element, name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "HasClass", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetStyle",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetStyle(*panel, element, property, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "property", "type": "string" },
+				{ "name": "value", "type": "string" }
+			],
+			"csharp": { "member": "SetStyle", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetStyle",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetStyle(*panel, element, property, computed)",
+			"returns": "string",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "property", "type": "string" },
+				{ "name": "computed", "type": "bool" }
+			],
+			"csharp": { "member": "GetStyle", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetText",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetText(*panel, element, text)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "SetText", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetText",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetText(*panel, element)",
+			"returns": "string",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetText", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetTextKey",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetTextKey(*panel, element, key, fallback)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "string" }
+			],
+			"csharp": { "member": "SetTextKey", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetTextKey",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetTextKey(*panel, element)",
+			"returns": "string",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetTextKey", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetRichText",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetRichText(*panel, element, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetRichText", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "ClearText",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::ClearText(*panel, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "ClearText", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetTextInput",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetTextInput(*panel, element)",
+			"returns": "bool",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetTextInput", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetTextInput",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetTextInput(*panel, element, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetTextInput", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetTooltip(*panel, element, text)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "SetTooltip", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetImage",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetImage(*panel, element, texture, sizePx)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "texture", "type": "Texture", "optional": true },
+				{ "name": "sizePx", "type": "f32" }
+			],
+			"csharp": { "member": "SetImage", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "ClearImage",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::ClearImage(*panel, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "ClearImage", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetImage",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetImage(*panel, element)",
+			"returns": "Texture",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetImage", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Focus",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::Focus(*panel, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "Focus", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetRect",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetRect(*panel, element, content)",
+			"returns": "Vec4",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "content", "type": "bool" }
+			],
+			"csharp": { "member": "GetRect", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "GetScrollOffset",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetScrollOffset(*panel, element)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "GetScrollOffset", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetScrollOffset",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::SetScrollOffset(*panel, element, offset)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "offset", "type": "Vec2" }
+			],
+			"csharp": { "member": "SetScrollOffset", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "ScrollIntoView",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::ScrollIntoView(*panel, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "ScrollIntoView", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "CreateChild",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::CreateChild(*panel, element)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "CreateChild", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Destroy",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::Destroy(*panel, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "Destroy", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "ClearChildren",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::ClearChildren(*panel, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" }
+			],
+			"csharp": { "member": "ClearChildren", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Instantiate",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::Instantiate(*panel, element, *document)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "document", "type": "UIDocumentAsset" }
+			],
+			"csharp": { "member": "Instantiate", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Listen",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::Listen(*panel, element, kind, key)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "kind", "type": "UIEvent" },
+				{ "name": "key", "type": "u64" }
+			],
+			"csharp": { "member": "Listen", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Unlisten",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::Unlisten(*panel, element, kind)",
+			"returns": "u64",
+			"params": [
+				{ "name": "panel", "type": "UIPanelRenderer" },
+				{ "name": "element", "type": "u64" },
+				{ "name": "kind", "type": "UIEvent" }
+			],
+			"csharp": { "member": "Unlisten", "kind": "method", "access": "internal", "relay": true }
+		}
+	]
+}

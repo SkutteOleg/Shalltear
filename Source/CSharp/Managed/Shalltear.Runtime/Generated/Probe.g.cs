@@ -323,6 +323,41 @@ internal static unsafe partial class BindingProbe {
 		return result;
 	}
 
+	internal static void ClickElement(UIPanelRenderer panel, ulong element) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.ClickElement");
+		}
+		ArgumentNullException.ThrowIfNull(panel);
+		int status = Bindings.table.probeClickElement(panel._id, element);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "BindingProbe.ClickElement");
+		}
+	}
+
+	internal static bool HasClickHandler(UIPanelRenderer panel, ulong element) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.HasClickHandler");
+		}
+		ArgumentNullException.ThrowIfNull(panel);
+		byte result;
+		int status = Bindings.table.probeHasClickHandler(panel._id, element, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "BindingProbe.HasClickHandler");
+		}
+		return result != 0;
+	}
+
+	internal static void UpdateUI(UIPanelRenderer panel) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.UpdateUI");
+		}
+		ArgumentNullException.ThrowIfNull(panel);
+		int status = Bindings.table.probeUpdateUI(panel._id);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "BindingProbe.UpdateUI");
+		}
+	}
+
 	internal static void FreeAsset(ulong id) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.FreeAsset");

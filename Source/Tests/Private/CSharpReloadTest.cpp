@@ -950,6 +950,38 @@ TEST_F(CSharpReloadTest, AnimationHandlersDropAtUnload) {
 	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
 }
 
+TEST_F(CSharpReloadTest, UIHandlersDropAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	ASSERT_TRUE(assets->IsStaged());
+	CSharpConformance::InputRig input(_hooks->setDriver);
+	CSharpConformance::UIRig ui;
+	ASSERT_TRUE(ui.IsReady());
+	str message;
+	ASSERT_EQ(Run("UIProbe.KeepsAHandler", message), SLT_OK) << message;
+	ASSERT_EQ(Run("UIProbe.ClicksKeepersButton", message), SLT_OK) << message;
+	ASSERT_EQ(Run("UIProbe.ReportsKeepersHandler", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"kept handler ran", "handler 1"}));
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	ASSERT_EQ(Run("UIProbe.ClicksKeepersButton", message), SLT_OK) << message;
+	ASSERT_EQ(Run("UIProbe.ReportsKeepersHandler", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"handler 0"}));
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+	const std::vector<Handle<Scene>> loaded(SceneSystem::GetLoadedScenes().begin(), SceneSystem::GetLoadedScenes().end());
+	for (const Handle<Scene>& scene : loaded) {
+		SceneSystem::UnloadScene(scene);
+	}
+	SceneSystem::EndFrame();
+}
+
 TEST_F(CSharpReloadTest, InputMapsEndAtUnload) {
 	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
 	ASSERT_TRUE(fs::is_regular_file(conformance));
@@ -976,6 +1008,8 @@ TEST_F(CSharpReloadTest, ConformanceSurvivesTenReloads) {
 	std::optional<CSharpConformance::StagedAssets> assets;
 	CSharpConformance::InputRig input(_hooks->setDriver);
 	ASSERT_TRUE(input.IsReady());
+	CSharpConformance::UIRig ui;
+	ASSERT_TRUE(ui.IsReady());
 	for (u32 round = 0; round < 10; ++round) {
 		const auto begin = std::chrono::steady_clock::now();
 		_editor->requestReload();

@@ -1,0 +1,140 @@
+{
+	"area": "UIPanelRenderer",
+	"include": "UIBindings.h",
+	"class": "Shalltear.UIPanelRenderer",
+	"instance": "UIPanelRenderer",
+	"types": [
+		{
+			"name": "UIPanelRenderer",
+			"cpp": "::Shalltear::UIPanelRenderer",
+			"engine": "UIPanelRenderer",
+			"base": "Component",
+			"doc": "Draws a UI document on the screen."
+		},
+		{
+			"name": "UIDocumentAsset",
+			"cpp": "::Shalltear::UIDocumentAsset",
+			"engine": "UIDocumentAsset",
+			"base": "Asset",
+			"doc": "UI document (elements, their styles + templates)."
+		}
+	],
+	"enums": [
+		{
+			"name": "UIEvent",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::UIEvent",
+			"underlying": "u8",
+			"doc": "Event of a UI element.",
+			"values": [
+				{ "name": "MouseDown", "value": 0, "doc": "Pointer pressed on the element." },
+				{ "name": "MouseUp", "value": 1, "doc": "Pointer released on the element." },
+				{ "name": "Click", "value": 2, "doc": "Pressed + released on the element." },
+				{ "name": "RightClick", "value": 3, "doc": "Right button clicked." },
+				{ "name": "DoubleClick", "value": 4, "doc": "2nd click in a row." },
+				{ "name": "HoverEnter", "value": 5, "doc": "Pointer moved onto the element." },
+				{ "name": "HoverLeave", "value": 6, "doc": "Pointer moved off the element." },
+				{ "name": "PressEnd", "value": 7, "doc": "Press on the element ended anywhere." },
+				{ "name": "FocusGained", "value": 8, "doc": "Element took keyboard focus." },
+				{ "name": "FocusLost", "value": 9, "doc": "Element lost keyboard focus." },
+				{ "name": "PopupClosed", "value": 10, "doc": "Element's popup closed." },
+				{ "name": "ValueChange", "value": 11, "doc": "User changed a widget's value (checkbox 0 or 1, slider value, dropdown index)." },
+				{ "name": "TextChange", "value": 12, "doc": "Text of a text input changed." },
+				{ "name": "TextCommit", "value": 13, "doc": "Text of a text input was committed." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetDocument",
+			"cpp": "self->GetDocument()",
+			"returns": "UIDocumentAsset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Document", "kind": "getter" },
+			"doc": "Document built by the panel (null to build nothing)."
+		},
+		{
+			"id": "SetDocument",
+			"cpp": "self->SetDocument(::Shalltear::Handle<::Shalltear::UIDocumentAsset>(document))",
+			"returns": "void",
+			"params": [{ "name": "document", "type": "UIDocumentAsset", "optional": true }],
+			"csharp": { "member": "Document", "kind": "setter" }
+		},
+		{
+			"id": "GetPanelSettings",
+			"cpp": "self->GetPanelSettings()",
+			"returns": "UIPanelSettings",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "PanelSettings", "kind": "getter" },
+			"doc": "Scaling, font + sort order of the panel (null to use defaults)."
+		},
+		{
+			"id": "SetPanelSettings",
+			"cpp": "self->SetPanelSettings(::Shalltear::Handle<::Shalltear::UIPanelSettings>(panelSettings))",
+			"returns": "void",
+			"params": [{ "name": "panelSettings", "type": "UIPanelSettings", "optional": true }],
+			"csharp": { "member": "PanelSettings", "kind": "setter" }
+		},
+		{
+			"id": "GetSortOrder",
+			"cpp": "self->GetSortOrder()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SortOrder", "kind": "getter" },
+			"doc": "Draw order among panels (lower 1st)."
+		},
+		{
+			"id": "SetSortOrder",
+			"cpp": "self->SetSortOrder(sortOrder)",
+			"returns": "void",
+			"params": [{ "name": "sortOrder", "type": "f32" }],
+			"csharp": { "member": "SortOrder", "kind": "setter" }
+		},
+		{
+			"id": "GetIsBuilt",
+			"cpp": "self->GetContext() != nullptr",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsBuilt", "kind": "getter" },
+			"doc": "True while the panel has a UI to find elements in."
+		},
+		{
+			"id": "FindElementKey",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::FindElement(*self, id)",
+			"returns": "u64",
+			"params": [{ "name": "id", "type": "string" }],
+			"csharp": { "member": "FindElementKey", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "GetRootKey",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetRoot(*self)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "RootKey", "kind": "getter", "access": "internal" }
+		},
+		{
+			"id": "GetFocusedKey",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetFocused(*self)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "FocusedKey", "kind": "getter", "access": "internal" }
+		},
+		{
+			"id": "GetHoveredKey",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::GetHovered(*self)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "HoveredKey", "kind": "getter", "access": "internal" }
+		},
+		{
+			"id": "ClearFocus",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::ClearFocus(*self)",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFocus", "kind": "method" },
+			"doc": "Take keyboard focus from the panel's elements."
+		}
+	]
+}

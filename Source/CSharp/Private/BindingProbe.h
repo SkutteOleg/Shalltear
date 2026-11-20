@@ -6,6 +6,7 @@
 #include "Shalltear/Core/Scene/SceneObject.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/Types.h"
+#include "Shalltear/Core/UI/UIPanelRenderer.h"
 
 #include <span>
 #include <string_view>
@@ -50,6 +51,9 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	u64 MakeAsset(std::string_view typeName);
 	u64 MakeSkeletonAsset();
 	u64 MakeMesh(i32 blendShapes);
+	void ClickElement(UIPanelRenderer& panel, u64 element);
+	void UpdateUI(UIPanelRenderer& panel);
+	bool HasClickHandler(UIPanelRenderer& panel, u64 element);
 	void FreeAsset(u64 id);
 
 	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);

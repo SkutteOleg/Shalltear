@@ -265,6 +265,27 @@
 			"csharp": { "member": "MakeMesh", "kind": "method" }
 		},
 		{
+			"id": "ClickElement",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::ClickElement(*panel, element)",
+			"returns": "void",
+			"params": [{ "name": "panel", "type": "UIPanelRenderer" }, { "name": "element", "type": "u64" }],
+			"csharp": { "member": "ClickElement", "kind": "method" }
+		},
+		{
+			"id": "HasClickHandler",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::HasClickHandler(*panel, element)",
+			"returns": "bool",
+			"params": [{ "name": "panel", "type": "UIPanelRenderer" }, { "name": "element", "type": "u64" }],
+			"csharp": { "member": "HasClickHandler", "kind": "method" }
+		},
+		{
+			"id": "UpdateUI",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::UpdateUI(*panel)",
+			"returns": "void",
+			"params": [{ "name": "panel", "type": "UIPanelRenderer" }],
+			"csharp": { "member": "UpdateUI", "kind": "method" }
+		},
+		{
 			"id": "FreeAsset",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id)",
 			"returns": "void",

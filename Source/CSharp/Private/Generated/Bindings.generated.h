@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x276deffcc795944eull
-#define SLT_BINDINGS_INPUT_DIGEST 0xb990132a97736c87ull
+#define SLT_BRIDGE_LAYOUT_HASH 0x63762ecdb0963cc6ull
+#define SLT_BINDINGS_INPUT_DIGEST 0xc646e7a2014cc1c7ull
 
 typedef struct SltString SltString;
 
@@ -231,6 +231,9 @@ typedef struct SltBindings {
 	int32_t (*probeMakeAsset)(SltString typeName, uint64_t* outResult);
 	int32_t (*probeMakeSkeletonAsset)(uint64_t* outResult);
 	int32_t (*probeMakeMesh)(int32_t blendShapes, uint64_t* outResult);
+	int32_t (*probeClickElement)(uint64_t panel, uint64_t element);
+	int32_t (*probeHasClickHandler)(uint64_t panel, uint64_t element, uint8_t* outResult);
+	int32_t (*probeUpdateUI)(uint64_t panel);
 	int32_t (*probeFreeAsset)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
@@ -321,6 +324,84 @@ typedef struct SltBindings {
 	int64_t (*timeGetFrameCount)(void);
 	float (*timeGetTimeScale)(void);
 	void (*timeSetTimeScale)(float scale);
+	int32_t (*uiElementIsAlive)(uint64_t panel, uint64_t element, uint8_t* outResult);
+	int32_t (*uiElementGetParent)(uint64_t panel, uint64_t element, uint64_t* outResult);
+	int32_t (*uiElementGetFirstChild)(uint64_t panel, uint64_t element, uint64_t* outResult);
+	int32_t (*uiElementGetNextSibling)(uint64_t panel, uint64_t element, uint64_t* outResult);
+	int32_t (*uiElementGetIdHash)(uint64_t panel, uint64_t element, uint64_t* outResult);
+	int32_t (*uiElementGetVisible)(uint64_t panel, uint64_t element, uint8_t* outResult);
+	int32_t (*uiElementSetVisible)(uint64_t panel, uint64_t element, uint8_t visible);
+	int32_t (*uiElementGetHoverable)(uint64_t panel, uint64_t element, uint8_t* outResult);
+	int32_t (*uiElementSetHoverable)(uint64_t panel, uint64_t element, uint8_t hoverable);
+	int32_t (*uiElementGetFocusable)(uint64_t panel, uint64_t element, uint8_t* outResult);
+	int32_t (*uiElementSetFocusable)(uint64_t panel, uint64_t element, uint8_t focusable);
+	int32_t (*uiElementGetTint)(uint64_t panel, uint64_t element, ::Shalltear::Color* outResult);
+	int32_t (*uiElementSetTint)(uint64_t panel, uint64_t element, float tintR, float tintG, float tintB, float tintA);
+	int32_t (*uiElementAddClass)(uint64_t panel, uint64_t element, SltString name);
+	int32_t (*uiElementRemoveClass)(uint64_t panel, uint64_t element, SltString name);
+	int32_t (*uiElementHasClass)(uint64_t panel, uint64_t element, SltString name, uint8_t* outResult);
+	int32_t (*uiElementSetStyle)(uint64_t panel, uint64_t element, SltString property, SltString value, uint8_t* outResult);
+	int32_t (*uiElementGetStyle)(uint64_t panel, uint64_t element, SltString property, uint8_t computed, SltString* outResult);
+	int32_t (*uiElementSetText)(uint64_t panel, uint64_t element, SltString text);
+	int32_t (*uiElementGetText)(uint64_t panel, uint64_t element, SltString* outResult);
+	int32_t (*uiElementSetTextKey)(uint64_t panel, uint64_t element, SltString key, SltString fallback);
+	int32_t (*uiElementGetTextKey)(uint64_t panel, uint64_t element, SltString* outResult);
+	int32_t (*uiElementSetRichText)(uint64_t panel, uint64_t element, uint8_t enabled);
+	int32_t (*uiElementClearText)(uint64_t panel, uint64_t element);
+	int32_t (*uiElementGetTextInput)(uint64_t panel, uint64_t element, uint8_t* outResult);
+	int32_t (*uiElementSetTextInput)(uint64_t panel, uint64_t element, uint8_t enabled);
+	int32_t (*uiElementSetTooltip)(uint64_t panel, uint64_t element, SltString text);
+	int32_t (*uiElementSetImage)(uint64_t panel, uint64_t element, uint64_t texture, float sizePx);
+	int32_t (*uiElementClearImage)(uint64_t panel, uint64_t element);
+	int32_t (*uiElementGetImage)(uint64_t panel, uint64_t element, uint64_t* outResult);
+	int32_t (*uiElementFocus)(uint64_t panel, uint64_t element);
+	int32_t (*uiElementGetRect)(uint64_t panel, uint64_t element, uint8_t content, SltVec4* outResult);
+	int32_t (*uiElementGetScrollOffset)(uint64_t panel, uint64_t element, ::Shalltear::Vec2* outResult);
+	int32_t (*uiElementSetScrollOffset)(uint64_t panel, uint64_t element, float offsetX, float offsetY);
+	int32_t (*uiElementScrollIntoView)(uint64_t panel, uint64_t element);
+	int32_t (*uiElementCreateChild)(uint64_t panel, uint64_t element, uint64_t* outResult);
+	int32_t (*uiElementDestroy)(uint64_t panel, uint64_t element);
+	int32_t (*uiElementClearChildren)(uint64_t panel, uint64_t element);
+	int32_t (*uiElementInstantiate)(uint64_t panel, uint64_t element, uint64_t document, uint64_t* outResult);
+	int32_t (*uiElementListen)(uint64_t panel, uint64_t element, uint8_t kind, uint64_t key, uint64_t* outResult);
+	int32_t (*uiElementUnlisten)(uint64_t panel, uint64_t element, uint8_t kind, uint64_t* outResult);
+	int32_t (*uiEventsAttach)(int64_t entry);
+	int32_t (*uiEventsForgetAll)(void);
+	int32_t (*uiPanelRendererGetDocument)(uint64_t self, uint64_t* outResult);
+	int32_t (*uiPanelRendererSetDocument)(uint64_t self, uint64_t document);
+	int32_t (*uiPanelRendererGetPanelSettings)(uint64_t self, uint64_t* outResult);
+	int32_t (*uiPanelRendererSetPanelSettings)(uint64_t self, uint64_t panelSettings);
+	int32_t (*uiPanelRendererGetSortOrder)(uint64_t self, float* outResult);
+	int32_t (*uiPanelRendererSetSortOrder)(uint64_t self, float sortOrder);
+	int32_t (*uiPanelRendererGetIsBuilt)(uint64_t self, uint8_t* outResult);
+	int32_t (*uiPanelRendererFindElementKey)(uint64_t self, SltString id, uint64_t* outResult);
+	int32_t (*uiPanelRendererGetRootKey)(uint64_t self, uint64_t* outResult);
+	int32_t (*uiPanelRendererGetFocusedKey)(uint64_t self, uint64_t* outResult);
+	int32_t (*uiPanelRendererGetHoveredKey)(uint64_t self, uint64_t* outResult);
+	int32_t (*uiPanelRendererClearFocus)(uint64_t self);
+	int32_t (*uiPanelSettingsGetScaleMode)(uint64_t self, uint8_t* outResult);
+	int32_t (*uiPanelSettingsSetScaleMode)(uint64_t self, uint8_t scaleMode);
+	int32_t (*uiPanelSettingsGetScale)(uint64_t self, float* outResult);
+	int32_t (*uiPanelSettingsSetScale)(uint64_t self, float scale);
+	int32_t (*uiPanelSettingsGetReferenceDPI)(uint64_t self, float* outResult);
+	int32_t (*uiPanelSettingsSetReferenceDPI)(uint64_t self, float referenceDPI);
+	int32_t (*uiPanelSettingsGetReferenceResolution)(uint64_t self, ::Shalltear::Vec2I* outResult);
+	int32_t (*uiPanelSettingsSetReferenceResolution)(uint64_t self, int32_t referenceResolutionX, int32_t referenceResolutionY);
+	int32_t (*uiPanelSettingsGetScreenMatchMode)(uint64_t self, uint8_t* outResult);
+	int32_t (*uiPanelSettingsSetScreenMatchMode)(uint64_t self, uint8_t screenMatchMode);
+	int32_t (*uiPanelSettingsGetMatch)(uint64_t self, float* outResult);
+	int32_t (*uiPanelSettingsSetMatch)(uint64_t self, float match);
+	int32_t (*uiPanelSettingsGetLogarithmicMatch)(uint64_t self, uint8_t* outResult);
+	int32_t (*uiPanelSettingsSetLogarithmicMatch)(uint64_t self, uint8_t logarithmicMatch);
+	int32_t (*uiPanelSettingsGetSortOrder)(uint64_t self, float* outResult);
+	int32_t (*uiPanelSettingsSetSortOrder)(uint64_t self, float sortOrder);
+	int32_t (*uiPanelSettingsGetFont)(uint64_t self, uint64_t* outResult);
+	int32_t (*uiPanelSettingsSetFont)(uint64_t self, uint64_t font);
+	int32_t (*uiPanelSettingsGetFontSizePx)(uint64_t self, float* outResult);
+	int32_t (*uiPanelSettingsSetFontSizePx)(uint64_t self, float fontSizePx);
+	int32_t (*uiPanelSettingsGetTextColor)(uint64_t self, ::Shalltear::Color* outResult);
+	int32_t (*uiPanelSettingsSetTextColor)(uint64_t self, float textColorR, float textColorG, float textColorB, float textColorA);
+	int32_t (*uiPanelSettingsResolveContentScale)(uint64_t self, int32_t screenSizePxX, int32_t screenSizePxY, float dpiScale, float* outResult);
 } SltBindings;
 
 namespace Shalltear::CSharpImpl::Generated {

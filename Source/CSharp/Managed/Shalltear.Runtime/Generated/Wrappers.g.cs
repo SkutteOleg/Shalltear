@@ -18,5 +18,9 @@ internal static partial class ObjectCache {
 		Wrap(SkinnedMeshRenderer.ENGINE_TYPE, static id => new SkinnedMeshRenderer(id));
 		Wrap(SkinAsset.ENGINE_TYPE, static id => new SkinAsset(id));
 		Wrap(TextAsset.ENGINE_TYPE, static id => new TextAsset(id));
+		Wrap(UIPanelRenderer.ENGINE_TYPE, static id => new UIPanelRenderer(id));
+		Wrap(UIDocumentAsset.ENGINE_TYPE, static id => new UIDocumentAsset(id));
+		Wrap(UIPanelSettings.ENGINE_TYPE, static id => new UIPanelSettings(id));
+		Wrap(FontAsset.ENGINE_TYPE, static id => new FontAsset(id));
 	}
 }

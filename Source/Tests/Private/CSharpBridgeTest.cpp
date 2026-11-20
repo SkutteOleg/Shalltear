@@ -180,6 +180,8 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 	ASSERT_NE(AssetDatabase::LoadAsset(Path("project://Assets/Dot.png")), nullptr);
 	std::optional<CSharpConformance::InputRig> input(std::in_place, _hooks->setDriver);
 	ASSERT_TRUE(input->IsReady());
+	std::optional<CSharpConformance::UIRig> ui(std::in_place);
+	ASSERT_TRUE(ui->IsReady());
 	SceneSystem::CreateScene("World");
 
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
@@ -201,6 +203,7 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
 	SceneSystem::Terminate();
+	ui.reset();
 	input.reset();
 	assets.reset();
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);
@@ -254,6 +257,53 @@ TEST_F(CSharpRuntimeFixture, ThrowingAnimationHandlerIsReported) {
 	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by an animation handler"), 1u) << _log.Delivered().Joined();
 	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard 0.5"}));
 	SceneSystem::Terminate();
+	assets.reset();
+}
+
+TEST_F(CSharpRuntimeFixture, ThrowingUIHandlerIsReported) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	ASSERT_TRUE(assets->IsStaged());
+	std::optional<CSharpConformance::InputRig> input(std::in_place, _hooks->setDriver);
+	std::optional<CSharpConformance::UIRig> ui(std::in_place);
+	ASSERT_TRUE(ui->IsReady());
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+
+	str message;
+	EXPECT_EQ(Run("UIProbe.HandlerThrows", message), SLT_OK) << message;
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a UI handler"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard MouseUp"}));
+	SceneSystem::Terminate();
+	ui.reset();
+	input.reset();
+	assets.reset();
+}
+
+TEST_F(CSharpRuntimeFixture, UIHandlerChangesApplyAtFrameEnd) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	ASSERT_TRUE(assets->IsStaged());
+	std::optional<CSharpConformance::InputRig> input(std::in_place, _hooks->setDriver);
+	std::optional<CSharpConformance::UIRig> ui(std::in_place);
+	ASSERT_TRUE(ui->IsReady());
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+
+	str message;
+	EXPECT_EQ(Run("UIProbe.SwapsInsideAHandler", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"swapped"}));
+	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	EXPECT_EQ(Run("UIProbe.ClicksSwappersButton", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard Click"}));
+	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
+	SceneSystem::Terminate();
+	ui.reset();
+	input.reset();
 	assets.reset();
 }
 

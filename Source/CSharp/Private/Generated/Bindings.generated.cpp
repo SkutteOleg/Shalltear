@@ -85,6 +85,10 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillSkinnedMeshRendererBindings(SltBindings& table);
 	void FillTextAssetBindings(SltBindings& table);
 	void FillTimeBindings(SltBindings& table);
+	void FillUIElementBindings(SltBindings& table);
+	void FillUIEventsBindings(SltBindings& table);
+	void FillUIPanelRendererBindings(SltBindings& table);
+	void FillUIPanelSettingsBindings(SltBindings& table);
 
 	void FillBindings(SltBindings& table) {
 		FillCameraBindings(table);
@@ -109,6 +113,10 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillSkinnedMeshRendererBindings(table);
 		FillTextAssetBindings(table);
 		FillTimeBindings(table);
+		FillUIElementBindings(table);
+		FillUIEventsBindings(table);
+		FillUIPanelRendererBindings(table);
+		FillUIPanelSettingsBindings(table);
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

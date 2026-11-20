@@ -93,6 +93,10 @@ class BindingsTest(unittest.TestCase):
 	def test_area_is_named_like_its_file(self):
 		self.assertEqual("Game.json: 'area' is 'Rules'. Name it like the file (Game)", self.refusal([GETTER], area="Rules"))
 
+	def test_table_member_lowers_leading_initialism(self):
+		area = bindings.parse_area(self.write([GETTER], name="UIGame"))
+		self.assertEqual("uiGameGetSpeed", area.functions[0].table_member)
+
 	def test_duplicate_id_is_refused(self):
 		twin = dict(METHOD, id="GetSpeed")
 		self.assertEqual("Game.json: GetSpeed: 'id' is used twice", self.refusal([GETTER, twin]))

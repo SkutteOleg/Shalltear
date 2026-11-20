@@ -248,6 +248,42 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeClickElement(uint64_t panelId, uint64_t element) noexcept {
+			::Shalltear::UIPanelRenderer* const panel = ResolveObject<::Shalltear::UIPanelRenderer>(panelId);
+			if (!panel) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::ClickElement(*panel, element);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeHasClickHandler(uint64_t panelId, uint64_t element, uint8_t* outResult) noexcept {
+			::Shalltear::UIPanelRenderer* const panel = ResolveObject<::Shalltear::UIPanelRenderer>(panelId);
+			if (!panel) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint8_t>((::Shalltear::CSharpImpl::BindingProbe::HasClickHandler(*panel, element)) ? 1 : 0);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeUpdateUI(uint64_t panelId) noexcept {
+			::Shalltear::UIPanelRenderer* const panel = ResolveObject<::Shalltear::UIPanelRenderer>(panelId);
+			if (!panel) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::UpdateUI(*panel);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ProbeFreeAsset(uint64_t id) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id);
@@ -299,6 +335,9 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeMakeAsset = &ProbeMakeAsset;
 		table.probeMakeSkeletonAsset = &ProbeMakeSkeletonAsset;
 		table.probeMakeMesh = &ProbeMakeMesh;
+		table.probeClickElement = &ProbeClickElement;
+		table.probeHasClickHandler = &ProbeHasClickHandler;
+		table.probeUpdateUI = &ProbeUpdateUI;
 		table.probeFreeAsset = &ProbeFreeAsset;
 		table.probeRunFrames = &ProbeRunFrames;
 	}

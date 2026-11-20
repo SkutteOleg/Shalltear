@@ -34,9 +34,9 @@ namespace Shalltear::CSharpConformance {
 	}
 
 #ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
-	inline constexpr int32_t PASS_SET_SIZE = 81;
+	inline constexpr int32_t PASS_SET_SIZE = 90;
 #else
-	inline constexpr int32_t PASS_SET_SIZE = 94;
+	inline constexpr int32_t PASS_SET_SIZE = 103;
 #endif
 
 	inline bool IsInPassSet(std::string_view caseName) {
@@ -112,6 +112,20 @@ namespace Shalltear::CSharpConformance {
 	private:
 		void (*_setDriver)(DriverFn);
 		bool _ready = false;
+	};
+
+	class UIRig {
+	public:
+		UIRig();
+		~UIRig();
+
+		UIRig(const UIRig&) = delete;
+		UIRig& operator=(const UIRig&) = delete;
+
+		bool IsReady() const { return _ready; }
+	private:
+		bool _ready = false;
+		bool _mounted = false;
 	};
 
 	struct LogRow {

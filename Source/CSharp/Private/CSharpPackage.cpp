@@ -1,6 +1,7 @@
 #include "DebugLines.h"
 #include "NativeAOTHost.h"
 #include "ScriptRuntime.h"
+#include "UIBindings.h"
 
 #ifdef SLT_WITH_EDITOR
 #include "CSharpBuildSteps.h"
@@ -41,6 +42,7 @@ namespace Shalltear::CSharpImpl {
 #endif
 			ScriptRuntime::Tick();
 			DebugLines::EndFrame();
+			UIBindings::FlushPending();
 		}
 
 	} // anonymous namespace
@@ -66,6 +68,7 @@ namespace Shalltear::CSharpImpl {
 #endif
 		ScriptRuntime::Detach();
 		DebugLines::Clear();
+		UIBindings::Release();
 	}
 
 } // namespace Shalltear::CSharpImpl

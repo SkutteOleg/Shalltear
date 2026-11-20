@@ -1,0 +1,22 @@
+{
+	"area": "UIEvents",
+	"include": "UIBindings.h",
+	"class": "Shalltear.Interop.UIEventBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "Attach",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::AttachEvents(entry)",
+			"returns": "void",
+			"params": [{ "name": "entry", "type": "i64" }],
+			"csharp": { "member": "Attach", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "ForgetAll",
+			"cpp": "::Shalltear::CSharpImpl::UIBindings::UnlistenAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ForgetAll", "kind": "method", "access": "internal" }
+		}
+	]
+}

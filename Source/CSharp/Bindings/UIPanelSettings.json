@@ -1,0 +1,229 @@
+{
+	"area": "UIPanelSettings",
+	"include": "UIBindings.h",
+	"class": "Shalltear.UIPanelSettings",
+	"instance": "UIPanelSettings",
+	"types": [
+		{
+			"name": "UIPanelSettings",
+			"cpp": "::Shalltear::UIPanelSettings",
+			"engine": "UIPanelSettings",
+			"base": "Asset",
+			"doc": "How panels scale to the screen + their default font."
+		},
+		{ "name": "FontAsset", "cpp": "::Shalltear::FontAsset", "engine": "FontAsset", "base": "Asset", "doc": "Font for UI text." }
+	],
+	"enums": [
+		{
+			"name": "UIPanelScaleMode",
+			"cpp": "::Shalltear::UIPanelScaleMode",
+			"underlying": "u8",
+			"doc": "How a panel scales with the screen.",
+			"values": [
+				{ "name": "ConstantPixelSize", "value": 0, "doc": "Same size in px on all screens." },
+				{ "name": "ConstantPhysicalSize", "value": 1, "doc": "Same physical size on all screens." },
+				{ "name": "ScaleWithScreenSize", "value": 2, "doc": "Scaled with the screen, relative to ReferenceResolution." }
+			]
+		},
+		{
+			"name": "UIPanelScreenMatchMode",
+			"cpp": "::Shalltear::UIPanelScreenMatchMode",
+			"underlying": "u8",
+			"doc": "How ScaleWithScreenSize matches the reference.",
+			"values": [
+				{ "name": "MatchWidthOrHeight", "value": 0, "doc": "Blend of width + height by Match." },
+				{ "name": "Shrink", "value": 1, "doc": "Larger of the width/height ratios." },
+				{ "name": "Expand", "value": 2, "doc": "Smaller of the width/height ratios." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetScaleMode",
+			"cpp": "self->scaleMode",
+			"returns": "UIPanelScaleMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ScaleMode", "kind": "getter" },
+			"doc": "How the panel scales with the screen."
+		},
+		{
+			"id": "SetScaleMode",
+			"cpp": "self->scaleMode = scaleMode",
+			"returns": "void",
+			"params": [{ "name": "scaleMode", "type": "UIPanelScaleMode" }],
+			"csharp": { "member": "ScaleMode", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Scale", "kind": "getter" },
+			"doc": "Multiplier on the mode's scale."
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = scale",
+			"returns": "void",
+			"params": [{ "name": "scale", "type": "f32" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetReferenceDPI",
+			"cpp": "self->referenceDPI",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReferenceDPI", "kind": "getter" },
+			"doc": "Screen DPI the panel was designed at (ConstantPhysicalSize)."
+		},
+		{
+			"id": "SetReferenceDPI",
+			"cpp": "self->referenceDPI = referenceDPI",
+			"returns": "void",
+			"params": [{ "name": "referenceDPI", "type": "f32" }],
+			"csharp": { "member": "ReferenceDPI", "kind": "setter" }
+		},
+		{
+			"id": "GetReferenceResolution",
+			"cpp": "self->referenceResolution",
+			"returns": "Vec2I",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReferenceResolution", "kind": "getter" },
+			"doc": "Screen size the panel was designed at (ScaleWithScreenSize)."
+		},
+		{
+			"id": "SetReferenceResolution",
+			"cpp": "self->referenceResolution = referenceResolution",
+			"returns": "void",
+			"params": [{ "name": "referenceResolution", "type": "Vec2I" }],
+			"csharp": { "member": "ReferenceResolution", "kind": "setter" }
+		},
+		{
+			"id": "GetScreenMatchMode",
+			"cpp": "self->screenMatchMode",
+			"returns": "UIPanelScreenMatchMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ScreenMatchMode", "kind": "getter" },
+			"doc": "How ScaleWithScreenSize matches the reference."
+		},
+		{
+			"id": "SetScreenMatchMode",
+			"cpp": "self->screenMatchMode = screenMatchMode",
+			"returns": "void",
+			"params": [{ "name": "screenMatchMode", "type": "UIPanelScreenMatchMode" }],
+			"csharp": { "member": "ScreenMatchMode", "kind": "setter" }
+		},
+		{
+			"id": "GetMatch",
+			"cpp": "self->match",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Match", "kind": "getter" },
+			"doc": "Width (0) to height (1) weight of MatchWidthOrHeight."
+		},
+		{
+			"id": "SetMatch",
+			"cpp": "self->match = match",
+			"returns": "void",
+			"params": [{ "name": "match", "type": "f32" }],
+			"csharp": { "member": "Match", "kind": "setter" }
+		},
+		{
+			"id": "GetLogarithmicMatch",
+			"cpp": "self->logarithmicMatch",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LogarithmicMatch", "kind": "getter" },
+			"doc": "Logarithmic blend of width + height scales."
+		},
+		{
+			"id": "SetLogarithmicMatch",
+			"cpp": "self->logarithmicMatch = logarithmicMatch",
+			"returns": "void",
+			"params": [{ "name": "logarithmicMatch", "type": "bool" }],
+			"csharp": { "member": "LogarithmicMatch", "kind": "setter" }
+		},
+		{
+			"id": "GetSortOrder",
+			"cpp": "self->sortOrder",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SortOrder", "kind": "getter" },
+			"doc": "Draw order of panels using these settings (lower 1st)."
+		},
+		{
+			"id": "SetSortOrder",
+			"cpp": "self->sortOrder = sortOrder",
+			"returns": "void",
+			"params": [{ "name": "sortOrder", "type": "f32" }],
+			"csharp": { "member": "SortOrder", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Font", "kind": "getter" },
+			"doc": "Default font of the panel's text (null to use the engine's)."
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(font)",
+			"returns": "void",
+			"params": [{ "name": "font", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FontSizePx", "kind": "getter" },
+			"doc": "Default font size in px."
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = fontSizePx",
+			"returns": "void",
+			"params": [{ "name": "fontSizePx", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetTextColor",
+			"cpp": "self->textColor",
+			"returns": "Color",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "TextColor", "kind": "getter" },
+			"doc": "Default text color."
+		},
+		{
+			"id": "SetTextColor",
+			"cpp": "self->textColor = textColor",
+			"returns": "void",
+			"params": [{ "name": "textColor", "type": "Color" }],
+			"csharp": { "member": "TextColor", "kind": "setter" }
+		},
+		{
+			"id": "ResolveContentScale",
+			"cpp": "self->ResolveContentScale(screenSizePx, dpiScale)",
+			"returns": "f32",
+			"params": [
+				{ "name": "screenSizePx", "type": "Vec2I" },
+				{ "name": "dpiScale", "type": "f32" }
+			],
+			"csharp": { "member": "ResolveContentScale", "kind": "method" },
+			"doc": "Content scale for a screen of screenSizePx at dpiScale (1 = 96 DPI)."
+		}
+	]
+}
