@@ -40,14 +40,13 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 			}
 		};
 
-		void RequireOutsideLifecycle(std::string_view member) {
-			if (ManagedTypes::GetLifecycleDepth() > 0) {
-				throw std::runtime_error(
-					std::format("{} called inside OnAttach/OnDetach/OnEnable/OnDisable/OnDestroy. Call from OnUpdate", member));
-			}
-		}
-
 	} // anonymous namespace
+
+	void RequireOutsideLifecycle(std::string_view member) {
+		if (ManagedTypes::GetLifecycleDepth() > 0) {
+			throw std::runtime_error(std::format("{} called inside OnAttach/OnDetach/OnEnable/OnDisable/OnDestroy. Call from OnUpdate", member));
+		}
+	}
 
 	bool IsAlive(u64 id) noexcept {
 #ifdef SLT_CSHARP_TEST_HOOKS
@@ -151,6 +150,10 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 
 	void Destroy(u64 objectId) {
 		SceneSystem::Destroy(Handle<SceneObject>(static_cast<SceneObject*>(ObjectRegistry::Resolve(objectId))));
+	}
+
+	void DestroyComponent(u64 componentId) {
+		SceneSystem::Destroy(Handle<Component>(static_cast<Component*>(ObjectRegistry::Resolve(componentId))));
 	}
 
 	void SetEnabled(Component& component, bool enabled) {

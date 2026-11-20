@@ -1,0 +1,91 @@
+{
+	"area": "Scene",
+	"include": "SceneBindings.h",
+	"class": "Shalltear.Scene",
+	"instance": "Scene",
+	"types": [
+		{ "name": "Scene", "cpp": "::Shalltear::Scene", "engine": "Scene", "base": "EngineObject", "doc": "Loaded scene." },
+		{ "name": "SceneAsset", "cpp": "::Shalltear::SceneAsset", "engine": "SceneAsset", "base": "Asset", "doc": "Scene file asset." }
+	],
+	"enums": [
+		{
+			"name": "SceneState",
+			"cpp": "::Shalltear::SceneState",
+			"underlying": "u8",
+			"doc": "Where a scene is between load and unload.",
+			"values": [
+				{ "name": "Loading", "value": 0, "doc": "Objects not in the world yet." },
+				{ "name": "Loaded", "value": 1, "doc": "In the world." },
+				{ "name": "Unloading", "value": 2, "doc": "Objects destroyed at end of frame." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "std::string_view(self->name)",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" },
+			"doc": "Scene's name (file name of a loaded one)."
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = name",
+			"returns": "void",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetState",
+			"cpp": "self->GetState()",
+			"returns": "SceneState",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "State", "kind": "getter" },
+			"doc": "Loading, loaded or unloading."
+		},
+		{
+			"id": "GetRootCount",
+			"cpp": "self->GetRootCount()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RootCount", "kind": "getter" },
+			"doc": "Number of objects without a parent."
+		},
+		{
+			"id": "GetRoot",
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::GetRoot(*self, index)",
+			"returns": "SceneObject",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetRoot", "kind": "method" },
+			"doc": "Root object at index (null when out of range)."
+		},
+		{
+			"id": "FindObjectByName",
+			"cpp": "self->FindObjectByName(objectName)",
+			"returns": "SceneObject",
+			"params": [{ "name": "objectName", "type": "string" }],
+			"csharp": { "member": "FindObjectByName", "kind": "method" },
+			"doc": "1st object with this name in this scene (null when none)."
+		},
+		{
+			"id": "GetObjectCount",
+			"cpp": "self->GetObjectCount()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ObjectCount", "kind": "getter" },
+			"doc": "Number of objects, children included."
+		},
+		{
+			"id": "FillObjects",
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::FillObjects(*self, ids)",
+			"returns": "i32",
+			"params": [{ "name": "ids", "type": "span<u64>", "out": true }],
+			"leaf": true,
+			"csharp": { "member": "FillObjects", "kind": "method", "access": "internal" }
+		}
+	]
+}

@@ -70,6 +70,14 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ObjectDestroyComponent(uint64_t componentId) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::ObjectBindings::DestroyComponent(componentId);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 	} // anonymous namespace
 
 	void FillObjectBindings(SltBindings& table) {
@@ -80,6 +88,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.objectFindScripts = &ObjectFindScripts;
 		table.objectAddScript = &ObjectAddScript;
 		table.objectDestroy = &ObjectDestroy;
+		table.objectDestroyComponent = &ObjectDestroyComponent;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

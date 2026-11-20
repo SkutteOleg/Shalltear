@@ -23,8 +23,10 @@
 #include "Shalltear/Core/Scene.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <map>
+#include <optional>
 
 using namespace Shalltear;
 using Shalltear::CSharpConformance::View;
@@ -137,6 +139,8 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 		return 2;
 	}
 	SceneSystem::Initialize();
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	std::printf("ASSETS staged=%d\n", assets->IsStaged());
 	SceneSystem::CreateScene("World");
 	const SltManagedAPI& managed = CSharpImpl::ScriptRuntime::GetManaged();
 	std::printf("ENTRIES load=%d unload=%d\n", managed.loadUserAssemblies != nullptr, managed.unloadUserAssemblies != nullptr);
@@ -161,21 +165,23 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	const auto cached = [&] {
 		SltString message{};
 		managed.runConformanceTest(reportsCache, &message);
-		return str(View(message));
+		return std::atoi(str(View(message)).c_str());
 	};
-	for (u32 pass = 0; pass < 64 && cached() != "0"; ++pass) {
+	for (u32 pass = 0; pass < 8; ++pass) {
 		FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
 	}
+	const int live = cached();
 	SltString ignored{};
 	managed.runConformanceTest(fillsCache, &ignored);
-	const str filled = cached();
+	const int filled = cached() - live;
 	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
-	const str swept = cached();
+	const int swept = cached() - live;
 	FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
-	std::printf("SWEEP %s %s %s\n", filled.c_str(), swept.c_str(), cached().c_str());
+	std::printf("SWEEP %d %d %d live %d\n", filled, swept, cached() - live, live);
 	FrameStages::UnregisterOwnedBy(&token);
 
 	SceneSystem::Terminate();
+	assets.reset();
 	CSharpImpl::ScriptRuntime::Detach();
 	LogManager::Terminate();
 	JobSystem::Terminate();
@@ -186,6 +192,7 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
 	ASSERT_EQ(run.exitCode, 0) << run.output;
+	EXPECT_TRUE(run.Has("ASSETS staged=1")) << run.output;
 	EXPECT_TRUE(run.Has("ENTRIES load=0 unload=0")) << run.output;
 
 	int ran = 0;
@@ -196,7 +203,7 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 		EXPECT_EQ(outcome.first, SLT_OK) << name << ": " << outcome.second;
 		++ran;
 	}
-	EXPECT_GE(ran, 44) << run.output;
+	EXPECT_GE(ran, 53) << run.output;
 	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
 }
 

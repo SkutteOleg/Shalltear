@@ -83,10 +83,10 @@ class BindingsTest(unittest.TestCase):
 		broken["params"][2]["type"] = "Vec5"
 		message = self.refusal([GETTER, broken])
 		self.assertTrue(message.startswith("Game.json: Describe: unknown type 'Vec5'. Use bool, i32,"), message)
-		self.assertTrue(message.endswith(", SceneObject, Component, TextAsset, string, span<T>"), message)
+		self.assertTrue(message.endswith(", SceneObject, Component, string, span<T>"), message)
 
 	def test_unknown_return_is_refused(self):
-		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, Vec2, Vec3, Vec4, Quat, Color, SceneObject, string"
+		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, Vec2, Vec3, Vec4, Quat, Color, SceneObject, string"
 		self.assertEqual("Game.json: GetSpeed: can't return 'span<f32>'. " + expected, self.refusal([dict(GETTER, returns="span<f32>")]))
 		self.assertEqual("Game.json: GetSpeed: can't return 'Component'. " + expected, self.refusal([dict(GETTER, returns="Component", leaf=False)]))
 
@@ -235,7 +235,7 @@ class BindingsTest(unittest.TestCase):
 		self.assertIn("\tpublic SceneObject? Attach(SceneObject target, int slot, SceneObject? parent, string member) {\n", managed)
 		self.assertIn("\t\t\tBridge.ThrowOffMainThread(member);\n", managed)
 		self.assertIn("\t\t\tthrow Bridge.Failure(status, member);\n", managed)
-		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component, TextAsset", self.refusal([LABEL], instance="Widget"))
+		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component", self.refusal([LABEL], instance="Widget"))
 		self.assertEqual("Game.json: GetLabel: 'relay' needs a method",
 						 self.refusal([dict(LABEL, csharp={"member": "Label", "kind": "getter", "relay": True})], instance="SceneObject"))
 
@@ -269,6 +269,79 @@ class BindingsTest(unittest.TestCase):
 		managed = bindings.render_managed_area(area)
 		self.assertIn("internal static unsafe partial class Game {\n", managed)
 		self.assertNotIn("public", managed)
+
+	def test_declared_type_becomes_a_wrapper(self):
+		widget = {"name": "Widget", "cpp": "::Game::Widget", "engine": "GameWidget", "base": "Asset", "doc": "Widget asset."}
+		find = {"id": "Find", "cpp": "::Game::Find(*near)", "returns": "Widget", "params": [{"name": "near", "type": "Widget"}],
+				"csharp": {"member": "Find", "kind": "method"}, "doc": "Nearest widget."}
+		area = bindings.parse_area(self.write([find], types=[widget]))
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\t\t::Game::Widget* const near = ResolveObject<::Game::Widget>(nearId);\n", native)
+		self.assertIn("\t\t\t\t*outResult = IdOf(::Game::Find(*near));\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("/// <summary>Widget asset.</summary>\n[EngineType(ENGINE_TYPE)]\npublic sealed partial class Widget : Asset {\n"
+					  "\tinternal const string ENGINE_TYPE = \"GameWidget\";\n\n\tinternal Widget(ulong id) {\n\t\t_id = id;\n\t}\n}\n", managed)
+		self.assertIn("\tpublic static Widget? Find(Widget near) {\n", managed)
+		self.assertIn("\t\treturn ObjectCache.Find<Widget>(result);\n", managed)
+		self.assertIn("\t\tWrap(Widget.ENGINE_TYPE, static id => new Widget(id));\n", bindings.render_managed_wrappers([area]))
+
+		member = bindings.parse_area(self.write([LABEL], types=[widget], instance="Widget", **{"class": "Shalltear.Widget"}))
+		self.assertIn("public unsafe partial class Widget {\n", bindings.render_managed_area(member))
+		self.assertEqual("Game.json: Widget: 'base' is 'Thing'. Use EngineObject, Asset, Component",
+						 self.refusal([find], types=[dict(widget, base="Thing")]))
+		self.assertEqual("Game.json: Widget: type is declared twice", self.refusal([find], types=[widget, widget]))
+		self.assertEqual("Game.json: SceneObject: type is declared twice", self.refusal([find], types=[widget, dict(widget, name="SceneObject")]))
+
+	def test_enum_crosses_as_its_integer(self):
+		mode = {"name": "Mode", "cpp": "::Game::Mode", "underlying": "u8", "doc": "How it runs.",
+				"values": [{"name": "Idle", "value": 0, "doc": "Stopped."}, {"name": "Busy", "value": 200, "doc": "Running."}]}
+		turn = {"id": "Turn", "cpp": "::Game::Turn(mode)", "returns": "Mode", "params": [{"name": "mode", "type": "Mode"}],
+				"csharp": {"member": "Turn", "kind": "method"}, "doc": "Next mode."}
+		peek = dict(turn, id="Peek", cpp="::Game::Peek()", params=[], leaf=True, csharp={"member": "Current", "kind": "getter"})
+		area = bindings.parse_area(self.write([turn, peek], enums=[mode]))
+		self.assertEqual("delegate* unmanaged<byte, byte*, int>", bindings.cs_pointer(area.functions[0]))
+		native = bindings.render_native_area(area)
+		self.assertIn("\tstatic_assert(sizeof(::Game::Mode) == sizeof(uint8_t));\n"
+					  "\tstatic_assert(static_cast<int64_t>(::Game::Mode::Idle) == 0);\n"
+					  "\tstatic_assert(static_cast<int64_t>(::Game::Mode::Busy) == 200);\n", native)
+		self.assertIn("\t\tint32_t GameTurn(uint8_t modeIn, uint8_t* outResult) noexcept {\n", native)
+		self.assertIn("\t\t\t\tconst ::Game::Mode mode = static_cast<::Game::Mode>(modeIn);\n"
+					  "\t\t\t\t*outResult = static_cast<uint8_t>(::Game::Turn(mode));\n", native)
+		self.assertIn("\t\t\treturn static_cast<uint8_t>(::Game::Peek());\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("/// <summary>How it runs.</summary>\npublic enum Mode : byte {\n\t/// <summary>Stopped.</summary>\n\tIdle = 0,\n"
+					  "\t/// <summary>Running.</summary>\n\tBusy = 200,\n}\n", managed)
+		self.assertIn("\tpublic static Mode Turn(Mode mode) {\n", managed)
+		self.assertIn("\t\tint status = Bindings.table.gameTurn((byte)mode, &result);\n", managed)
+		self.assertIn("\t\treturn (Mode)result;\n", managed)
+		self.assertIn("\t\t\treturn (Mode)Bindings.table.gamePeek();\n", managed)
+
+		moved = copy.deepcopy(mode)
+		moved["values"][1]["value"] = 201
+		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([bindings.parse_area(self.write([turn, peek], enums=[moved]))]))
+		self.assertEqual("Game.json: Mode: 'underlying' is 'i64'. Use u8, u16, i32, u32", self.refusal([turn], enums=[dict(mode, underlying="i64")]))
+		self.assertEqual("Game.json: Mode: 'values' is empty", self.refusal([turn], enums=[dict(mode, values=[])]))
+
+	def test_internal_member_sits_in_a_public_class(self):
+		hidden = {key: value for key, value in GETTER.items() if key != "doc"}
+		hidden["csharp"] = {"member": "Speed", "kind": "getter", "access": "internal"}
+		managed = bindings.render_managed_area(bindings.parse_area(self.write([hidden, METHOD])))
+		self.assertIn("\tinternal static float Speed {\n", managed)
+		self.assertIn("\tpublic static Vec3 Describe(", managed)
+		self.assertEqual("Game.json: GetSpeed: 'access' is 'private'. Use internal",
+						 self.refusal([dict(GETTER, csharp={"member": "Speed", "kind": "getter", "access": "private"})]))
+
+	def test_keyword_parameter_is_refused(self):
+		broken = dict(SETTER, params=[{"name": "event", "type": "f32"}])
+		self.assertEqual("Game.json: SetSpeed: parameter 'event' is a C# keyword. Rename it", self.refusal([broken]))
+
+	def test_trailing_optional_objects_default_to_null(self):
+		place = dict(ATTACH, params=[{"name": "target", "type": "SceneObject", "optional": True}, {"name": "slot", "type": "i32"},
+									 {"name": "parent", "type": "SceneObject", "optional": True},
+									 {"name": "anchor", "type": "SceneObject", "optional": True}],
+					 cpp="::Game::Place(target, slot, parent, anchor)")
+		managed = bindings.render_managed_area(bindings.parse_area(self.write([place])))
+		self.assertIn("\tpublic static SceneObject? Attach(SceneObject? target, int slot, SceneObject? parent = null, SceneObject? anchor = null) {\n", managed)
 
 	def test_digest_follows_schemas_and_script(self):
 		script = self.directory / "script.py"

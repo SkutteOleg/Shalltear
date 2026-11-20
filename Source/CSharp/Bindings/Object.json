@@ -73,6 +73,13 @@
 			"returns": "void",
 			"params": [{ "name": "objectId", "type": "u64" }],
 			"csharp": { "member": "Destroy", "kind": "method", "relay": true }
+		},
+		{
+			"id": "DestroyComponent",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::DestroyComponent(componentId)",
+			"returns": "void",
+			"params": [{ "name": "componentId", "type": "u64" }],
+			"csharp": { "member": "DestroyComponent", "kind": "method", "relay": true }
 		}
 	]
 }

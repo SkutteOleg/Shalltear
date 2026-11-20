@@ -1,0 +1,18 @@
+{
+	"area": "Events",
+	"include": "ScriptEvents.h",
+	"class": "Shalltear.Interop.EventBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "SetListening",
+			"cpp": "::Shalltear::CSharpImpl::ScriptEvents::SetListening(id, listening)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "i32" },
+				{ "name": "listening", "type": "bool" }
+			],
+			"csharp": { "member": "SetListening", "kind": "method" }
+		}
+	]
+}

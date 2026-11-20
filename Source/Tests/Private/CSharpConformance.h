@@ -6,6 +6,7 @@
 #include "Shalltear/Core/Time.h"
 #include "Shalltear/Core/Types.h"
 
+#include <filesystem>
 #include <mutex>
 #include <string_view>
 #include <vector>
@@ -31,6 +32,20 @@ namespace Shalltear::CSharpConformance {
 	inline bool IsProbe(std::string_view caseName) {
 		return caseName.substr(0, caseName.find('.')).ends_with("Probe");
 	}
+
+	class StagedAssets {
+	public:
+		StagedAssets();
+		~StagedAssets();
+
+		StagedAssets(const StagedAssets&) = delete;
+		StagedAssets& operator=(const StagedAssets&) = delete;
+
+		bool IsStaged() const { return _staged; }
+	private:
+		std::filesystem::path _root;
+		bool _staged = false;
+	};
 
 	struct LogRow {
 		LogLevel level;

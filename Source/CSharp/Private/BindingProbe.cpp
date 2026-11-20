@@ -4,6 +4,8 @@
 
 #include "ManagedTypes.h"
 
+#include "Shalltear/Core/Asset/Asset.h"
+#include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Math/MathUtil.h"
 
 #include <iterator>
@@ -303,6 +305,11 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 
 	i32 GetAliveChecks() {
 		return static_cast<i32>(ManagedTypes::GetCounters().aliveChecks);
+	}
+
+	u64 FindAsset(std::string_view path) {
+		const Asset* asset = AssetDatabase::LoadAsset(Path(str(path)));
+		return asset ? asset->GetInstanceId() : 0;
 	}
 
 	void RunFrames(i32 count) {

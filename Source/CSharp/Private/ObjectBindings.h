@@ -11,6 +11,8 @@
 // refusals thrown as std::runtime_error
 namespace Shalltear::CSharpImpl::ObjectBindings {
 
+	void RequireOutsideLifecycle(std::string_view member);
+
 	bool IsAlive(u64 id) noexcept;
 	bool IsA(u64 id, u64 typeHash);
 
@@ -28,6 +30,7 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 	void SetSiblingIndex(SceneObject& object, i32 index);
 	SceneObject* GetChild(SceneObject& object, i32 index);
 	void Destroy(u64 objectId);
+	void DestroyComponent(u64 componentId);
 	void SetEnabled(Component& component, bool enabled);
 
 	SceneObject* Instantiate(SceneObject& source, SceneObject* parent);

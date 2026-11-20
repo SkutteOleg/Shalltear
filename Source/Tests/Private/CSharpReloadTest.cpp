@@ -35,6 +35,7 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <optional>
 #include <thread>
 
 using namespace Shalltear;
@@ -907,17 +908,44 @@ TEST_F(CSharpReloadTest, MemoryFlatOverTenReloads) {
 	EXPECT_EQ(_editor->getReloadMigratedCount(), 50u);
 }
 
+TEST_F(CSharpReloadTest, SceneHandlersDropAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	str message;
+	ASSERT_EQ(Run("SceneProbe.KeepsListening", message), SLT_OK) << message;
+	_hooks->takeRecords();
+	SceneSystem::CreateScene("First");
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard First"}));
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	ASSERT_EQ(_editor->getReloadCount(), 2u);
+	SceneSystem::CreateScene("Second");
+	EXPECT_TRUE(_hooks->takeRecords().empty());
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+}
+
 TEST_F(CSharpReloadTest, ConformanceSurvivesTenReloads) {
 	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
 	ASSERT_TRUE(fs::is_regular_file(conformance));
 	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
+	std::optional<CSharpConformance::StagedAssets> assets;
 	for (u32 round = 0; round < 10; ++round) {
 		const auto begin = std::chrono::steady_clock::now();
 		_editor->requestReload();
 		_editor->pumpReload();
 		ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded) << round;
 		ASSERT_EQ(_editor->getReloadCount(), round + 1);
+		if (!assets) {
+			assets.emplace();
+			ASSERT_TRUE(assets->IsStaged());
+		}
 		const SltManagedAPI& managed = _hooks->getManaged();
 		const int32_t count = managed.getConformanceTestCount();
 		ASSERT_GT(count, 50) << round;
@@ -940,6 +968,12 @@ TEST_F(CSharpReloadTest, ConformanceSurvivesTenReloads) {
 		SceneSystem::EndFrame();
 	}
 	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+	const std::vector<Handle<Scene>> loaded(SceneSystem::GetLoadedScenes().begin(), SceneSystem::GetLoadedScenes().end());
+	for (const Handle<Scene>& scene : loaded) {
+		SceneSystem::UnloadScene(scene);
+	}
+	SceneSystem::EndFrame();
+	assets.reset();
 }
 
 namespace {

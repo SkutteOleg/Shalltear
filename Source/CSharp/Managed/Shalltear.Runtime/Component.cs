@@ -1,8 +1,15 @@
+using Shalltear.Interop;
+
 namespace Shalltear;
 
 /// <summary>Part of a scene object. Scripts derive from Behavior.</summary>
 public abstract partial class Component : EngineObject {
 	private protected Component() {}
+
+	/// <summary>Destroy this component at end of frame.</summary>
+	public void Destroy() {
+		ObjectBindings.DestroyComponent(_id, "Component.Destroy");
+	}
 
 	/// <summary>Added to its object.</summary>
 	protected virtual void OnAttach() {}

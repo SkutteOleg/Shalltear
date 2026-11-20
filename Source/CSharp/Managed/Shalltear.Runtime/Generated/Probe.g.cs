@@ -237,6 +237,20 @@ internal static unsafe partial class BindingProbe {
 		}
 	}
 
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static ulong FindAsset(string path) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.FindAsset");
+		}
+		using UTF8Scratch pathText = new(path, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		ulong result;
+		int status = Bindings.table.probeFindAsset(pathText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
 	internal static void RunFrames(int count) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.RunFrames");

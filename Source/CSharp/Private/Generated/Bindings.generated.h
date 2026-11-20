@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xad806939f5eadeb9ull
-#define SLT_BINDINGS_INPUT_DIGEST 0x0351442598aa04dfull
+#define SLT_BRIDGE_LAYOUT_HASH 0x94cd470a2cfb890dull
+#define SLT_BINDINGS_INPUT_DIGEST 0x95ed4745797f1423ull
 
 typedef struct SltString SltString;
 
@@ -25,6 +25,7 @@ typedef struct SltBindings {
 	int32_t (*componentIsEnabledSelf)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentIsEffectivelyEnabled)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentSetEnabled)(uint64_t self, uint8_t enabled);
+	int32_t (*eventsSetListening)(int32_t id, uint8_t listening);
 	int32_t (*logGetLevel)(void);
 	int32_t (*logWrite)(int32_t level, SltString category, SltString message, SltString file, int32_t line);
 	uint8_t (*objectIsAlive)(uint64_t id);
@@ -34,6 +35,7 @@ typedef struct SltBindings {
 	int32_t (*objectFindScripts)(uint64_t self, int32_t scriptIndex, int64_t* handles, int32_t handlesCount, int32_t* outResult);
 	int32_t (*objectAddScript)(uint64_t self, int32_t scriptIndex, int64_t* outResult);
 	int32_t (*objectDestroy)(uint64_t objectId);
+	int32_t (*objectDestroyComponent)(uint64_t componentId);
 	int32_t (*probeGetMathCaseCount)(void);
 	int32_t (*probeEvaluateMath)(SltString name, const float* inputs, int32_t inputsCount, float* outputs, int32_t outputsCount, int32_t* outResult);
 	uint8_t (*probeEchoBool)(uint8_t value);
@@ -59,7 +61,16 @@ typedef struct SltBindings {
 	int32_t (*probeGetTouches)(int32_t* outResult);
 	int32_t (*probeGetAliveChecks)(int32_t* outResult);
 	int32_t (*probeEndFrame)(void);
+	int32_t (*probeFindAsset)(SltString path, uint64_t* outResult);
 	int32_t (*probeRunFrames)(int32_t count);
+	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
+	int32_t (*sceneSetName)(uint64_t self, SltString name);
+	int32_t (*sceneGetState)(uint64_t self, uint8_t* outResult);
+	int32_t (*sceneGetRootCount)(uint64_t self, int32_t* outResult);
+	int32_t (*sceneGetRoot)(uint64_t self, int32_t index, uint64_t* outResult);
+	int32_t (*sceneFindObjectByName)(uint64_t self, SltString objectName, uint64_t* outResult);
+	int32_t (*sceneGetObjectCount)(uint64_t self, int32_t* outResult);
+	int32_t (*sceneFillObjects)(uint64_t self, uint64_t* ids, int32_t idsCount, int32_t* outResult);
 	int32_t (*sceneObjectGetName)(uint64_t self, SltString* outResult);
 	int32_t (*sceneObjectSetName)(uint64_t self, SltString value);
 	int32_t (*sceneObjectIsActiveSelf)(uint64_t self, uint8_t* outResult);
@@ -85,6 +96,17 @@ typedef struct SltBindings {
 	int32_t (*sceneObjectGetLossyScale)(uint64_t self, ::Shalltear::Vec3* outResult);
 	int32_t (*sceneSystemInstantiate)(uint64_t source, uint64_t parent, uint64_t* outResult);
 	int32_t (*sceneSystemFindObjectByName)(SltString name, uint64_t* outResult);
+	int32_t (*sceneSystemInstantiatePrefab)(uint64_t prefab, float positionX, float positionY, float positionZ, float rotationX, float rotationY, float rotationZ, float rotationW, uint64_t parent, uint64_t scene, uint64_t* outResult);
+	int32_t (*sceneSystemCreateObject)(SltString name, uint64_t parent, uint64_t scene, uint64_t* outResult);
+	int32_t (*sceneSystemCreateScene)(SltString name, uint64_t* outResult);
+	int32_t (*sceneSystemLoadScene)(uint64_t scene, uint64_t* outResult);
+	int32_t (*sceneSystemReplaceScenes)(uint64_t scene, uint64_t keep);
+	int32_t (*sceneSystemUnloadScene)(uint64_t scene);
+	int32_t (*sceneSystemFillLoadedScenes)(uint64_t* ids, int32_t idsCount);
+	int32_t (*sceneSystemGetPrimaryScene)(uint64_t* outResult);
+	int32_t (*sceneSystemSetPrimaryScene)(uint64_t scene);
+	int32_t (*sceneSystemIsPrefabLinked)(uint64_t target, uint8_t* outResult);
+	int32_t (*sceneSystemIsPrefabInstanceRoot)(uint64_t target, uint8_t* outResult);
 	int32_t (*textAssetGetText)(uint64_t self, SltString* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);

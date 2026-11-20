@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 10;
+	internal const uint ABI_VERSION = 11;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -63,6 +63,7 @@ internal static unsafe class Bridge {
 		managed->runConformanceTest = &RunConformanceTest;
 		managed->tick = &Tick;
 		managed->shutdown = &Shutdown;
+		managed->dispatchEvent = &ScriptEvents.Dispatch;
 
 		if (!_handlerInstalled) {
 			_handlerInstalled = true;
@@ -228,6 +229,7 @@ internal static unsafe class Bridge {
 
 	[UnmanagedCallersOnly]
 	static void Shutdown() {
+		ScriptEvents.Forget();
 		ScriptTypes.Clear();
 		ObjectCache.Clear();
 		_attached = false;

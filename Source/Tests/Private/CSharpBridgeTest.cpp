@@ -8,6 +8,7 @@
 #include "Shalltear/Core/Scene.h"
 
 #include <format>
+#include <optional>
 
 using namespace Shalltear;
 using namespace Shalltear::CSharpTests;
@@ -166,6 +167,8 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 	SceneSystem::Initialize();
 	ASSERT_TRUE(Attach()) << _error;
 	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	ASSERT_TRUE(assets->IsStaged());
 	SceneSystem::CreateScene("World");
 
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
@@ -183,12 +186,27 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 		EXPECT_EQ(managed.runConformanceTest(index, &message), SLT_OK) << caseName << ": " << View(message);
 		++ran;
 	}
-	EXPECT_GE(ran, 44);
+	EXPECT_GE(ran, 53);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
 	SceneSystem::Terminate();
+	assets.reset();
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);
 	EXPECT_EQ(managed.getConformanceTestCount(), 0);
+}
+
+TEST_F(CSharpRuntimeFixture, ThrowingSceneHandlerIsReported) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	str message;
+	ASSERT_EQ(Run("SceneProbe.ThrowsThenListens", message), SLT_OK) << message;
+	_hooks->takeRecords();
+
+	SceneSystem::CreateScene("Loud");
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a scene handler"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard Loud"}));
+	SceneSystem::Terminate();
 }
 
 TEST_F(CSharpRuntimeFixture, SecondLoadIsRefused) {

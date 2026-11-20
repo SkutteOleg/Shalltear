@@ -44,5 +44,6 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	i32 GetTouches();
 	i32 GetAliveChecks();
 	void RunFrames(i32 count);
+	u64 FindAsset(std::string_view path);
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

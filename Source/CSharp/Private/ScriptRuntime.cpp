@@ -4,6 +4,7 @@
 
 #include "ManagedBehavior.h"
 #include "ManagedTypes.h"
+#include "ScriptEvents.h"
 #include "ShadowStorage.h"
 
 #include "Shalltear/Core/Log.h"
@@ -171,6 +172,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		}
 		UnloadUserAssemblies();
 		_managed.shutdown();
+		ScriptEvents::Reset();
 		_managed = {};
 		_attached = false;
 	}

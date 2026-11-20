@@ -2,7 +2,7 @@
 
 #include "BindingSupport.h"
 
-#include "ObjectBindings.h"
+#include "SceneBindings.h"
 
 namespace Shalltear::CSharpImpl::Generated {
 
@@ -30,11 +30,145 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t SceneSystemInstantiatePrefab(uint64_t prefabId, float positionX, float positionY, float positionZ, float rotationX, float rotationY, float rotationZ, float rotationW, uint64_t parentId, uint64_t sceneId, uint64_t* outResult) noexcept {
+			::Shalltear::PrefabAsset* const prefab = ResolveObject<::Shalltear::PrefabAsset>(prefabId);
+			if (!prefab) {
+				return SLT_ERR_DESTROYED;
+			}
+			::Shalltear::SceneObject* const parent = ResolveObject<::Shalltear::SceneObject>(parentId);
+			::Shalltear::Scene* const scene = ResolveObject<::Shalltear::Scene>(sceneId);
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const ::Shalltear::Vec3 position(positionX, positionY, positionZ);
+				const ::Shalltear::Quat rotation(rotationX, rotationY, rotationZ, rotationW);
+				*outResult = IdOf(::Shalltear::CSharpImpl::SceneBindings::InstantiatePrefab(*prefab, scene, parent, position, rotation));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemCreateObject(SltString nameIn, uint64_t parentId, uint64_t sceneId, uint64_t* outResult) noexcept {
+			::Shalltear::SceneObject* const parent = ResolveObject<::Shalltear::SceneObject>(parentId);
+			::Shalltear::Scene* const scene = ResolveObject<::Shalltear::Scene>(sceneId);
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view name = View(nameIn);
+				*outResult = IdOf(::Shalltear::CSharpImpl::SceneBindings::CreateObject(name, scene, parent));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemCreateScene(SltString nameIn, uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view name = View(nameIn);
+				*outResult = IdOf(::Shalltear::CSharpImpl::SceneBindings::CreateScene(name));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemLoadScene(uint64_t sceneId, uint64_t* outResult) noexcept {
+			::Shalltear::SceneAsset* const scene = ResolveObject<::Shalltear::SceneAsset>(sceneId);
+			if (!scene) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = IdOf(::Shalltear::CSharpImpl::SceneBindings::LoadScene(*scene));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemReplaceScenes(uint64_t sceneId, uint64_t keepId) noexcept {
+			::Shalltear::SceneAsset* const scene = ResolveObject<::Shalltear::SceneAsset>(sceneId);
+			if (!scene) {
+				return SLT_ERR_DESTROYED;
+			}
+			::Shalltear::Scene* const keep = ResolveObject<::Shalltear::Scene>(keepId);
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::SceneBindings::ReplaceScenes(*scene, keep);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemUnloadScene(uint64_t sceneId) noexcept {
+			::Shalltear::Scene* const scene = ResolveObject<::Shalltear::Scene>(sceneId);
+			if (!scene) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::SceneSystem::UnloadScene(::Shalltear::Handle<::Shalltear::Scene>(scene));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemFillLoadedScenes(uint64_t* idsData, int32_t idsCount) noexcept {
+			const std::span<uint64_t> ids(idsData, static_cast<size_t>(idsCount));
+			static_assert(noexcept(::Shalltear::CSharpImpl::SceneBindings::FillLoadedScenes(ids)));
+			return static_cast<int32_t>(::Shalltear::CSharpImpl::SceneBindings::FillLoadedScenes(ids));
+		}
+
+		int32_t SceneSystemGetPrimaryScene(uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = IdOf(::Shalltear::SceneSystem::GetPrimaryScene());
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemSetPrimaryScene(uint64_t sceneId) noexcept {
+			::Shalltear::Scene* const scene = ResolveObject<::Shalltear::Scene>(sceneId);
+			if (!scene) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::SceneSystem::SetPrimaryScene(::Shalltear::Handle<::Shalltear::Scene>(scene));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemIsPrefabLinked(uint64_t targetId, uint8_t* outResult) noexcept {
+			::Shalltear::SceneObject* const target = ResolveObject<::Shalltear::SceneObject>(targetId);
+			if (!target) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint8_t>((::Shalltear::SceneSystem::IsPrefabLinked(::Shalltear::Handle<::Shalltear::SceneObject>(target))) ? 1 : 0);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SceneSystemIsPrefabInstanceRoot(uint64_t targetId, uint8_t* outResult) noexcept {
+			::Shalltear::SceneObject* const target = ResolveObject<::Shalltear::SceneObject>(targetId);
+			if (!target) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint8_t>((::Shalltear::SceneSystem::IsPrefabInstanceRoot(::Shalltear::Handle<::Shalltear::SceneObject>(target))) ? 1 : 0);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 	} // anonymous namespace
 
 	void FillSceneSystemBindings(SltBindings& table) {
 		table.sceneSystemInstantiate = &SceneSystemInstantiate;
 		table.sceneSystemFindObjectByName = &SceneSystemFindObjectByName;
+		table.sceneSystemInstantiatePrefab = &SceneSystemInstantiatePrefab;
+		table.sceneSystemCreateObject = &SceneSystemCreateObject;
+		table.sceneSystemCreateScene = &SceneSystemCreateScene;
+		table.sceneSystemLoadScene = &SceneSystemLoadScene;
+		table.sceneSystemReplaceScenes = &SceneSystemReplaceScenes;
+		table.sceneSystemUnloadScene = &SceneSystemUnloadScene;
+		table.sceneSystemFillLoadedScenes = &SceneSystemFillLoadedScenes;
+		table.sceneSystemGetPrimaryScene = &SceneSystemGetPrimaryScene;
+		table.sceneSystemSetPrimaryScene = &SceneSystemSetPrimaryScene;
+		table.sceneSystemIsPrefabLinked = &SceneSystemIsPrefabLinked;
+		table.sceneSystemIsPrefabInstanceRoot = &SceneSystemIsPrefabInstanceRoot;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

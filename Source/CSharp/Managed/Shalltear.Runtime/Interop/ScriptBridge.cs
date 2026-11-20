@@ -101,4 +101,5 @@ internal unsafe struct SltManagedAPI {
 	public delegate* unmanaged<int, SltString*, int> runConformanceTest;
 	public delegate* unmanaged<void> tick;
 	public delegate* unmanaged<void> shutdown;
+	public delegate* unmanaged<int, ulong, void> dispatchEvent;
 }

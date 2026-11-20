@@ -13,6 +13,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEnabledSelf;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEffectivelyEnabled;
 	public delegate* unmanaged<ulong, byte, int> componentSetEnabled;
+	public delegate* unmanaged<int, byte, int> eventsSetListening;
 	public delegate* unmanaged[SuppressGCTransition]<int> logGetLevel;
 	public delegate* unmanaged<int, SltString, SltString, SltString, int, int> logWrite;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
@@ -22,6 +23,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int, int*, int> objectFindScripts;
 	public delegate* unmanaged<ulong, int, long*, int> objectAddScript;
 	public delegate* unmanaged<ulong, int> objectDestroy;
+	public delegate* unmanaged<ulong, int> objectDestroyComponent;
 	public delegate* unmanaged[SuppressGCTransition]<int> probeGetMathCaseCount;
 	public delegate* unmanaged<SltString, float*, int, float*, int, int*, int> probeEvaluateMath;
 	public delegate* unmanaged[SuppressGCTransition]<byte, byte> probeEchoBool;
@@ -47,7 +49,16 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<int*, int> probeGetTouches;
 	public delegate* unmanaged<int*, int> probeGetAliveChecks;
 	public delegate* unmanaged<int> probeEndFrame;
+	public delegate* unmanaged<SltString, ulong*, int> probeFindAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
+	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
+	public delegate* unmanaged<ulong, SltString, int> sceneSetName;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> sceneGetState;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> sceneGetRootCount;
+	public delegate* unmanaged<ulong, int, ulong*, int> sceneGetRoot;
+	public delegate* unmanaged<ulong, SltString, ulong*, int> sceneFindObjectByName;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> sceneGetObjectCount;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int, int*, int> sceneFillObjects;
 	public delegate* unmanaged<ulong, SltString*, int> sceneObjectGetName;
 	public delegate* unmanaged<ulong, SltString, int> sceneObjectSetName;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> sceneObjectIsActiveSelf;
@@ -73,6 +84,17 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, Vec3*, int> sceneObjectGetLossyScale;
 	public delegate* unmanaged<ulong, ulong, ulong*, int> sceneSystemInstantiate;
 	public delegate* unmanaged<SltString, ulong*, int> sceneSystemFindObjectByName;
+	public delegate* unmanaged<ulong, float, float, float, float, float, float, float, ulong, ulong, ulong*, int> sceneSystemInstantiatePrefab;
+	public delegate* unmanaged<SltString, ulong, ulong, ulong*, int> sceneSystemCreateObject;
+	public delegate* unmanaged<SltString, ulong*, int> sceneSystemCreateScene;
+	public delegate* unmanaged<ulong, ulong*, int> sceneSystemLoadScene;
+	public delegate* unmanaged<ulong, ulong, int> sceneSystemReplaceScenes;
+	public delegate* unmanaged<ulong, int> sceneSystemUnloadScene;
+	public delegate* unmanaged[SuppressGCTransition]<ulong*, int, int> sceneSystemFillLoadedScenes;
+	public delegate* unmanaged<ulong*, int> sceneSystemGetPrimaryScene;
+	public delegate* unmanaged<ulong, int> sceneSystemSetPrimaryScene;
+	public delegate* unmanaged<ulong, byte*, int> sceneSystemIsPrefabLinked;
+	public delegate* unmanaged<ulong, byte*, int> sceneSystemIsPrefabInstanceRoot;
 	public delegate* unmanaged<ulong, SltString*, int> textAssetGetText;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
@@ -85,7 +107,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xad806939f5eadeb9;
+	internal const ulong LAYOUT_HASH = 0x94cd470a2cfb890d;
 
 	internal static SltBindings table;
 

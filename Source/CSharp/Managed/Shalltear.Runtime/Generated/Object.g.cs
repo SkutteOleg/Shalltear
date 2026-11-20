@@ -83,4 +83,14 @@ internal static unsafe partial class ObjectBindings {
 			throw Bridge.LastError();
 		}
 	}
+
+	internal static void DestroyComponent(ulong componentId, string member) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread(member);
+		}
+		int status = Bindings.table.objectDestroyComponent(componentId);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
 }

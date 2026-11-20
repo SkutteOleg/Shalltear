@@ -1,8 +1,11 @@
 {
 	"area": "SceneSystem",
-	"include": "ObjectBindings.h",
+	"include": "SceneBindings.h",
 	"class": "Shalltear.SceneSystem",
-	"doc": "Objects of loaded scenes.",
+	"doc": "Loaded scenes + their objects.",
+	"types": [
+		{ "name": "Prefab", "cpp": "::Shalltear::PrefabAsset", "engine": "PrefabAsset", "base": "Asset", "doc": "Prefab asset." }
+	],
 	"functions": [
 		{
 			"id": "Instantiate",
@@ -23,6 +26,109 @@
 			"params": [{ "name": "name", "type": "string" }],
 			"csharp": { "member": "FindObjectByName", "kind": "method" },
 			"doc": "1st object with this name in loaded scenes (null when none)."
+		},
+		{
+			"id": "InstantiatePrefab",
+			"nullable": false,
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::InstantiatePrefab(*prefab, scene, parent, position, rotation)",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "prefab", "type": "Prefab" },
+				{ "name": "position", "type": "Vec3" },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "scene", "type": "Scene", "optional": true }
+			],
+			"csharp": { "member": "InstantiatePrefab", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "CreateObject",
+			"nullable": false,
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::CreateObject(name, scene, parent)",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "scene", "type": "Scene", "optional": true }
+			],
+			"csharp": { "member": "CreateObject", "kind": "method" },
+			"doc": "New empty object (under parent, in scene or in PrimaryScene)."
+		},
+		{
+			"id": "CreateScene",
+			"nullable": false,
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::CreateScene(name)",
+			"returns": "Scene",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "CreateScene", "kind": "method" },
+			"doc": "New empty scene (added to loaded scenes)."
+		},
+		{
+			"id": "LoadScene",
+			"nullable": false,
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::LoadScene(*scene)",
+			"returns": "Scene",
+			"params": [{ "name": "scene", "type": "SceneAsset" }],
+			"csharp": { "member": "LoadScene", "kind": "method" },
+			"doc": "Load scene in addition to loaded ones. PrimaryScene unchanged."
+		},
+		{
+			"id": "ReplaceScenes",
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::ReplaceScenes(*scene, keep)",
+			"returns": "void",
+			"params": [
+				{ "name": "scene", "type": "SceneAsset" },
+				{ "name": "keep", "type": "Scene", "optional": true }
+			],
+			"csharp": { "member": "ReplaceScenes", "kind": "method" },
+			"doc": "Unload loaded scenes (except keep) + load scene, at end of frame."
+		},
+		{
+			"id": "UnloadScene",
+			"cpp": "::Shalltear::SceneSystem::UnloadScene(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "void",
+			"params": [{ "name": "scene", "type": "Scene" }],
+			"csharp": { "member": "UnloadScene", "kind": "method" },
+			"doc": "Destroy scene's objects now, remove scene at end of frame."
+		},
+		{
+			"id": "FillLoadedScenes",
+			"cpp": "::Shalltear::CSharpImpl::SceneBindings::FillLoadedScenes(ids)",
+			"returns": "i32",
+			"params": [{ "name": "ids", "type": "span<u64>", "out": true }],
+			"leaf": true,
+			"csharp": { "member": "FillLoadedScenes", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "GetPrimaryScene",
+			"cpp": "::Shalltear::SceneSystem::GetPrimaryScene()",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "PrimaryScene", "kind": "getter" },
+			"doc": "Scene for new objects (null when none loaded)."
+		},
+		{
+			"id": "SetPrimaryScene",
+			"cpp": "::Shalltear::SceneSystem::SetPrimaryScene(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "void",
+			"params": [{ "name": "scene", "type": "Scene" }],
+			"csharp": { "member": "PrimaryScene", "kind": "setter" }
+		},
+		{
+			"id": "IsPrefabLinked",
+			"cpp": "::Shalltear::SceneSystem::IsPrefabLinked(::Shalltear::Handle<::Shalltear::SceneObject>(target))",
+			"returns": "bool",
+			"params": [{ "name": "target", "type": "SceneObject" }],
+			"csharp": { "member": "IsPrefabLinked", "kind": "method" },
+			"doc": "True for a prefab instance's root + objects made from its prefab."
+		},
+		{
+			"id": "IsPrefabInstanceRoot",
+			"cpp": "::Shalltear::SceneSystem::IsPrefabInstanceRoot(::Shalltear::Handle<::Shalltear::SceneObject>(target))",
+			"returns": "bool",
+			"params": [{ "name": "target", "type": "SceneObject" }],
+			"csharp": { "member": "IsPrefabInstanceRoot", "kind": "method" },
+			"doc": "True for root object of a prefab instance."
 		}
 	]
 }

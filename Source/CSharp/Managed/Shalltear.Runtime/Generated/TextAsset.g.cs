@@ -8,6 +8,16 @@ using Shalltear.Interop;
 
 namespace Shalltear;
 
+/// <summary>Text file asset.</summary>
+[EngineType(ENGINE_TYPE)]
+public sealed partial class TextAsset : Asset {
+	internal const string ENGINE_TYPE = "TextAsset";
+
+	internal TextAsset(ulong id) {
+		_id = id;
+	}
+}
+
 public unsafe partial class TextAsset {
 	/// <summary>File's text.</summary>
 	public string Text {

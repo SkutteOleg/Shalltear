@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 10
+#define SLT_BRIDGE_ABI_VERSION 11
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -161,6 +161,7 @@ typedef struct SltManagedAPI {
 	int32_t (*runConformanceTest)(int32_t index, SltString* outMessage);
 	void (*tick)(void);
 	void (*shutdown)(void);
+	void (*dispatchEvent)(int32_t event, uint64_t subject);
 } SltManagedAPI;
 
 typedef int32_t (*SltInitializeFn)(const SltEngineAPI* engine, SltManagedAPI* outManaged);

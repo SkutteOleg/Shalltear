@@ -14,8 +14,9 @@ internal static class Wrapper<T>
 	internal static ulong typeHash;
 }
 
-internal static class ObjectCache {
+internal static partial class ObjectCache {
 	internal const int SLICE = 256;
+	internal const int STACK_IDS = 64;
 
 	static readonly Dictionary<ulong, EngineObject> _wrappers = new();
 	static readonly List<ulong> _ids = new();
@@ -65,9 +66,8 @@ internal static class ObjectCache {
 		Wrap(Material.ENGINE_TYPE, static id => new Material(id));
 		Wrap(Mesh.ENGINE_TYPE, static id => new Mesh(id));
 		Wrap(Texture.ENGINE_TYPE, static id => new Texture(id));
-		Wrap(Prefab.ENGINE_TYPE, static id => new Prefab(id));
 		Wrap(Sprite.ENGINE_TYPE, static id => new Sprite(id));
-		Wrap(TextAsset.ENGINE_TYPE, static id => new TextAsset(id));
+		WrapGenerated();
 	}
 
 	internal static int Sweep() {

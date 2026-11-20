@@ -137,6 +137,7 @@ internal static unsafe class UserAssemblies {
 		ConformanceRegistry.Clear();
 		ScriptTypes.Clear();
 		LogOrigins.Clear();
+		ScriptEvents.Clear();
 		if (context == null) {
 			return new WeakReference(null);
 		}

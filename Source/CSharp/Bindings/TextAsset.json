@@ -3,6 +3,9 @@
 	"include": "Shalltear/Core/Asset/TextAsset.h",
 	"class": "Shalltear.TextAsset",
 	"instance": "TextAsset",
+	"types": [
+		{ "name": "TextAsset", "cpp": "::Shalltear::TextAsset", "engine": "TextAsset", "base": "Asset", "doc": "Text file asset." }
+	],
 	"functions": [
 		{
 			"id": "GetText",

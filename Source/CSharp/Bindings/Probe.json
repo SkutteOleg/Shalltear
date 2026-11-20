@@ -212,6 +212,13 @@
 			"csharp": { "member": "EndFrame", "kind": "method" }
 		},
 		{
+			"id": "FindAsset",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FindAsset(path)",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "FindAsset", "kind": "method" }
+		},
+		{
 			"id": "RunFrames",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::RunFrames(count)",
 			"returns": "void",

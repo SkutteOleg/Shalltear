@@ -8,7 +8,17 @@ using Shalltear.Interop;
 
 namespace Shalltear;
 
-/// <summary>Objects of loaded scenes.</summary>
+/// <summary>Prefab asset.</summary>
+[EngineType(ENGINE_TYPE)]
+public sealed partial class Prefab : Asset {
+	internal const string ENGINE_TYPE = "PrefabAsset";
+
+	internal Prefab(ulong id) {
+		_id = id;
+	}
+}
+
+/// <summary>Loaded scenes + their objects.</summary>
 public static unsafe partial class SceneSystem {
 	/// <summary>Copy of source with its children + components (under parent when given).</summary>
 	public static SceneObject Instantiate(SceneObject source, SceneObject? parent = null) {
@@ -37,5 +47,148 @@ public static unsafe partial class SceneSystem {
 			throw Bridge.LastError();
 		}
 		return ObjectCache.SceneObject(result);
+	}
+
+	internal static SceneObject InstantiatePrefab(Prefab prefab, Vec3 position, Quat rotation, SceneObject? parent = null, Scene? scene = null) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.InstantiatePrefab");
+		}
+		ArgumentNullException.ThrowIfNull(prefab);
+		ulong result;
+		int status = Bindings.table.sceneSystemInstantiatePrefab(prefab._id, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, parent is null ? 0UL : parent._id, scene is null ? 0UL : scene._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.InstantiatePrefab");
+		}
+		return ObjectCache.SceneObject(result)!;
+	}
+
+	/// <summary>New empty object (under parent, in scene or in PrimaryScene).</summary>
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	public static SceneObject CreateObject(string name, SceneObject? parent = null, Scene? scene = null) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.CreateObject");
+		}
+		using UTF8Scratch nameText = new(name, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		ulong result;
+		int status = Bindings.table.sceneSystemCreateObject(nameText.Text, parent is null ? 0UL : parent._id, scene is null ? 0UL : scene._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.CreateObject");
+		}
+		return ObjectCache.SceneObject(result)!;
+	}
+
+	/// <summary>New empty scene (added to loaded scenes).</summary>
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	public static Scene CreateScene(string name) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.CreateScene");
+		}
+		using UTF8Scratch nameText = new(name, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		ulong result;
+		int status = Bindings.table.sceneSystemCreateScene(nameText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return ObjectCache.Find<Scene>(result)!;
+	}
+
+	/// <summary>Load scene in addition to loaded ones. PrimaryScene unchanged.</summary>
+	public static Scene LoadScene(SceneAsset scene) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.LoadScene");
+		}
+		ArgumentNullException.ThrowIfNull(scene);
+		ulong result;
+		int status = Bindings.table.sceneSystemLoadScene(scene._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.LoadScene");
+		}
+		return ObjectCache.Find<Scene>(result)!;
+	}
+
+	/// <summary>Unload loaded scenes (except keep) + load scene, at end of frame.</summary>
+	public static void ReplaceScenes(SceneAsset scene, Scene? keep = null) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.ReplaceScenes");
+		}
+		ArgumentNullException.ThrowIfNull(scene);
+		int status = Bindings.table.sceneSystemReplaceScenes(scene._id, keep is null ? 0UL : keep._id);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.ReplaceScenes");
+		}
+	}
+
+	/// <summary>Destroy scene's objects now, remove scene at end of frame.</summary>
+	public static void UnloadScene(Scene scene) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.UnloadScene");
+		}
+		ArgumentNullException.ThrowIfNull(scene);
+		int status = Bindings.table.sceneSystemUnloadScene(scene._id);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.UnloadScene");
+		}
+	}
+
+	internal static int FillLoadedScenes(Span<ulong> ids) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.FillLoadedScenes");
+		}
+		fixed (ulong* idsData = ids) {
+			return Bindings.table.sceneSystemFillLoadedScenes(idsData, ids.Length);
+		}
+	}
+
+	/// <summary>Scene for new objects (null when none loaded).</summary>
+	public static Scene? PrimaryScene {
+		get {
+			if (Bridge.OffMainThread) {
+				Bridge.ThrowOffMainThread("SceneSystem.PrimaryScene");
+			}
+			ulong result;
+			int status = Bindings.table.sceneSystemGetPrimaryScene(&result);
+			if (status != Bridge.OK) {
+				throw Bridge.LastError();
+			}
+			return ObjectCache.Find<Scene>(result);
+		}
+		set {
+			if (Bridge.OffMainThread) {
+				Bridge.ThrowOffMainThread("SceneSystem.PrimaryScene");
+			}
+			ArgumentNullException.ThrowIfNull(value);
+			int status = Bindings.table.sceneSystemSetPrimaryScene(value._id);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "SceneSystem.PrimaryScene");
+			}
+		}
+	}
+
+	/// <summary>True for a prefab instance's root + objects made from its prefab.</summary>
+	public static bool IsPrefabLinked(SceneObject target) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.IsPrefabLinked");
+		}
+		ArgumentNullException.ThrowIfNull(target);
+		byte result;
+		int status = Bindings.table.sceneSystemIsPrefabLinked(target._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.IsPrefabLinked");
+		}
+		return result != 0;
+	}
+
+	/// <summary>True for root object of a prefab instance.</summary>
+	public static bool IsPrefabInstanceRoot(SceneObject target) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SceneSystem.IsPrefabInstanceRoot");
+		}
+		ArgumentNullException.ThrowIfNull(target);
+		byte result;
+		int status = Bindings.table.sceneSystemIsPrefabInstanceRoot(target._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SceneSystem.IsPrefabInstanceRoot");
+		}
+		return result != 0;
 	}
 }
