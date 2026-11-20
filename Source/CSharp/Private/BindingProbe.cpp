@@ -192,6 +192,7 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		std::mutex _recordsMutex;
 		std::vector<str> _records;
 		i32 _touches = 0;
+		DriverFn _driver = nullptr;
 
 	} // anonymous namespace
 
@@ -310,6 +311,17 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	u64 FindAsset(std::string_view path) {
 		const Asset* asset = AssetDatabase::LoadAsset(Path(str(path)));
 		return asset ? asset->GetInstanceId() : 0;
+	}
+
+	void SetDriver(DriverFn driver) {
+		_driver = driver;
+	}
+
+	i32 Drive(i32 op, i32 first, i32 second) {
+		if (!_driver) {
+			throw std::runtime_error("no test driver installed");
+		}
+		return _driver(op, first, second);
 	}
 
 	void RunFrames(i32 count) {

@@ -47,6 +47,22 @@ namespace Shalltear::CSharpConformance {
 		bool _staged = false;
 	};
 
+	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);
+
+	class InputRig {
+	public:
+		explicit InputRig(void (*setDriver)(DriverFn));
+		~InputRig();
+
+		InputRig(const InputRig&) = delete;
+		InputRig& operator=(const InputRig&) = delete;
+
+		bool IsReady() const { return _ready; }
+	private:
+		void (*_setDriver)(DriverFn);
+		bool _ready = false;
+	};
+
 	struct LogRow {
 		LogLevel level;
 		str category;

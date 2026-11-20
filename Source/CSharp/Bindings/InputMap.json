@@ -1,0 +1,139 @@
+{
+	"area": "InputMap",
+	"include": "InputMaps.h",
+	"class": "Shalltear.Interop.InputMapBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::Create()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Create", "kind": "method" }
+		},
+		{
+			"id": "Destroy",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::Destroy(map)",
+			"returns": "void",
+			"params": [{ "name": "map", "type": "u32" }],
+			"csharp": { "member": "Destroy", "kind": "method" }
+		},
+		{
+			"id": "RegisterAction",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::RegisterAction(map, name, type)",
+			"returns": "u32",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "name", "type": "string" },
+				{ "name": "type", "type": "ActionType" }
+			],
+			"csharp": { "member": "RegisterAction", "kind": "method" }
+		},
+		{
+			"id": "FindAction",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::FindAction(map, name)",
+			"returns": "u32",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "FindAction", "kind": "method" }
+		},
+		{
+			"id": "Bind",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::Bind(map, action, source, code, requiredMods, exactMods, scale, component, gamepadIndex)",
+			"returns": "void",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "action", "type": "u32" },
+				{ "name": "source", "type": "u8" },
+				{ "name": "code", "type": "u16" },
+				{ "name": "requiredMods", "type": "KeyMod" },
+				{ "name": "exactMods", "type": "bool" },
+				{ "name": "scale", "type": "f32" },
+				{ "name": "component", "type": "u8" },
+				{ "name": "gamepadIndex", "type": "u8" }
+			],
+			"csharp": { "member": "Bind", "kind": "method" }
+		},
+		{
+			"id": "ClearBindings",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::ClearBindings(map, action)",
+			"returns": "void",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "action", "type": "u32" }
+			],
+			"csharp": { "member": "ClearBindings", "kind": "method" }
+		},
+		{
+			"id": "SetEnabled",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::SetEnabled(map, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetEnabled", "kind": "method" }
+		},
+		{
+			"id": "Evaluate",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::Evaluate(map)",
+			"returns": "void",
+			"params": [{ "name": "map", "type": "u32" }],
+			"csharp": { "member": "Evaluate", "kind": "method" }
+		},
+		{
+			"id": "IsPressed",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::IsPressed(map, action)",
+			"returns": "bool",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "action", "type": "u32" }
+			],
+			"leaf": true,
+			"csharp": { "member": "IsPressed", "kind": "method" }
+		},
+		{
+			"id": "WasPerformed",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::WasPerformed(map, action)",
+			"returns": "bool",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "action", "type": "u32" }
+			],
+			"leaf": true,
+			"csharp": { "member": "WasPerformed", "kind": "method" }
+		},
+		{
+			"id": "GetAxis1D",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::GetAxis1D(map, action)",
+			"returns": "f32",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "action", "type": "u32" }
+			],
+			"leaf": true,
+			"csharp": { "member": "GetAxis1D", "kind": "method" }
+		},
+		{
+			"id": "GetAxis2D",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::GetAxis2D(map, action)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "map", "type": "u32" },
+				{ "name": "action", "type": "u32" }
+			],
+			"leaf": true,
+			"csharp": { "member": "GetAxis2D", "kind": "method" }
+		},
+		{
+			"id": "GetActionCount",
+			"cpp": "::Shalltear::CSharpImpl::InputMaps::GetActionCount(map)",
+			"returns": "i32",
+			"params": [{ "name": "map", "type": "u32" }],
+			"leaf": true,
+			"csharp": { "member": "GetActionCount", "kind": "method" }
+		}
+	]
+}

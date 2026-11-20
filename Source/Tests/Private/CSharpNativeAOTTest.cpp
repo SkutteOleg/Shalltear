@@ -141,6 +141,8 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	SceneSystem::Initialize();
 	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
 	std::printf("ASSETS staged=%d\n", assets->IsStaged());
+	std::optional<CSharpConformance::InputRig> input(std::in_place, &CSharpImpl::BindingProbe::SetDriver);
+	std::printf("INPUT ready=%d\n", input->IsReady());
 	SceneSystem::CreateScene("World");
 	const SltManagedAPI& managed = CSharpImpl::ScriptRuntime::GetManaged();
 	std::printf("ENTRIES load=%d unload=%d\n", managed.loadUserAssemblies != nullptr, managed.unloadUserAssemblies != nullptr);
@@ -181,6 +183,7 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	FrameStages::UnregisterOwnedBy(&token);
 
 	SceneSystem::Terminate();
+	input.reset();
 	assets.reset();
 	CSharpImpl::ScriptRuntime::Detach();
 	LogManager::Terminate();
@@ -193,6 +196,7 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 	EXPECT_TRUE(run.Has("ASSETS staged=1")) << run.output;
+	EXPECT_TRUE(run.Has("INPUT ready=1")) << run.output;
 	EXPECT_TRUE(run.Has("ENTRIES load=0 unload=0")) << run.output;
 
 	int ran = 0;
@@ -203,7 +207,7 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 		EXPECT_EQ(outcome.first, SLT_OK) << name << ": " << outcome.second;
 		++ran;
 	}
-	EXPECT_GE(ran, 53) << run.output;
+	EXPECT_GE(ran, 61) << run.output;
 	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
 }
 

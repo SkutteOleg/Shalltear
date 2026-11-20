@@ -3,6 +3,7 @@
 #include "ScriptLog.h"
 
 #include "ManagedBehavior.h"
+#include "InputMaps.h"
 #include "ManagedTypes.h"
 #include "ScriptEvents.h"
 #include "ShadowStorage.h"
@@ -198,6 +199,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 			return SLT_OK;
 		}
 		ManagedTypes::ReleaseAll();
+		InputMaps::DestroyAll();
 		return _managed.unloadUserAssemblies ? _managed.unloadUserAssemblies() : SLT_OK;
 	}
 

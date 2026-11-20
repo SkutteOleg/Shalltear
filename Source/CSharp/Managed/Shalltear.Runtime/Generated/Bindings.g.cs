@@ -14,6 +14,31 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEffectivelyEnabled;
 	public delegate* unmanaged<ulong, byte, int> componentSetEnabled;
 	public delegate* unmanaged<int, byte, int> eventsSetListening;
+	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputIsKeyDown;
+	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputWasKeyPressed;
+	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputWasKeyReleased;
+	public delegate* unmanaged[SuppressGCTransition]<byte> inputGetKeyMods;
+	public delegate* unmanaged[SuppressGCTransition]<byte, byte> inputIsMouseButtonDown;
+	public delegate* unmanaged[SuppressGCTransition]<byte, byte> inputWasMouseButtonPressed;
+	public delegate* unmanaged[SuppressGCTransition]<byte, byte> inputWasMouseButtonReleased;
+	public delegate* unmanaged[SuppressGCTransition]<Vec2I> inputGetMousePosition;
+	public delegate* unmanaged[SuppressGCTransition]<Vec2> inputGetMouseDelta;
+	public delegate* unmanaged[SuppressGCTransition]<Vec2> inputGetMouseWheel;
+	public delegate* unmanaged[SuppressGCTransition]<int, GamepadState*, int, void> inputFillGamepad;
+	public delegate* unmanaged[SuppressGCTransition]<InputEvent*, int, int> inputFillFrameEvents;
+	public delegate* unmanaged<uint*, int> inputMapCreate;
+	public delegate* unmanaged<uint, int> inputMapDestroy;
+	public delegate* unmanaged<uint, SltString, byte, uint*, int> inputMapRegisterAction;
+	public delegate* unmanaged<uint, SltString, uint*, int> inputMapFindAction;
+	public delegate* unmanaged<uint, uint, byte, ushort, byte, byte, float, byte, byte, int> inputMapBind;
+	public delegate* unmanaged<uint, uint, int> inputMapClearBindings;
+	public delegate* unmanaged<uint, byte, int> inputMapSetEnabled;
+	public delegate* unmanaged<uint, int> inputMapEvaluate;
+	public delegate* unmanaged[SuppressGCTransition]<uint, uint, byte> inputMapIsPressed;
+	public delegate* unmanaged[SuppressGCTransition]<uint, uint, byte> inputMapWasPerformed;
+	public delegate* unmanaged[SuppressGCTransition]<uint, uint, float> inputMapGetAxis1D;
+	public delegate* unmanaged[SuppressGCTransition]<uint, uint, Vec2> inputMapGetAxis2D;
+	public delegate* unmanaged[SuppressGCTransition]<uint, int> inputMapGetActionCount;
 	public delegate* unmanaged[SuppressGCTransition]<int> logGetLevel;
 	public delegate* unmanaged<int, SltString, SltString, SltString, int, int> logWrite;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
@@ -49,6 +74,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<int*, int> probeGetTouches;
 	public delegate* unmanaged<int*, int> probeGetAliveChecks;
 	public delegate* unmanaged<int> probeEndFrame;
+	public delegate* unmanaged<int, int, int, int*, int> probeDrive;
 	public delegate* unmanaged<SltString, ulong*, int> probeFindAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
@@ -107,7 +133,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0x94cd470a2cfb890d;
+	internal const ulong LAYOUT_HASH = 0xdd0bde211f970a6f;
 
 	internal static SltBindings table;
 
@@ -182,6 +208,22 @@ internal static unsafe class Bindings {
 		}
 		if ((byte*)&color.a - (byte*)&color != 12) {
 			return "Color.a offset " + ((byte*)&color.a - (byte*)&color) + " (engine 12)";
+		}
+		if (sizeof(Vec2I) != 8) {
+			return "Vec2I size " + sizeof(Vec2I) + " (engine 8)";
+		}
+		Vec2I vec2I = default;
+		if ((byte*)&vec2I.x - (byte*)&vec2I != 0) {
+			return "Vec2I.x offset " + ((byte*)&vec2I.x - (byte*)&vec2I) + " (engine 0)";
+		}
+		if ((byte*)&vec2I.y - (byte*)&vec2I != 4) {
+			return "Vec2I.y offset " + ((byte*)&vec2I.y - (byte*)&vec2I) + " (engine 4)";
+		}
+		if (sizeof(InputEvent) != 32) {
+			return "InputEvent size " + sizeof(InputEvent) + " (engine 32)";
+		}
+		if (sizeof(GamepadState) != 32) {
+			return "GamepadState size " + sizeof(GamepadState) + " (engine 32)";
 		}
 		return null;
 	}

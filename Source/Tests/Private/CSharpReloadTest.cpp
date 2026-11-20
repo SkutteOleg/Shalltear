@@ -930,12 +930,32 @@ TEST_F(CSharpReloadTest, SceneHandlersDropAtUnload) {
 	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
 }
 
+TEST_F(CSharpReloadTest, InputMapsEndAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	str message;
+	ASSERT_EQ(Run("InputProbe.KeepsAMap", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->getInputMapCount(), 1);
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	EXPECT_EQ(_hooks->getInputMapCount(), 0);
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+}
+
 TEST_F(CSharpReloadTest, ConformanceSurvivesTenReloads) {
 	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
 	ASSERT_TRUE(fs::is_regular_file(conformance));
 	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
 	std::optional<CSharpConformance::StagedAssets> assets;
+	CSharpConformance::InputRig input(_hooks->setDriver);
+	ASSERT_TRUE(input.IsReady());
 	for (u32 round = 0; round < 10; ++round) {
 		const auto begin = std::chrono::steady_clock::now();
 		_editor->requestReload();

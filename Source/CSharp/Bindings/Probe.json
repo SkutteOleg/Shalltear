@@ -212,6 +212,17 @@
 			"csharp": { "member": "EndFrame", "kind": "method" }
 		},
 		{
+			"id": "Drive",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::Drive(op, first, second)",
+			"returns": "i32",
+			"params": [
+				{ "name": "op", "type": "i32" },
+				{ "name": "first", "type": "i32" },
+				{ "name": "second", "type": "i32" }
+			],
+			"csharp": { "member": "Drive", "kind": "method" }
+		},
+		{
 			"id": "FindAsset",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FindAsset(path)",
 			"returns": "u64",

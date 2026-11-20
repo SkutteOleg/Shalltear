@@ -169,6 +169,8 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
 	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
 	ASSERT_TRUE(assets->IsStaged());
+	std::optional<CSharpConformance::InputRig> input(std::in_place, _hooks->setDriver);
+	ASSERT_TRUE(input->IsReady());
 	SceneSystem::CreateScene("World");
 
 	const Time::FrameScope frame(CSharpConformance::MakeFrame());
@@ -186,10 +188,11 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 		EXPECT_EQ(managed.runConformanceTest(index, &message), SLT_OK) << caseName << ": " << View(message);
 		++ran;
 	}
-	EXPECT_GE(ran, 53);
+	EXPECT_GE(ran, 61);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
 	SceneSystem::Terminate();
+	input.reset();
 	assets.reset();
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);
 	EXPECT_EQ(managed.getConformanceTestCount(), 0);
@@ -207,6 +210,17 @@ TEST_F(CSharpRuntimeFixture, ThrowingSceneHandlerIsReported) {
 	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a scene handler"), 1u) << _log.Delivered().Joined();
 	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard Loud"}));
 	SceneSystem::Terminate();
+}
+
+TEST_F(CSharpRuntimeFixture, DroppedInputMapsFreedAtTick) {
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	const i32 before = _hooks->getInputMapCount();
+	str message;
+	ASSERT_EQ(Run("InputProbe.DropsMaps", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->getInputMapCount(), before + 20);
+	_hooks->getManaged().tick();
+	EXPECT_EQ(_hooks->getInputMapCount(), before);
 }
 
 TEST_F(CSharpRuntimeFixture, SecondLoadIsRefused) {

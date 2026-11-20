@@ -86,7 +86,7 @@ class BindingsTest(unittest.TestCase):
 		self.assertTrue(message.endswith(", SceneObject, Component, string, span<T>"), message)
 
 	def test_unknown_return_is_refused(self):
-		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, Vec2, Vec3, Vec4, Quat, Color, SceneObject, string"
+		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, Vec2, Vec3, Vec4, Quat, Color, Vec2I, SceneObject, string"
 		self.assertEqual("Game.json: GetSpeed: can't return 'span<f32>'. " + expected, self.refusal([dict(GETTER, returns="span<f32>")]))
 		self.assertEqual("Game.json: GetSpeed: can't return 'Component'. " + expected, self.refusal([dict(GETTER, returns="Component", leaf=False)]))
 
@@ -321,6 +321,56 @@ class BindingsTest(unittest.TestCase):
 		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([bindings.parse_area(self.write([turn, peek], enums=[moved]))]))
 		self.assertEqual("Game.json: Mode: 'underlying' is 'i64'. Use u8, u16, i32, u32", self.refusal([turn], enums=[dict(mode, underlying="i64")]))
 		self.assertEqual("Game.json: Mode: 'values' is empty", self.refusal([turn], enums=[dict(mode, values=[])]))
+
+	def test_struct_fills_a_span(self):
+		mode = {"name": "Mode", "cpp": "::Game::Mode", "underlying": "u16", "doc": "How it runs.",
+				"values": [{"name": "Idle", "value": 0, "doc": "Stopped."}]}
+		hit = {"name": "Hit", "doc": "1 hit.", "fields": [
+			{"name": "solid", "type": "bool", "doc": "Blocks."}, {"name": "mode", "type": "Mode", "doc": "Its mode."},
+			{"name": "cell", "type": "Vec2I", "doc": "Where."}, {"name": "weight", "type": "f64", "doc": "How heavy."}]}
+		fill = {"id": "Fill", "cpp": "::Game::Fill(hits)", "returns": "i32", "params": [{"name": "hits", "type": "span<Hit>", "out": True}],
+				"leaf": True, "csharp": {"member": "Fill", "kind": "method"}, "doc": "Hits found."}
+		area = bindings.parse_area(self.write([fill], enums=[mode], structs=[hit]))
+		self.assertEqual("delegate* unmanaged[SuppressGCTransition]<Hit*, int, int>", bindings.cs_pointer(area.functions[0]))
+		header = bindings.render_native_header([area], 0)
+		self.assertIn("typedef struct SltHit {\n\tuint8_t solid;\n\tuint16_t mode;\n\t::Shalltear::Vec2I cell;\n\tdouble weight;\n} SltHit;\n", header)
+		self.assertIn("\tint32_t (*gameFill)(SltHit* hits, int32_t hitsCount);\n", header)
+		table = bindings.render_native_table([area])
+		self.assertIn("\tstatic_assert(sizeof(SltHit) == 24 && alignof(SltHit) == 8);\n\tstatic_assert(offsetof(SltHit, solid) == 0);\n"
+					  "\tstatic_assert(offsetof(SltHit, mode) == 2);\n\tstatic_assert(offsetof(SltHit, cell) == 4);\n"
+					  "\tstatic_assert(offsetof(SltHit, weight) == 16);\n", table)
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\t\tconst std::span<SltHit> hits(hitsData, static_cast<size_t>(hitsCount));\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("/// <summary>1 hit.</summary>\n[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]\n"
+					  "public partial struct Hit {\n\t/// <summary>Blocks.</summary>\n\tpublic bool solid;\n\t/// <summary>Its mode.</summary>\n"
+					  "\tpublic Mode mode;\n", managed)
+		self.assertIn("\tpublic static int Fill(Span<Hit> hits) {\n", managed)
+		self.assertIn("\t\tfixed (Hit* hitsData = hits) {\n\t\t\treturn Bindings.table.gameFill(hitsData, hits.Length);\n", managed)
+		self.assertIn('\t\tif (sizeof(Hit) != 24) {\n\t\t\treturn "Hit size " + sizeof(Hit) + " (engine 24)";\n', bindings.render_managed_table([area]))
+
+		wide = dict(hit, fields=hit["fields"] + [{"name": "tag", "type": "u8", "doc": "Tag."}])
+		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([bindings.parse_area(self.write([fill], enums=[mode], structs=[wide]))]))
+		self.assertEqual("Game.json: Hit: field 'name' can't be string. Use a scalar, a value type or an enum",
+						 self.refusal([fill], structs=[dict(hit, fields=[{"name": "name", "type": "string", "doc": "Name."}])]))
+		self.assertEqual("Game.json: Hit: 'fields' is empty", self.refusal([fill], structs=[dict(hit, fields=[])]))
+
+	def test_flag_enum_is_marked(self):
+		mods = {"name": "Mods", "cpp": "::Game::Mods", "underlying": "u8", "doc": "Held keys.", "flags": True,
+				"values": [{"name": "None", "value": 0, "doc": "None."}, {"name": "Shift", "value": 2, "doc": "Shift."}]}
+		held = {"id": "Held", "cpp": "::Game::Held()", "returns": "Mods", "params": [], "csharp": {"member": "Held", "kind": "getter"}, "doc": "Held."}
+		managed = bindings.render_managed_area(bindings.parse_area(self.write([held], enums=[mods])))
+		self.assertIn("/// <summary>Held keys.</summary>\n[Flags]\npublic enum Mods : byte {\n", managed)
+		plain = bindings.render_managed_area(bindings.parse_area(self.write([held], enums=[{key: value for key, value in mods.items() if key != "flags"}])))
+		self.assertNotIn("[Flags]", plain)
+
+	def test_integer_value_crosses_as_ints(self):
+		move = {"id": "Move", "cpp": "::Game::Move(cell)", "returns": "Vec2I", "params": [{"name": "cell", "type": "Vec2I"}], "leaf": True,
+				"csharp": {"member": "Move", "kind": "method"}, "doc": "Next cell."}
+		area = bindings.parse_area(self.write([move]))
+		self.assertEqual("delegate* unmanaged[SuppressGCTransition]<int, int, Vec2I>", bindings.cs_pointer(area.functions[0]))
+		self.assertIn("\t\t::Shalltear::Vec2I GameMove(int32_t cellX, int32_t cellY) noexcept {\n"
+					  "\t\t\tconst ::Shalltear::Vec2I cell(cellX, cellY);\n", bindings.render_native_area(area))
 
 	def test_internal_member_sits_in_a_public_class(self):
 		hidden = {key: value for key, value in GETTER.items() if key != "doc"}

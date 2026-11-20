@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x94cd470a2cfb890dull
-#define SLT_BINDINGS_INPUT_DIGEST 0x95ed4745797f1423ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xdd0bde211f970a6full
+#define SLT_BINDINGS_INPUT_DIGEST 0xe405610d550d3ab4ull
 
 typedef struct SltString SltString;
 
@@ -20,12 +20,61 @@ typedef struct SltQuat {
 	float x, y, z, w;
 } SltQuat;
 
+typedef struct SltInputEvent {
+	uint8_t type;
+	uint8_t mods;
+	uint8_t button;
+	uint8_t repeat;
+	uint16_t key;
+	uint16_t scancode;
+	uint8_t gamepadIndex;
+	::Shalltear::Vec2I mousePosPx;
+	::Shalltear::Vec2 wheel;
+	uint32_t codepoint;
+} SltInputEvent;
+
+typedef struct SltGamepadState {
+	uint8_t connected;
+	uint32_t buttons;
+	float leftX;
+	float leftY;
+	float rightX;
+	float rightY;
+	float leftTrigger;
+	float rightTrigger;
+} SltGamepadState;
+
 typedef struct SltBindings {
 	int32_t (*componentGetOwner)(uint64_t self, uint64_t* outResult);
 	int32_t (*componentIsEnabledSelf)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentIsEffectivelyEnabled)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentSetEnabled)(uint64_t self, uint8_t enabled);
 	int32_t (*eventsSetListening)(int32_t id, uint8_t listening);
+	uint8_t (*inputIsKeyDown)(uint16_t key);
+	uint8_t (*inputWasKeyPressed)(uint16_t key);
+	uint8_t (*inputWasKeyReleased)(uint16_t key);
+	uint8_t (*inputGetKeyMods)(void);
+	uint8_t (*inputIsMouseButtonDown)(uint8_t button);
+	uint8_t (*inputWasMouseButtonPressed)(uint8_t button);
+	uint8_t (*inputWasMouseButtonReleased)(uint8_t button);
+	::Shalltear::Vec2I (*inputGetMousePosition)(void);
+	::Shalltear::Vec2 (*inputGetMouseDelta)(void);
+	::Shalltear::Vec2 (*inputGetMouseWheel)(void);
+	void (*inputFillGamepad)(int32_t index, SltGamepadState* state, int32_t stateCount);
+	int32_t (*inputFillFrameEvents)(SltInputEvent* events, int32_t eventsCount);
+	int32_t (*inputMapCreate)(uint32_t* outResult);
+	int32_t (*inputMapDestroy)(uint32_t map);
+	int32_t (*inputMapRegisterAction)(uint32_t map, SltString name, uint8_t type, uint32_t* outResult);
+	int32_t (*inputMapFindAction)(uint32_t map, SltString name, uint32_t* outResult);
+	int32_t (*inputMapBind)(uint32_t map, uint32_t action, uint8_t source, uint16_t code, uint8_t requiredMods, uint8_t exactMods, float scale, uint8_t component, uint8_t gamepadIndex);
+	int32_t (*inputMapClearBindings)(uint32_t map, uint32_t action);
+	int32_t (*inputMapSetEnabled)(uint32_t map, uint8_t enabled);
+	int32_t (*inputMapEvaluate)(uint32_t map);
+	uint8_t (*inputMapIsPressed)(uint32_t map, uint32_t action);
+	uint8_t (*inputMapWasPerformed)(uint32_t map, uint32_t action);
+	float (*inputMapGetAxis1D)(uint32_t map, uint32_t action);
+	::Shalltear::Vec2 (*inputMapGetAxis2D)(uint32_t map, uint32_t action);
+	int32_t (*inputMapGetActionCount)(uint32_t map);
 	int32_t (*logGetLevel)(void);
 	int32_t (*logWrite)(int32_t level, SltString category, SltString message, SltString file, int32_t line);
 	uint8_t (*objectIsAlive)(uint64_t id);
@@ -61,6 +110,7 @@ typedef struct SltBindings {
 	int32_t (*probeGetTouches)(int32_t* outResult);
 	int32_t (*probeGetAliveChecks)(int32_t* outResult);
 	int32_t (*probeEndFrame)(void);
+	int32_t (*probeDrive)(int32_t op, int32_t first, int32_t second, int32_t* outResult);
 	int32_t (*probeFindAsset)(SltString path, uint64_t* outResult);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);

@@ -237,6 +237,18 @@ internal static unsafe partial class BindingProbe {
 		}
 	}
 
+	internal static int Drive(int op, int first, int second) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.Drive");
+		}
+		int result;
+		int status = Bindings.table.probeDrive(op, first, second, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
 	[System.Runtime.CompilerServices.SkipLocalsInit]
 	internal static ulong FindAsset(string path) {
 		if (Bridge.OffMainThread) {

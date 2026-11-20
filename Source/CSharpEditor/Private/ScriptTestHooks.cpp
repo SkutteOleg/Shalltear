@@ -7,6 +7,7 @@
 #include "CoreCLRHost.h"
 #include "DotNetPin.generated.h"
 #include "DotNetToolchain.h"
+#include "InputMaps.h"
 #include "ManagedTypes.h"
 #include "ScriptLog.h"
 #include "ScriptRuntime.h"
@@ -31,6 +32,8 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpEditor::InstallComponentMenu,
 		&CSharpImpl::BindingProbe::TakeRecords,
 		&CSharpImpl::InternLogOrigin,
+		&CSharpImpl::BindingProbe::SetDriver,
+		&CSharpImpl::InputMaps::GetAliveCount,
 		CSharpEditor::DotNetPinData::RUNTIME_VERSION,
 	};
 	return &HOOKS;

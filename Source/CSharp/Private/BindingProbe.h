@@ -46,4 +46,8 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	void RunFrames(i32 count);
 	u64 FindAsset(std::string_view path);
 
+	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);
+	void SetDriver(DriverFn driver);
+	i32 Drive(i32 op, i32 first, i32 second);
+
 } // namespace Shalltear::CSharpImpl::BindingProbe

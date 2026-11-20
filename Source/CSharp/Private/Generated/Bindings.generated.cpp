@@ -34,9 +34,35 @@ namespace Shalltear::CSharpImpl::Generated {
 	static_assert(offsetof(::Shalltear::Color, g) == 4 && offsetof(::Shalltear::Color, g) == 4);
 	static_assert(offsetof(::Shalltear::Color, b) == 8 && offsetof(::Shalltear::Color, b) == 8);
 	static_assert(offsetof(::Shalltear::Color, a) == 12 && offsetof(::Shalltear::Color, a) == 12);
+	static_assert(sizeof(::Shalltear::Vec2I) == 8 && std::is_trivially_copyable_v<::Shalltear::Vec2I>);
+	static_assert(sizeof(::Shalltear::Vec2I) == 8 && alignof(::Shalltear::Vec2I) == 4);
+	static_assert(offsetof(::Shalltear::Vec2I, x) == 0 && offsetof(::Shalltear::Vec2I, x) == 0);
+	static_assert(offsetof(::Shalltear::Vec2I, y) == 4 && offsetof(::Shalltear::Vec2I, y) == 4);
+	static_assert(sizeof(SltInputEvent) == 32 && alignof(SltInputEvent) == 4);
+	static_assert(offsetof(SltInputEvent, type) == 0);
+	static_assert(offsetof(SltInputEvent, mods) == 1);
+	static_assert(offsetof(SltInputEvent, button) == 2);
+	static_assert(offsetof(SltInputEvent, repeat) == 3);
+	static_assert(offsetof(SltInputEvent, key) == 4);
+	static_assert(offsetof(SltInputEvent, scancode) == 6);
+	static_assert(offsetof(SltInputEvent, gamepadIndex) == 8);
+	static_assert(offsetof(SltInputEvent, mousePosPx) == 12);
+	static_assert(offsetof(SltInputEvent, wheel) == 20);
+	static_assert(offsetof(SltInputEvent, codepoint) == 28);
+	static_assert(sizeof(SltGamepadState) == 32 && alignof(SltGamepadState) == 4);
+	static_assert(offsetof(SltGamepadState, connected) == 0);
+	static_assert(offsetof(SltGamepadState, buttons) == 4);
+	static_assert(offsetof(SltGamepadState, leftX) == 8);
+	static_assert(offsetof(SltGamepadState, leftY) == 12);
+	static_assert(offsetof(SltGamepadState, rightX) == 16);
+	static_assert(offsetof(SltGamepadState, rightY) == 20);
+	static_assert(offsetof(SltGamepadState, leftTrigger) == 24);
+	static_assert(offsetof(SltGamepadState, rightTrigger) == 28);
 
 	void FillComponentBindings(SltBindings& table);
 	void FillEventsBindings(SltBindings& table);
+	void FillInputBindings(SltBindings& table);
+	void FillInputMapBindings(SltBindings& table);
 	void FillLogBindings(SltBindings& table);
 	void FillObjectBindings(SltBindings& table);
 	void FillProbeBindings(SltBindings& table);
@@ -49,6 +75,8 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillBindings(SltBindings& table) {
 		FillComponentBindings(table);
 		FillEventsBindings(table);
+		FillInputBindings(table);
+		FillInputMapBindings(table);
 		FillLogBindings(table);
 		FillObjectBindings(table);
 		FillProbeBindings(table);

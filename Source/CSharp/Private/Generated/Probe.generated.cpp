@@ -190,6 +190,14 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeDrive(int32_t op, int32_t first, int32_t second, int32_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::Drive(op, first, second));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ProbeFindAsset(SltString pathIn, uint64_t* outResult) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				const std::string_view path = View(pathIn);
@@ -235,6 +243,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeGetTouches = &ProbeGetTouches;
 		table.probeGetAliveChecks = &ProbeGetAliveChecks;
 		table.probeEndFrame = &ProbeEndFrame;
+		table.probeDrive = &ProbeDrive;
 		table.probeFindAsset = &ProbeFindAsset;
 		table.probeRunFrames = &ProbeRunFrames;
 	}

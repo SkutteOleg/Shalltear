@@ -29,7 +29,10 @@ VALUES = {
 	"Vec4": ("x", "y", "z", "w"),
 	"Quat": ("x", "y", "z", "w"),
 	"Color": ("r", "g", "b", "a"),
+	"Vec2I": ("x", "y"),
 }
+INTEGER_VALUES = ("Vec2I",)
+SCALAR_SIZES = {"bool": 1, "u8": 1, "u16": 2, "i32": 4, "u32": 4, "f32": 4, "i64": 8, "u64": 8, "f64": 8}
 # 16 byte aligned in engine, 4 in C#
 WIDE = ("Vec4", "Quat")
 VALUE_HEADERS = ("Shalltear/Core/Math/Color.h", "Shalltear/Core/Math/Quat.h", "Shalltear/Core/Math/Vector.h")
@@ -44,12 +47,14 @@ LOWERING = 1
 IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9]*\Z")
 CLASS_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*(\.[A-Za-z][A-Za-z0-9]*)+\Z")
 SPAN = re.compile(r"span<([A-Za-z0-9]+)>\Z")
-AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions", "types", "enums"}
+AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions", "types", "enums", "structs"}
 FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable"}
 PARAM_KEYS = {"name", "type", "out", "optional"}
 CSHARP_KEYS = {"member", "kind", "conditional", "relay", "access"}
 TYPE_KEYS = {"name", "cpp", "engine", "base", "doc"}
-ENUM_KEYS = {"name", "cpp", "underlying", "values", "doc"}
+ENUM_KEYS = {"name", "cpp", "underlying", "values", "doc", "flags"}
+STRUCT_KEYS = {"name", "doc", "fields"}
+FIELD_KEYS = {"name", "type", "doc"}
 ENUM_VALUE_KEYS = {"name", "value", "doc"}
 ENUM_UNDERLYING = ("u8", "u16", "i32", "u32")
 CSHARP_KEYWORDS = frozenset(
@@ -88,6 +93,7 @@ class Catalog:
 		self.objects = dict(BUILT_IN_OBJECTS)
 		self.wrappers = set(WRAPPERS)
 		self.enums = {}
+		self.structs = {}
 
 	def type_list(self):
 		return ", ".join(list(SCALARS) + list(VALUES) + list(self.objects) + list(self.enums)) + ", string, span<T>"
@@ -117,7 +123,7 @@ def classify(type_name, catalog):
 	if isinstance(type_name, str) and type_name in catalog.enums:
 		return "enum", type_name
 	match = SPAN.match(type_name) if isinstance(type_name, str) else None
-	if match and match.group(1) in SCALARS and match.group(1) != "bool":
+	if match and ((match.group(1) in SCALARS and match.group(1) != "bool") or match.group(1) in catalog.structs):
 		return "span", match.group(1)
 	return None, type_name
 
@@ -247,7 +253,7 @@ def parse_enums(raw, path, catalog):
 		where = entry.get("name", "enum") if isinstance(entry, dict) else "enum"
 		if not isinstance(entry, dict):
 			raise SchemaError(f"{path.name}: {where}: enum must be an object")
-		check_keys(entry, ENUM_KEYS, ENUM_KEYS, path, where)
+		check_keys(entry, ENUM_KEYS, ENUM_KEYS - {"flags"}, path, where)
 		if not isinstance(entry["name"], str) or not IDENTIFIER.match(entry["name"]):
 			raise SchemaError(f"{path.name}: {where}: 'name' must be letters/digits")
 		if entry["name"] in catalog.objects or entry["name"] in catalog.enums:
@@ -256,6 +262,7 @@ def parse_enums(raw, path, catalog):
 			raise SchemaError(f"{path.name}: {where}: 'underlying' is '{entry['underlying']}'. Use {', '.join(ENUM_UNDERLYING)}")
 		declared = Area()
 		declared.name, declared.cpp, declared.underlying, declared.doc = entry["name"], entry["cpp"], entry["underlying"], entry["doc"]
+		declared.flags = entry.get("flags", False)
 		declared.values = []
 		for value in entry["values"]:
 			if not isinstance(value, dict):
@@ -271,10 +278,51 @@ def parse_enums(raw, path, catalog):
 	return enums
 
 
-def build_area(path, raw, catalog, types, enums):
+def parse_structs(raw, path, catalog):
+	structs = []
+	for entry in raw.get("structs", []):
+		where = entry.get("name", "struct") if isinstance(entry, dict) else "struct"
+		if not isinstance(entry, dict):
+			raise SchemaError(f"{path.name}: {where}: struct must be an object")
+		check_keys(entry, STRUCT_KEYS, STRUCT_KEYS, path, where)
+		if not isinstance(entry["name"], str) or not IDENTIFIER.match(entry["name"]):
+			raise SchemaError(f"{path.name}: {where}: 'name' must be letters/digits")
+		if entry["name"] in catalog.objects or entry["name"] in catalog.enums or entry["name"] in catalog.structs:
+			raise SchemaError(f"{path.name}: {where}: type is declared twice")
+		declared = Area()
+		declared.name, declared.doc, declared.fields = entry["name"], entry["doc"], []
+		offset = 0
+		declared.alignment = 1
+		for field in entry["fields"]:
+			if not isinstance(field, dict):
+				raise SchemaError(f"{path.name}: {where}: field must be an object")
+			check_keys(field, FIELD_KEYS, FIELD_KEYS, path, where)
+			kind, type_name = classify(field["type"], catalog)
+			if kind not in ("scalar", "value", "enum"):
+				raise SchemaError(f"{path.name}: {where}: field '{field.get('name')}' can't be {field['type']}. Use a scalar, a value type or an enum")
+			if not isinstance(field["name"], str) or not IDENTIFIER.match(field["name"]) or field["name"] in CSHARP_KEYWORDS:
+				raise SchemaError(f"{path.name}: {where}: field name must be letters/digits + no C# keyword")
+			scalar = catalog.enums[type_name].underlying if kind == "enum" else type_name
+			size = 4 * len(VALUES[type_name]) if kind == "value" else SCALAR_SIZES[scalar]
+			alignment = 4 if kind == "value" else size
+			offset = (offset + alignment - 1) // alignment * alignment
+			declared.fields.append((field["name"], kind, type_name, field["doc"], offset))
+			offset += size
+			declared.alignment = max(declared.alignment, alignment)
+		if not declared.fields:
+			raise SchemaError(f"{path.name}: {where}: 'fields' is empty")
+		declared.size = (offset + declared.alignment - 1) // declared.alignment * declared.alignment
+		catalog.structs[declared.name] = declared
+		structs.append(declared)
+	return structs
+
+
+def build_area(path, raw, catalog, types, enums, structs):
 	area = Area()
 	area.types = types
 	area.enums = enums
+	area.structs = structs
+	area.catalog = catalog
 	area.name = raw["area"]
 	if area.name != path.stem or not IDENTIFIER.match(area.name):
 		raise SchemaError(f"{path.name}: 'area' is '{area.name}'. Name it like the file ({path.stem})")
@@ -323,7 +371,7 @@ def load_files(paths):
 	for path in paths:
 		raw = read_area(path)
 		read.append((path, raw, parse_types(raw, path, catalog), parse_enums(raw, path, catalog)))
-	return [build_area(path, raw, catalog, types, enums) for path, raw, types, enums in read]
+	return [build_area(path, raw, catalog, types, enums, parse_structs(raw, path, catalog)) for path, raw, types, enums in read]
 
 
 def parse_area(path):
@@ -346,12 +394,24 @@ def layout_hash(areas):
 	for area in areas:
 		for declared in area.enums:
 			lines.append(f"enum {declared.name}:{declared.underlying}{{{','.join(f'{name}={value}' for name, value, _ in declared.values)}}}")
+		for declared in area.structs:
+			lines.append(f"struct {declared.name}{{{','.join(f'{name}:{type_name}' for name, _, type_name, _, _ in declared.fields)}}}")
 	for area in areas:
 		for function in area.functions:
 			params = ",".join(("span<" + param.type + ">" if param.kind == "span" else param.type) + ("&" if param.out else "") +
 							  ("?" if param.optional else "") for param in function.params)
 			lines.append(f"{area.name}.{function.id}:{function.returns}({params}){'|leaf' if function.leaf else ''}")
 	return fnv1a(("\n".join(lines) + "\n").encode("utf-8"))
+
+
+def element(type_name):
+	return ("int32_t", "int") if type_name in INTEGER_VALUES else ("float", "float")
+
+
+def span_element(param, catalog, managed):
+	if param.type in catalog.structs:
+		return param.type if managed else "Slt" + param.type
+	return SCALARS[param.type][2 if managed == "api" else 1 if managed else 0]
 
 
 def c_type(kind, type_name, catalog=None):
@@ -401,13 +461,13 @@ def c_parameters(function, thunk):
 		elif param.kind == "enum":
 			parts.append(f"{c_type(param.kind, param.type, function.catalog)} {param.name}{suffix}")
 		elif param.kind == "value":
-			parts += [f"float {param.name}{field.upper()}" for field in VALUES[param.type]]
+			parts += [f"{element(param.type)[0]} {param.name}{field.upper()}" for field in VALUES[param.type]]
 		elif param.kind == "string":
 			parts.append(f"SltString {param.name}{suffix}")
 		elif param.kind == "object":
 			parts.append(f"uint64_t {param.name}{'Id' if thunk else ''}")
 		else:
-			parts.append(f"{'' if param.out else 'const '}{SCALARS[param.type][0]}* {param.name}{'Data' if thunk else ''}")
+			parts.append(f"{'' if param.out else 'const '}{span_element(param, function.catalog, False)}* {param.name}{'Data' if thunk else ''}")
 			parts.append(f"int32_t {param.name}Count")
 	if function.guarded and function.return_kind != "void":
 		parts.append(f"{c_type(function.return_kind, function.returns, function.catalog)}* outResult")
@@ -427,6 +487,11 @@ def render_native_header(areas, digest):
 			"typedef struct SltString SltString;", ""]
 	for name in WIDE:
 		out += [f"typedef struct Slt{name} {{", f"\tfloat {', '.join(VALUES[name])};", f"}} Slt{name};", ""]
+	for area in areas:
+		for declared in area.structs:
+			out.append(f"typedef struct Slt{declared.name} {{")
+			out += [f"\t{c_type(kind, type_name, area.catalog)} {name};" for name, kind, type_name, _, _ in declared.fields]
+			out += [f"}} Slt{declared.name};", ""]
 	out.append("typedef struct SltBindings {")
 	for area in areas:
 		for function in area.functions:
@@ -447,6 +512,10 @@ def render_native_table(areas):
 		out.append(f"\tstatic_assert(sizeof({slot}) == {size} && alignof({slot}) == 4);")
 		for index, field in enumerate(fields):
 			out.append(f"\tstatic_assert(offsetof(::Shalltear::{name}, {field}) == {4 * index} && offsetof({slot}, {field}) == {4 * index});")
+	for area in areas:
+		for declared in area.structs:
+			out.append(f"\tstatic_assert(sizeof(Slt{declared.name}) == {declared.size} && alignof(Slt{declared.name}) == {declared.alignment});")
+			out += [f"\tstatic_assert(offsetof(Slt{declared.name}, {name}) == {offset});" for name, _, _, _, offset in declared.fields]
 	out.append("")
 	out += [f"\tvoid Fill{area.name}Bindings(SltBindings& table);" for area in areas]
 	out += ["", "\tvoid FillBindings(SltBindings& table) {"]
@@ -469,8 +538,8 @@ def cpp_locals(function):
 		elif param.kind == "string":
 			lines.append(f"const std::string_view {param.name} = View({param.name}In);")
 		elif param.kind == "span":
-			element = ("" if param.out else "const ") + SCALARS[param.type][0]
-			lines.append(f"const std::span<{element}> {param.name}({param.name}Data, static_cast<size_t>({param.name}Count));")
+			items = ("" if param.out else "const ") + span_element(param, function.catalog, False)
+			lines.append(f"const std::span<{items}> {param.name}({param.name}Data, static_cast<size_t>({param.name}Count));")
 	return lines
 
 
@@ -551,9 +620,9 @@ def cs_pointer(function):
 	types = []
 	for param in function.params:
 		if param.kind == "span":
-			types += [SCALARS[param.type][1] + "*", "int"]
+			types += [span_element(param, function.catalog, True) + "*", "int"]
 		elif param.kind == "value":
-			types += ["float"] * len(VALUES[param.type])
+			types += [element(param.type)[1]] * len(VALUES[param.type])
 		else:
 			types.append("SltString" if param.kind == "string" else cs_abi_type(param.kind, param.type, function.catalog))
 	if function.guarded:
@@ -582,6 +651,10 @@ def render_managed_table(areas):
 		for index, field in enumerate(fields):
 			out += [f"\t\tif ((byte*)&{local}.{field} - (byte*)&{local} != {4 * index}) {{",
 					f'\t\t\treturn "{name}.{field} offset " + ((byte*)&{local}.{field} - (byte*)&{local}) + " (engine {4 * index})";', "\t\t}"]
+	for area in areas:
+		for declared in area.structs:
+			out += [f"\t\tif (sizeof({declared.name}) != {declared.size}) {{",
+					f'\t\t\treturn "{declared.name} size " + sizeof({declared.name}) + " (engine {declared.size})";', "\t\t}"]
 	out += ["\t\treturn null;", "\t}", "}", ""]
 	return "\n".join(out)
 
@@ -617,7 +690,7 @@ def cs_call(area, function, setter):
 				lines.append(f"ArgumentNullException.ThrowIfNull({name});")
 				arguments.append(f"{name}._id")
 		else:
-			pinned.append(f"fixed ({SCALARS[param.type][1]}* {name}Data = {name})")
+			pinned.append(f"fixed ({span_element(param, function.catalog, True)}* {name}Data = {name})")
 			arguments += [f"{name}Data", f"{name}.Length"]
 
 	body = []
@@ -657,7 +730,7 @@ def cs_parameters(function):
 		if param.kind == "string":
 			parts.append(f"string {param.name}")
 		elif param.kind == "span":
-			parts.append(f"{'Span' if param.out else 'ReadOnlySpan'}<{SCALARS[param.type][2]}> {param.name}")
+			parts.append(f"{'Span' if param.out else 'ReadOnlySpan'}<{span_element(param, function.catalog, 'api')}> {param.name}")
 		elif param.kind == "object":
 			trailing = not function.relay and all(later.kind == "object" and later.optional for later in listed[index:])
 			parts.append(f"{param.type}? {param.name}{' = null' if trailing else ''}" if param.optional else f"{param.type} {param.name}")
@@ -671,9 +744,17 @@ def cs_parameters(function):
 def render_managed_types(area):
 	out = []
 	for declared in area.enums:
-		out += [f"/// <summary>{xml_text(declared.doc)}</summary>", f"public enum {declared.name} : {SCALARS[declared.underlying][2]} {{"]
+		out += [f"/// <summary>{xml_text(declared.doc)}</summary>"] + (["[Flags]"] if declared.flags else [])
+		out.append(f"public enum {declared.name} : {SCALARS[declared.underlying][2]} {{")
 		for name, value, doc in declared.values:
 			out += [f"\t/// <summary>{xml_text(doc)}</summary>", f"\t{name} = {value},"]
+		out += ["}", ""]
+	for declared in area.structs:
+		out += [f"/// <summary>{xml_text(declared.doc)}</summary>",
+				"[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]",
+				f"public partial struct {declared.name} {{"]
+		for name, kind, type_name, doc, _ in declared.fields:
+			out += [f"\t/// <summary>{xml_text(doc)}</summary>", f"\tpublic {cs_api_type(kind, type_name)} {name};"]
 		out += ["}", ""]
 	for declared in area.types:
 		out += [f"/// <summary>{xml_text(declared.doc)}</summary>", "[EngineType(ENGINE_TYPE)]",

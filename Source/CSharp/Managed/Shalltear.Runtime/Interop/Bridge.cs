@@ -222,6 +222,7 @@ internal static unsafe class Bridge {
 	static void Tick() {
 		try {
 			ObjectCache.Sweep();
+			InputActionMap.FreeRetired();
 		} catch (Exception exception) {
 			Report(exception);
 		}
@@ -230,6 +231,7 @@ internal static unsafe class Bridge {
 	[UnmanagedCallersOnly]
 	static void Shutdown() {
 		ScriptEvents.Forget();
+		InputActionMap.Forget();
 		ScriptTypes.Clear();
 		ObjectCache.Clear();
 		_attached = false;
