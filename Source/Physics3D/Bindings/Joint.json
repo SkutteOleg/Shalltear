@@ -1,0 +1,140 @@
+{
+	"area": "Joint",
+	"include": "Shalltear/Physics3D/Joints.h",
+	"class": "Shalltear.Joint",
+	"instance": "Joint",
+	"types": [
+		{
+			"name": "Joint",
+			"cpp": "::Shalltear::Joint",
+			"engine": "Joint",
+			"base": "Component",
+			"doc": "Constraint between this object's body and another (or the world).",
+			"abstract": true
+		},
+		{ "name": "FixedJoint", "cpp": "::Shalltear::FixedJoint", "engine": "FixedJoint", "base": "Joint", "doc": "Holds 2 bodies in their relative pose." }
+	],
+	"functions": [
+		{
+			"id": "GetConnectedBody",
+			"cpp": "self->GetConnectedBody()",
+			"returns": "Rigidbody",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ConnectedBody", "kind": "getter" },
+			"doc": "Other body (null = the world)."
+		},
+		{
+			"id": "SetConnectedBody",
+			"cpp": "self->SetConnectedBody(::Shalltear::Handle<::Shalltear::Rigidbody>(connectedBody))",
+			"returns": "void",
+			"params": [{ "name": "connectedBody", "type": "Rigidbody", "optional": true }],
+			"csharp": { "member": "ConnectedBody", "kind": "setter" }
+		},
+		{
+			"id": "GetAnchor",
+			"cpp": "self->GetAnchor()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Anchor", "kind": "getter" },
+			"doc": "Joint's point in local space."
+		},
+		{
+			"id": "SetAnchor",
+			"cpp": "self->SetAnchor(anchor)",
+			"returns": "void",
+			"params": [{ "name": "anchor", "type": "Vec3" }],
+			"csharp": { "member": "Anchor", "kind": "setter" }
+		},
+		{
+			"id": "GetAutoConfigureConnectedAnchor",
+			"cpp": "self->GetAutoConfigureConnectedAnchor()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AutoConfigureConnectedAnchor", "kind": "getter" },
+			"doc": "ConnectedAnchor computed from Anchor."
+		},
+		{
+			"id": "SetAutoConfigureConnectedAnchor",
+			"cpp": "self->SetAutoConfigureConnectedAnchor(autoConfigureConnectedAnchor)",
+			"returns": "void",
+			"params": [{ "name": "autoConfigureConnectedAnchor", "type": "bool" }],
+			"csharp": { "member": "AutoConfigureConnectedAnchor", "kind": "setter" }
+		},
+		{
+			"id": "GetConnectedAnchor",
+			"cpp": "self->GetConnectedAnchor()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ConnectedAnchor", "kind": "getter" },
+			"doc": "Joint's point in the connected body's local space."
+		},
+		{
+			"id": "SetConnectedAnchor",
+			"cpp": "self->SetConnectedAnchor(connectedAnchor)",
+			"returns": "void",
+			"params": [{ "name": "connectedAnchor", "type": "Vec3" }],
+			"csharp": { "member": "ConnectedAnchor", "kind": "setter" }
+		},
+		{
+			"id": "GetBreakForce",
+			"cpp": "self->GetBreakForce()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BreakForce", "kind": "getter" },
+			"doc": "Force needed to break the joint."
+		},
+		{
+			"id": "SetBreakForce",
+			"cpp": "self->SetBreakForce(breakForce)",
+			"returns": "void",
+			"params": [{ "name": "breakForce", "type": "f32" }],
+			"csharp": { "member": "BreakForce", "kind": "setter" }
+		},
+		{
+			"id": "GetBreakTorque",
+			"cpp": "self->GetBreakTorque()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BreakTorque", "kind": "getter" },
+			"doc": "Torque needed to break the joint."
+		},
+		{
+			"id": "SetBreakTorque",
+			"cpp": "self->SetBreakTorque(breakTorque)",
+			"returns": "void",
+			"params": [{ "name": "breakTorque", "type": "f32" }],
+			"csharp": { "member": "BreakTorque", "kind": "setter" }
+		},
+		{
+			"id": "GetEnableCollision",
+			"cpp": "self->GetEnableCollision()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "EnableCollision", "kind": "getter" },
+			"doc": "Connected bodies collide with each other."
+		},
+		{
+			"id": "SetEnableCollision",
+			"cpp": "self->SetEnableCollision(enableCollision)",
+			"returns": "void",
+			"params": [{ "name": "enableCollision", "type": "bool" }],
+			"csharp": { "member": "EnableCollision", "kind": "setter" }
+		},
+		{
+			"id": "GetIsInSimulation",
+			"cpp": "self->IsInSimulation()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsInSimulation", "kind": "getter" },
+			"doc": "True while the simulation has this joint."
+		}
+	]
+}

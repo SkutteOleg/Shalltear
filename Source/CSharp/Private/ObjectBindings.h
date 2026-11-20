@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ScriptAPI.h"
+
 #include "Shalltear/Core/Scene/Component.h"
 #include "Shalltear/Core/Scene/SceneObject.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
@@ -11,10 +13,11 @@
 // refusals thrown as std::runtime_error
 namespace Shalltear::CSharpImpl::ObjectBindings {
 
-	void RequireOutsideLifecycle(std::string_view member);
+	SHALLTEAR_CSHARP_API void RequireOutsideLifecycle(std::string_view member);
 
 	bool IsAlive(u64 id) noexcept;
-	bool IsA(u64 id, u64 typeHash);
+	u64 GetTypeHash(u64 id) noexcept;
+	u64 GetParentTypeHash(u64 typeHash) noexcept;
 
 	// ids[N] alive -> bit N % 32 of alive[N / 32]
 	void AreAlive(std::span<const u64> ids, std::span<u32> alive);
@@ -24,6 +27,11 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 	// returned count may exceed handles.size()
 	i32 FindScripts(SceneObject& object, i32 scriptIndex, std::span<i64> handles);
 	i64 AddScript(SceneObject& object, i32 scriptIndex);
+
+	Component* FindComponent(SceneObject& object, u64 typeHash) noexcept;
+	// returned count may exceed ids.size()
+	i32 FindComponents(SceneObject& object, u64 typeHash, std::span<u64> ids) noexcept;
+	Component* AddComponent(SceneObject& object, u64 typeHash);
 
 	void SetActive(SceneObject& object, bool active);
 	void SetParent(SceneObject& object, SceneObject* parent, bool worldStays);

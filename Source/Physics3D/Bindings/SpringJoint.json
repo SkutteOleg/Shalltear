@@ -1,0 +1,75 @@
+{
+	"area": "SpringJoint",
+	"include": "Shalltear/Physics3D/Joints.h",
+	"class": "Shalltear.SpringJoint",
+	"instance": "SpringJoint",
+	"types": [
+		{ "name": "SpringJoint", "cpp": "::Shalltear::SpringJoint", "engine": "SpringJoint", "base": "Joint", "doc": "Spring between 2 points." }
+	],
+	"functions": [
+		{
+			"id": "GetSpring",
+			"cpp": "self->GetSpring()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Spring", "kind": "getter" },
+			"doc": "Spring force per m."
+		},
+		{
+			"id": "SetSpring",
+			"cpp": "self->SetSpring(spring)",
+			"returns": "void",
+			"params": [{ "name": "spring", "type": "f32" }],
+			"csharp": { "member": "Spring", "kind": "setter" }
+		},
+		{
+			"id": "GetDamper",
+			"cpp": "self->GetDamper()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Damper", "kind": "getter" },
+			"doc": "Spring force per m/s."
+		},
+		{
+			"id": "SetDamper",
+			"cpp": "self->SetDamper(damper)",
+			"returns": "void",
+			"params": [{ "name": "damper", "type": "f32" }],
+			"csharp": { "member": "Damper", "kind": "setter" }
+		},
+		{
+			"id": "GetMinDistance",
+			"cpp": "self->GetMinDistance()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MinDistance", "kind": "getter" },
+			"doc": "Spring pushes under this distance."
+		},
+		{
+			"id": "SetMinDistance",
+			"cpp": "self->SetMinDistance(minDistance)",
+			"returns": "void",
+			"params": [{ "name": "minDistance", "type": "f32" }],
+			"csharp": { "member": "MinDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxDistance",
+			"cpp": "self->GetMaxDistance()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MaxDistance", "kind": "getter" },
+			"doc": "Spring pulls over this distance."
+		},
+		{
+			"id": "SetMaxDistance",
+			"cpp": "self->SetMaxDistance(maxDistance)",
+			"returns": "void",
+			"params": [{ "name": "maxDistance", "type": "f32" }],
+			"csharp": { "member": "MaxDistance", "kind": "setter" }
+		}
+	]
+}

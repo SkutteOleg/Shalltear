@@ -1,0 +1,411 @@
+{
+	"area": "Rigidbody",
+	"include": "Shalltear/Physics3D/Rigidbody.h",
+	"class": "Shalltear.Rigidbody",
+	"instance": "Rigidbody",
+	"types": [
+		{ "name": "Rigidbody", "cpp": "::Shalltear::Rigidbody", "engine": "Rigidbody", "base": "Component", "doc": "Body moved by the physics simulation." }
+	],
+	"enums": [
+		{
+			"name": "RigidbodyInterpolation",
+			"cpp": "::Shalltear::RigidbodyInterpolation",
+			"underlying": "u8",
+			"doc": "How a body's transform moves between fixed steps.",
+			"values": [
+				{ "name": "None", "value": 0, "doc": "Transform changes at fixed steps only." },
+				{ "name": "Interpolate", "value": 1, "doc": "Blend between the last 2 steps." },
+				{ "name": "Extrapolate", "value": 2, "doc": "Predict from the last step's velocity." }
+			]
+		},
+		{
+			"name": "RigidbodyCollisionDetection",
+			"cpp": "::Shalltear::RigidbodyCollisionDetection",
+			"underlying": "u8",
+			"doc": "How a body's fast motion is kept from tunneling.",
+			"values": [
+				{ "name": "Continuous", "value": 0, "doc": "Sweep tested on static colliders." },
+				{ "name": "ContinuousDynamic", "value": 1, "doc": "Sweep tested on static + moving colliders." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetMass",
+			"cpp": "self->GetMass()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Mass", "kind": "getter" },
+			"doc": "Mass in kg."
+		},
+		{
+			"id": "SetMass",
+			"cpp": "self->SetMass(mass)",
+			"returns": "void",
+			"params": [{ "name": "mass", "type": "f32" }],
+			"csharp": { "member": "Mass", "kind": "setter" }
+		},
+		{
+			"id": "GetLinearDamping",
+			"cpp": "self->GetLinearDamping()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LinearDamping", "kind": "getter" },
+			"doc": "Drag on linear velocity."
+		},
+		{
+			"id": "SetLinearDamping",
+			"cpp": "self->SetLinearDamping(linearDamping)",
+			"returns": "void",
+			"params": [{ "name": "linearDamping", "type": "f32" }],
+			"csharp": { "member": "LinearDamping", "kind": "setter" }
+		},
+		{
+			"id": "GetAngularDamping",
+			"cpp": "self->GetAngularDamping()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AngularDamping", "kind": "getter" },
+			"doc": "Drag on angular velocity."
+		},
+		{
+			"id": "SetAngularDamping",
+			"cpp": "self->SetAngularDamping(angularDamping)",
+			"returns": "void",
+			"params": [{ "name": "angularDamping", "type": "f32" }],
+			"csharp": { "member": "AngularDamping", "kind": "setter" }
+		},
+		{
+			"id": "GetAutomaticCenterOfMass",
+			"cpp": "self->GetAutomaticCenterOfMass()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AutomaticCenterOfMass", "kind": "getter" },
+			"doc": "Center of mass computed from colliders."
+		},
+		{
+			"id": "SetAutomaticCenterOfMass",
+			"cpp": "self->SetAutomaticCenterOfMass(automaticCenterOfMass)",
+			"returns": "void",
+			"params": [{ "name": "automaticCenterOfMass", "type": "bool" }],
+			"csharp": { "member": "AutomaticCenterOfMass", "kind": "setter" }
+		},
+		{
+			"id": "GetCenterOfMass",
+			"cpp": "self->GetCenterOfMass()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CenterOfMass", "kind": "getter" },
+			"doc": "Center of mass in local space (used when not automatic)."
+		},
+		{
+			"id": "SetCenterOfMass",
+			"cpp": "self->SetCenterOfMass(centerOfMass)",
+			"returns": "void",
+			"params": [{ "name": "centerOfMass", "type": "Vec3" }],
+			"csharp": { "member": "CenterOfMass", "kind": "setter" }
+		},
+		{
+			"id": "GetAutomaticInertiaTensor",
+			"cpp": "self->GetAutomaticInertiaTensor()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AutomaticInertiaTensor", "kind": "getter" },
+			"doc": "Inertia tensor computed from colliders."
+		},
+		{
+			"id": "SetAutomaticInertiaTensor",
+			"cpp": "self->SetAutomaticInertiaTensor(automaticInertiaTensor)",
+			"returns": "void",
+			"params": [{ "name": "automaticInertiaTensor", "type": "bool" }],
+			"csharp": { "member": "AutomaticInertiaTensor", "kind": "setter" }
+		},
+		{
+			"id": "GetInertiaTensor",
+			"cpp": "self->GetInertiaTensor()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "InertiaTensor", "kind": "getter" },
+			"doc": "Principal moments of inertia (used when not automatic)."
+		},
+		{
+			"id": "SetInertiaTensor",
+			"cpp": "self->SetInertiaTensor(inertiaTensor)",
+			"returns": "void",
+			"params": [{ "name": "inertiaTensor", "type": "Vec3" }],
+			"csharp": { "member": "InertiaTensor", "kind": "setter" }
+		},
+		{
+			"id": "GetInertiaTensorRotation",
+			"cpp": "self->GetInertiaTensorRotation()",
+			"returns": "Quat",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "InertiaTensorRotation", "kind": "getter" },
+			"doc": "Rotation of the inertia tensor's axes."
+		},
+		{
+			"id": "SetInertiaTensorRotation",
+			"cpp": "self->SetInertiaTensorRotation(inertiaTensorRotation)",
+			"returns": "void",
+			"params": [{ "name": "inertiaTensorRotation", "type": "Quat" }],
+			"csharp": { "member": "InertiaTensorRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetUseGravity",
+			"cpp": "self->GetUseGravity()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseGravity", "kind": "getter" },
+			"doc": "Pulled by gravity."
+		},
+		{
+			"id": "SetUseGravity",
+			"cpp": "self->SetUseGravity(useGravity)",
+			"returns": "void",
+			"params": [{ "name": "useGravity", "type": "bool" }],
+			"csharp": { "member": "UseGravity", "kind": "setter" }
+		},
+		{
+			"id": "GetIsKinematic",
+			"cpp": "self->IsKinematic()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsKinematic", "kind": "getter" },
+			"doc": "Moved by its transform (not by forces/collisions)."
+		},
+		{
+			"id": "SetIsKinematic",
+			"cpp": "self->SetKinematic(kinematic)",
+			"returns": "void",
+			"params": [{ "name": "kinematic", "type": "bool" }],
+			"csharp": { "member": "IsKinematic", "kind": "setter" }
+		},
+		{
+			"id": "GetInterpolation",
+			"cpp": "self->GetInterpolation()",
+			"returns": "RigidbodyInterpolation",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Interpolation", "kind": "getter" },
+			"doc": "How the transform moves between fixed steps."
+		},
+		{
+			"id": "SetInterpolation",
+			"cpp": "self->SetInterpolation(interpolation)",
+			"returns": "void",
+			"params": [{ "name": "interpolation", "type": "RigidbodyInterpolation" }],
+			"csharp": { "member": "Interpolation", "kind": "setter" }
+		},
+		{
+			"id": "GetCollisionDetectionMode",
+			"cpp": "self->GetCollisionDetectionMode()",
+			"returns": "RigidbodyCollisionDetection",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CollisionDetectionMode", "kind": "getter" },
+			"doc": "How fast motion is kept from tunneling."
+		},
+		{
+			"id": "SetCollisionDetectionMode",
+			"cpp": "self->SetCollisionDetectionMode(collisionDetectionMode)",
+			"returns": "void",
+			"params": [{ "name": "collisionDetectionMode", "type": "RigidbodyCollisionDetection" }],
+			"csharp": { "member": "CollisionDetectionMode", "kind": "setter" }
+		},
+		{
+			"id": "GetCarryRiders",
+			"cpp": "self->GetCarryRiders()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CarryRiders", "kind": "getter" },
+			"doc": "Bodies + character controllers standing on this body move along."
+		},
+		{
+			"id": "SetCarryRiders",
+			"cpp": "self->SetCarryRiders(carryRiders)",
+			"returns": "void",
+			"params": [{ "name": "carryRiders", "type": "bool" }],
+			"csharp": { "member": "CarryRiders", "kind": "setter" }
+		},
+		{
+			"id": "GetSleepThreshold",
+			"cpp": "self->GetSleepThreshold()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SleepThreshold", "kind": "getter" },
+			"doc": "Body may sleep below this speed in m/s."
+		},
+		{
+			"id": "SetSleepThreshold",
+			"cpp": "self->SetSleepThreshold(sleepThreshold)",
+			"returns": "void",
+			"params": [{ "name": "sleepThreshold", "type": "f32" }],
+			"csharp": { "member": "SleepThreshold", "kind": "setter" }
+		},
+		{
+			"id": "GetFreezePositionX",
+			"cpp": "self->GetFreezePositionX()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FreezePositionX", "kind": "getter" },
+			"doc": "No movement along world x."
+		},
+		{
+			"id": "SetFreezePositionX",
+			"cpp": "self->SetFreezePositionX(freezePositionX)",
+			"returns": "void",
+			"params": [{ "name": "freezePositionX", "type": "bool" }],
+			"csharp": { "member": "FreezePositionX", "kind": "setter" }
+		},
+		{
+			"id": "GetFreezePositionY",
+			"cpp": "self->GetFreezePositionY()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FreezePositionY", "kind": "getter" },
+			"doc": "No movement along world y."
+		},
+		{
+			"id": "SetFreezePositionY",
+			"cpp": "self->SetFreezePositionY(freezePositionY)",
+			"returns": "void",
+			"params": [{ "name": "freezePositionY", "type": "bool" }],
+			"csharp": { "member": "FreezePositionY", "kind": "setter" }
+		},
+		{
+			"id": "GetFreezePositionZ",
+			"cpp": "self->GetFreezePositionZ()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FreezePositionZ", "kind": "getter" },
+			"doc": "No movement along world z."
+		},
+		{
+			"id": "SetFreezePositionZ",
+			"cpp": "self->SetFreezePositionZ(freezePositionZ)",
+			"returns": "void",
+			"params": [{ "name": "freezePositionZ", "type": "bool" }],
+			"csharp": { "member": "FreezePositionZ", "kind": "setter" }
+		},
+		{
+			"id": "GetFreezeRotationX",
+			"cpp": "self->GetFreezeRotationX()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FreezeRotationX", "kind": "getter" },
+			"doc": "No rotation about world x."
+		},
+		{
+			"id": "SetFreezeRotationX",
+			"cpp": "self->SetFreezeRotationX(freezeRotationX)",
+			"returns": "void",
+			"params": [{ "name": "freezeRotationX", "type": "bool" }],
+			"csharp": { "member": "FreezeRotationX", "kind": "setter" }
+		},
+		{
+			"id": "GetFreezeRotationY",
+			"cpp": "self->GetFreezeRotationY()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FreezeRotationY", "kind": "getter" },
+			"doc": "No rotation about world y."
+		},
+		{
+			"id": "SetFreezeRotationY",
+			"cpp": "self->SetFreezeRotationY(freezeRotationY)",
+			"returns": "void",
+			"params": [{ "name": "freezeRotationY", "type": "bool" }],
+			"csharp": { "member": "FreezeRotationY", "kind": "setter" }
+		},
+		{
+			"id": "GetFreezeRotationZ",
+			"cpp": "self->GetFreezeRotationZ()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FreezeRotationZ", "kind": "getter" },
+			"doc": "No rotation about world z."
+		},
+		{
+			"id": "SetFreezeRotationZ",
+			"cpp": "self->SetFreezeRotationZ(freezeRotationZ)",
+			"returns": "void",
+			"params": [{ "name": "freezeRotationZ", "type": "bool" }],
+			"csharp": { "member": "FreezeRotationZ", "kind": "setter" }
+		},
+		{
+			"id": "GetLinearVelocity",
+			"cpp": "self->GetLinearVelocity()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LinearVelocity", "kind": "getter" },
+			"doc": "Velocity in m/s."
+		},
+		{
+			"id": "SetLinearVelocity",
+			"cpp": "self->SetLinearVelocity(linearVelocity)",
+			"returns": "void",
+			"params": [{ "name": "linearVelocity", "type": "Vec3" }],
+			"csharp": { "member": "LinearVelocity", "kind": "setter" }
+		},
+		{
+			"id": "GetAngularVelocity",
+			"cpp": "self->GetAngularVelocity()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AngularVelocity", "kind": "getter" },
+			"doc": "Angular velocity in rads/s about the center of mass."
+		},
+		{
+			"id": "SetAngularVelocity",
+			"cpp": "self->SetAngularVelocity(angularVelocity)",
+			"returns": "void",
+			"params": [{ "name": "angularVelocity", "type": "Vec3" }],
+			"csharp": { "member": "AngularVelocity", "kind": "setter" }
+		},
+		{
+			"id": "GetIsSleeping",
+			"cpp": "self->IsSleeping()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsSleeping", "kind": "getter" },
+			"doc": "True while the simulation skips this body."
+		},
+		{
+			"id": "Sleep",
+			"cpp": "self->Sleep()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Sleep", "kind": "method" },
+			"doc": "Put the body to sleep."
+		},
+		{
+			"id": "WakeUp",
+			"cpp": "self->WakeUp()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "WakeUp", "kind": "method" },
+			"doc": "Wake the body."
+		}
+	]
+}

@@ -11,13 +11,12 @@ internal static unsafe partial class ObjectBindings {
 		return Bindings.table.objectIsAlive(id) != 0;
 	}
 
-	internal static bool IsA(ulong id, ulong typeHash) {
-		byte result;
-		int status = Bindings.table.objectIsA(id, typeHash, &result);
-		if (status != Bridge.OK) {
-			throw Bridge.LastError();
-		}
-		return result != 0;
+	internal static ulong GetTypeHash(ulong id) {
+		return Bindings.table.objectGetTypeHash(id);
+	}
+
+	internal static ulong GetParentTypeHash(ulong typeHash) {
+		return Bindings.table.objectGetParentTypeHash(typeHash);
 	}
 
 	internal static void AreAlive(ReadOnlySpan<ulong> ids, Span<uint> alive) {
@@ -68,6 +67,47 @@ internal static unsafe partial class ObjectBindings {
 		ArgumentNullException.ThrowIfNull(self);
 		long result;
 		int status = Bindings.table.objectAddScript(self._id, scriptIndex, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, member);
+		}
+		return result;
+	}
+
+	internal static ulong FindComponent(SceneObject self, ulong typeHash, string member) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread(member);
+		}
+		ArgumentNullException.ThrowIfNull(self);
+		ulong result;
+		int status = Bindings.table.objectFindComponent(self._id, typeHash, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, member);
+		}
+		return result;
+	}
+
+	internal static int FindComponents(SceneObject self, ulong typeHash, Span<ulong> ids, string member) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread(member);
+		}
+		ArgumentNullException.ThrowIfNull(self);
+		fixed (ulong* idsData = ids) {
+			int result;
+			int status = Bindings.table.objectFindComponents(self._id, typeHash, idsData, ids.Length, &result);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, member);
+			}
+			return result;
+		}
+	}
+
+	internal static ulong AddComponent(SceneObject self, ulong typeHash, string member) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread(member);
+		}
+		ArgumentNullException.ThrowIfNull(self);
+		ulong result;
+		int status = Bindings.table.objectAddComponent(self._id, typeHash, &result);
 		if (status != Bridge.OK) {
 			throw Bridge.Failure(status, member);
 		}

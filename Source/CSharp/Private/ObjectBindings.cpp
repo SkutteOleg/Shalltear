@@ -55,10 +55,14 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 		return ObjectRegistry::Resolve(id) != nullptr;
 	}
 
-	bool IsA(u64 id, u64 typeHash) {
+	u64 GetTypeHash(u64 id) noexcept {
 		const Object* object = ObjectRegistry::Resolve(id);
+		return object ? object->GetType()->name.GetValue() : 0;
+	}
+
+	u64 GetParentTypeHash(u64 typeHash) noexcept {
 		const TypeInfo* type = TypeRegistry::FindType(StringHash(typeHash));
-		return object && type && TypeRegistry::IsDerivedFrom(object->GetType(), type);
+		return type && type->parent ? type->parent->name.GetValue() : 0;
 	}
 
 	void AreAlive(std::span<const u64> ids, std::span<u32> alive) {
@@ -112,6 +116,46 @@ namespace Shalltear::CSharpImpl::ObjectBindings {
 			throw std::runtime_error(std::format("SceneObject.AddComponent got no {} instance (constructor failed)", type->displayName));
 		}
 		return script;
+	}
+
+	Component* FindComponent(SceneObject& object, u64 typeHash) noexcept {
+		u64 found = 0;
+		return FindComponents(object, typeHash, std::span<u64>(&found, 1)) > 0 ? static_cast<Component*>(ObjectRegistry::Resolve(found)) : nullptr;
+	}
+
+	i32 FindComponents(SceneObject& object, u64 typeHash, std::span<u64> ids) noexcept {
+		const TypeInfo* type = TypeRegistry::FindType(StringHash(typeHash));
+		i32 count = 0;
+		for (u32 index = 0; type && index < object.GetComponentCount(); ++index) {
+			const Component* component = object.GetComponentAt(index).Get();
+			if (!component || component->IsPendingDestroy() || !TypeRegistry::IsDerivedFrom(component->GetType(), type)) {
+				continue;
+			}
+			if (static_cast<size_t>(count) < ids.size()) {
+				ids[static_cast<size_t>(count)] = component->GetInstanceId();
+			}
+			++count;
+		}
+		return count;
+	}
+
+	Component* AddComponent(SceneObject& object, u64 typeHash) {
+		RequireOutsideLifecycle("SceneObject.AddComponent");
+		const TypeInfo* type = TypeRegistry::FindType(StringHash(typeHash));
+		if (!type || !(type->flags & TypeFlagComponent)) {
+			throw std::runtime_error("SceneObject.AddComponent got an unknown component class");
+		}
+		if (type->flags & TypeFlagAbstract) {
+			throw std::runtime_error(std::format("SceneObject.AddComponent can't add {} (abstract)", type->displayName));
+		}
+		if (object.IsPendingDestroy()) {
+			throw std::runtime_error("SceneObject.AddComponent used on object pending destroy");
+		}
+		Component* added = object.AddComponent(type).Get();
+		if (!added) {
+			throw std::runtime_error(std::format("SceneObject.AddComponent got no {} instance", type->displayName));
+		}
+		return added;
 	}
 
 	void SetActive(SceneObject& object, bool active) {

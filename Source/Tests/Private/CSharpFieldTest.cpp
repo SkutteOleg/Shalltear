@@ -498,6 +498,8 @@ int Shalltear::TestHelpers::RunCSharpAOTFields(const char* library) {
 	JobSystem::Initialize();
 	LogManager::Initialize({true, false});
 	TypeRegistry::RegisterPendingTypes();
+	static char packages = 0;
+	CSharpConformance::StandUpPackages(&packages);
 	int result = 0;
 	{
 		const CSharpScenarios::FieldProject project;

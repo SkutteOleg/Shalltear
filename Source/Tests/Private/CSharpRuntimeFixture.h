@@ -30,8 +30,9 @@ namespace Shalltear::CSharpTests {
 
 		void SetUp() override {
 			ModuleSystem::Initialize();
-			_package = ModuleSystem::Load(Path(str("CSharp") + SLT_TEST_DLL_SUFFIX));
+			_package = ModuleSystem::Load(Path(str("CSharp") + SLT_TEST_DLL_SUFFIX), ModuleLoadPolicy::InPlace);
 			ASSERT_TRUE(ModuleSystem::IsLoaded(_package));
+			ASSERT_TRUE(CSharpConformance::StandUpPackages(nullptr));
 			const auto get = reinterpret_cast<CSharpImpl::GetScriptTestHooksFn>(
 				ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_package), CSharpImpl::SCRIPT_TEST_HOOKS_SYMBOL));
 			ASSERT_NE(get, nullptr);

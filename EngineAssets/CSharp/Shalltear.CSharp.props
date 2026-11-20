@@ -28,6 +28,8 @@
 		<CompilerVisibleProperty Include="MSBuildProjectDirectory" />
 		<CompilerVisibleProperty Include="ShalltearScriptNames" />
 		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedDir)Shalltear.Runtime.dll" Private="false" />
+		<ShalltearPackageAssembly Include="$(ShalltearPackageAssemblies)" />
+		<Reference Include="@(ShalltearPackageAssembly)" HintPath="$(ShalltearManagedDir)%(Identity).dll" Private="false" />
 		<Analyzer Include="$(ShalltearManagedDir)Shalltear.Generators.dll" />
 	</ItemGroup>
 </Project>

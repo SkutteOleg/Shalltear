@@ -3,7 +3,9 @@
 #include "CSharpConformance.h"
 #include "TestPlatform.h"
 
+#include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Input.h"
+#include "Shalltear/Core/Time.h"
 #include "Shalltear/Core/Window.h"
 
 namespace Shalltear::CSharpConformance {
@@ -34,6 +36,17 @@ namespace Shalltear::CSharpConformance {
 			case 5:
 				WindowSystem::PumpEvents();
 				return 0;
+			case 6: {
+				FrameTime fixed;
+				fixed.fixedDeltaTime = 1.0f / 60.0f;
+				fixed.maximumDeltaTime = 1000.0f;
+				const Time::FrameScope clock{fixed};
+				Time::BeginFrame(fixed.fixedDeltaTime);
+				for (i32 step = 0; step < first; ++step) {
+					FrameStages::Run(FrameStage::FixedUpdate, FrameStageArgs{});
+				}
+				return 0;
+			}
 			default:
 				return -1;
 			}

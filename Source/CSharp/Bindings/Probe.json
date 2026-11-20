@@ -230,6 +230,20 @@
 			"csharp": { "member": "FindAsset", "kind": "method" }
 		},
 		{
+			"id": "MakeDerivedText",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::MakeDerivedText()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MakeDerivedText", "kind": "method" }
+		},
+		{
+			"id": "FreeDerivedText",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FreeDerivedText(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "FreeDerivedText", "kind": "method" }
+		},
+		{
 			"id": "RunFrames",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::RunFrames(count)",
 			"returns": "void",

@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xdd0bde211f970a6full
-#define SLT_BINDINGS_INPUT_DIGEST 0xe405610d550d3ab4ull
+#define SLT_BRIDGE_LAYOUT_HASH 0x4da5e291eb5c2cf6ull
+#define SLT_BINDINGS_INPUT_DIGEST 0x4a6b8dca0c876902ull
 
 typedef struct SltString SltString;
 
@@ -78,11 +78,15 @@ typedef struct SltBindings {
 	int32_t (*logGetLevel)(void);
 	int32_t (*logWrite)(int32_t level, SltString category, SltString message, SltString file, int32_t line);
 	uint8_t (*objectIsAlive)(uint64_t id);
-	int32_t (*objectIsA)(uint64_t id, uint64_t typeHash, uint8_t* outResult);
+	uint64_t (*objectGetTypeHash)(uint64_t id);
+	uint64_t (*objectGetParentTypeHash)(uint64_t typeHash);
 	int32_t (*objectAreAlive)(const uint64_t* ids, int32_t idsCount, uint32_t* alive, int32_t aliveCount);
 	int32_t (*objectFindScript)(uint64_t self, int32_t scriptIndex, int64_t* outResult);
 	int32_t (*objectFindScripts)(uint64_t self, int32_t scriptIndex, int64_t* handles, int32_t handlesCount, int32_t* outResult);
 	int32_t (*objectAddScript)(uint64_t self, int32_t scriptIndex, int64_t* outResult);
+	int32_t (*objectFindComponent)(uint64_t self, uint64_t typeHash, uint64_t* outResult);
+	int32_t (*objectFindComponents)(uint64_t self, uint64_t typeHash, uint64_t* ids, int32_t idsCount, int32_t* outResult);
+	int32_t (*objectAddComponent)(uint64_t self, uint64_t typeHash, uint64_t* outResult);
 	int32_t (*objectDestroy)(uint64_t objectId);
 	int32_t (*objectDestroyComponent)(uint64_t componentId);
 	int32_t (*probeGetMathCaseCount)(void);
@@ -112,6 +116,8 @@ typedef struct SltBindings {
 	int32_t (*probeEndFrame)(void);
 	int32_t (*probeDrive)(int32_t op, int32_t first, int32_t second, int32_t* outResult);
 	int32_t (*probeFindAsset)(SltString path, uint64_t* outResult);
+	int32_t (*probeMakeDerivedText)(uint64_t* outResult);
+	int32_t (*probeFreeDerivedText)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
 	int32_t (*sceneSetName)(uint64_t self, SltString name);

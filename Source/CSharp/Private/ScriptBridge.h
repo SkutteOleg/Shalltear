@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 11
+#define SLT_BRIDGE_ABI_VERSION 12
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -116,6 +116,7 @@ typedef struct SltTypeDesc {
 	uint32_t hookMask;
 	// BehaviorTick bits
 	uint32_t tickMask;
+	uint32_t listenerMask;
 	SltFieldDesc* fields;
 	int32_t fieldCount;
 	// source file from project root (empty in a player)
@@ -140,6 +141,7 @@ typedef struct SltEngineAPI {
 	void* (*listResize)(void* field, int32_t count);
 	void* (*listData)(const void* field, int32_t* outCount);
 	intptr_t (*scriptOf)(uint64_t id);
+	int32_t (*findBindings)(SltString name, uint64_t layoutHash, int32_t size, const void** outTable);
 	int32_t (*throwForTest)(void);
 	SltBindings bindings;
 } SltEngineAPI;

@@ -207,6 +207,22 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeMakeDerivedText(uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint64_t>(::Shalltear::CSharpImpl::BindingProbe::MakeDerivedText());
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeFreeDerivedText(uint64_t id) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::FreeDerivedText(id);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ProbeRunFrames(int32_t count) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::BindingProbe::RunFrames(count);
@@ -245,6 +261,8 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeEndFrame = &ProbeEndFrame;
 		table.probeDrive = &ProbeDrive;
 		table.probeFindAsset = &ProbeFindAsset;
+		table.probeMakeDerivedText = &ProbeMakeDerivedText;
+		table.probeFreeDerivedText = &ProbeFreeDerivedText;
 		table.probeRunFrames = &ProbeRunFrames;
 	}
 

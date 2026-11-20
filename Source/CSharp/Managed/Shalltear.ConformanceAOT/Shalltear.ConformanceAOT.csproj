@@ -11,6 +11,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedOutput)Shalltear.Runtime.dll" />
+		<Reference Include="Shalltear.Physics3D" HintPath="$(ShalltearManagedOutput)Shalltear.Physics3D.dll" />
 		<Reference Include="Shalltear.Conformance" HintPath="$(ShalltearManagedOutput)Shalltear.Conformance.dll" />
 		<ShalltearRenameAssembly Include="Shalltear.Conformance" />
 	</ItemGroup>

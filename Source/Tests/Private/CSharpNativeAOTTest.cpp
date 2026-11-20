@@ -79,6 +79,8 @@ int Shalltear::TestHelpers::RunCSharpAOTComponents(const char* library) {
 	JobSystem::Initialize();
 	LogManager::Initialize({true, false});
 	TypeRegistry::RegisterPendingTypes();
+	static char packages = 0;
+	CSharpConformance::StandUpPackages(&packages);
 	SceneSystem::Initialize();
 	str error;
 	if (!library || !CSharpImpl::NativeAOTHost::Start(library, error)) {
@@ -131,6 +133,8 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	LogManager::Initialize({true, false});
 	LogManager::SetGlobalLevel(LogLevel::Trace);
 	TypeRegistry::RegisterPendingTypes();
+	static char packages = 0;
+	CSharpConformance::StandUpPackages(&packages);
 	str error;
 	if (!library || !CSharpImpl::NativeAOTHost::Start(library, error)) {
 		std::printf("START FAILED %s\n", error.c_str());
@@ -201,13 +205,13 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 
 	int ran = 0;
 	for (const auto& [name, outcome] : run.cases) {
-		if (CSharpConformance::IsProbe(name)) {
+		if (!CSharpConformance::IsInPassSet(name)) {
 			continue;
 		}
 		EXPECT_EQ(outcome.first, SLT_OK) << name << ": " << outcome.second;
 		++ran;
 	}
-	EXPECT_GE(ran, 61) << run.output;
+	EXPECT_GE(ran, CSharpConformance::PASS_SET_SIZE) << run.output;
 	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
 }
 

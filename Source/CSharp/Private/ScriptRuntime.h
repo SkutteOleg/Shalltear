@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ScriptAPI.h"
 #include "ScriptBridge.h"
 
 #include "Shalltear/Core/Types.h"
@@ -27,10 +28,10 @@ namespace Shalltear::CSharpImpl {
 
 		SltEngineAPI MakeEngineAPI();
 
-		void SetLastError(std::string_view text);
+		SHALLTEAR_CSHARP_API void SetLastError(std::string_view text);
 
 		// valid until this thread's next KeepString
-		SltString KeepString(std::string_view text);
+		SHALLTEAR_CSHARP_API SltString KeepString(std::string_view text);
 
 		void Tick();
 

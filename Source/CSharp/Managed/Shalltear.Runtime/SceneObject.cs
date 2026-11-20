@@ -29,7 +29,7 @@ public sealed partial class SceneObject : EngineObject {
 		ObjectBindings.Destroy(_id, "SceneObject.Destroy");
 	}
 
-	/// <summary>1st script of type T on this object (null when none).</summary>
+	/// <summary>1st component of type T on this object (null when none).</summary>
 	[SkipLocalsInit]
 	public T? GetComponent<T>()
 		where T : class {
@@ -38,6 +38,10 @@ public sealed partial class SceneObject : EngineObject {
 		if (script != 0) {
 			long found = ObjectBindings.FindScript(this, script, MEMBER);
 			return found == 0 ? null : GCHandle.FromIntPtr((nint)found).Target as T;
+		}
+		ulong engineType = EngineTypeOf<T>.hash;
+		if (engineType != 0) {
+			return ObjectCache.Find(ObjectBindings.FindComponent(this, engineType, MEMBER)) as T;
 		}
 		Span<long> handles = stackalloc long[STACK_HANDLES];
 		long[]? rented = FindAll(EVERY_SCRIPT, ref handles, MEMBER);
@@ -54,14 +58,35 @@ public sealed partial class SceneObject : EngineObject {
 		return match;
 	}
 
-	/// <summary>Fill results with each script of type T on this object.</summary>
+	/// <summary>Fill results with each component of type T on this object.</summary>
 	[SkipLocalsInit]
 	public void GetComponents<T>(List<T> results)
 		where T : class {
+		const string MEMBER = "SceneObject.GetComponents";
 		ArgumentNullException.ThrowIfNull(results);
 		results.Clear();
+		ulong engineType = EngineTypeOf<T>.hash;
+		if (engineType != 0) {
+			Span<ulong> ids = stackalloc ulong[STACK_HANDLES];
+			int count = ObjectBindings.FindComponents(this, engineType, ids, MEMBER);
+			ulong[]? rentedIds = null;
+			if (count > ids.Length) {
+				rentedIds = ArrayPool<ulong>.Shared.Rent(count);
+				ids = rentedIds;
+				count = Math.Min(ObjectBindings.FindComponents(this, engineType, ids, MEMBER), ids.Length);
+			}
+			foreach (ulong id in ids.Slice(0, count)) {
+				if (ObjectCache.Find(id) is T found) {
+					results.Add(found);
+				}
+			}
+			if (rentedIds != null) {
+				ArrayPool<ulong>.Shared.Return(rentedIds);
+			}
+			return;
+		}
 		Span<long> handles = stackalloc long[STACK_HANDLES];
-		long[]? rented = FindAll(ScriptIndex<T>.value, ref handles, "SceneObject.GetComponents");
+		long[]? rented = FindAll(ScriptIndex<T>.value, ref handles, MEMBER);
 		foreach (long handle in handles) {
 			if (GCHandle.FromIntPtr((nint)handle).Target is T script) {
 				results.Add(script);
@@ -72,11 +97,15 @@ public sealed partial class SceneObject : EngineObject {
 		}
 	}
 
-	/// <summary>Add a script of type T.</summary>
+	/// <summary>Add a component of type T.</summary>
 	public T AddComponent<T>()
 		where T : Component {
 		const string MEMBER = "SceneObject.AddComponent";
 		int script = ScriptIndex<T>.value;
+		ulong engineType = EngineTypeOf<T>.hash;
+		if (script == 0 && engineType != 0) {
+			return (T)ObjectCache.Find(ObjectBindings.AddComponent(this, engineType, MEMBER))!;
+		}
 		if (script == 0) {
 			throw new EngineException(MEMBER + " can't add " + typeof(T).Name + " (not a registered script class)");
 		}

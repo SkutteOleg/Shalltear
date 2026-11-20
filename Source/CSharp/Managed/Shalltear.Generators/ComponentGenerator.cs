@@ -19,6 +19,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 	const string LIST = "System.Collections.Generic.List<T>";
 	const string SHADOW = "global::Shalltear.Interop.ShadowFields";
 	const string TYPES = "global::Shalltear.Interop.ScriptTypes";
+	const string PACKAGE_PREFIX = "Shalltear.";
 
 	// must match SLT_FIELD_* + SLT_FIELD_SLOT_LIMIT in ScriptBridge.h
 	const uint FIELD_HIDDEN = 1;
@@ -150,10 +151,12 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 
 	sealed class Target : IEquatable<Target> {
 		public string scriptRoot = "";
+		public string packages = "";
 		public bool player;
 		public bool hashedNames;
 
-		public bool Equals(Target? other) => other != null && scriptRoot == other.scriptRoot && player == other.player && hashedNames == other.hashedNames;
+		public bool Equals(Target? other) =>
+			other != null && scriptRoot == other.scriptRoot && packages == other.packages && player == other.player && hashedNames == other.hashedNames;
 
 		public override bool Equals(object? other) => Equals(other as Target);
 
@@ -203,6 +206,10 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			}
 			return target;
 		});
+		IncrementalValueProvider<string> packages = context.CompilationProvider.Select(static (compilation, _) => string.Join(";", PackageBindings(compilation)));
+		target = target.Combine(packages).Select(static (pair, _) => new Target {
+			scriptRoot = pair.Left.scriptRoot, packages = pair.Right, player = pair.Left.player, hashedNames = pair.Left.hashedNames
+		});
 		context.RegisterSourceOutput(components.Collect().Combine(target), static (output, pair) => {
 			ImmutableArray<Component> found = pair.Left.IsDefault ? ImmutableArray<Component>.Empty : pair.Left;
 			if (found.IsEmpty && !pair.Right.player) {
@@ -227,6 +234,18 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			}
 			output.AddSource("TypeTable.g.cs", SourceText.From(Render(ordered, pair.Right), Encoding.UTF8));
 		});
+	}
+
+	static IEnumerable<string> PackageBindings(Compilation compilation) {
+		foreach (IAssemblySymbol assembly in compilation.SourceModule.ReferencedAssemblySymbols.OrderBy(static assembly => assembly.Name, StringComparer.Ordinal)) {
+			if (!assembly.Name.StartsWith(PACKAGE_PREFIX, StringComparison.Ordinal)) {
+				continue;
+			}
+			string bindings = "Shalltear.Interop." + assembly.Name.Substring(PACKAGE_PREFIX.Length) + "Bindings";
+			if (assembly.GetTypeByMetadataName(bindings) != null) {
+				yield return bindings;
+			}
+		}
 	}
 
 	static bool IsRegistered(INamedTypeSymbol type) {
@@ -831,6 +850,9 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append(target.player ? "\tpublic" : "\tinternal").Append(" static void Register() {\n");
 		text.Append("\t\tif (_registered || !").Append(TYPES).Append(".IsAttached) {\n\t\t\treturn;\n\t\t}\n");
 		text.Append("\t\t_registered = true;\n");
+		foreach (string bindings in target.packages.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+			text.Append("\t\tglobal::").Append(bindings).Append(".Attach();\n");
+		}
 		text.Append(calls);
 		text.Append("\t}\n}\n");
 		return text.ToString();

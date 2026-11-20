@@ -68,6 +68,7 @@ public static unsafe class ScriptTypes {
 
 	static readonly List<ScriptType> _types = new();
 	static readonly Dictionary<ulong, ScriptType> _byHash = new();
+	static readonly List<(int slot, Type listener)> _listeners = new();
 
 	/// <summary>False outside the engine.</summary>
 	public static bool IsAttached => Bridge.IsAttached;
@@ -167,6 +168,10 @@ public static unsafe class ScriptTypes {
 			desc.flags = (isAbstract ? TYPE_ABSTRACT : 0) | (normalizes ? TYPE_NORMALIZE : 0);
 			desc.hookMask = hookMask;
 			desc.tickMask = tickMask;
+			desc.listenerMask = 0;
+			foreach ((int slot, Type listener) in _listeners) {
+				desc.listenerMask |= listener.IsAssignableFrom(typeof(T)) ? 1u << slot : 0;
+			}
 			desc.fields = descStart;
 			desc.fieldCount = fields.Length;
 			desc.script = Put(script, ref at, textEnd);
@@ -216,6 +221,15 @@ public static unsafe class ScriptTypes {
 	internal static void Clear() {
 		_types.Clear();
 		_byHash.Clear();
+	}
+
+	internal static void AddListener(int slot, Type listener) {
+		_listeners.RemoveAll(held => held.slot == slot);
+		_listeners.Add((slot, listener));
+	}
+
+	internal static void ForgetListeners() {
+		_listeners.Clear();
 	}
 
 	[UnmanagedCallersOnly]

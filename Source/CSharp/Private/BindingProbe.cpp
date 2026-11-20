@@ -6,6 +6,7 @@
 
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Asset/TextAsset.h"
 #include "Shalltear/Core/Math/MathUtil.h"
 
 #include <iterator>
@@ -13,6 +14,13 @@
 #include <stdexcept>
 
 namespace Shalltear::CSharpImpl::BindingProbe {
+
+	class DerivedText final : public TextAsset {
+	public:
+		SLT_REFLECT_CLASS(DerivedText)
+		SLT_REFLECT_PARENT(TextAsset)
+		SLT_END_REFLECT()
+	};
 
 	namespace {
 
@@ -313,6 +321,16 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		return asset ? asset->GetInstanceId() : 0;
 	}
 
+	u64 MakeDerivedText() {
+		return New<DerivedText>(MemTag::Scripting)->GetInstanceId();
+	}
+
+	void FreeDerivedText(u64 id) {
+		if (Object* made = ObjectRegistry::Resolve(id); made && made->GetType() == DerivedText::GetReflectType()) {
+			Delete(static_cast<DerivedText*>(made));
+		}
+	}
+
 	void SetDriver(DriverFn driver) {
 		_driver = driver;
 	}
@@ -334,5 +352,7 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	}
 
 } // namespace Shalltear::CSharpImpl::BindingProbe
+
+SLT_REGISTER_TYPE(Shalltear::CSharpImpl::BindingProbe::DerivedText)
 
 #endif

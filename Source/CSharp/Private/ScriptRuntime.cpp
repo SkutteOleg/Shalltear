@@ -5,6 +5,7 @@
 #include "ManagedBehavior.h"
 #include "InputMaps.h"
 #include "ManagedTypes.h"
+#include "PackageBindings.h"
 #include "ScriptEvents.h"
 #include "ShadowStorage.h"
 
@@ -97,6 +98,10 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 			return object && object->GetType()->ownerModule == ManagedTypes::GetOwnerToken() ? static_cast<ManagedBehavior*>(object)->GetInstance() : 0;
 		}
 
+		int32_t FindBindings(SltString name, uint64_t layoutHash, int32_t size, const void** outTable) noexcept {
+			return Guard([&] { *outTable = PackageBindings::Find(View(name), layoutHash, size); });
+		}
+
 		void GetLastError(SltString* outText) noexcept {
 			*outText = SltString{_lastError.data(), static_cast<int32_t>(_lastError.size())};
 		}
@@ -141,6 +146,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		engine.listResize = &ListResize;
 		engine.listData = &ListData;
 		engine.scriptOf = &ScriptOf;
+		engine.findBindings = &FindBindings;
 #ifdef SLT_CSHARP_TEST_HOOKS
 		engine.throwForTest = &ThrowForTest;
 #endif

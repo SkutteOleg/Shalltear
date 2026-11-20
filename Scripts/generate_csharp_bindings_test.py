@@ -73,9 +73,9 @@ class BindingsTest(unittest.TestCase):
 		return str(caught.exception)
 
 	def test_generated_files_are_current(self):
-		areas = bindings.load_areas(bindings.BINDINGS)
-		digest = bindings.input_digest(bindings.BINDINGS, Path(bindings.__file__).resolve())
-		stale = bindings.find_stale(bindings.render(areas, digest))
+		sets = bindings.load_sets(bindings.find_sets(bindings.ROOT))
+		digest = bindings.sets_digest(sets, Path(bindings.__file__).resolve())
+		stale = bindings.find_stale(bindings.render_sets(sets, digest), sets)
 		self.assertEqual([], [path.name for path in stale])
 
 	def test_unknown_type_is_refused(self):
@@ -83,10 +83,10 @@ class BindingsTest(unittest.TestCase):
 		broken["params"][2]["type"] = "Vec5"
 		message = self.refusal([GETTER, broken])
 		self.assertTrue(message.startswith("Game.json: Describe: unknown type 'Vec5'. Use bool, i32,"), message)
-		self.assertTrue(message.endswith(", SceneObject, Component, string, span<T>"), message)
+		self.assertTrue(message.endswith(", SceneObject, Component, Material, Mesh, Texture, Sprite, string, span<T>"), message)
 
 	def test_unknown_return_is_refused(self):
-		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, Vec2, Vec3, Vec4, Quat, Color, Vec2I, SceneObject, string"
+		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, Vec2, Vec3, Vec4, Quat, Color, Vec2I, SceneObject, Material, Mesh, Texture, Sprite, string"
 		self.assertEqual("Game.json: GetSpeed: can't return 'span<f32>'. " + expected, self.refusal([dict(GETTER, returns="span<f32>")]))
 		self.assertEqual("Game.json: GetSpeed: can't return 'Component'. " + expected, self.refusal([dict(GETTER, returns="Component", leaf=False)]))
 
@@ -235,7 +235,7 @@ class BindingsTest(unittest.TestCase):
 		self.assertIn("\tpublic SceneObject? Attach(SceneObject target, int slot, SceneObject? parent, string member) {\n", managed)
 		self.assertIn("\t\t\tBridge.ThrowOffMainThread(member);\n", managed)
 		self.assertIn("\t\t\tthrow Bridge.Failure(status, member);\n", managed)
-		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component", self.refusal([LABEL], instance="Widget"))
+		self.assertEqual("Game.json: 'instance' is 'Widget'. Use SceneObject, Component, Material, Mesh, Texture, Sprite", self.refusal([LABEL], instance="Widget"))
 		self.assertEqual("Game.json: GetLabel: 'relay' needs a method",
 						 self.refusal([dict(LABEL, csharp={"member": "Label", "kind": "getter", "relay": True})], instance="SceneObject"))
 
@@ -287,7 +287,7 @@ class BindingsTest(unittest.TestCase):
 
 		member = bindings.parse_area(self.write([LABEL], types=[widget], instance="Widget", **{"class": "Shalltear.Widget"}))
 		self.assertIn("public unsafe partial class Widget {\n", bindings.render_managed_area(member))
-		self.assertEqual("Game.json: Widget: 'base' is 'Thing'. Use EngineObject, Asset, Component",
+		self.assertEqual("Game.json: Widget: 'base' is 'Thing'. Use EngineObject, Asset, Component or an abstract type",
 						 self.refusal([find], types=[dict(widget, base="Thing")]))
 		self.assertEqual("Game.json: Widget: type is declared twice", self.refusal([find], types=[widget, widget]))
 		self.assertEqual("Game.json: SceneObject: type is declared twice", self.refusal([find], types=[widget, dict(widget, name="SceneObject")]))
@@ -351,7 +351,7 @@ class BindingsTest(unittest.TestCase):
 
 		wide = dict(hit, fields=hit["fields"] + [{"name": "tag", "type": "u8", "doc": "Tag."}])
 		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([bindings.parse_area(self.write([fill], enums=[mode], structs=[wide]))]))
-		self.assertEqual("Game.json: Hit: field 'name' can't be string. Use a scalar, a value type or an enum",
+		self.assertEqual("Game.json: Hit: field 'name' can't be string. Use a scalar, a value type, an enum or a struct",
 						 self.refusal([fill], structs=[dict(hit, fields=[{"name": "name", "type": "string", "doc": "Name."}])]))
 		self.assertEqual("Game.json: Hit: 'fields' is empty", self.refusal([fill], structs=[dict(hit, fields=[])]))
 
@@ -397,12 +397,127 @@ class BindingsTest(unittest.TestCase):
 		script = self.directory / "script.py"
 		script.write_text("first", encoding="utf-8")
 		self.write([GETTER])
-		before = bindings.input_digest(self.directory, script)
+		package = self.directory / "package"
+		package.mkdir()
+		sets = [bindings.BindingSet("", self.directory, self.directory, self.directory), bindings.BindingSet("Game", package, package, package)]
+		before = bindings.sets_digest(sets, script)
 		self.write([GETTER, SETTER])
-		changed = bindings.input_digest(self.directory, script)
+		changed = bindings.sets_digest(sets, script)
+		(package / "Extra.json").write_text("{}", encoding="utf-8")
+		added = bindings.sets_digest(sets, script)
 		script.write_text("second", encoding="utf-8")
 		self.assertNotEqual(before, changed)
-		self.assertNotEqual(changed, bindings.input_digest(self.directory, script))
+		self.assertNotEqual(changed, added)
+		self.assertNotEqual(added, bindings.sets_digest(sets, script))
+
+	def package_sets(self, functions, **extra):
+		core = self.directory / "core"
+		game = self.directory / "Source" / "Game" / "Bindings"
+		core.mkdir()
+		game.mkdir(parents=True)
+		(core / "Base.json").write_text(json.dumps({"area": "Base", "include": "Base.h", "class": "Shalltear.Base", "doc": "Base.", "functions": [METHOD]}),
+										encoding="utf-8")
+		area = {"area": "Game", "include": "Game.h", "class": "Shalltear.Game", "doc": "Game rules.", "functions": functions}
+		area.update(extra)
+		(game / "Game.json").write_text(json.dumps(area), encoding="utf-8")
+		found = bindings.find_sets(self.directory)
+		self.assertEqual(["", "Game"], [binding_set.name for binding_set in found])
+		found[0] = bindings.BindingSet("", core, self.directory / "native", self.directory / "managed")
+		return found
+
+	def test_package_set_gets_its_table(self):
+		sets = self.package_sets([GETTER, SETTER])
+		core, game = sets
+		self.assertEqual(self.directory / "Source" / "GameCSharp" / "Private" / "Generated", game.native)
+		self.assertEqual(self.directory / "Source" / "CSharp" / "Managed" / "Shalltear.Game" / "Generated", game.managed)
+		files = bindings.render_sets(bindings.load_sets(sets), 7)
+
+		header = files[game.native / "GameBindings.generated.h"]
+		self.assertIn('#pragma once\n\n#include "ScriptBridge.h"\n\n#define SLT_GAME_LAYOUT_HASH 0x', header)
+		self.assertNotIn("SLT_BINDINGS_INPUT_DIGEST", header)
+		self.assertIn("typedef struct SltGameBindings {\n\tfloat (*gameGetSpeed)(void);\n\tvoid (*gameSetSpeed)(float speed);\n} SltGameBindings;\n", header)
+		self.assertIn("\tvoid FillGameTable(SltGameBindings& table);\n", header)
+		table = files[game.native / "GameBindings.generated.cpp"]
+		self.assertIn('#include "GameBindings.generated.h"\n', table)
+		self.assertNotIn("::Shalltear::Vec3", table)
+		self.assertIn("\tvoid FillGameTable(SltGameBindings& table) {\n\t\tFillGameBindings(table);\n\t}\n", table)
+		thunks = files[game.native / "Game.generated.cpp"]
+		self.assertIn('#include "BindingSupport.h"\n\n#include "GameBindings.generated.h"\n#include "Game.h"\n', thunks)
+		self.assertIn("\tvoid FillGameBindings(SltGameBindings& table) {\n", thunks)
+
+		holder = files[game.managed / "GameBindings.g.cs"]
+		self.assertIn("internal unsafe struct SltGameBindings {\n\tpublic delegate* unmanaged[SuppressGCTransition]<float> gameGetSpeed;\n", holder)
+		self.assertIn("public static unsafe partial class GameBindings {\n", holder)
+		self.assertIn("\tstatic partial void Attached();\n", holder)
+		self.assertIn('\tpublic static void Attach() {\n\t\ttable = *(SltGameBindings*)Bridge.FindBindings("Game", LAYOUT_HASH, sizeof(SltGameBindings));\n'
+					  "\t\tAttached();\n\t}\n", holder)
+		self.assertIn("\t\t\treturn GameBindings.table.gameGetSpeed();\n", files[game.managed / "Game.g.cs"])
+
+		self.assertIn("#define SLT_BRIDGE_LAYOUT_HASH 0x", files[core.native / "Bindings.generated.h"])
+		self.assertIn("#define SLT_BINDINGS_INPUT_DIGEST 0x0000000000000007ull\n", files[core.native / "Bindings.generated.h"])
+		self.assertNotIn("gameGetSpeed", files[core.native / "Bindings.generated.h"])
+		self.assertNotIn("gameGetSpeed", files[core.managed / "Bindings.g.cs"])
+		self.assertIn("Bindings.table.baseDescribe(", files[core.managed / "Base.g.cs"])
+
+		game.managed.mkdir(parents=True)
+		(game.managed / "Old.g.cs").write_text("stale", encoding="utf-8")
+		self.assertIn(game.managed / "Old.g.cs", bindings.find_stale(files, sets))
+
+	def test_area_name_is_taken_once_over_all_sets(self):
+		sets = self.package_sets([GETTER])
+		(sets[0].bindings / "Game.json").write_text(
+			json.dumps({"area": "Game", "include": "Game.h", "class": "Shalltear.Game", "doc": "Game rules.", "functions": [GETTER]}), encoding="utf-8")
+		with self.assertRaises(bindings.SchemaError) as caught:
+			bindings.load_sets(sets)
+		self.assertEqual("Game.json: area is declared twice (" + self.directory.name + " + Game)", str(caught.exception))
+
+	def test_abstract_type_takes_derived_wrappers(self):
+		shape = {"name": "Shape", "cpp": "::Game::Shape", "engine": "GameShape", "base": "Component", "doc": "Any shape.", "abstract": True}
+		box = {"name": "Box", "cpp": "::Game::Box", "engine": "GameBox", "base": "Shape", "doc": "Box shape."}
+		grow = {"id": "Grow", "cpp": "self->Grow()", "returns": "void", "params": [], "csharp": {"member": "Grow", "kind": "method"}, "doc": "Grow."}
+		first = self.write([grow], name="Box", types=[box], instance="Box", **{"class": "Shalltear.Box"})
+		second = self.write([grow], name="Shape", types=[shape], instance="Shape", **{"class": "Shalltear.Shape"})
+		derived, base = bindings.load_files([first, second])
+		self.assertIn("/// <summary>Any shape.</summary>\n[EngineType(ENGINE_TYPE)]\npublic abstract partial class Shape : Component {\n"
+					  "\tinternal const string ENGINE_TYPE = \"GameShape\";\n\n\tprivate protected Shape() {}\n}\n", bindings.render_managed_area(base))
+		self.assertIn("public sealed partial class Box : Shape {\n\tinternal new const string ENGINE_TYPE = \"GameBox\";\n\n\tinternal Box(ulong id) {\n",
+					  bindings.render_managed_area(derived))
+		self.assertIn("\t\t\t::Game::Shape* const self = ResolveObject<::Game::Shape>(selfId);\n", bindings.render_native_area(base))
+		wrappers = bindings.render_managed_wrappers([derived, base])
+		self.assertIn("\t\tWrap(Box.ENGINE_TYPE, static id => new Box(id));\n\t\tDeclare<Shape>(Shape.ENGINE_TYPE);\n", wrappers)
+		self.assertEqual("Game.json: Lid: 'base' is 'Box'. Use EngineObject, Asset, Component or an abstract type",
+						 self.refusal([GETTER], types=[box, shape, dict(box, name="Lid", base="Box")]))
+
+	def test_struct_field_can_be_hidden_or_nested(self):
+		point = {"name": "Point", "doc": "1 point.", "fields": [{"name": "depth", "type": "f32", "doc": "How deep."}]}
+		hit = {"name": "Hit", "doc": "1 hit.", "fields": [
+			{"name": "ownerId", "type": "u64", "access": "internal"}, {"name": "first", "type": "Point", "access": "internal"},
+			{"name": "count", "type": "i32", "doc": "Points."}]}
+		fill = {"id": "Fill", "cpp": "::Game::Fill(hits)", "returns": "i32", "params": [{"name": "hits", "type": "span<Hit>", "out": True}],
+				"csharp": {"member": "Fill", "kind": "method"}, "doc": "Hits found."}
+		area = bindings.parse_area(self.write([fill], structs=[point, hit]))
+		header = bindings.render_native_header([area], 0)
+		self.assertIn("typedef struct SltHit {\n\tuint64_t ownerId;\n\tSltPoint first;\n\tint32_t count;\n} SltHit;\n", header)
+		self.assertIn("\tstatic_assert(sizeof(SltHit) == 16 && alignof(SltHit) == 8);\n\tstatic_assert(offsetof(SltHit, ownerId) == 0);\n"
+					  "\tstatic_assert(offsetof(SltHit, first) == 8);\n\tstatic_assert(offsetof(SltHit, count) == 12);\n", bindings.render_native_table([area]))
+		self.assertIn("public partial struct Hit {\n\tinternal ulong _ownerId;\n\tinternal Point _first;\n\t/// <summary>Points.</summary>\n"
+					  "\tpublic int count;\n}\n", bindings.render_managed_area(area))
+		self.assertEqual("Game.json: Hit: field 'ownerId' has access 'public'. Use internal (or leave it out)",
+						 self.refusal([fill], structs=[dict(hit, fields=[{"name": "ownerId", "type": "u64", "access": "public"}])]))
+		self.assertEqual("Game.json: Hit: 'doc' is missing", self.refusal([fill], structs=[dict(hit, fields=[{"name": "ownerId", "type": "u64"}])]))
+		self.assertEqual("Game.json: Hit: field 'first' can't be Point. Use a scalar, a value type, an enum or a struct",
+						 self.refusal([fill], structs=[hit, point]))
+
+	def test_hand_written_asset_wrapper_is_returned(self):
+		skin = {"id": "GetSkin", "cpp": "::Game::GetSkin()", "returns": "Mesh", "params": [], "csharp": {"member": "Skin", "kind": "getter"}, "doc": "Skin."}
+		dress = {"id": "SetSkin", "cpp": "::Game::SetSkin(skin)", "returns": "void", "params": [{"name": "skin", "type": "Mesh", "optional": True}],
+				 "csharp": {"member": "Skin", "kind": "setter"}}
+		area = bindings.parse_area(self.write([skin, dress]))
+		self.assertIn("\t\t\t::Shalltear::MeshAsset* const skin = ResolveObject<::Shalltear::MeshAsset>(skinId);\n", bindings.render_native_area(area))
+		managed = bindings.render_managed_area(area)
+		self.assertIn("\tpublic static Mesh? Skin {\n", managed)
+		self.assertIn("\t\t\treturn ObjectCache.Find<Mesh>(result);\n", managed)
+		self.assertIn("can't return 'Component'", self.refusal([dict(skin, returns="Component")]))
 
 
 if __name__ == "__main__":

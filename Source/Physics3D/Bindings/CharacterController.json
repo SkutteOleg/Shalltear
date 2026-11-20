@@ -1,0 +1,203 @@
+{
+	"area": "CharacterController",
+	"include": "Shalltear/Physics3D/CharacterController.h",
+	"class": "Shalltear.CharacterController",
+	"instance": "CharacterController",
+	"types": [
+		{
+			"name": "CharacterController",
+			"cpp": "::Shalltear::CharacterController",
+			"engine": "CharacterController",
+			"base": "Collider",
+			"doc": "Capsule moved by a script, sliding along obstacles."
+		}
+	],
+	"enums": [
+		{
+			"name": "CollisionFlags",
+			"cpp": "::Shalltear::CollisionFlags",
+			"underlying": "u8",
+			"doc": "Colliding sides of a character controller.",
+			"flags": true,
+			"values": [
+				{ "name": "None", "value": 0, "doc": "Nothing hit." },
+				{ "name": "Sides", "value": 1, "doc": "Hit at the sides." },
+				{ "name": "Above", "value": 2, "doc": "Hit above." },
+				{ "name": "Below", "value": 4, "doc": "Hit below." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "Move",
+			"cpp": "self->Move(motion)",
+			"returns": "CollisionFlags",
+			"params": [{ "name": "motion", "type": "Vec3" }],
+			"csharp": { "member": "Move", "kind": "method" },
+			"doc": "Move by motion (a distance, no gravity). Returns what was hit."
+		},
+		{
+			"id": "SimpleMove",
+			"cpp": "self->SimpleMove(speed)",
+			"returns": "bool",
+			"params": [{ "name": "speed", "type": "Vec3" }],
+			"csharp": { "member": "SimpleMove", "kind": "method" },
+			"doc": "Move at speed in m/s with gravity (y ignored). Returns true when grounded."
+		},
+		{
+			"id": "GetIsGrounded",
+			"cpp": "self->IsGrounded()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsGrounded", "kind": "getter" },
+			"doc": "True when the last move ended on ground."
+		},
+		{
+			"id": "GetCollisionFlags",
+			"cpp": "self->GetCollisionFlags()",
+			"returns": "CollisionFlags",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CollisionFlags", "kind": "getter" },
+			"doc": "What the last move hit."
+		},
+		{
+			"id": "GetVelocity",
+			"cpp": "self->GetVelocity()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Velocity", "kind": "getter" },
+			"doc": "Velocity of the last move in m/s (relative to a carrying body)."
+		},
+		{
+			"id": "GetSlopeLimit",
+			"cpp": "self->GetSlopeLimit()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SlopeLimit", "kind": "getter" },
+			"doc": "Steepest climbable slope in degrees."
+		},
+		{
+			"id": "SetSlopeLimit",
+			"cpp": "self->SetSlopeLimit(slopeLimit)",
+			"returns": "void",
+			"params": [{ "name": "slopeLimit", "type": "f32" }],
+			"csharp": { "member": "SlopeLimit", "kind": "setter" }
+		},
+		{
+			"id": "GetStepOffset",
+			"cpp": "self->GetStepOffset()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "StepOffset", "kind": "getter" },
+			"doc": "Tallest climbable step."
+		},
+		{
+			"id": "SetStepOffset",
+			"cpp": "self->SetStepOffset(stepOffset)",
+			"returns": "void",
+			"params": [{ "name": "stepOffset", "type": "f32" }],
+			"csharp": { "member": "StepOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetSkinWidth",
+			"cpp": "self->GetSkinWidth()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SkinWidth", "kind": "getter" },
+			"doc": "Gap kept to other colliders."
+		},
+		{
+			"id": "SetSkinWidth",
+			"cpp": "self->SetSkinWidth(skinWidth)",
+			"returns": "void",
+			"params": [{ "name": "skinWidth", "type": "f32" }],
+			"csharp": { "member": "SkinWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetMinMoveDistance",
+			"cpp": "self->GetMinMoveDistance()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MinMoveDistance", "kind": "getter" },
+			"doc": "Moves shorter than this are skipped."
+		},
+		{
+			"id": "SetMinMoveDistance",
+			"cpp": "self->SetMinMoveDistance(minMoveDistance)",
+			"returns": "void",
+			"params": [{ "name": "minMoveDistance", "type": "f32" }],
+			"csharp": { "member": "MinMoveDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetCenter",
+			"cpp": "self->GetCenter()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Center", "kind": "getter" },
+			"doc": "Capsule's center from the object's position (never rotated)."
+		},
+		{
+			"id": "SetCenter",
+			"cpp": "self->SetCenter(center)",
+			"returns": "void",
+			"params": [{ "name": "center", "type": "Vec3" }],
+			"csharp": { "member": "Center", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->GetRadius()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Radius", "kind": "getter" },
+			"doc": "Capsule's radius."
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->SetRadius(radius)",
+			"returns": "void",
+			"params": [{ "name": "radius", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetHeight",
+			"cpp": "self->GetHeight()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Height", "kind": "getter" },
+			"doc": "Capsule's total height."
+		},
+		{
+			"id": "SetHeight",
+			"cpp": "self->SetHeight(height)",
+			"returns": "void",
+			"params": [{ "name": "height", "type": "f32" }],
+			"csharp": { "member": "Height", "kind": "setter" }
+		},
+		{
+			"id": "GetDetectCollisions",
+			"cpp": "self->GetDetectCollisions()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DetectCollisions", "kind": "getter" },
+			"doc": "Set false to take the capsule out of the simulation."
+		},
+		{
+			"id": "SetDetectCollisions",
+			"cpp": "self->SetDetectCollisions(detectCollisions)",
+			"returns": "void",
+			"params": [{ "name": "detectCollisions", "type": "bool" }],
+			"csharp": { "member": "DetectCollisions", "kind": "setter" }
+		}
+	]
+}

@@ -8,10 +8,8 @@ internal static class ScriptIndex<T> {
 	internal static int value;
 }
 
-internal static class Wrapper<T>
-	where T : EngineObject {
-	internal static Func<ulong, T>? create;
-	internal static ulong typeHash;
+internal static class EngineTypeOf<T> {
+	internal static ulong hash;
 }
 
 internal static partial class ObjectCache {
@@ -19,6 +17,7 @@ internal static partial class ObjectCache {
 	internal const int STACK_IDS = 64;
 
 	static readonly Dictionary<ulong, EngineObject> _wrappers = new();
+	static readonly Dictionary<ulong, Func<ulong, EngineObject>> _factories = new();
 	static readonly List<ulong> _ids = new();
 	static int _cursor;
 
@@ -39,26 +38,38 @@ internal static partial class ObjectCache {
 
 	internal static T? Find<T>(ulong id)
 		where T : EngineObject {
+		return Find(id) as T;
+	}
+
+	internal static EngineObject? Find(ulong id) {
 		if (id == 0) {
 			return null;
 		}
 		if (_wrappers.TryGetValue(id, out EngineObject? wrapper)) {
-			return wrapper as T;
+			return wrapper;
 		}
-		Func<ulong, T>? create = Wrapper<T>.create;
-		if (create == null || !ObjectBindings.IsA(id, Wrapper<T>.typeHash)) {
+		Func<ulong, EngineObject>? create = null;
+		for (ulong type = ObjectBindings.GetTypeHash(id); type != 0 && !_factories.TryGetValue(type, out create);) {
+			type = ObjectBindings.GetParentTypeHash(type);
+		}
+		if (create == null) {
 			return null;
 		}
-		T made = create(id);
-		_wrappers.Add(id, made);
+		wrapper = create(id);
+		_wrappers.Add(id, wrapper);
 		_ids.Add(id);
-		return made;
+		return wrapper;
 	}
 
-	static void Wrap<T>(string engineType, Func<ulong, T> create)
+	internal static void Wrap<T>(string engineType, Func<ulong, T> create)
 		where T : EngineObject {
-		Wrapper<T>.create = create;
-		Wrapper<T>.typeHash = Bridge.HashOf(engineType);
+		EngineTypeOf<T>.hash = Bridge.HashOf(engineType);
+		_factories[EngineTypeOf<T>.hash] = create;
+	}
+
+	internal static void Declare<T>(string engineType)
+		where T : EngineObject {
+		EngineTypeOf<T>.hash = Bridge.HashOf(engineType);
 	}
 
 	static ObjectCache() {

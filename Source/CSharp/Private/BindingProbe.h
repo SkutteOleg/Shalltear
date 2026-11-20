@@ -45,6 +45,8 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	i32 GetAliveChecks();
 	void RunFrames(i32 count);
 	u64 FindAsset(std::string_view path);
+	u64 MakeDerivedText();
+	void FreeDerivedText(u64 id);
 
 	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);
 	void SetDriver(DriverFn driver);

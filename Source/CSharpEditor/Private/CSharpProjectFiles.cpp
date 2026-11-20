@@ -1,6 +1,7 @@
 #include "CSharpProjectFiles.h"
 
 #include "CSharpSettings.h"
+#include "PackageBindings.h"
 
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Log.h"
@@ -10,6 +11,7 @@
 #include "Shalltear/Editor/ProjectOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
+#include <algorithm>
 #include <cctype>
 #include <filesystem>
 #include <sstream>
@@ -88,6 +90,12 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 			tokens.push_back({"MANAGED_DIRECTORY", path(options.managedDirectory)});
 			tokens.push_back({"DOTNET_ROOT", path(options.dotnetRoot)});
 			tokens.push_back({"PACKAGES_ROOT", path(options.packagesRoot)});
+			str packages;
+			for (const str& assembly : options.packageAssemblies) {
+				packages += packages.empty() ? "" : ";";
+				packages += assembly;
+			}
+			tokens.push_back({"PACKAGE_ASSEMBLIES", path(packages)});
 			tokens.push_back({"DOTNET_SDK_VERSION", options.pin.sdkVersion});
 			tokens.push_back({"DOTNET_RUNTIME_VERSION", options.pin.runtimeVersion});
 			tokens.push_back({"TARGET_FRAMEWORK", options.pin.targetFramework});
@@ -164,6 +172,10 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		options.packagesRoot = fs::is_directory(folder, ec) ? folder.generic_string()
 															: DotNetToolchain::GetPackagesRoot(DotNetToolchain::GetCacheRoot(), DotNetToolchain::GetPin());
 		options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
+		for (u32 index = 0; index < CSharpImpl::PackageBindings::GetCount(); ++index) {
+			options.packageAssemblies.push_back("Shalltear." + str(CSharpImpl::PackageBindings::GetName(index)));
+		}
+		std::sort(options.packageAssemblies.begin(), options.packageAssemblies.end());
 		options.pin = DotNetToolchain::GetPin();
 		options.allowUnsafeCode = CSharpSettings::GetProject().allowUnsafeCode;
 		options.invariantGlobalization = CSharpSettings::GetProject().invariantGlobalization;

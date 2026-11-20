@@ -412,6 +412,47 @@ TEST_F(CSharpProjectFilesTest, BuildWithoutARootWritesUnderIDE) {
 	EXPECT_EQ(Joined(lines).find("warning"), str::npos) << Joined(lines);
 }
 
+TEST_F(CSharpProjectFilesTest, PackageAssembliesAreNamedInPaths) {
+	Write();
+	EXPECT_NE(Read(PATHS_FILE).find("<ShalltearPackageAssemblies></ShalltearPackageAssemblies>"), str::npos);
+	_options.packageAssemblies.push_back("Shalltear.Audio");
+	_options.packageAssemblies.push_back("Shalltear.Physics3D");
+	EXPECT_EQ(Write(), (std::vector<str>{PATHS_FILE}));
+	EXPECT_NE(Read(PATHS_FILE).find("<ShalltearPackageAssemblies>Shalltear.Audio;Shalltear.Physics3D</ShalltearPackageAssemblies>"), str::npos);
+}
+
+TEST_F(CSharpProjectFilesTest, BuildSeesOnlyEnabledPackages) {
+	if (!UseRealToolchain()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	ASSERT_EQ(_options.packageAssemblies.size(), 1u);
+	EXPECT_EQ(_options.packageAssemblies[0], "Shalltear.Physics3D");
+	Put("Assets/Scripts/Bumper.cs", "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Bumper : Behavior, IPhysicsListener {\n"
+									"\tpublic Rigidbody? body;\n\n\tpublic void OnCollisionEnter(in Collision collision) {\n"
+									"\t\tbody = collision.Rigidbody;\n\t}\n}\n");
+	Write();
+	fs::create_directories(_root / "feed");
+	ChildEnvironment::Set("NUGET_PACKAGES", (_root / "global-packages").generic_string(), &_environmentOwner);
+	ChildEnvironment::Set("DOTNET_CLI_TELEMETRY_OPTOUT", "1", &_environmentOwner);
+	ChildEnvironment::Set("DOTNET_NOLOGO", "1", &_environmentOwner);
+	const str muxer = (fs::path(_options.dotnetRoot) / _editor->muxerName).generic_string();
+	const str build = QuoteCommandArgument(muxer) + " build " + SOLUTION_FILE + " --disable-build-servers -nologo -v q -p:RestoreSources=" +
+					  QuoteCommandArgument((_root / "feed").generic_string());
+
+	i32 exitCode = -1;
+	std::vector<str> lines = RunIn(_project, build, exitCode);
+	ASSERT_EQ(exitCode, 0) << Joined(lines);
+	EXPECT_NE(Read("Library/CSharp/IDE/bin/Space_Game.Scripts.dll").find("Physics3DBindings"), str::npos);
+	EXPECT_FALSE(fs::exists(_project / "Library/CSharp/IDE/bin/Shalltear.Physics3D.dll"));
+
+	_options.packageAssemblies.clear();
+	Write();
+	lines = RunIn(_project, build, exitCode);
+	EXPECT_NE(exitCode, 0);
+	EXPECT_NE(Joined(lines).find("error CS0246"), str::npos) << Joined(lines);
+	EXPECT_NE(Joined(lines).find("'Rigidbody'"), str::npos) << Joined(lines);
+}
+
 TEST_F(CSharpProjectFilesTest, ProjectWithoutModuleGetsAttachConfiguration) {
 	_options.editorExecutable = "C:/Engine/bin/Shalltear.exe";
 	const std::vector<str> written = Write();

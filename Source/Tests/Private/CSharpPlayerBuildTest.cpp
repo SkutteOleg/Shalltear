@@ -10,6 +10,7 @@
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/BuildInfo.h"
 #include "Shalltear/Core/Config.h"
+#include "Shalltear/Core/Serialization/HandleResolver.h"
 
 #include "Shalltear/Editor/BuildPipeline.h"
 #include "Shalltear/Editor/BuildProfile.h"
@@ -60,6 +61,16 @@ namespace {
 
 	constexpr const char* NOTICE = "namespace Scripted;\n\npublic static class Notice {\n#if SHALLTEAR_PLAYER\n#warning player builds only\n#endif\n}\n";
 
+	constexpr const char* BUMPER =
+		"using System.Globalization;\nusing Shalltear;\n\nnamespace Scripted;\n\npublic sealed class Bumper : Behavior, IPhysicsListener {\n"
+		"\tpublic Rigidbody? body;\n\tint _frames;\n\n\tprotected override void OnEnable() {\n"
+		"\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE body mass=\" + (body ? body!.Mass : -1f).ToString(CultureInfo.InvariantCulture) +\n"
+		"\t\t\t\t\t\t\t\t\" same=\" + ReferenceEquals(body, Owner.GetComponent<Rigidbody>()));\n\t}\n\n"
+		"\tprotected override void OnUpdate() {\n\t\tif (++_frames == 2) {\n"
+		"\t\t\tbool hit = Physics.Raycast(new Ray(new Vec3(0f, 5f, 0f), new Vec3(0f, -1f, 0f)), out RaycastHit found);\n"
+		"\t\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE ray hit=\" + hit + \" object=\" + (hit ? found.Object!.Name : \"none\"));\n"
+		"\t\t}\n\t}\n\n\tpublic void OnCollisionEnter(in Collision collision) {\n\t\t_frames += 100;\n\t}\n}\n";
+
 	constexpr const char* POINTER = "namespace Scripted;\n\npublic static class Pointer {\n\tpublic static unsafe int Read(int* at) {\n\t\treturn *at;\n\t}\n}\n";
 
 	str Hex(std::string_view name) {
@@ -78,9 +89,15 @@ namespace {
 		const str talker = std::format("{{\"id\": 4, \"type\": \"{}\", \"fields\": {{\"_type\": \"Scripted.Talker\", \"_enabledSelf\": true, \"speed\": 4.25, "
 									   "\"gear\": \"High\", \"label\": \"from scene\", \"tuning\": {{\"grip\": 0.5, \"laps\": 3}}, \"steps\": [1, 2, 3]}}}}",
 									   Hex("Scripted.Talker"));
-		return std::format("{{\n\t\"_type\": \"Scene\",\n\t\"formatVersion\": 1,\n\t\"engineHash\": \"{:016x}\",\n\t\"name\": \"Main\",\n\t\"nextLocalId\": 5,\n"
+		const str body = std::format("{{\"id\": 5, \"type\": \"{}\", \"fields\": {{\"_type\": \"Rigidbody\", \"_enabledSelf\": true}}}}", Hex("Rigidbody"));
+		const str bumper = std::format("{{\"id\": 6, \"type\": \"{}\", \"fields\": {{\"_type\": \"Scripted.Bumper\", \"_enabledSelf\": true, "
+									   "\"body\": {{\"_handle\": true, \"pointeeType\": \"Rigidbody\", \"assetId\": \"{}\"}}}}}}",
+									   Hex("Scripted.Bumper"), Guid{5, SLT_LOCAL_SENTINEL}.ToString());
+		const str shape = std::format("{{\"id\": 7, \"type\": \"{}\", \"fields\": {{\"_type\": \"SphereCollider\", \"_enabledSelf\": true}}}}", Hex("SphereCollider"));
+		return std::format("{{\n\t\"_type\": \"Scene\",\n\t\"formatVersion\": 1,\n\t\"engineHash\": \"{:016x}\",\n\t\"name\": \"Main\",\n\t\"nextLocalId\": 8,\n"
 						   "\t\"objects\": [\n{},\n{}\n\t]\n}}\n",
-						   BuildInfo::GetEngineHash(), SceneObjectRow(1, "Camera", camera), SceneObjectRow(3, "Guide", talker));
+						   BuildInfo::GetEngineHash(), SceneObjectRow(1, "Camera", camera),
+						   SceneObjectRow(3, "Guide", talker + ", " + body + ", " + bumper + ", " + shape));
 	}
 
 	str ReadBytes(const fs::path& file) {
@@ -224,12 +241,13 @@ namespace {
 			projectFile.SetString("Project", "name", "ScriptedGame");
 			ASSERT_TRUE(projectFile.Save(Path(suite.project.generic_string() + "/Project.ini")));
 			Config settings;
-			settings.SetString("Packages", "enabled", "dev.shalltear.csharp");
+			settings.SetString("Packages", "enabled", "dev.shalltear.csharp;dev.shalltear.physics3d");
 			settings.SetBool("C#", "allowUnsafeCode", true);
 			ASSERT_TRUE(settings.Save(Path(suite.project.generic_string() + "/ProjectSettings.ini")));
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Talker.cs", std::ios::binary) << TALKER;
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Notice.cs", std::ios::binary) << NOTICE;
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Pointer.cs", std::ios::binary) << POINTER;
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Bumper.cs", std::ios::binary) << BUMPER;
 			std::ofstream(suite.project / "Assets" / "Scenes" / "Main.scene", std::ios::binary) << SceneText();
 			for (const char* target : {"Windows", "WindowsServer"}) {
 				BuildProfile profile;
@@ -336,10 +354,21 @@ TEST_F(CSharpPlayerBuildTest, CSharpTypesRegisteredBeforeBootScene) {
 	ASSERT_NE(started, str::npos) << log;
 	ASSERT_NE(scenes, str::npos) << log;
 	ASSERT_NE(enabled, str::npos) << log;
-	EXPECT_NE(log.find(" ms (1 script type(s))", started), str::npos) << log;
+	EXPECT_NE(log.find(" ms (2 script type(s))", started), str::npos) << log;
 	EXPECT_LT(started, scenes);
 	EXPECT_LT(scenes, enabled);
 	EXPECT_EQ(log.find("unloaded type"), str::npos) << log;
+}
+
+TEST_F(CSharpPlayerBuildTest, CSharpPlayerResolvesPackageTypes) {
+	ASSERT_EQ(_suite->playerExit, 0) << _suite->playerLog;
+	EXPECT_NE(_suite->playerLog.find(str(PROBE_MARKER) + " body mass=1 same=True"), str::npos) << _suite->playerLog;
+#ifndef SHALLTEAR_PHYSICS_BACKEND_STUB
+	EXPECT_NE(_suite->playerLog.find(str(PROBE_MARKER) + " ray hit=True object=Guide"), str::npos) << _suite->playerLog;
+#endif
+	const size_t physics = _suite->playerLog.find("Physics 3D up");
+	ASSERT_NE(physics, str::npos) << _suite->playerLog;
+	EXPECT_LT(physics, _suite->playerLog.find(str(LIBRARY) + " started in "));
 }
 
 TEST_F(CSharpPlayerBuildTest, CSharpPlayerShipsNoIL) {

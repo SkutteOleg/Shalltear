@@ -350,6 +350,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		type->parent = managedParent;
 		type->managedTypeId = desc.managedTypeId;
 		type->hookMask = desc.hookMask;
+		type->listenerMask = desc.listenerMask;
 		type->slotEnd = slot;
 		type->hasFields = desc.fieldCount > 0 || (managedParent && managedParent->hasFields);
 		type->normalizes = (desc.flags & SLT_TYPE_NORMALIZE) != 0 || (managedParent && managedParent->normalizes);

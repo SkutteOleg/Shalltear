@@ -1,0 +1,117 @@
+{
+	"area": "Collider",
+	"include": "Shalltear/Physics3D/Colliders.h",
+	"class": "Shalltear.Collider",
+	"instance": "Collider",
+	"types": [
+		{
+			"name": "Collider",
+			"cpp": "::Shalltear::Collider",
+			"engine": "Collider",
+			"base": "Component",
+			"doc": "Shape for physics collisions.",
+			"abstract": true
+		}
+	],
+	"enums": [
+		{
+			"name": "PhysicsCategoryMatch",
+			"cpp": "::Shalltear::PhysicsCategoryMatch",
+			"underlying": "u8",
+			"doc": "How a list of categories is read.",
+			"values": [
+				{ "name": "AllExcept", "value": 0, "doc": "Everything but the listed categories." },
+				{ "name": "Only", "value": 1, "doc": "Only the listed categories." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetIsTrigger",
+			"cpp": "self->IsTrigger()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsTrigger", "kind": "getter" },
+			"doc": "Reports overlaps (no collisions)."
+		},
+		{
+			"id": "SetIsTrigger",
+			"cpp": "self->SetTrigger(trigger)",
+			"returns": "void",
+			"params": [{ "name": "trigger", "type": "bool" }],
+			"csharp": { "member": "IsTrigger", "kind": "setter" }
+		},
+		{
+			"id": "GetMaterial",
+			"cpp": "self->GetMaterial()",
+			"returns": "PhysicsMaterial",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Material", "kind": "getter" },
+			"doc": "Friction + bounce (null = defaults)."
+		},
+		{
+			"id": "SetMaterial",
+			"cpp": "self->SetMaterial(::Shalltear::Handle<::Shalltear::PhysicsMaterial>(material))",
+			"returns": "void",
+			"params": [{ "name": "material", "type": "PhysicsMaterial", "optional": true }],
+			"csharp": { "member": "Material", "kind": "setter" }
+		},
+		{
+			"id": "GetCategories",
+			"cpp": "std::string_view(self->GetCategories())",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Categories", "kind": "getter" },
+			"doc": "Category names, comma separated."
+		},
+		{
+			"id": "SetCategories",
+			"cpp": "self->SetCategories(::Shalltear::str(categories))",
+			"returns": "void",
+			"params": [{ "name": "categories", "type": "string" }],
+			"csharp": { "member": "Categories", "kind": "setter" }
+		},
+		{
+			"id": "GetCollidesWithMode",
+			"cpp": "self->GetCollidesWithMode()",
+			"returns": "PhysicsCategoryMatch",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CollidesWithMode", "kind": "getter" },
+			"doc": "Whether CollidesWith is a skip list or a hit list."
+		},
+		{
+			"id": "SetCollidesWithMode",
+			"cpp": "self->SetCollidesWithMode(collidesWithMode)",
+			"returns": "void",
+			"params": [{ "name": "collidesWithMode", "type": "PhysicsCategoryMatch" }],
+			"csharp": { "member": "CollidesWithMode", "kind": "setter" }
+		},
+		{
+			"id": "GetCollidesWith",
+			"cpp": "std::string_view(self->GetCollidesWith())",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CollidesWith", "kind": "getter" },
+			"doc": "Category names for CollidesWithMode, comma separated."
+		},
+		{
+			"id": "SetCollidesWith",
+			"cpp": "self->SetCollidesWith(::Shalltear::str(collidesWith))",
+			"returns": "void",
+			"params": [{ "name": "collidesWith", "type": "string" }],
+			"csharp": { "member": "CollidesWith", "kind": "setter" }
+		},
+		{
+			"id": "GetIsInSimulation",
+			"cpp": "self->IsInSimulation()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsInSimulation", "kind": "getter" },
+			"doc": "True while the simulation has this shape."
+		}
+	]
+}

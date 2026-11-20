@@ -42,11 +42,15 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged[SuppressGCTransition]<int> logGetLevel;
 	public delegate* unmanaged<int, SltString, SltString, SltString, int, int> logWrite;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
-	public delegate* unmanaged<ulong, ulong, byte*, int> objectIsA;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong> objectGetTypeHash;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong> objectGetParentTypeHash;
 	public delegate* unmanaged<ulong*, int, uint*, int, int> objectAreAlive;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int> objectFindScript;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, int, long*, int, int*, int> objectFindScripts;
 	public delegate* unmanaged<ulong, int, long*, int> objectAddScript;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong, ulong*, int> objectFindComponent;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong, ulong*, int, int*, int> objectFindComponents;
+	public delegate* unmanaged<ulong, ulong, ulong*, int> objectAddComponent;
 	public delegate* unmanaged<ulong, int> objectDestroy;
 	public delegate* unmanaged<ulong, int> objectDestroyComponent;
 	public delegate* unmanaged[SuppressGCTransition]<int> probeGetMathCaseCount;
@@ -76,6 +80,8 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<int> probeEndFrame;
 	public delegate* unmanaged<int, int, int, int*, int> probeDrive;
 	public delegate* unmanaged<SltString, ulong*, int> probeFindAsset;
+	public delegate* unmanaged<ulong*, int> probeMakeDerivedText;
+	public delegate* unmanaged<ulong, int> probeFreeDerivedText;
 	public delegate* unmanaged<int, int> probeRunFrames;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
 	public delegate* unmanaged<ulong, SltString, int> sceneSetName;
@@ -133,7 +139,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xdd0bde211f970a6f;
+	internal const ulong LAYOUT_HASH = 0x4da5e291eb5c2cf6;
 
 	internal static SltBindings table;
 

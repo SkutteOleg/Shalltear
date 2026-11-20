@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ScriptAPI.h"
 #include "ScriptBridge.h"
 #include "ShadowStorage.h"
 
@@ -23,6 +24,7 @@ namespace Shalltear::CSharpImpl {
 		std::vector<ShadowInit> inits;
 		i32 managedTypeId = 0;
 		u32 hookMask = 0;
+		u32 listenerMask = 0;
 		u32 liveCount = 0;
 		u32 slotEnd = 0;
 		bool hasFields = false;
@@ -55,8 +57,8 @@ namespace Shalltear::CSharpImpl {
 
 		void LinkDirty(ManagedBehavior& proxy);
 		void UnlinkDirty(ManagedBehavior& proxy);
-		void PullDirty();
-		extern ManagedBehavior* dirtyHead;
+		SHALLTEAR_CSHARP_API void PullDirty();
+		SHALLTEAR_CSHARP_API extern ManagedBehavior* dirtyHead;
 		inline void FlushDirty() {
 			if (dirtyHead) {
 				PullDirty();

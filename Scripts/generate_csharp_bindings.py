@@ -1,4 +1,4 @@
-"""Writes the C# bridge's binding tables from Source/CSharp/Bindings/*.json
+"""Writes the C# bridge's binding tables from Source/CSharp/Bindings/*.json + each package's Source/<Name>/Bindings/*.json
 """
 import argparse
 import json
@@ -39,8 +39,13 @@ VALUE_HEADERS = ("Shalltear/Core/Math/Color.h", "Shalltear/Core/Math/Quat.h", "S
 BUILT_IN_OBJECTS = {
 	"SceneObject": "::Shalltear::SceneObject",
 	"Component": "::Shalltear::Component",
+	"Material": "::Shalltear::MaterialAsset",
+	"Mesh": "::Shalltear::MeshAsset",
+	"Texture": "::Shalltear::TextureAsset",
+	"Sprite": "::Shalltear::SpriteAsset",
 }
 WRAPPERS = {"SceneObject": "ObjectCache.SceneObject"}
+RETURNED = set(BUILT_IN_OBJECTS) - {"Component"}
 BASES = ("EngineObject", "Asset", "Component")
 # bump when a type's C signature changes
 LOWERING = 1
@@ -51,10 +56,10 @@ AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", 
 FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable"}
 PARAM_KEYS = {"name", "type", "out", "optional"}
 CSHARP_KEYS = {"member", "kind", "conditional", "relay", "access"}
-TYPE_KEYS = {"name", "cpp", "engine", "base", "doc"}
+TYPE_KEYS = {"name", "cpp", "engine", "base", "doc", "abstract"}
 ENUM_KEYS = {"name", "cpp", "underlying", "values", "doc", "flags"}
 STRUCT_KEYS = {"name", "doc", "fields"}
-FIELD_KEYS = {"name", "type", "doc"}
+FIELD_KEYS = {"name", "type", "doc", "access"}
 ENUM_VALUE_KEYS = {"name", "value", "doc"}
 ENUM_UNDERLYING = ("u8", "u16", "i32", "u32")
 CSHARP_KEYWORDS = frozenset(
@@ -88,10 +93,35 @@ class Area:
 	pass
 
 
+class BindingSet:
+	def __init__(self, name, bindings, native, managed):
+		self.name = name
+		self.bindings = bindings
+		self.native = native
+		self.managed = managed
+		self.table = f"Slt{name}Bindings"
+		self.holder = f"{name}Bindings"
+		self.header = f"{name}Bindings.generated.h"
+		self.hash_macro = f"SLT_{name.upper()}_LAYOUT_HASH" if name else "SLT_BRIDGE_LAYOUT_HASH"
+		self.fill = f"Fill{name}Table" if name else "FillBindings"
+		self.areas = []
+
+
+def find_sets(root):
+	sets = [BindingSet("", BINDINGS, NATIVE, MANAGED)]
+	for folder in sorted((root / "Source").glob("*/Bindings"), key=lambda folder: folder.parent.name):
+		name = folder.parent.name
+		if name != "CSharp":
+			sets.append(BindingSet(name, folder, root / "Source" / f"{name}CSharp" / "Private" / "Generated",
+								   root / "Source" / "CSharp" / "Managed" / f"Shalltear.{name}" / "Generated"))
+	return sets
+
+
 class Catalog:
 	def __init__(self):
 		self.objects = dict(BUILT_IN_OBJECTS)
-		self.wrappers = set(WRAPPERS)
+		self.abstract = {"Component"}
+		self.wrappers = set(RETURNED)
 		self.enums = {}
 		self.structs = {}
 
@@ -231,18 +261,21 @@ def parse_types(raw, path, catalog):
 		where = entry.get("name", "type") if isinstance(entry, dict) else "type"
 		if not isinstance(entry, dict):
 			raise SchemaError(f"{path.name}: {where}: type must be an object")
-		check_keys(entry, TYPE_KEYS, TYPE_KEYS, path, where)
+		check_keys(entry, TYPE_KEYS, TYPE_KEYS - {"abstract"}, path, where)
 		if not isinstance(entry["name"], str) or not IDENTIFIER.match(entry["name"]):
 			raise SchemaError(f"{path.name}: {where}: 'name' must be letters/digits")
 		if entry["name"] in catalog.objects or entry["name"] in catalog.enums:
 			raise SchemaError(f"{path.name}: {where}: type is declared twice")
-		if entry["base"] not in BASES:
-			raise SchemaError(f"{path.name}: {where}: 'base' is '{entry['base']}'. Use {', '.join(BASES)}")
+		if entry["base"] not in BASES and entry["base"] not in catalog.abstract:
+			raise SchemaError(f"{path.name}: {where}: 'base' is '{entry['base']}'. Use {', '.join(BASES)} or an abstract type")
 		declared = Area()
 		declared.name, declared.cpp, declared.engine, declared.base, declared.doc = (
 			entry["name"], entry["cpp"], entry["engine"], entry["base"], entry["doc"])
+		declared.abstract = entry.get("abstract", False)
 		catalog.objects[declared.name] = declared.cpp
 		catalog.wrappers.add(declared.name)
+		if declared.abstract:
+			catalog.abstract.add(declared.name)
 		types.append(declared)
 	return types
 
@@ -296,17 +329,27 @@ def parse_structs(raw, path, catalog):
 		for field in entry["fields"]:
 			if not isinstance(field, dict):
 				raise SchemaError(f"{path.name}: {where}: field must be an object")
-			check_keys(field, FIELD_KEYS, FIELD_KEYS, path, where)
+			if field.get("access", "internal") != "internal":
+				raise SchemaError(f"{path.name}: {where}: field '{field.get('name')}' has access '{field['access']}'. Use internal (or leave it out)")
+			check_keys(field, FIELD_KEYS, {"name", "type"} if "access" in field else {"name", "type", "doc"}, path, where)
 			kind, type_name = classify(field["type"], catalog)
-			if kind not in ("scalar", "value", "enum"):
-				raise SchemaError(f"{path.name}: {where}: field '{field.get('name')}' can't be {field['type']}. Use a scalar, a value type or an enum")
+			if isinstance(field["type"], str) and field["type"] in catalog.structs:
+				kind = "struct"
+			if kind not in ("scalar", "value", "enum", "struct"):
+				raise SchemaError(f"{path.name}: {where}: field '{field.get('name')}' can't be {field['type']}. Use a scalar, a value type, an enum or a struct")
 			if not isinstance(field["name"], str) or not IDENTIFIER.match(field["name"]) or field["name"] in CSHARP_KEYWORDS:
 				raise SchemaError(f"{path.name}: {where}: field name must be letters/digits + no C# keyword")
-			scalar = catalog.enums[type_name].underlying if kind == "enum" else type_name
-			size = 4 * len(VALUES[type_name]) if kind == "value" else SCALAR_SIZES[scalar]
-			alignment = 4 if kind == "value" else size
+			if kind == "struct":
+				size, alignment = catalog.structs[type_name].size, catalog.structs[type_name].alignment
+			else:
+				scalar = catalog.enums[type_name].underlying if kind == "enum" else type_name
+				size = 4 * len(VALUES[type_name]) if kind == "value" else SCALAR_SIZES[scalar]
+				alignment = 4 if kind == "value" else size
 			offset = (offset + alignment - 1) // alignment * alignment
-			declared.fields.append((field["name"], kind, type_name, field["doc"], offset))
+			member = Area()
+			member.name, member.kind, member.type, member.doc, member.offset = field["name"], kind, type_name, field.get("doc", ""), offset
+			member.internal = "access" in field
+			declared.fields.append(member)
 			offset += size
 			declared.alignment = max(declared.alignment, alignment)
 		if not declared.fields:
@@ -365,27 +408,44 @@ def explicit(function):
 	return [param for param in function.params if not param.implicit]
 
 
-def load_files(paths):
-	catalog = Catalog()
+def load_files(paths, binding_set=None, catalog=None):
+	catalog = catalog or Catalog()
+	binding_set = binding_set or BindingSet("", BINDINGS, NATIVE, MANAGED)
 	read = []
-	for path in paths:
-		raw = read_area(path)
+	raws = [(path, read_area(path)) for path in paths]
+	for _, raw in raws:
+		catalog.abstract.update(entry["name"] for entry in raw.get("types", [])
+								if isinstance(entry, dict) and entry.get("abstract") is True and isinstance(entry.get("name"), str))
+	for path, raw in raws:
 		read.append((path, raw, parse_types(raw, path, catalog), parse_enums(raw, path, catalog)))
-	return [build_area(path, raw, catalog, types, enums, parse_structs(raw, path, catalog)) for path, raw, types, enums in read]
+	areas = [build_area(path, raw, catalog, types, enums, parse_structs(raw, path, catalog)) for path, raw, types, enums in read]
+	for area in areas:
+		area.set = binding_set
+	return areas
+
+
+def load_sets(sets):
+	catalog = Catalog()
+	seen = {}
+	for binding_set in sets:
+		paths = sorted(binding_set.bindings.glob("*.json"), key=lambda path: path.name)
+		binding_set.areas = load_files(paths, binding_set, catalog)
+		for area in binding_set.areas:
+			if area.name in seen:
+				raise SchemaError(f"{area.name}.json: area is declared twice ({seen[area.name]} + {binding_set.bindings.parent.name})")
+			seen[area.name] = binding_set.bindings.parent.name
+	return sets
 
 
 def parse_area(path):
 	return load_files([path])[0]
 
 
-def load_areas(directory):
-	return load_files(sorted(directory.glob("*.json"), key=lambda path: path.name))
-
-
-def input_digest(directory, script):
+def sets_digest(sets, script):
 	value = FNV_OFFSET
-	for path in sorted(directory.glob("*.json"), key=lambda path: path.name):
-		value = fnv1a(path.name.encode("utf-8") + b"\0" + path.read_bytes() + b"\0", value)
+	for binding_set in sets:
+		for path in sorted(binding_set.bindings.glob("*.json"), key=lambda path: path.name):
+			value = fnv1a(path.name.encode("utf-8") + b"\0" + path.read_bytes() + b"\0", value)
 	return fnv1a(script.read_bytes(), value)
 
 
@@ -395,7 +455,7 @@ def layout_hash(areas):
 		for declared in area.enums:
 			lines.append(f"enum {declared.name}:{declared.underlying}{{{','.join(f'{name}={value}' for name, value, _ in declared.values)}}}")
 		for declared in area.structs:
-			lines.append(f"struct {declared.name}{{{','.join(f'{name}:{type_name}' for name, _, type_name, _, _ in declared.fields)}}}")
+			lines.append(f"struct {declared.name}{{{','.join(f'{field.name}:{field.type}' for field in declared.fields)}}}")
 	for area in areas:
 		for function in area.functions:
 			params = ",".join(("span<" + param.type + ">" if param.kind == "span" else param.type) + ("&" if param.out else "") +
@@ -425,7 +485,7 @@ def c_type(kind, type_name, catalog=None):
 		return "SltString"
 	if kind == "object":
 		return "uint64_t"
-	return "Slt" + type_name if type_name in WIDE else "::Shalltear::" + type_name
+	return "Slt" + type_name if type_name in WIDE or kind == "struct" else "::Shalltear::" + type_name
 
 
 def cs_abi_type(kind, type_name, catalog=None):
@@ -479,33 +539,39 @@ def c_return(function):
 
 
 def render_native_header(areas, digest):
+	binding_set = areas[0].set if areas else BindingSet("", BINDINGS, NATIVE, MANAGED)
 	out = [f"// {BANNER}", "#pragma once", ""]
-	out += [f'#include "{header}"' for header in VALUE_HEADERS]
-	out += ["", "#include <stdint.h>", "",
-			f"#define SLT_BRIDGE_LAYOUT_HASH 0x{layout_hash(areas):016x}ull",
-			f"#define SLT_BINDINGS_INPUT_DIGEST 0x{digest:016x}ull", "",
-			"typedef struct SltString SltString;", ""]
-	for name in WIDE:
-		out += [f"typedef struct Slt{name} {{", f"\tfloat {', '.join(VALUES[name])};", f"}} Slt{name};", ""]
+	if binding_set.name:
+		out += ['#include "ScriptBridge.h"', "", f"#define {binding_set.hash_macro} 0x{layout_hash(areas):016x}ull", ""]
+	else:
+		out += [f'#include "{header}"' for header in VALUE_HEADERS]
+		out += ["", "#include <stdint.h>", "",
+				f"#define SLT_BRIDGE_LAYOUT_HASH 0x{layout_hash(areas):016x}ull",
+				f"#define SLT_BINDINGS_INPUT_DIGEST 0x{digest:016x}ull", "",
+				"typedef struct SltString SltString;", ""]
+		for name in WIDE:
+			out += [f"typedef struct Slt{name} {{", f"\tfloat {', '.join(VALUES[name])};", f"}} Slt{name};", ""]
 	for area in areas:
 		for declared in area.structs:
 			out.append(f"typedef struct Slt{declared.name} {{")
-			out += [f"\t{c_type(kind, type_name, area.catalog)} {name};" for name, kind, type_name, _, _ in declared.fields]
+			out += [f"\t{c_type(field.kind, field.type, area.catalog)} {field.name};" for field in declared.fields]
 			out += [f"}} Slt{declared.name};", ""]
-	out.append("typedef struct SltBindings {")
+	out.append(f"typedef struct {binding_set.table} {{")
 	for area in areas:
 		for function in area.functions:
 			parameters = ", ".join(c_parameters(function, False)) or "void"
 			out.append(f"\t{c_return(function)} (*{function.table_member})({parameters});")
-	out += ["} SltBindings;", "", "namespace Shalltear::CSharpImpl::Generated {", "",
-			"\tvoid FillBindings(SltBindings& table);", "", "} // namespace Shalltear::CSharpImpl::Generated", ""]
+	out += [f"}} {binding_set.table};", "", "namespace Shalltear::CSharpImpl::Generated {", "",
+			f"\tvoid {binding_set.fill}({binding_set.table}& table);", "", "} // namespace Shalltear::CSharpImpl::Generated", ""]
 	return "\n".join(out)
 
 
 def render_native_table(areas):
-	out = [f"// {BANNER}", "", '#include "ScriptBridge.h"', "", "#include <cstddef>", "#include <type_traits>", "",
+	binding_set = areas[0].set if areas else BindingSet("", BINDINGS, NATIVE, MANAGED)
+	include = binding_set.header if binding_set.name else "ScriptBridge.h"
+	out = [f"// {BANNER}", "", f'#include "{include}"', "", "#include <cstddef>", "#include <type_traits>", "",
 		   "namespace Shalltear::CSharpImpl::Generated {", ""]
-	for name, fields in VALUES.items():
+	for name, fields in ({} if binding_set.name else VALUES).items():
 		size = 4 * len(fields)
 		slot = f"Slt{name}" if name in WIDE else f"::Shalltear::{name}"
 		out.append(f"\tstatic_assert(sizeof(::Shalltear::{name}) == {size} && std::is_trivially_copyable_v<::Shalltear::{name}>);")
@@ -515,10 +581,10 @@ def render_native_table(areas):
 	for area in areas:
 		for declared in area.structs:
 			out.append(f"\tstatic_assert(sizeof(Slt{declared.name}) == {declared.size} && alignof(Slt{declared.name}) == {declared.alignment});")
-			out += [f"\tstatic_assert(offsetof(Slt{declared.name}, {name}) == {offset});" for name, _, _, _, offset in declared.fields]
+			out += [f"\tstatic_assert(offsetof(Slt{declared.name}, {field.name}) == {field.offset});" for field in declared.fields]
 	out.append("")
-	out += [f"\tvoid Fill{area.name}Bindings(SltBindings& table);" for area in areas]
-	out += ["", "\tvoid FillBindings(SltBindings& table) {"]
+	out += [f"\tvoid Fill{area.name}Bindings({binding_set.table}& table);" for area in areas]
+	out += ["", f"\tvoid {binding_set.fill}({binding_set.table}& table) {{"]
 	out += [f"\t\tFill{area.name}Bindings(table);" for area in areas]
 	out += ["\t}", "", "} // namespace Shalltear::CSharpImpl::Generated", ""]
 	return "\n".join(out)
@@ -597,6 +663,8 @@ def render_thunk(function):
 
 def render_native_area(area):
 	out = [f"// {BANNER}", "", '#include "BindingSupport.h"', "", f'#include "{area.include}"', ""]
+	if area.set.name:
+		out[4:4] = [f'#include "{area.set.header}"']
 	if area.test:
 		out += ["#ifdef SLT_CSHARP_TEST_HOOKS", ""]
 	out += ["namespace Shalltear::CSharpImpl::Generated {", ""]
@@ -607,7 +675,7 @@ def render_native_area(area):
 	out += ["\tnamespace {", ""]
 	for function in area.functions:
 		out += render_thunk(function) + [""]
-	out += ["\t} // anonymous namespace", "", f"\tvoid Fill{area.name}Bindings(SltBindings& table) {{"]
+	out += ["\t} // anonymous namespace", "", f"\tvoid Fill{area.name}Bindings({area.set.table}& table) {{"]
 	out += [f"\t\ttable.{function.table_member} = &{function.thunk};" for function in area.functions]
 	out += ["\t}", "", "} // namespace Shalltear::CSharpImpl::Generated", ""]
 	if area.test:
@@ -632,6 +700,34 @@ def cs_pointer(function):
 	else:
 		types.append(cs_abi_type(function.return_kind, function.returns, function.catalog))
 	return f"delegate* unmanaged{'[SuppressGCTransition]' if function.leaf else ''}<{', '.join(types)}>"
+
+
+def render_package_table(binding_set):
+	areas = binding_set.areas
+	out = ["// <auto-generated/>", f"// {BANNER}", "#nullable enable", "#pragma warning disable CS0649", "",
+		   "using System.Runtime.InteropServices;", "", "namespace Shalltear.Interop;", "",
+		   "[StructLayout(LayoutKind.Sequential)]", f"internal unsafe struct {binding_set.table} {{"]
+	for area in areas:
+		for function in area.functions:
+			out.append(f"\tpublic {cs_pointer(function)} {function.table_member};")
+	hidden = ["/// <summary>Called by generated code.</summary>", "[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]"]
+	out += ["}", ""] + hidden + [f"public static unsafe partial class {binding_set.holder} {{",
+			f"\tinternal const ulong LAYOUT_HASH = 0x{layout_hash(areas):016x};", "", f"\tinternal static {binding_set.table} table;", "",
+			"\tstatic partial void Attached();", ""] + ["\t" + line for line in hidden] + ["\tpublic static void Attach() {",
+			f'\t\ttable = *({binding_set.table}*)Bridge.FindBindings("{binding_set.name}", LAYOUT_HASH, sizeof({binding_set.table}));']
+	for area in areas:
+		for declared in area.structs:
+			out += [f"\t\tif (sizeof({declared.name}) != {declared.size}) {{",
+					f'\t\t\tthrow new EngineException("{declared.name} size " + sizeof({declared.name}) + " (engine {declared.size})");', "\t\t}"]
+	for area in areas:
+		out += wrapper_lines(area, "ObjectCache.")
+	out += ["\t\tAttached();", "\t}", "}", ""]
+	return "\n".join(out)
+
+
+def wrapper_lines(area, prefix):
+	return [f"\t\t{prefix}Declare<{declared.name}>({declared.name}.ENGINE_TYPE);" if declared.abstract else
+			f"\t\t{prefix}Wrap({declared.name}.ENGINE_TYPE, static id => new {declared.name}(id));" for declared in area.types]
 
 
 def render_managed_table(areas):
@@ -701,7 +797,7 @@ def cs_call(area, function, setter):
 			body.append(f"{cs_abi_type(function.return_kind, function.returns, function.catalog)} result;")
 			arguments.append("&result")
 		failure = f"Bridge.Failure(status, {member})" if function.has_objects else "Bridge.LastError()"
-		body += [f"int status = Bindings.table.{function.table_member}({', '.join(arguments)});", "if (status != Bridge.OK) {",
+		body += [f"int status = {area.set.holder}.table.{function.table_member}({', '.join(arguments)});", "if (status != Bridge.OK) {",
 				 f"\tthrow {failure};", "}"]
 		if function.return_kind == "string":
 			body.append("return Bridge.Text(result);")
@@ -711,7 +807,7 @@ def cs_call(area, function, setter):
 		elif function.return_kind != "void":
 			body.append("return result != 0;" if is_bool else f"return {cast}result;")
 	else:
-		call = f"Bindings.table.{function.table_member}({', '.join(arguments)})"
+		call = f"{area.set.holder}.table.{function.table_member}({', '.join(arguments)})"
 		if function.return_kind == "void":
 			body.append(call + ";")
 		else:
@@ -753,13 +849,20 @@ def render_managed_types(area):
 		out += [f"/// <summary>{xml_text(declared.doc)}</summary>",
 				"[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]",
 				f"public partial struct {declared.name} {{"]
-		for name, kind, type_name, doc, _ in declared.fields:
-			out += [f"\t/// <summary>{xml_text(doc)}</summary>", f"\tpublic {cs_api_type(kind, type_name)} {name};"]
+		for field in declared.fields:
+			if field.internal:
+				out.append(f"\tinternal {cs_api_type(field.kind, field.type)} _{field.name};")
+			else:
+				out += [f"\t/// <summary>{xml_text(field.doc)}</summary>", f"\tpublic {cs_api_type(field.kind, field.type)} {field.name};"]
 		out += ["}", ""]
 	for declared in area.types:
-		out += [f"/// <summary>{xml_text(declared.doc)}</summary>", "[EngineType(ENGINE_TYPE)]",
-				f"public sealed partial class {declared.name} : {declared.base} {{", f'\tinternal const string ENGINE_TYPE = "{declared.engine}";', "",
-				f"\tinternal {declared.name}(ulong id) {{", "\t\t_id = id;", "\t}", "}", ""]
+		out += [f"/// <summary>{xml_text(declared.doc)}</summary>", "[EngineType(ENGINE_TYPE)]"]
+		constant = f'\tinternal {"" if declared.base in BASES else "new "}const string ENGINE_TYPE = "{declared.engine}";'
+		if declared.abstract:
+			out += [f"public abstract partial class {declared.name} : {declared.base} {{", constant, "", f"\tprivate protected {declared.name}() {{}}", "}", ""]
+		else:
+			out += [f"public sealed partial class {declared.name} : {declared.base} {{", constant,
+					"", f"\tinternal {declared.name}(ulong id) {{", "\t\t_id = id;", "\t}", "}", ""]
 	return out
 
 
@@ -767,7 +870,7 @@ def render_managed_wrappers(areas):
 	out = ["// <auto-generated/>", f"// {BANNER}", "#nullable enable", "", "namespace Shalltear.Interop;", "",
 		   "internal static partial class ObjectCache {", "\tstatic void WrapGenerated() {"]
 	for area in areas:
-		out += [f"\t\tWrap({declared.name}.ENGINE_TYPE, static id => new {declared.name}(id));" for declared in area.types]
+		out += wrapper_lines(area, "")
 	out += ["\t}", "}", ""]
 	return "\n".join(out)
 
@@ -828,23 +931,28 @@ def render_managed_area(area):
 	return "\n".join(out)
 
 
-def render(areas, digest):
-	files = {
-		NATIVE / "Bindings.generated.h": render_native_header(areas, digest),
-		NATIVE / "Bindings.generated.cpp": render_native_table(areas),
-		MANAGED / "Bindings.g.cs": render_managed_table(areas),
-		MANAGED / "Wrappers.g.cs": render_managed_wrappers(areas),
-	}
-	for area in areas:
-		files[NATIVE / f"{area.name}.generated.cpp"] = render_native_area(area)
-		files[MANAGED / f"{area.name}.g.cs"] = render_managed_area(area)
+def render_sets(sets, digest):
+	files = {}
+	for binding_set in sets:
+		areas = binding_set.areas
+		files[binding_set.native / binding_set.header] = render_native_header(areas, digest)
+		files[binding_set.native / f"{binding_set.name}Bindings.generated.cpp"] = render_native_table(areas)
+		if binding_set.name:
+			files[binding_set.managed / f"{binding_set.name}Bindings.g.cs"] = render_package_table(binding_set)
+		else:
+			files[binding_set.managed / "Bindings.g.cs"] = render_managed_table(areas)
+			files[binding_set.managed / "Wrappers.g.cs"] = render_managed_wrappers(areas)
+		for area in areas:
+			files[binding_set.native / f"{area.name}.generated.cpp"] = render_native_area(area)
+			files[binding_set.managed / f"{area.name}.g.cs"] = render_managed_area(area)
 	return files
 
 
-def find_stale(files):
+def find_stale(files, sets):
 	stale = [path for path, text in files.items() if not path.exists() or path.read_bytes() != text.encode("utf-8")]
-	for directory, pattern in ((NATIVE, "*.generated.*"), (MANAGED, "*.g.cs")):
-		stale += [path for path in sorted(directory.glob(pattern)) if path not in files]
+	for binding_set in sets:
+		for directory, pattern in ((binding_set.native, "*.generated.*"), (binding_set.managed, "*.g.cs")):
+			stale += [path for path in sorted(directory.glob(pattern)) if path not in files]
 	return stale
 
 
@@ -854,11 +962,12 @@ def main():
 	args = parser.parse_args()
 
 	try:
-		areas = load_areas(BINDINGS)
+		sets = load_sets(find_sets(ROOT))
 	except SchemaError as error:
 		sys.exit(str(error))
-	files = render(areas, input_digest(BINDINGS, Path(__file__).resolve()))
-	stale = find_stale(files)
+	areas = [area for binding_set in sets for area in binding_set.areas]
+	files = render_sets(sets, sets_digest(sets, Path(__file__).resolve()))
+	stale = find_stale(files, sets)
 	if args.check:
 		if stale:
 			sys.exit("stale generated C# bindings: " + ", ".join(path.relative_to(ROOT).as_posix() for path in stale) +

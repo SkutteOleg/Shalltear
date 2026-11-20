@@ -20,6 +20,7 @@
 	<ItemGroup>
 		<Compile Include="Exports.g.cs;TypeTables.g.cs" />
 		<Reference Update="Shalltear.Runtime" Private="true" />
+		<Reference Update="@(ShalltearPackageAssembly)" Private="true" />
 		<Analyzer Remove="@(Analyzer)" />
 {{SCRIPT_REFERENCES}}	</ItemGroup>
 	<Import Project="$(ShalltearSDKRoot)/EngineAssets/CSharp/Shalltear.CSharp.targets" />

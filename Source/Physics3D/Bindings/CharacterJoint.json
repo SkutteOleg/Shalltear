@@ -1,0 +1,209 @@
+{
+	"area": "CharacterJoint",
+	"include": "Shalltear/Physics3D/Joints.h",
+	"class": "Shalltear.CharacterJoint",
+	"instance": "CharacterJoint",
+	"types": [
+		{
+			"name": "CharacterJoint",
+			"cpp": "::Shalltear::CharacterJoint",
+			"engine": "CharacterJoint",
+			"base": "Joint",
+			"doc": "Ball joint with swing + twist limits."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetAxis",
+			"cpp": "self->GetAxis()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Axis", "kind": "getter" },
+			"doc": "Twist axis in local space."
+		},
+		{
+			"id": "SetAxis",
+			"cpp": "self->SetAxis(axis)",
+			"returns": "void",
+			"params": [{ "name": "axis", "type": "Vec3" }],
+			"csharp": { "member": "Axis", "kind": "setter" }
+		},
+		{
+			"id": "GetSwingAxis",
+			"cpp": "self->GetSwingAxis()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SwingAxis", "kind": "getter" },
+			"doc": "Swing1 axis in local space."
+		},
+		{
+			"id": "SetSwingAxis",
+			"cpp": "self->SetSwingAxis(swingAxis)",
+			"returns": "void",
+			"params": [{ "name": "swingAxis", "type": "Vec3" }],
+			"csharp": { "member": "SwingAxis", "kind": "setter" }
+		},
+		{
+			"id": "GetUseSwingLimit",
+			"cpp": "self->GetUseSwingLimit()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseSwingLimit", "kind": "getter" },
+			"doc": "Swing held inside a cone."
+		},
+		{
+			"id": "SetUseSwingLimit",
+			"cpp": "self->SetUseSwingLimit(useSwingLimit)",
+			"returns": "void",
+			"params": [{ "name": "useSwingLimit", "type": "bool" }],
+			"csharp": { "member": "UseSwingLimit", "kind": "setter" }
+		},
+		{
+			"id": "GetSwing1Limit",
+			"cpp": "self->GetSwing1Limit()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Swing1Limit", "kind": "getter" },
+			"doc": "Cone's half angle about SwingAxis, in degrees."
+		},
+		{
+			"id": "SetSwing1Limit",
+			"cpp": "self->SetSwing1Limit(swing1Limit)",
+			"returns": "void",
+			"params": [{ "name": "swing1Limit", "type": "f32" }],
+			"csharp": { "member": "Swing1Limit", "kind": "setter" }
+		},
+		{
+			"id": "GetSwing2Limit",
+			"cpp": "self->GetSwing2Limit()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Swing2Limit", "kind": "getter" },
+			"doc": "Cone's half angle about the 3rd axis, in degrees."
+		},
+		{
+			"id": "SetSwing2Limit",
+			"cpp": "self->SetSwing2Limit(swing2Limit)",
+			"returns": "void",
+			"params": [{ "name": "swing2Limit", "type": "f32" }],
+			"csharp": { "member": "Swing2Limit", "kind": "setter" }
+		},
+		{
+			"id": "GetUseTwistLimit",
+			"cpp": "self->GetUseTwistLimit()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseTwistLimit", "kind": "getter" },
+			"doc": "Twist held between LowTwistLimit + HighTwistLimit."
+		},
+		{
+			"id": "SetUseTwistLimit",
+			"cpp": "self->SetUseTwistLimit(useTwistLimit)",
+			"returns": "void",
+			"params": [{ "name": "useTwistLimit", "type": "bool" }],
+			"csharp": { "member": "UseTwistLimit", "kind": "setter" }
+		},
+		{
+			"id": "GetLowTwistLimit",
+			"cpp": "self->GetLowTwistLimit()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LowTwistLimit", "kind": "getter" },
+			"doc": "Lowest twist in degrees."
+		},
+		{
+			"id": "SetLowTwistLimit",
+			"cpp": "self->SetLowTwistLimit(lowTwistLimit)",
+			"returns": "void",
+			"params": [{ "name": "lowTwistLimit", "type": "f32" }],
+			"csharp": { "member": "LowTwistLimit", "kind": "setter" }
+		},
+		{
+			"id": "GetHighTwistLimit",
+			"cpp": "self->GetHighTwistLimit()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "HighTwistLimit", "kind": "getter" },
+			"doc": "Highest twist in degrees."
+		},
+		{
+			"id": "SetHighTwistLimit",
+			"cpp": "self->SetHighTwistLimit(highTwistLimit)",
+			"returns": "void",
+			"params": [{ "name": "highTwistLimit", "type": "f32" }],
+			"csharp": { "member": "HighTwistLimit", "kind": "setter" }
+		},
+		{
+			"id": "GetUseDrive",
+			"cpp": "self->GetUseDrive()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseDrive", "kind": "getter" },
+			"doc": "Spring pulls to TargetRotation."
+		},
+		{
+			"id": "SetUseDrive",
+			"cpp": "self->SetUseDrive(useDrive)",
+			"returns": "void",
+			"params": [{ "name": "useDrive", "type": "bool" }],
+			"csharp": { "member": "UseDrive", "kind": "setter" }
+		},
+		{
+			"id": "GetDriveSpring",
+			"cpp": "self->GetDriveSpring()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DriveSpring", "kind": "getter" },
+			"doc": "Drive torque per rad."
+		},
+		{
+			"id": "SetDriveSpring",
+			"cpp": "self->SetDriveSpring(driveSpring)",
+			"returns": "void",
+			"params": [{ "name": "driveSpring", "type": "f32" }],
+			"csharp": { "member": "DriveSpring", "kind": "setter" }
+		},
+		{
+			"id": "GetDriveDamper",
+			"cpp": "self->GetDriveDamper()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DriveDamper", "kind": "getter" },
+			"doc": "Drive torque per rad/s."
+		},
+		{
+			"id": "SetDriveDamper",
+			"cpp": "self->SetDriveDamper(driveDamper)",
+			"returns": "void",
+			"params": [{ "name": "driveDamper", "type": "f32" }],
+			"csharp": { "member": "DriveDamper", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetRotation",
+			"cpp": "self->GetTargetRotation()",
+			"returns": "Quat",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "TargetRotation", "kind": "getter" },
+			"doc": "Drive's target rotation."
+		},
+		{
+			"id": "SetTargetRotation",
+			"cpp": "self->SetTargetRotation(targetRotation)",
+			"returns": "void",
+			"params": [{ "name": "targetRotation", "type": "Quat" }],
+			"csharp": { "member": "TargetRotation", "kind": "setter" }
+		}
+	]
+}

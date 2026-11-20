@@ -1,0 +1,111 @@
+{
+	"area": "PhysicsMaterial",
+	"include": "Shalltear/Physics3D/PhysicsMaterial.h",
+	"class": "Shalltear.PhysicsMaterial",
+	"instance": "PhysicsMaterial",
+	"types": [
+		{
+			"name": "PhysicsMaterial",
+			"cpp": "::Shalltear::PhysicsMaterial",
+			"engine": "PhysicsMaterial",
+			"base": "Asset",
+			"doc": "Friction + bounce of a collider's surface."
+		}
+	],
+	"enums": [
+		{
+			"name": "PhysicsMaterialCombine",
+			"cpp": "::Shalltear::PhysicsMaterialCombine",
+			"underlying": "u8",
+			"doc": "How 2 touching surfaces' values are combined (higher of both modes used).",
+			"values": [
+				{ "name": "Average", "value": 0, "doc": "Mean of both." },
+				{ "name": "Minimum", "value": 1, "doc": "Lower of both." },
+				{ "name": "Multiply", "value": 2, "doc": "Product of both." },
+				{ "name": "Maximum", "value": 3, "doc": "Higher of both." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetFriction",
+			"cpp": "self->friction",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Friction", "kind": "getter" },
+			"doc": "Friction (0 = ice, 1 = rubber)."
+		},
+		{
+			"id": "SetFriction",
+			"cpp": "self->friction = friction",
+			"returns": "void",
+			"params": [{ "name": "friction", "type": "f32" }],
+			"csharp": { "member": "Friction", "kind": "setter" }
+		},
+		{
+			"id": "GetBounciness",
+			"cpp": "self->bounciness",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Bounciness", "kind": "getter" },
+			"doc": "Bounce (0 = none, 1 = no energy lost)."
+		},
+		{
+			"id": "SetBounciness",
+			"cpp": "self->bounciness = bounciness",
+			"returns": "void",
+			"params": [{ "name": "bounciness", "type": "f32" }],
+			"csharp": { "member": "Bounciness", "kind": "setter" }
+		},
+		{
+			"id": "GetRollingResistance",
+			"cpp": "self->rollingResistance",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RollingResistance", "kind": "getter" },
+			"doc": "Resistance to rolling (spheres + capsules)."
+		},
+		{
+			"id": "SetRollingResistance",
+			"cpp": "self->rollingResistance = rollingResistance",
+			"returns": "void",
+			"params": [{ "name": "rollingResistance", "type": "f32" }],
+			"csharp": { "member": "RollingResistance", "kind": "setter" }
+		},
+		{
+			"id": "GetFrictionCombine",
+			"cpp": "self->frictionCombine",
+			"returns": "PhysicsMaterialCombine",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FrictionCombine", "kind": "getter" },
+			"doc": "How 2 touching surfaces' friction is combined."
+		},
+		{
+			"id": "SetFrictionCombine",
+			"cpp": "self->frictionCombine = frictionCombine",
+			"returns": "void",
+			"params": [{ "name": "frictionCombine", "type": "PhysicsMaterialCombine" }],
+			"csharp": { "member": "FrictionCombine", "kind": "setter" }
+		},
+		{
+			"id": "GetBounceCombine",
+			"cpp": "self->bounceCombine",
+			"returns": "PhysicsMaterialCombine",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BounceCombine", "kind": "getter" },
+			"doc": "How 2 touching surfaces' bounce is combined."
+		},
+		{
+			"id": "SetBounceCombine",
+			"cpp": "self->bounceCombine = bounceCombine",
+			"returns": "void",
+			"params": [{ "name": "bounceCombine", "type": "PhysicsMaterialCombine" }],
+			"csharp": { "member": "BounceCombine", "kind": "setter" }
+		}
+	]
+}

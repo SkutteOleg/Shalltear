@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.physics3d.csharp",
+	"version": "1.0.0",
+	"displayName": "Physics 3D for C#",
+	"description": "The C# API of Physics 3D.",
+	"kind": "engine",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.csharp": "1.0.0",
+		"dev.shalltear.physics3d": "1.0.0"
+	}
+}

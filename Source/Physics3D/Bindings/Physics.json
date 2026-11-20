@@ -1,0 +1,152 @@
+{
+	"area": "Physics",
+	"include": "PhysicsBindings.h",
+	"class": "Shalltear.Physics",
+	"doc": "Queries of the physics world.",
+	"enums": [
+		{
+			"name": "PhysicsQueryTriggers",
+			"cpp": "::Shalltear::PhysicsQueryTriggers",
+			"underlying": "u8",
+			"doc": "Whether a query hits trigger colliders.",
+			"values": [
+				{ "name": "UseGlobal", "value": 0, "doc": "Project's physics setting." },
+				{ "name": "Ignore", "value": 1, "doc": "Triggers are skipped." },
+				{ "name": "Collide", "value": 2, "doc": "Triggers are hit." }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "RaycastHit",
+			"doc": "What a ray or a swept shape hit.",
+			"fields": [
+				{ "name": "colliderId", "type": "u64", "access": "internal" },
+				{ "name": "objectId", "type": "u64", "access": "internal" },
+				{ "name": "rigidbodyId", "type": "u64", "access": "internal" },
+				{ "name": "point", "type": "Vec3", "doc": "Hit point in world space." },
+				{ "name": "normal", "type": "Vec3", "doc": "Surface normal at point." },
+				{ "name": "distance", "type": "f32", "doc": "Distance traveled to the hit." }
+			]
+		},
+		{
+			"name": "ContactPoint",
+			"doc": "1 point where 2 colliders touch.",
+			"fields": [
+				{ "name": "point", "type": "Vec3", "doc": "Point in world space." },
+				{ "name": "normal", "type": "Vec3", "doc": "Normal from the listener's collider to the other." },
+				{ "name": "separation", "type": "f32", "doc": "Gap between the surfaces (negative when overlapping)." },
+				{ "name": "normalImpulse", "type": "f32", "doc": "Impulse applied along normal." }
+			]
+		},
+		{
+			"name": "Collision",
+			"doc": "Contact between the listener's collider and another.",
+			"fields": [
+				{ "name": "colliderId", "type": "u64", "access": "internal" },
+				{ "name": "objectId", "type": "u64", "access": "internal" },
+				{ "name": "rigidbodyId", "type": "u64", "access": "internal" },
+				{ "name": "relativeVelocity", "type": "Vec3", "doc": "Other body's velocity minus the listener's." },
+				{ "name": "contactCount", "type": "i32", "doc": "Number of contact points (4 at most)." },
+				{ "name": "contact0", "type": "ContactPoint", "access": "internal" },
+				{ "name": "contact1", "type": "ContactPoint", "access": "internal" },
+				{ "name": "contact2", "type": "ContactPoint", "access": "internal" },
+				{ "name": "contact3", "type": "ContactPoint", "access": "internal" }
+			]
+		},
+		{
+			"name": "ControllerColliderHit",
+			"doc": "What a character controller's move hit.",
+			"fields": [
+				{ "name": "controllerId", "type": "u64", "access": "internal" },
+				{ "name": "colliderId", "type": "u64", "access": "internal" },
+				{ "name": "objectId", "type": "u64", "access": "internal" },
+				{ "name": "rigidbodyId", "type": "u64", "access": "internal" },
+				{ "name": "point", "type": "Vec3", "doc": "Hit point in world space." },
+				{ "name": "normal", "type": "Vec3", "doc": "Surface normal at point." },
+				{ "name": "moveDirection", "type": "Vec3", "doc": "Direction of the move pass (up, sideways or down)." },
+				{ "name": "moveLength", "type": "f32", "doc": "Distance of the move pass." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "CastRay",
+			"cpp": "::Shalltear::CSharpImpl::PhysicsBindings::CastRay(origin, direction, maxDistance, categories, collidesWithMode, collidesWith, triggers, hit)",
+			"returns": "bool",
+			"params": [
+				{ "name": "origin", "type": "Vec3" },
+				{ "name": "direction", "type": "Vec3" },
+				{ "name": "maxDistance", "type": "f32" },
+				{ "name": "categories", "type": "string" },
+				{ "name": "collidesWithMode", "type": "PhysicsCategoryMatch" },
+				{ "name": "collidesWith", "type": "string" },
+				{ "name": "triggers", "type": "PhysicsQueryTriggers" },
+				{ "name": "hit", "type": "span<RaycastHit>", "out": true }
+			],
+			"csharp": { "member": "CastRay", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "CastSphere",
+			"cpp": "::Shalltear::CSharpImpl::PhysicsBindings::CastSphere(origin, direction, radius, maxDistance, categories, collidesWithMode, collidesWith, triggers, hit)",
+			"returns": "bool",
+			"params": [
+				{ "name": "origin", "type": "Vec3" },
+				{ "name": "direction", "type": "Vec3" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "maxDistance", "type": "f32" },
+				{ "name": "categories", "type": "string" },
+				{ "name": "collidesWithMode", "type": "PhysicsCategoryMatch" },
+				{ "name": "collidesWith", "type": "string" },
+				{ "name": "triggers", "type": "PhysicsQueryTriggers" },
+				{ "name": "hit", "type": "span<RaycastHit>", "out": true }
+			],
+			"csharp": { "member": "CastSphere", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "CastCapsule",
+			"cpp": "::Shalltear::CSharpImpl::PhysicsBindings::CastCapsule(point1, point2, radius, direction, maxDistance, categories, collidesWithMode, collidesWith, triggers, hit)",
+			"returns": "bool",
+			"params": [
+				{ "name": "point1", "type": "Vec3" },
+				{ "name": "point2", "type": "Vec3" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "direction", "type": "Vec3" },
+				{ "name": "maxDistance", "type": "f32" },
+				{ "name": "categories", "type": "string" },
+				{ "name": "collidesWithMode", "type": "PhysicsCategoryMatch" },
+				{ "name": "collidesWith", "type": "string" },
+				{ "name": "triggers", "type": "PhysicsQueryTriggers" },
+				{ "name": "hit", "type": "span<RaycastHit>", "out": true }
+			],
+			"csharp": { "member": "CastCapsule", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "FindOverlaps",
+			"cpp": "::Shalltear::CSharpImpl::PhysicsBindings::FindOverlaps(center, radius, categories, collidesWithMode, collidesWith, triggers, ids)",
+			"returns": "i32",
+			"params": [
+				{ "name": "center", "type": "Vec3" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "categories", "type": "string" },
+				{ "name": "collidesWithMode", "type": "PhysicsCategoryMatch" },
+				{ "name": "collidesWith", "type": "string" },
+				{ "name": "triggers", "type": "PhysicsQueryTriggers" },
+				{ "name": "ids", "type": "span<u64>", "out": true }
+			],
+			"csharp": { "member": "FindOverlaps", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "AttachEvents",
+			"cpp": "::Shalltear::CSharpImpl::PhysicsBindings::AttachEvents(collision, trigger, jointBreak, controllerHit)",
+			"returns": "i32",
+			"params": [
+				{ "name": "collision", "type": "i64" },
+				{ "name": "trigger", "type": "i64" },
+				{ "name": "jointBreak", "type": "i64" },
+				{ "name": "controllerHit", "type": "i64" }
+			],
+			"csharp": { "member": "AttachEvents", "kind": "method", "access": "internal" }
+		}
+	]
+}

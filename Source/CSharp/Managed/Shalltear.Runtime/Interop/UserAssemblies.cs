@@ -26,6 +26,12 @@ internal static unsafe class UserAssemblies {
 			if (name.Name == runtime.GetName().Name) {
 				return runtime;
 			}
+			if (name.Name != null && name.Name.StartsWith("Shalltear.", StringComparison.Ordinal)) {
+				try {
+					return GetLoadContext(runtime)!.LoadFromAssemblyName(name);
+				} catch (FileNotFoundException) {
+				}
+			}
 			string candidate = Path.Combine(_directory, name.Name + ".dll");
 			return File.Exists(candidate) ? LoadUnlocked(candidate) : null;
 		}

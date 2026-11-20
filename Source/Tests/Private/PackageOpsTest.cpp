@@ -697,7 +697,7 @@ TEST_F(PackageDiskFixture, ScaffoldingWritesBuiltInFeatures) {
 	ASSERT_FALSE(catalogue.empty());
 
 	auto switchable = [](const PackageOps::PackageManifest& manifest) {
-		return manifest.scaffold &&
+		return manifest.scaffold && !manifest.bridge &&
 			   (manifest.kind == PackageOps::PackageKind::Engine || (manifest.kind == PackageOps::PackageKind::Tool && !manifest.required));
 	};
 	u32 features = 0;

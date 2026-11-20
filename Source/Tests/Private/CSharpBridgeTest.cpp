@@ -181,14 +181,14 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 		SltString name{};
 		ASSERT_EQ(managed.getConformanceTestName(index, &name), SLT_OK);
 		const str caseName(View(name));
-		if (CSharpConformance::IsProbe(caseName)) {
+		if (!CSharpConformance::IsInPassSet(caseName)) {
 			continue;
 		}
 		SltString message{};
 		EXPECT_EQ(managed.runConformanceTest(index, &message), SLT_OK) << caseName << ": " << View(message);
 		++ran;
 	}
-	EXPECT_GE(ran, 61);
+	EXPECT_GE(ran, CSharpConformance::PASS_SET_SIZE);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 
 	SceneSystem::Terminate();
@@ -210,6 +210,33 @@ TEST_F(CSharpRuntimeFixture, ThrowingSceneHandlerIsReported) {
 	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a scene handler"), 1u) << _log.Delivered().Joined();
 	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard Loud"}));
 	SceneSystem::Terminate();
+}
+
+TEST_F(CSharpRuntimeFixture, ThrowingPhysicsListenerIsReported) {
+#ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
+	GTEST_SKIP();
+#endif
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	std::optional<CSharpConformance::InputRig> rig(std::in_place, _hooks->setDriver);
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+
+	str message;
+	ASSERT_EQ(Run("PhysicsProbe.ListenerThrows", message), SLT_OK) << message;
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a physics listener"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"second heard 1"}));
+	SceneSystem::Terminate();
+	rig.reset();
+}
+
+TEST_F(CSharpRuntimeFixture, ScriptsNeedTheirPackagesBindings) {
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(CSharpConformance::UnloadBridges());
+	EXPECT_FALSE(LoadConformance());
+	EXPECT_EQ(_log.Delivered().Count("Shalltear.Physics3D has no bindings in this engine. Enable the package"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_hooks->getManaged().getConformanceTestCount(), 0);
 }
 
 TEST_F(CSharpRuntimeFixture, DroppedInputMapsFreedAtTick) {

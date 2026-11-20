@@ -33,6 +33,24 @@ namespace Shalltear::CSharpConformance {
 		return caseName.substr(0, caseName.find('.')).ends_with("Probe");
 	}
 
+#ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
+	inline constexpr int32_t PASS_SET_SIZE = 62;
+#else
+	inline constexpr int32_t PASS_SET_SIZE = 75;
+#endif
+
+	inline bool IsInPassSet(std::string_view caseName) {
+#ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
+		if (caseName.starts_with("PhysicsTests.")) {
+			return false;
+		}
+#endif
+		return !IsProbe(caseName);
+	}
+
+	bool StandUpPackages(const void* owner);
+	bool UnloadBridges();
+
 	class StagedAssets {
 	public:
 		StagedAssets();

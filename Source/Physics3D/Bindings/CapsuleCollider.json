@@ -1,0 +1,88 @@
+{
+	"area": "CapsuleCollider",
+	"include": "Shalltear/Physics3D/Colliders.h",
+	"class": "Shalltear.CapsuleCollider",
+	"instance": "CapsuleCollider",
+	"types": [
+		{ "name": "CapsuleCollider", "cpp": "::Shalltear::CapsuleCollider", "engine": "CapsuleCollider", "base": "Collider", "doc": "Capsule shape." }
+	],
+	"enums": [
+		{
+			"name": "CapsuleDirection",
+			"cpp": "::Shalltear::CapsuleDirection",
+			"underlying": "u8",
+			"doc": "Local axis of a capsule.",
+			"values": [
+				{ "name": "XAxis", "value": 0, "doc": "Along local x." },
+				{ "name": "YAxis", "value": 1, "doc": "Along local y." },
+				{ "name": "ZAxis", "value": 2, "doc": "Along local z." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetCenter",
+			"cpp": "self->GetCenter()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Center", "kind": "getter" },
+			"doc": "Center in local space."
+		},
+		{
+			"id": "SetCenter",
+			"cpp": "self->SetCenter(center)",
+			"returns": "void",
+			"params": [{ "name": "center", "type": "Vec3" }],
+			"csharp": { "member": "Center", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->GetRadius()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Radius", "kind": "getter" },
+			"doc": "Radius."
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->SetRadius(radius)",
+			"returns": "void",
+			"params": [{ "name": "radius", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetHeight",
+			"cpp": "self->GetHeight()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Height", "kind": "getter" },
+			"doc": "Total height, caps included."
+		},
+		{
+			"id": "SetHeight",
+			"cpp": "self->SetHeight(height)",
+			"returns": "void",
+			"params": [{ "name": "height", "type": "f32" }],
+			"csharp": { "member": "Height", "kind": "setter" }
+		},
+		{
+			"id": "GetDirection",
+			"cpp": "self->GetDirection()",
+			"returns": "CapsuleDirection",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Direction", "kind": "getter" },
+			"doc": "Capsule's local axis."
+		},
+		{
+			"id": "SetDirection",
+			"cpp": "self->SetDirection(direction)",
+			"returns": "void",
+			"params": [{ "name": "direction", "type": "CapsuleDirection" }],
+			"csharp": { "member": "Direction", "kind": "setter" }
+		}
+	]
+}

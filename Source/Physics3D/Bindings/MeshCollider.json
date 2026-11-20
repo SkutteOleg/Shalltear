@@ -1,0 +1,43 @@
+{
+	"area": "MeshCollider",
+	"include": "Shalltear/Physics3D/Colliders.h",
+	"class": "Shalltear.MeshCollider",
+	"instance": "MeshCollider",
+	"types": [
+		{ "name": "MeshCollider", "cpp": "::Shalltear::MeshCollider", "engine": "MeshCollider", "base": "Collider", "doc": "Shape of a mesh asset." }
+	],
+	"functions": [
+		{
+			"id": "GetMesh",
+			"cpp": "self->GetMesh()",
+			"returns": "Mesh",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Mesh", "kind": "getter" },
+			"doc": "Mesh the shape is built from."
+		},
+		{
+			"id": "SetMesh",
+			"cpp": "self->SetMesh(::Shalltear::Handle<::Shalltear::MeshAsset>(mesh))",
+			"returns": "void",
+			"params": [{ "name": "mesh", "type": "Mesh", "optional": true }],
+			"csharp": { "member": "Mesh", "kind": "setter" }
+		},
+		{
+			"id": "GetConvex",
+			"cpp": "self->GetConvex()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Convex", "kind": "getter" },
+			"doc": "Use the mesh's convex hull (128 vertices at most)."
+		},
+		{
+			"id": "SetConvex",
+			"cpp": "self->SetConvex(convex)",
+			"returns": "void",
+			"params": [{ "name": "convex", "type": "bool" }],
+			"csharp": { "member": "Convex", "kind": "setter" }
+		}
+	]
+}

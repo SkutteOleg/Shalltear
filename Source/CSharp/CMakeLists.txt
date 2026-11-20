@@ -134,6 +134,7 @@ shalltear_select_platform_sources(CSHARP_SOURCES)
 shalltear_add_package(CSharp SOURCES ${CSHARP_SOURCES})
 
 target_include_directories(CSharp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
+target_compile_definitions(CSharp PRIVATE SHALLTEAR_CSHARP_BUILD)
 add_dependencies(CSharp CSharpManaged)
 if(TARGET CSharpNative)
 	add_dependencies(CSharp CSharpNative)

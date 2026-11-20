@@ -263,6 +263,28 @@ internal static unsafe partial class BindingProbe {
 		return result;
 	}
 
+	internal static ulong MakeDerivedText() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.MakeDerivedText");
+		}
+		ulong result;
+		int status = Bindings.table.probeMakeDerivedText(&result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
+	internal static void FreeDerivedText(ulong id) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.FreeDerivedText");
+		}
+		int status = Bindings.table.probeFreeDerivedText(id);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
+
 	internal static void RunFrames(int count) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.RunFrames");

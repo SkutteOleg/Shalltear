@@ -5,6 +5,7 @@
 		<ShalltearManagedDir>{{MANAGED_DIRECTORY}}/</ShalltearManagedDir>
 		<ShalltearDotNetRoot>{{DOTNET_ROOT}}</ShalltearDotNetRoot>
 		<ShalltearPackagesRoot>{{PACKAGES_ROOT}}</ShalltearPackagesRoot>
+		<ShalltearPackageAssemblies>{{PACKAGE_ASSEMBLIES}}</ShalltearPackageAssemblies>
 		<ShalltearDotNetSDKVersion>{{DOTNET_SDK_VERSION}}</ShalltearDotNetSDKVersion>
 		<ShalltearDotNetRuntimeVersion>{{DOTNET_RUNTIME_VERSION}}</ShalltearDotNetRuntimeVersion>
 		<ShalltearTargetFramework>{{TARGET_FRAMEWORK}}</ShalltearTargetFramework>

@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 11;
+	internal const uint ABI_VERSION = 12;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -114,6 +114,17 @@ internal static unsafe class Bridge {
 
 	internal static nint ScriptOf(ulong id) {
 		return _engine.scriptOf(id);
+	}
+
+	internal static void* FindBindings(string name, ulong layoutHash, int size) {
+		byte[] bytes = Encoding.UTF8.GetBytes(name);
+		void* table;
+		fixed (byte* ptr = bytes) {
+			if (_engine.findBindings(new SltString { ptr = ptr, length = bytes.Length }, layoutHash, size, &table) != OK) {
+				throw LastError();
+			}
+		}
+		return table;
 	}
 
 	internal static ulong HashOf(string name) {
@@ -233,6 +244,7 @@ internal static unsafe class Bridge {
 		ScriptEvents.Forget();
 		InputActionMap.Forget();
 		ScriptTypes.Clear();
+		ScriptTypes.ForgetListeners();
 		ObjectCache.Clear();
 		_attached = false;
 	}

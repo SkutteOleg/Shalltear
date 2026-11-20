@@ -1295,6 +1295,9 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	constexpr const char* PACKAGE_ARCHIVE = "CSharp.a";
 	constexpr const char* PACKAGE_OBJECT = "ScriptRuntime.cpp.o";
 	constexpr const char* PACKAGE_SYMBOL = "Shalltear::CSharpImpl::";
+	constexpr const char* BRIDGED_PACKAGES = "dev.shalltear.physics3d";
+	constexpr const char* BRIDGED_OBJECT = "PhysicsWorld.cpp.o";
+	constexpr const char* BRIDGE_OBJECT = "PhysicsBindings.cpp.o";
 
 	std::filesystem::path project = _root / "ScriptlessProject";
 	std::filesystem::create_directories(project / "Assets");
@@ -1311,6 +1314,11 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 		profile.SetString("configuration", _config);
 		ASSERT_TRUE(BuildProfileOps::SaveProfile(
 			BuildProfileOps::GetProfilePath(project.generic_string(), "Windows"), profile));
+	}
+	{
+		Config settings;
+		settings.SetString("Packages", "enabled", BRIDGED_PACKAGES);
+		ASSERT_TRUE(settings.Save(Path(project.generic_string() + "/ProjectSettings.ini")));
 	}
 	const std::filesystem::path staging = project / "Builds" / "Windows";
 	const str command = "\"" + EditorExecutable() + "\" --project \"" + project.generic_string() + "\" --build Windows";
@@ -1329,6 +1337,8 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	const str plain = ReadAllBytes(plainMap);
 	ASSERT_NE(plain.find("TypeRegistry.cpp.o"), str::npos) << plainLog;
 	ASSERT_NE(plain.find("Shalltear::TypeRegistry::"), str::npos) << plainLog;
+	EXPECT_NE(plain.find(BRIDGED_OBJECT), str::npos) << plainLog;
+	EXPECT_EQ(plain.find(BRIDGE_OBJECT), str::npos);
 	EXPECT_EQ(plain.find(PACKAGE_OBJECT), str::npos);
 	EXPECT_EQ(plain.find(PACKAGE_SYMBOL), str::npos);
 	EXPECT_EQ(plain.find("NativeAOTHost"), str::npos);
@@ -1343,7 +1353,7 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	}
 	{
 		Config settings;
-		settings.SetString("Packages", "enabled", PACKAGE_ID);
+		settings.SetString("Packages", "enabled", str(PACKAGE_ID) + ";" + BRIDGED_PACKAGES);
 		ASSERT_TRUE(settings.Save(Path(project.generic_string() + "/ProjectSettings.ini")));
 	}
 	std::filesystem::remove_all(project / "Library" / "Player", ec);
@@ -1353,6 +1363,7 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	const str scripted = ReadAllBytes(scriptedMap);
 	EXPECT_NE(scripted.find(PACKAGE_OBJECT), str::npos) << scriptedLog;
 	EXPECT_NE(scripted.find(PACKAGE_SYMBOL), str::npos) << scriptedLog;
+	EXPECT_NE(scripted.find(BRIDGE_OBJECT), str::npos) << scriptedLog;
 }
 
 TEST_F(PlayerBuildIntegrationTest, DisabledPackageLinkRefused) {

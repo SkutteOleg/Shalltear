@@ -131,6 +131,17 @@ static class ObjectTests {
 	}
 
 	[ConformanceTest]
+	internal static void ClassWithoutWrapperTakesParents() {
+		ulong id = BindingProbe.MakeDerivedText();
+		TextAsset? found = ObjectCache.Find<TextAsset>(id);
+		Check.True(!Gone(found), "wrapper of the parent class");
+		Check.Same<EngineObject>(found, ObjectCache.Find(id));
+		Check.True(Gone(ObjectCache.Find<Prefab>(id)), "no wrapper of another class");
+		BindingProbe.FreeDerivedText(id);
+		Check.True(Gone(found), "freed");
+	}
+
+	[ConformanceTest]
 	internal static void SameObjectSameReference() {
 		SceneObject parent = BindingProbe.CreateObject("SameParent");
 		SceneObject child = BindingProbe.CreateObject("SameChild");

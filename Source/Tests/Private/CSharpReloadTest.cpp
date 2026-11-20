@@ -974,7 +974,7 @@ TEST_F(CSharpReloadTest, ConformanceSurvivesTenReloads) {
 			SltString name{};
 			ASSERT_EQ(managed.getConformanceTestName(index, &name), SLT_OK);
 			const str label(CSharpConformance::View(name));
-			if (CSharpConformance::IsProbe(label)) {
+			if (!CSharpConformance::IsInPassSet(label)) {
 				continue;
 			}
 			SltString message{};

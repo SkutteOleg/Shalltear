@@ -13,10 +13,14 @@ namespace Shalltear::CSharpImpl::Generated {
 			return static_cast<uint8_t>((::Shalltear::CSharpImpl::ObjectBindings::IsAlive(id)) ? 1 : 0);
 		}
 
-		int32_t ObjectIsA(uint64_t id, uint64_t typeHash, uint8_t* outResult) noexcept {
-			return ScriptRuntime::Guard([&] {
-				*outResult = static_cast<uint8_t>((::Shalltear::CSharpImpl::ObjectBindings::IsA(id, typeHash)) ? 1 : 0);
-			});
+		uint64_t ObjectGetTypeHash(uint64_t id) noexcept {
+			static_assert(noexcept(::Shalltear::CSharpImpl::ObjectBindings::GetTypeHash(id)));
+			return static_cast<uint64_t>(::Shalltear::CSharpImpl::ObjectBindings::GetTypeHash(id));
+		}
+
+		uint64_t ObjectGetParentTypeHash(uint64_t typeHash) noexcept {
+			static_assert(noexcept(::Shalltear::CSharpImpl::ObjectBindings::GetParentTypeHash(typeHash)));
+			return static_cast<uint64_t>(::Shalltear::CSharpImpl::ObjectBindings::GetParentTypeHash(typeHash));
 		}
 
 		int32_t ObjectAreAlive(const uint64_t* idsData, int32_t idsCount, uint32_t* aliveData, int32_t aliveCount) noexcept {
@@ -62,6 +66,39 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ObjectFindComponent(uint64_t selfId, uint64_t typeHash, uint64_t* outResult) noexcept {
+			::Shalltear::SceneObject* const self = ResolveObject<::Shalltear::SceneObject>(selfId);
+			if (!self) {
+				return SLT_ERR_DESTROYED;
+			}
+			return ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint64_t>(::Shalltear::CSharpImpl::IdOf(::Shalltear::CSharpImpl::ObjectBindings::FindComponent(*self, typeHash)));
+			});
+		}
+
+		int32_t ObjectFindComponents(uint64_t selfId, uint64_t typeHash, uint64_t* idsData, int32_t idsCount, int32_t* outResult) noexcept {
+			::Shalltear::SceneObject* const self = ResolveObject<::Shalltear::SceneObject>(selfId);
+			if (!self) {
+				return SLT_ERR_DESTROYED;
+			}
+			return ScriptRuntime::Guard([&] {
+				const std::span<uint64_t> ids(idsData, static_cast<size_t>(idsCount));
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::ObjectBindings::FindComponents(*self, typeHash, ids));
+			});
+		}
+
+		int32_t ObjectAddComponent(uint64_t selfId, uint64_t typeHash, uint64_t* outResult) noexcept {
+			::Shalltear::SceneObject* const self = ResolveObject<::Shalltear::SceneObject>(selfId);
+			if (!self) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint64_t>(::Shalltear::CSharpImpl::IdOf(::Shalltear::CSharpImpl::ObjectBindings::AddComponent(*self, typeHash)));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ObjectDestroy(uint64_t objectId) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::ObjectBindings::Destroy(objectId);
@@ -82,11 +119,15 @@ namespace Shalltear::CSharpImpl::Generated {
 
 	void FillObjectBindings(SltBindings& table) {
 		table.objectIsAlive = &ObjectIsAlive;
-		table.objectIsA = &ObjectIsA;
+		table.objectGetTypeHash = &ObjectGetTypeHash;
+		table.objectGetParentTypeHash = &ObjectGetParentTypeHash;
 		table.objectAreAlive = &ObjectAreAlive;
 		table.objectFindScript = &ObjectFindScript;
 		table.objectFindScripts = &ObjectFindScripts;
 		table.objectAddScript = &ObjectAddScript;
+		table.objectFindComponent = &ObjectFindComponent;
+		table.objectFindComponents = &ObjectFindComponents;
+		table.objectAddComponent = &ObjectAddComponent;
 		table.objectDestroy = &ObjectDestroy;
 		table.objectDestroyComponent = &ObjectDestroyComponent;
 	}

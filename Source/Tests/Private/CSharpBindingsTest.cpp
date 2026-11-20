@@ -19,13 +19,27 @@ TEST(CSharpBindingsTest, GeneratedFilesMatchTheirInputs) {
 	ASSERT_FALSE(schemas.empty());
 	ASSERT_FALSE(script.empty());
 
-	std::vector<std::filesystem::path> files;
-	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(schemas)) {
-		if (entry.path().extension() == ".json") {
-			files.push_back(entry.path());
+	std::vector<std::filesystem::path> sets;
+	for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(schemas.parent_path().parent_path())) {
+		if (entry.path() != schemas.parent_path() && std::filesystem::is_directory(entry.path() / "Bindings")) {
+			sets.push_back(entry.path() / "Bindings");
 		}
 	}
-	std::sort(files.begin(), files.end(), [](const std::filesystem::path& a, const std::filesystem::path& b) { return a.filename() < b.filename(); });
+	const auto byName = [](const std::filesystem::path& a, const std::filesystem::path& b) { return a.filename() < b.filename(); };
+	std::sort(sets.begin(), sets.end(), [](const std::filesystem::path& a, const std::filesystem::path& b) { return a.parent_path().filename() < b.parent_path().filename(); });
+	sets.insert(sets.begin(), schemas);
+	ASSERT_GE(sets.size(), 2u);
+
+	std::vector<std::filesystem::path> files;
+	for (const std::filesystem::path& set : sets) {
+		const size_t first = files.size();
+		for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(set)) {
+			if (entry.path().extension() == ".json") {
+				files.push_back(entry.path());
+			}
+		}
+		std::sort(files.begin() + static_cast<std::ptrdiff_t>(first), files.end(), byName);
+	}
 	ASSERT_GE(files.size(), 2u);
 
 	str inputs;

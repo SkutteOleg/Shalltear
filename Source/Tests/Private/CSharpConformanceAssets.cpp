@@ -3,6 +3,7 @@
 #include "CSharpConformance.h"
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
@@ -40,6 +41,9 @@ namespace Shalltear::CSharpConformance {
 		_staged = SceneSystem::SavePrefab(unit, Path("project://Assets/Unit.prefab")).IsValid() && _staged;
 		SceneSystem::UnloadScene(bench);
 		SceneSystem::EndFrame();
+		if (AssetImporterRegistry::FindByExtension(".physmat")) {
+			_staged = AssetDatabase::CreateAsset(Path("project://Assets/Surface.physmat"), StringHash("PhysicsMaterial")).IsValid() && _staged;
+		}
 		AssetDatabase::ScanProjectDirectory();
 	}
 

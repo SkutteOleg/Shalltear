@@ -1,0 +1,187 @@
+{
+	"area": "PrismaticJoint",
+	"include": "Shalltear/Physics3D/Joints.h",
+	"class": "Shalltear.PrismaticJoint",
+	"instance": "PrismaticJoint",
+	"types": [
+		{ "name": "PrismaticJoint", "cpp": "::Shalltear::PrismaticJoint", "engine": "PrismaticJoint", "base": "Joint", "doc": "Sliding along 1 axis." }
+	],
+	"functions": [
+		{
+			"id": "GetAxis",
+			"cpp": "self->GetAxis()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Axis", "kind": "getter" },
+			"doc": "Slide axis in local space."
+		},
+		{
+			"id": "SetAxis",
+			"cpp": "self->SetAxis(axis)",
+			"returns": "void",
+			"params": [{ "name": "axis", "type": "Vec3" }],
+			"csharp": { "member": "Axis", "kind": "setter" }
+		},
+		{
+			"id": "GetUseSpring",
+			"cpp": "self->GetUseSpring()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseSpring", "kind": "getter" },
+			"doc": "Spring pulls to SpringTargetPosition."
+		},
+		{
+			"id": "SetUseSpring",
+			"cpp": "self->SetUseSpring(useSpring)",
+			"returns": "void",
+			"params": [{ "name": "useSpring", "type": "bool" }],
+			"csharp": { "member": "UseSpring", "kind": "setter" }
+		},
+		{
+			"id": "GetSpring",
+			"cpp": "self->GetSpring()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Spring", "kind": "getter" },
+			"doc": "Spring force per m."
+		},
+		{
+			"id": "SetSpring",
+			"cpp": "self->SetSpring(spring)",
+			"returns": "void",
+			"params": [{ "name": "spring", "type": "f32" }],
+			"csharp": { "member": "Spring", "kind": "setter" }
+		},
+		{
+			"id": "GetDamper",
+			"cpp": "self->GetDamper()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Damper", "kind": "getter" },
+			"doc": "Spring force per m/s."
+		},
+		{
+			"id": "SetDamper",
+			"cpp": "self->SetDamper(damper)",
+			"returns": "void",
+			"params": [{ "name": "damper", "type": "f32" }],
+			"csharp": { "member": "Damper", "kind": "setter" }
+		},
+		{
+			"id": "GetSpringTargetPosition",
+			"cpp": "self->GetSpringTargetPosition()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SpringTargetPosition", "kind": "getter" },
+			"doc": "Spring's rest position in m."
+		},
+		{
+			"id": "SetSpringTargetPosition",
+			"cpp": "self->SetSpringTargetPosition(springTargetPosition)",
+			"returns": "void",
+			"params": [{ "name": "springTargetPosition", "type": "f32" }],
+			"csharp": { "member": "SpringTargetPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetUseMotor",
+			"cpp": "self->GetUseMotor()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseMotor", "kind": "getter" },
+			"doc": "Motor drives to MotorTargetVelocity."
+		},
+		{
+			"id": "SetUseMotor",
+			"cpp": "self->SetUseMotor(useMotor)",
+			"returns": "void",
+			"params": [{ "name": "useMotor", "type": "bool" }],
+			"csharp": { "member": "UseMotor", "kind": "setter" }
+		},
+		{
+			"id": "GetMotorTargetVelocity",
+			"cpp": "self->GetMotorTargetVelocity()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MotorTargetVelocity", "kind": "getter" },
+			"doc": "Motor's speed in m/s."
+		},
+		{
+			"id": "SetMotorTargetVelocity",
+			"cpp": "self->SetMotorTargetVelocity(motorTargetVelocity)",
+			"returns": "void",
+			"params": [{ "name": "motorTargetVelocity", "type": "f32" }],
+			"csharp": { "member": "MotorTargetVelocity", "kind": "setter" }
+		},
+		{
+			"id": "GetMotorForce",
+			"cpp": "self->GetMotorForce()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MotorForce", "kind": "getter" },
+			"doc": "Motor's largest force."
+		},
+		{
+			"id": "SetMotorForce",
+			"cpp": "self->SetMotorForce(motorForce)",
+			"returns": "void",
+			"params": [{ "name": "motorForce", "type": "f32" }],
+			"csharp": { "member": "MotorForce", "kind": "setter" }
+		},
+		{
+			"id": "GetUseLimits",
+			"cpp": "self->GetUseLimits()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UseLimits", "kind": "getter" },
+			"doc": "Position held between LimitMin + LimitMax."
+		},
+		{
+			"id": "SetUseLimits",
+			"cpp": "self->SetUseLimits(useLimits)",
+			"returns": "void",
+			"params": [{ "name": "useLimits", "type": "bool" }],
+			"csharp": { "member": "UseLimits", "kind": "setter" }
+		},
+		{
+			"id": "GetLimitMin",
+			"cpp": "self->GetLimitMin()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LimitMin", "kind": "getter" },
+			"doc": "Lowest position in m."
+		},
+		{
+			"id": "SetLimitMin",
+			"cpp": "self->SetLimitMin(limitMin)",
+			"returns": "void",
+			"params": [{ "name": "limitMin", "type": "f32" }],
+			"csharp": { "member": "LimitMin", "kind": "setter" }
+		},
+		{
+			"id": "GetLimitMax",
+			"cpp": "self->GetLimitMax()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LimitMax", "kind": "getter" },
+			"doc": "Highest position in m."
+		},
+		{
+			"id": "SetLimitMax",
+			"cpp": "self->SetLimitMax(limitMax)",
+			"returns": "void",
+			"params": [{ "name": "limitMax", "type": "f32" }],
+			"csharp": { "member": "LimitMax", "kind": "setter" }
+		}
+	]
+}

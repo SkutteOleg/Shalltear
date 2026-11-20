@@ -59,6 +59,7 @@ internal unsafe struct SltTypeDesc {
 	public uint flags;
 	public uint hookMask;
 	public uint tickMask;
+	public uint listenerMask;
 	public SltFieldDesc* fields;
 	public int fieldCount;
 	public SltString script;
@@ -80,6 +81,7 @@ internal unsafe struct SltEngineAPI {
 	public delegate* unmanaged<void*, int, void*> listResize;
 	public delegate* unmanaged<void*, int*, void*> listData;
 	public delegate* unmanaged<ulong, nint> scriptOf;
+	public delegate* unmanaged<SltString, ulong, int, void**, int> findBindings;
 	public delegate* unmanaged<int> throwForTest;
 	public SltBindings bindings;
 }

@@ -14,15 +14,22 @@
 			"csharp": { "member": "IsAlive", "kind": "method" }
 		},
 		{
-			"id": "IsA",
-			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::IsA(id, typeHash)",
-			"returns": "bool",
-			"params": [
-				{ "name": "id", "type": "u64" },
-				{ "name": "typeHash", "type": "u64" }
-			],
+			"id": "GetTypeHash",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::GetTypeHash(id)",
+			"returns": "u64",
+			"params": [{ "name": "id", "type": "u64" }],
+			"leaf": true,
 			"thread": "any",
-			"csharp": { "member": "IsA", "kind": "method" }
+			"csharp": { "member": "GetTypeHash", "kind": "method" }
+		},
+		{
+			"id": "GetParentTypeHash",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::GetParentTypeHash(typeHash)",
+			"returns": "u64",
+			"params": [{ "name": "typeHash", "type": "u64" }],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "GetParentTypeHash", "kind": "method" }
 		},
 		{
 			"id": "AreAlive",
@@ -66,6 +73,39 @@
 				{ "name": "scriptIndex", "type": "i32" }
 			],
 			"csharp": { "member": "AddScript", "kind": "method", "relay": true }
+		},
+		{
+			"id": "FindComponent",
+			"cpp": "::Shalltear::CSharpImpl::IdOf(::Shalltear::CSharpImpl::ObjectBindings::FindComponent(*self, typeHash))",
+			"returns": "u64",
+			"params": [
+				{ "name": "self", "type": "SceneObject" },
+				{ "name": "typeHash", "type": "u64" }
+			],
+			"leaf": true,
+			"csharp": { "member": "FindComponent", "kind": "method", "relay": true }
+		},
+		{
+			"id": "FindComponents",
+			"cpp": "::Shalltear::CSharpImpl::ObjectBindings::FindComponents(*self, typeHash, ids)",
+			"returns": "i32",
+			"params": [
+				{ "name": "self", "type": "SceneObject" },
+				{ "name": "typeHash", "type": "u64" },
+				{ "name": "ids", "type": "span<u64>", "out": true }
+			],
+			"leaf": true,
+			"csharp": { "member": "FindComponents", "kind": "method", "relay": true }
+		},
+		{
+			"id": "AddComponent",
+			"cpp": "::Shalltear::CSharpImpl::IdOf(::Shalltear::CSharpImpl::ObjectBindings::AddComponent(*self, typeHash))",
+			"returns": "u64",
+			"params": [
+				{ "name": "self", "type": "SceneObject" },
+				{ "name": "typeHash", "type": "u64" }
+			],
+			"csharp": { "member": "AddComponent", "kind": "method", "relay": true }
 		},
 		{
 			"id": "Destroy",
