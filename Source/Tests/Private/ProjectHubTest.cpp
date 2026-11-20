@@ -261,9 +261,12 @@ TEST_F(ProjectHubFixture, NewProjectEnablesBuiltIns) {
 
 	for (const PackageOps::PackageManifest& manifest : catalogue) {
 		const bool enabled = PackageOps::IsEnabled(resolution, manifest.name);
+		const bool dependenciesEnabled = std::all_of(manifest.dependencies.begin(), manifest.dependencies.end(), [&](const PackageOps::PackageDependency& dependency) {
+			return PackageOps::IsEnabled(resolution, dependency.name);
+		});
 		switch (manifest.kind) {
 		case PackageOps::PackageKind::Engine:
-			EXPECT_EQ(enabled, manifest.scaffold) << manifest.name;
+			EXPECT_EQ(enabled, manifest.bridge ? dependenciesEnabled : manifest.scaffold) << manifest.name;
 			break;
 		case PackageOps::PackageKind::Package:
 			EXPECT_FALSE(enabled);

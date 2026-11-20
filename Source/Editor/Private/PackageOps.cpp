@@ -257,6 +257,15 @@ namespace Shalltear {
 				parsed.scaffold = scaffold.AsBool();
 			}
 
+			if (root.HasKey("bridge")) {
+				const JSONValue& bridge = root["bridge"];
+				if (!bridge.IsBool()) {
+					error = "'bridge' must be true or false";
+					return false;
+				}
+				parsed.bridge = bridge.AsBool();
+			}
+
 			if (root.HasKey("displayName")) {
 				parsed.displayName = str{root["displayName"].AsString()};
 			}
@@ -287,6 +296,10 @@ namespace Shalltear {
 					}
 					parsed.dependencies.push_back(PackageDependency{str{key}, str{value.AsString()}});
 				}
+			}
+			if (parsed.bridge && parsed.dependencies.size() < 2) {
+				error = "a 'bridge' must join 2 or more packages. List them in 'dependencies'";
+				return false;
 			}
 
 			out = std::move(parsed);
@@ -390,7 +403,30 @@ namespace Shalltear {
 				}
 			}
 			for (const str& name : stored) {
-				CollectReachable(catalogue, name, reached);
+				const PackageManifest* manifest = FindPackage(catalogue, name);
+				if (manifest && !manifest->bridge) {
+					CollectReachable(catalogue, name, reached);
+				}
+			}
+			Vector<str> bridges;
+			for (size_t from = 0;; from = bridges.size()) {
+				for (const PackageManifest& manifest : catalogue) {
+					if (!manifest.bridge || Contains(reached, manifest.name)) {
+						continue;
+					}
+					bool allReached = true;
+					for (const PackageDependency& dependency : manifest.dependencies) {
+						allReached = allReached && Contains(reached, dependency.name);
+					}
+					if (allReached) {
+						bridges.emplace_back(manifest.name);
+					}
+				}
+				if (bridges.size() == from) {
+					break;
+				}
+				std::sort(bridges.begin() + static_cast<std::ptrdiff_t>(from), bridges.end());
+				reached.insert(reached.end(), bridges.begin() + static_cast<std::ptrdiff_t>(from), bridges.end());
 			}
 
 			for (const str& name : reached) {
@@ -405,7 +441,7 @@ namespace Shalltear {
 			for (ResolvedPackage& entry : out) {
 				for (const str& other : reached) {
 					const PackageManifest* dependent = FindPackage(catalogue, other);
-					if (!dependent) {
+					if (!dependent || dependent->bridge) {
 						continue;
 					}
 					for (const PackageDependency& dependency : dependent->dependencies) {
@@ -418,7 +454,16 @@ namespace Shalltear {
 				std::sort(entry.requiredBy.begin(), entry.requiredBy.end());
 			}
 
-			std::sort(out.begin(), out.end(), [](const ResolvedPackage& a, const ResolvedPackage& b) { return a.name < b.name; });
+			// bridges last (if loaded earlier, OS loads their packages as imports)
+			const auto rank = [&](const ResolvedPackage& entry) {
+				const auto found = std::find(bridges.begin(), bridges.end(), entry.name);
+				return found == bridges.end() ? size_t{0} : 1 + static_cast<size_t>(found - bridges.begin());
+			};
+			std::sort(out.begin(), out.end(), [&](const ResolvedPackage& a, const ResolvedPackage& b) {
+				const size_t left = rank(a);
+				const size_t right = rank(b);
+				return left != right ? left < right : a.name < b.name;
+			});
 		}
 
 		bool IsEnabled(std::span<const ResolvedPackage> resolution, std::string_view name) {
@@ -640,7 +685,8 @@ namespace Shalltear {
 
 			Vector<str> names;
 			for (const PackageManifest& manifest : catalogue) {
-				if ((manifest.scaffold || Contains(optIn, manifest.name)) && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
+				if ((manifest.scaffold || Contains(optIn, manifest.name)) && !manifest.bridge &&
+					(manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
 					names.push_back(manifest.name);
 				}
 			}
@@ -663,7 +709,7 @@ namespace Shalltear {
 		void ListOptInPackages(std::span<const PackageManifest> catalogue, Vector<PackageManifest>& out) {
 			out.clear();
 			for (const PackageManifest& manifest : catalogue) {
-				if (!manifest.scaffold && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
+				if (!manifest.scaffold && !manifest.bridge && (manifest.kind == PackageKind::Engine || IsOptionalTool(manifest))) {
 					out.push_back(manifest);
 				}
 			}
@@ -695,7 +741,7 @@ namespace Shalltear {
 			out.clear();
 
 			for (const PackageManifest& manifest : catalogue) {
-				if (manifest.kind == PackageKind::Game) {
+				if (manifest.kind == PackageKind::Game || manifest.bridge) {
 					continue;
 				}
 

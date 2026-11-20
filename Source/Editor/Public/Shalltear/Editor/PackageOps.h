@@ -35,6 +35,7 @@ namespace Shalltear {
 			PackageKind kind = PackageKind::Package;
 			bool required = false;
 			bool scaffold = true;
+			bool bridge = false;
 			std::optional<FrameStage> stage;
 			Vector<PackageDependency> dependencies;
 			Path directory;

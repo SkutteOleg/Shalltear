@@ -248,6 +248,26 @@ TEST(PackageManifestTest, ScaffoldMustBeTrueOrFalse) {
 	EXPECT_NE(error.find("'scaffold' must be true or false"), str::npos) << error;
 }
 
+TEST(PackageManifestTest, BridgeNamesItsPackages) {
+	PackageOps::PackageManifest manifest;
+	str error;
+	ASSERT_TRUE(PackageOps::ParseManifest(R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})", manifest, error)) << error;
+	EXPECT_FALSE(manifest.bridge);
+	ASSERT_TRUE(PackageOps::ParseManifest(
+		R"({"name":"com.acme.glue","version":"1.0.0","kind":"engine","bridge":true,"dependencies":{"com.acme.physics":"1.0.0","com.acme.scripting":"1.0.0"}})",
+		manifest, error))
+		<< error;
+	EXPECT_TRUE(manifest.bridge);
+
+	error.clear();
+	EXPECT_FALSE(PackageOps::ParseManifest(R"({"name":"com.acme.glue","version":"1.0.0","bridge":"yes"})", manifest, error));
+	EXPECT_NE(error.find("'bridge' must be true or false"), str::npos) << error;
+	error.clear();
+	EXPECT_FALSE(PackageOps::ParseManifest(R"({"name":"com.acme.glue","version":"1.0.0","bridge":true,"dependencies":{"com.acme.physics":"1.0.0"}})",
+										   manifest, error));
+	EXPECT_NE(error.find("a 'bridge' must join 2 or more packages"), str::npos) << error;
+}
+
 TEST_F(PackageDiskFixture, DiscoveryReadsManifestsOnly) {
 	WritePackage("physics", R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})");
 	WritePackage("animation", R"({"name":"com.acme.animation","version":"1.0.0","kind":"engine"})");
@@ -385,6 +405,44 @@ TEST(PackageResolveTest, EnablingADependentAutomaticallyEnablesItsDependencies) 
 	EXPECT_FALSE(Find(resolution, "base")->requested);
 	EXPECT_EQ(Join(Find(resolution, "base")->requiredBy), "left,right");
 	EXPECT_EQ(Join(Find(resolution, "top")->requiredBy), "");
+}
+
+TEST(PackageResolveTest, BridgeFollowsItsDependencies) {
+	Vector<PackageOps::PackageManifest> catalogue;
+	catalogue.push_back(MakeEngine("physics"));
+	catalogue.push_back(MakeEngine("scripting"));
+	catalogue.push_back(MakeEngine("audio"));
+	catalogue.push_back(MakeEngine("glue", {"physics", "scripting"}));
+	catalogue.back().bridge = true;
+	catalogue.push_back(MakeEngine("sounds", {"glue", "audio"}));
+	catalogue.back().bridge = true;
+
+	Vector<PackageOps::ResolvedPackage> resolution;
+	Vector<str> blockers;
+	{
+		str stored[] = {str{"physics"}};
+		PackageOps::ResolveEnabledSet(catalogue, stored, resolution);
+		EXPECT_EQ(Join(Names(resolution)), "physics");
+	}
+	{
+		str stored[] = {str{"glue"}, str{"sounds"}};
+		PackageOps::ResolveEnabledSet(catalogue, stored, resolution);
+		EXPECT_EQ(Join(Names(resolution)), "");
+	}
+	{
+		str stored[] = {str{"physics"}, str{"scripting"}};
+		PackageOps::ResolveEnabledSet(catalogue, stored, resolution);
+		EXPECT_EQ(Join(Names(resolution)), "physics,scripting,glue");
+		EXPECT_FALSE(Find(resolution, "glue")->requested);
+		EXPECT_EQ(Join(Find(resolution, "physics")->requiredBy), "");
+		EXPECT_TRUE(PackageOps::CanDisable(resolution, "physics", blockers));
+		EXPECT_TRUE(PackageOps::CanDisable(resolution, "scripting", blockers));
+	}
+	{
+		str stored[] = {str{"audio"}, str{"physics"}, str{"scripting"}};
+		PackageOps::ResolveEnabledSet(catalogue, stored, resolution);
+		EXPECT_EQ(Join(Names(resolution)), "audio,physics,scripting,glue,sounds");
+	}
 }
 
 TEST(PackageResolveTest, DependentBlocksDisable) {
@@ -865,6 +923,44 @@ namespace {
 	}
 
 } // namespace
+
+TEST(PackageRowsTest, BridgeHasNoRow) {
+	Vector<PackageOps::PackageManifest> catalogue;
+	catalogue.push_back(MakeEngine("physics"));
+	catalogue.push_back(MakeEngine("scripting"));
+	catalogue.push_back(MakeEngine("glue", {"physics", "scripting"}));
+	catalogue.back().bridge = true;
+	catalogue.back().scaffold = false;
+
+	str stored[] = {str{"physics"}, str{"scripting"}};
+	const Vector<PackageOps::PackageRow> rows = RowsFor(catalogue, stored);
+	EXPECT_EQ(RowNames(rows), "physics,scripting");
+	ASSERT_NE(FindRow(rows, "physics"), nullptr);
+	EXPECT_TRUE(FindRow(rows, "physics")->canToggle);
+	EXPECT_TRUE(FindRow(rows, "physics")->blockedBy.empty());
+
+	Vector<PackageOps::PackageManifest> optIn;
+	PackageOps::ListOptInPackages(catalogue, optIn);
+	EXPECT_TRUE(optIn.empty());
+}
+
+TEST_F(PackageDiskFixture, ScaffoldLeavesBridgesOut) {
+	WritePackage("physics", R"({"name":"com.acme.physics","version":"1.0.0","kind":"engine"})");
+	WritePackage("audio", R"({"name":"com.acme.audio","version":"1.0.0","kind":"engine"})");
+	WritePackage("glue", R"({"name":"com.acme.glue","version":"1.0.0","kind":"engine","bridge":true,"dependencies":{"com.acme.physics":"1.0.0","com.acme.audio":"1.0.0"}})");
+
+	Path roots[] = {Root()};
+	Vector<PackageOps::PackageManifest> catalogue;
+	Vector<str> diagnostics;
+	PackageOps::DiscoverPackages(roots, catalogue, diagnostics);
+	ASSERT_EQ(catalogue.size(), 3u) << Join(diagnostics);
+
+	const Path document{(_root / "ProjectSettings.ini").generic_string()};
+	EXPECT_EQ(PackageOps::ScaffoldEnabledSet(document, catalogue), 2u);
+	Config reread;
+	ASSERT_TRUE(reread.Load(document));
+	EXPECT_EQ(reread.GetString("Packages", "enabled"), "com.acme.audio;com.acme.physics");
+}
 
 TEST(PackageRowsTest, RequiredToolHasDeadToggle) {
 	Vector<PackageOps::PackageManifest> catalogue;
