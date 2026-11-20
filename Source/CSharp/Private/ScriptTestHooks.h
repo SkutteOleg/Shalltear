@@ -28,6 +28,7 @@ namespace Shalltear::CSharpImpl {
 		void (*setDriver)(i32 (*driver)(i32 op, i32 first, i32 second));
 		void (*setAssetFinder)(u64 (*finder)(std::string_view path));
 		i32 (*getInputMapCount)();
+		bool (*registerDebugLineGizmo)(const void* owner);
 		const char* runtimeVersion;
 	};
 

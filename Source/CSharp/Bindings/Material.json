@@ -1,0 +1,212 @@
+{
+	"area": "Material",
+	"include": "RenderingBindings.h",
+	"class": "Shalltear.Material",
+	"instance": "Material",
+	"functions": [
+		{
+			"id": "GetFloat",
+			"cpp": "self->GetFloat(::Shalltear::StringHash(name), fallback)",
+			"returns": "f32",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "fallback", "type": "f32", "default": 0 }
+			],
+			"csharp": { "member": "GetFloat", "kind": "method" },
+			"doc": "Float parameter name (fallback when none)."
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->GetColor(::Shalltear::StringHash(name), fallback)",
+			"returns": "Color",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "fallback", "type": "Color" }
+			],
+			"csharp": { "member": "GetColor", "kind": "method" },
+			"doc": "Color parameter name (fallback when none)."
+		},
+		{
+			"id": "GetTexture",
+			"cpp": "self->GetTexture(::Shalltear::StringHash(name))",
+			"returns": "Texture",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GetTexture", "kind": "method" },
+			"doc": "Texture parameter name (null when none)."
+		},
+		{
+			"id": "HasFloat",
+			"cpp": "self->HasFloat(::Shalltear::StringHash(name))",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "HasFloat", "kind": "method" },
+			"doc": "True when name is a float parameter."
+		},
+		{
+			"id": "HasColor",
+			"cpp": "self->HasColor(::Shalltear::StringHash(name))",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "HasColor", "kind": "method" },
+			"doc": "True when name is a color parameter."
+		},
+		{
+			"id": "HasTexture",
+			"cpp": "self->HasTexture(::Shalltear::StringHash(name))",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "HasTexture", "kind": "method" },
+			"doc": "True when name is a texture parameter."
+		},
+		{
+			"id": "SetFloat",
+			"cpp": "self->SetFloat(name, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetFloat", "kind": "method" },
+			"doc": "Set float parameter name."
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->SetColor(name, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "Color" }
+			],
+			"csharp": { "member": "SetColor", "kind": "method" },
+			"doc": "Set color parameter name."
+		},
+		{
+			"id": "SetVec2",
+			"cpp": "self->SetVec2(name, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "Vec2" }
+			],
+			"csharp": { "member": "SetVec2", "kind": "method" },
+			"doc": "Set 2 component parameter name."
+		},
+		{
+			"id": "SetVec3",
+			"cpp": "self->SetVec3(name, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "Vec3" }
+			],
+			"csharp": { "member": "SetVec3", "kind": "method" },
+			"doc": "Set 3 component parameter name."
+		},
+		{
+			"id": "SetInt",
+			"cpp": "self->SetInt(name, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "i32" }
+			],
+			"csharp": { "member": "SetInt", "kind": "method" },
+			"doc": "Set integer parameter name."
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::SetTexture(*self, name, texture)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "texture", "type": "Texture", "optional": true }
+			],
+			"csharp": { "member": "SetTexture", "kind": "method" },
+			"doc": "Set texture parameter name to a project texture (null to clear)."
+		},
+		{
+			"id": "GetAlphaClipThreshold",
+			"cpp": "self->alphaClipThreshold",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AlphaClipThreshold", "kind": "getter" },
+			"doc": "Pixels below this alpha are clipped (0 = off)."
+		},
+		{
+			"id": "SetAlphaClipThreshold",
+			"cpp": "self->SetAlphaClipThreshold(alphaClipThreshold)",
+			"returns": "void",
+			"params": [{ "name": "alphaClipThreshold", "type": "f32" }],
+			"csharp": { "member": "AlphaClipThreshold", "kind": "setter" }
+		},
+		{
+			"id": "GetSortingPriority",
+			"cpp": "self->sortingPriority",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SortingPriority", "kind": "getter" },
+			"doc": "Draw order inside a blend class (lower 1st)."
+		},
+		{
+			"id": "SetSortingPriority",
+			"cpp": "self->sortingPriority = sortingPriority",
+			"returns": "void",
+			"params": [{ "name": "sortingPriority", "type": "i32" }],
+			"csharp": { "member": "SortingPriority", "kind": "setter" }
+		},
+		{
+			"id": "SetKeyword",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::SetKeyword(*self, keyword, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "keyword", "type": "string" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetKeyword", "kind": "method" },
+			"doc": "Turn shader keyword on/off."
+		},
+		{
+			"id": "HasKeyword",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::HasKeyword(*self, keyword)",
+			"returns": "bool",
+			"params": [{ "name": "keyword", "type": "string" }],
+			"csharp": { "member": "HasKeyword", "kind": "method" },
+			"doc": "True when shader keyword is on."
+		},
+		{
+			"id": "GetKeywordCount",
+			"cpp": "self->keywords.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "KeywordCount", "kind": "getter" },
+			"doc": "Number of shader keywords on."
+		},
+		{
+			"id": "GetKeyword",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::GetKeyword(*self, index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetKeyword", "kind": "method" },
+			"doc": "Shader keyword at index (sorted)."
+		},
+		{
+			"id": "CreateInstance",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::CreateInstance(*self)",
+			"returns": "Material",
+			"params": [],
+			"csharp": { "member": "CreateInstance", "kind": "method" },
+			"doc": "Copy of this material (parameters copied, shader + textures shared). Free it with DestroyInstance."
+		},
+		{
+			"id": "DestroyInstance",
+			"cpp": "::Shalltear::MaterialAsset::DestroyInstance(::Shalltear::Handle<::Shalltear::MaterialAsset>(self))",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DestroyInstance", "kind": "method" },
+			"doc": "Free a copy made by CreateInstance (other materials untouched)."
+		}
+	]
+}

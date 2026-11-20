@@ -55,6 +55,19 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t SkeletonAssetGetRestPose(uint64_t selfId, SltBoneTransform* poseData, int32_t poseCount, int32_t* outResult) noexcept {
+			::Shalltear::SkeletonAsset* const self = ResolveObject<::Shalltear::SkeletonAsset>(selfId);
+			if (!self) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::span<SltBoneTransform> pose(poseData, static_cast<size_t>(poseCount));
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::SkeletonBindings::ReadRestPose(*self, pose));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 	} // anonymous namespace
 
 	void FillSkeletonAssetBindings(SltBindings& table) {
@@ -62,6 +75,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.skeletonAssetFindBone = &SkeletonAssetFindBone;
 		table.skeletonAssetGetBoneName = &SkeletonAssetGetBoneName;
 		table.skeletonAssetGetBoneParent = &SkeletonAssetGetBoneParent;
+		table.skeletonAssetGetRestPose = &SkeletonAssetGetRestPose;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

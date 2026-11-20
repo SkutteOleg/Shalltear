@@ -5,9 +5,11 @@
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Graphics/ImageEncoding.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <format>
@@ -25,6 +27,8 @@ namespace Shalltear::CSharpConformance {
 	 "times": [0.5], "values": [[1, 2, 3, 4]]}
 ]
 })";
+
+		constexpr const char* GLOW = R"({"shader": "0000000000000000-0000000000000000", "floats": {}, "colors": {}, "textures": {}})";
 
 		str Controller(const Guid& clip) {
 			return std::format(R"({{
@@ -86,6 +90,21 @@ namespace Shalltear::CSharpConformance {
 			const Guid walk = AssetDatabase::LookupGuid(Path("project://Assets/Walk.anim"));
 			_staged = walk.IsValid() && FileSystem::WriteTextFile(Path("project://Assets/Hero.controller"), Controller(walk)) && _staged;
 		}
+		if (AssetImporterRegistry::FindByExtension(".mat")) {
+			_staged = FileSystem::WriteTextFile(Path("project://Assets/Glow.mat"), GLOW) && _staged;
+		}
+#ifdef SHALLTEAR_SHARED
+		if (AssetImporterRegistry::FindByExtension(".png")) {
+			const u8 pixels[16] = {255, 255, 255, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255, 255};
+			Vector<u8> png;
+			Buffer bytes;
+			if (ImageEncoding::EncodePNG(pixels, Vec2I(2, 2), png)) {
+				bytes.Allocate(png.size(), MemTag::Unknown);
+				std::copy(png.begin(), png.end(), bytes.data);
+			}
+			_staged = bytes && FileSystem::WriteFile(Path("project://Assets/Dot.png"), bytes) && _staged;
+		}
+#endif
 		AssetDatabase::ScanProjectDirectory();
 	}
 

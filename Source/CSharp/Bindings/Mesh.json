@@ -1,0 +1,42 @@
+{
+	"area": "Mesh",
+	"include": "RenderingBindings.h",
+	"class": "Shalltear.Mesh",
+	"instance": "Mesh",
+	"functions": [
+		{
+			"id": "GetSubmeshCount",
+			"cpp": "self->submeshes.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SubmeshCount", "kind": "getter" },
+			"doc": "Number of submeshes (1 material slot each)."
+		},
+		{
+			"id": "GetBlendShapeCount",
+			"cpp": "self->blendShapes.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BlendShapeCount", "kind": "getter" },
+			"doc": "Number of blend shapes."
+		},
+		{
+			"id": "FindBlendShape",
+			"cpp": "self->FindBlendShape(name)",
+			"returns": "i32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindBlendShape", "kind": "method" },
+			"doc": "Blend shape with this name (-1 when none)."
+		},
+		{
+			"id": "GetBlendShapeName",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::GetBlendShapeName(*self, index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetBlendShapeName", "kind": "method" },
+			"doc": "Name of the blend shape at index."
+		}
+	]
+}

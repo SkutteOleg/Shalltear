@@ -64,4 +64,19 @@ public unsafe partial class SkeletonAsset {
 		}
 		return result;
 	}
+
+	/// <summary>Copy each bone's rest pose into pose. Returns the bone count (may exceed pose.Length).</summary>
+	public int GetRestPose(Span<BoneTransform> pose) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SkeletonAsset.GetRestPose");
+		}
+		fixed (BoneTransform* poseData = pose) {
+			int result;
+			int status = Bindings.table.skeletonAssetGetRestPose(_id, poseData, pose.Length, &result);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "SkeletonAsset.GetRestPose");
+			}
+			return result;
+		}
+	}
 }

@@ -258,6 +258,13 @@
 			"csharp": { "member": "MakeSkeletonAsset", "kind": "method" }
 		},
 		{
+			"id": "MakeMesh",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::MakeMesh(blendShapes)",
+			"returns": "u64",
+			"params": [{ "name": "blendShapes", "type": "i32" }],
+			"csharp": { "member": "MakeMesh", "kind": "method" }
+		},
+		{
 			"id": "FreeAsset",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id)",
 			"returns": "void",

@@ -1,0 +1,44 @@
+{
+	"area": "DebugLines",
+	"include": "DebugLines.h",
+	"class": "Shalltear.DebugLines",
+	"doc": "Lines drawn by scripts for debugging.",
+	"functions": [
+		{
+			"id": "Draw",
+			"cpp": "::Shalltear::CSharpImpl::DebugLines::Draw(from, to, color, seconds, depthTested)",
+			"returns": "void",
+			"params": [
+				{ "name": "from", "type": "Vec3" },
+				{ "name": "to", "type": "Vec3" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "seconds", "type": "f32", "default": 0 },
+				{ "name": "depthTested", "type": "bool", "default": true }
+			],
+			"csharp": { "member": "Draw", "kind": "method" },
+			"doc": "Draw a line in the editor's Scene View for seconds (0 = this frame). Not drawn in players."
+		},
+		{
+			"id": "DrawRay",
+			"cpp": "::Shalltear::CSharpImpl::DebugLines::Draw(origin, origin + direction, color, seconds, depthTested)",
+			"returns": "void",
+			"params": [
+				{ "name": "origin", "type": "Vec3" },
+				{ "name": "direction", "type": "Vec3" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "seconds", "type": "f32", "default": 0 },
+				{ "name": "depthTested", "type": "bool", "default": true }
+			],
+			"csharp": { "member": "DrawRay", "kind": "method" },
+			"doc": "Draw a line from origin along direction (like Draw)."
+		},
+		{
+			"id": "GetCount",
+			"cpp": "static_cast<::Shalltear::i32>(::Shalltear::CSharpImpl::DebugLines::GetCount())",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "GetCount", "kind": "method", "access": "internal" }
+		}
+	]
+}

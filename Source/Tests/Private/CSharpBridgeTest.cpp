@@ -4,11 +4,19 @@
 
 #include "CSharpRuntimeFixture.h"
 
+#include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Frame/FrameStages.h"
+#include "Shalltear/Core/Graphics/RenderSystem.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
+#include "Shalltear/Core/Window/WindowSystem.h"
 
+#include "Shalltear/Editor/EditorGizmos.h"
+
+#include <chrono>
 #include <format>
 #include <optional>
+#include <thread>
 
 using namespace Shalltear;
 using namespace Shalltear::CSharpTests;
@@ -169,6 +177,7 @@ TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {
 	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
 	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
 	ASSERT_TRUE(assets->IsStaged());
+	ASSERT_NE(AssetDatabase::LoadAsset(Path("project://Assets/Dot.png")), nullptr);
 	std::optional<CSharpConformance::InputRig> input(std::in_place, _hooks->setDriver);
 	ASSERT_TRUE(input->IsReady());
 	SceneSystem::CreateScene("World");
@@ -260,6 +269,80 @@ TEST_F(CSharpRuntimeFixture, ScriptsUnloadAfterTheirBridge) {
 	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
 	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 	SceneSystem::Terminate();
+}
+
+TEST_F(CSharpRuntimeFixture, CamerasAreListed) {
+	WindowSystem::Initialize();
+	RenderSystem::Initialize();
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+	str message;
+	EXPECT_EQ(Run("RenderingProbe.ListsCameras", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"cameras 1 then 0"}));
+	SceneSystem::Terminate();
+	RenderSystem::Terminate();
+	WindowSystem::Terminate();
+}
+
+TEST_F(CSharpRuntimeFixture, DebugLinesReachTheSceneView) {
+	EditorGizmos::Initialize();
+	char owner = 0;
+	ASSERT_TRUE(_hooks->registerDebugLineGizmo(&owner));
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	Vector<DebugLine> lines;
+	Vector<DebugLine> overlay;
+	const auto draw = [&] {
+		lines.clear();
+		overlay.clear();
+		GizmoDrawContext context;
+		context.lines = &lines;
+		context.overlayLines = &overlay;
+		EditorGizmos::DrawSceneGizmos(context);
+	};
+	FrameTime frame = CSharpConformance::MakeFrame();
+	str message;
+	{
+		const Time::FrameScope scope(frame);
+		EXPECT_EQ(Run("RenderingProbe.DrawsLines", message), SLT_OK) << message;
+		FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	}
+	draw();
+	EXPECT_EQ(lines.size(), 1u);
+	EXPECT_EQ(overlay.size(), 1u);
+	if (lines.size() == 1 && overlay.size() == 1) {
+		EXPECT_EQ(lines[0].a, Vec3(0.0f, 0.0f, 0.0f));
+		EXPECT_EQ(lines[0].b, Vec3(1.0f, 2.0f, 3.0f));
+		EXPECT_EQ(lines[0].color, Color32(255, 0, 0, 255));
+		EXPECT_EQ(overlay[0].b, Vec3(0.0f, 1.0f, 0.0f));
+		EXPECT_EQ(overlay[0].color, Color32(0, 255, 0, 255));
+	}
+
+	++frame.frameCount;
+	{
+		const Time::FrameScope scope(frame);
+		FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	}
+	draw();
+	EXPECT_EQ(lines.size(), 0u);
+	EXPECT_EQ(overlay.size(), 1u);
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(600));
+	++frame.frameCount;
+	{
+		const Time::FrameScope scope(frame);
+		FrameStages::Run(FrameStage::EndFrame, FrameStageArgs{});
+	}
+	draw();
+	EXPECT_EQ(lines.size(), 0u);
+	EXPECT_EQ(overlay.size(), 0u);
+	EXPECT_NE(Run("RenderingProbe.CountsDrawnLines", message), SLT_OK);
+	EXPECT_EQ(message, "lines 2");
+	EditorGizmos::UnregisterOwnedBy(&owner);
+	EditorGizmos::Terminate();
 }
 
 TEST_F(CSharpRuntimeFixture, ScriptsNeedTheirPackagesBindings) {

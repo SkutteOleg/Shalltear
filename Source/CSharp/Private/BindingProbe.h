@@ -49,6 +49,7 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	void FreeDerivedText(u64 id);
 	u64 MakeAsset(std::string_view typeName);
 	u64 MakeSkeletonAsset();
+	u64 MakeMesh(i32 blendShapes);
 	void FreeAsset(u64 id);
 
 	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);

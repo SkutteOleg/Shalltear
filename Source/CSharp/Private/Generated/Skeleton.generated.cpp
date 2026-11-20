@@ -77,6 +77,34 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t SkeletonGetLocalPose(uint64_t selfId, SltBoneTransform* poseData, int32_t poseCount, int32_t* outResult) noexcept {
+			::Shalltear::Skeleton* const self = ResolveObject<::Shalltear::Skeleton>(selfId);
+			if (!self) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::span<SltBoneTransform> pose(poseData, static_cast<size_t>(poseCount));
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::SkeletonBindings::ReadLocalPose(*self, pose));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SkeletonWriteBoneLocalPose(uint64_t selfId, int32_t bone, float positionX, float positionY, float positionZ, float rotationX, float rotationY, float rotationZ, float rotationW, float scaleX, float scaleY, float scaleZ) noexcept {
+			::Shalltear::Skeleton* const self = ResolveObject<::Shalltear::Skeleton>(selfId);
+			if (!self) {
+				return SLT_ERR_DESTROYED;
+			}
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const ::Shalltear::Vec3 position(positionX, positionY, positionZ);
+				const ::Shalltear::Quat rotation(rotationX, rotationY, rotationZ, rotationW);
+				const ::Shalltear::Vec3 scale(scaleX, scaleY, scaleZ);
+				::Shalltear::CSharpImpl::SkeletonBindings::WriteBoneLocalPose(*self, bone, position, rotation, scale);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 	} // anonymous namespace
 
 	void FillSkeletonBindings(SltBindings& table) {
@@ -86,6 +114,8 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.skeletonGetExposedBone = &SkeletonGetExposedBone;
 		table.skeletonGetExposedObject = &SkeletonGetExposedObject;
 		table.skeletonUpdatePose = &SkeletonUpdatePose;
+		table.skeletonGetLocalPose = &SkeletonGetLocalPose;
+		table.skeletonWriteBoneLocalPose = &SkeletonWriteBoneLocalPose;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

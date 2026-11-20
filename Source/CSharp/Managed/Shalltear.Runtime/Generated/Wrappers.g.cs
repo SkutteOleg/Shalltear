@@ -6,11 +6,17 @@ namespace Shalltear.Interop;
 
 internal static partial class ObjectCache {
 	static void WrapGenerated() {
+		Wrap(Camera.ENGINE_TYPE, static id => new Camera(id));
+		Wrap(RenderPass.ENGINE_TYPE, static id => new RenderPass(id));
+		Wrap(Light.ENGINE_TYPE, static id => new Light(id));
+		Wrap(MeshRenderer.ENGINE_TYPE, static id => new MeshRenderer(id));
 		Wrap(Scene.ENGINE_TYPE, static id => new Scene(id));
 		Wrap(SceneAsset.ENGINE_TYPE, static id => new SceneAsset(id));
 		Wrap(Prefab.ENGINE_TYPE, static id => new Prefab(id));
 		Wrap(Skeleton.ENGINE_TYPE, static id => new Skeleton(id));
 		Wrap(SkeletonAsset.ENGINE_TYPE, static id => new SkeletonAsset(id));
+		Wrap(SkinnedMeshRenderer.ENGINE_TYPE, static id => new SkinnedMeshRenderer(id));
+		Wrap(SkinAsset.ENGINE_TYPE, static id => new SkinAsset(id));
 		Wrap(TextAsset.ENGINE_TYPE, static id => new TextAsset(id));
 	}
 }

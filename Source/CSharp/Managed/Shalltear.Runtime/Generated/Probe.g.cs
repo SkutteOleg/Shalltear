@@ -311,6 +311,18 @@ internal static unsafe partial class BindingProbe {
 		return result;
 	}
 
+	internal static ulong MakeMesh(int blendShapes) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.MakeMesh");
+		}
+		ulong result;
+		int status = Bindings.table.probeMakeMesh(blendShapes, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
 	internal static void FreeAsset(ulong id) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.FreeAsset");

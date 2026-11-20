@@ -58,12 +58,23 @@ namespace Shalltear::CSharpImpl::Generated {
 	static_assert(offsetof(SltGamepadState, rightY) == 20);
 	static_assert(offsetof(SltGamepadState, leftTrigger) == 24);
 	static_assert(offsetof(SltGamepadState, rightTrigger) == 28);
+	static_assert(sizeof(SltBoneTransform) == 40 && alignof(SltBoneTransform) == 4);
+	static_assert(offsetof(SltBoneTransform, position) == 0);
+	static_assert(offsetof(SltBoneTransform, rotation) == 12);
+	static_assert(offsetof(SltBoneTransform, scale) == 28);
 
+	void FillCameraBindings(SltBindings& table);
+	void FillCameraListBindings(SltBindings& table);
 	void FillComponentBindings(SltBindings& table);
+	void FillDebugLinesBindings(SltBindings& table);
 	void FillEventsBindings(SltBindings& table);
 	void FillInputBindings(SltBindings& table);
 	void FillInputMapBindings(SltBindings& table);
+	void FillLightBindings(SltBindings& table);
 	void FillLogBindings(SltBindings& table);
+	void FillMaterialBindings(SltBindings& table);
+	void FillMeshBindings(SltBindings& table);
+	void FillMeshRendererBindings(SltBindings& table);
 	void FillObjectBindings(SltBindings& table);
 	void FillProbeBindings(SltBindings& table);
 	void FillSceneBindings(SltBindings& table);
@@ -71,15 +82,23 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillSceneSystemBindings(SltBindings& table);
 	void FillSkeletonBindings(SltBindings& table);
 	void FillSkeletonAssetBindings(SltBindings& table);
+	void FillSkinnedMeshRendererBindings(SltBindings& table);
 	void FillTextAssetBindings(SltBindings& table);
 	void FillTimeBindings(SltBindings& table);
 
 	void FillBindings(SltBindings& table) {
+		FillCameraBindings(table);
+		FillCameraListBindings(table);
 		FillComponentBindings(table);
+		FillDebugLinesBindings(table);
 		FillEventsBindings(table);
 		FillInputBindings(table);
 		FillInputMapBindings(table);
+		FillLightBindings(table);
 		FillLogBindings(table);
+		FillMaterialBindings(table);
+		FillMeshBindings(table);
+		FillMeshRendererBindings(table);
 		FillObjectBindings(table);
 		FillProbeBindings(table);
 		FillSceneBindings(table);
@@ -87,6 +106,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillSceneSystemBindings(table);
 		FillSkeletonBindings(table);
 		FillSkeletonAssetBindings(table);
+		FillSkinnedMeshRendererBindings(table);
 		FillTextAssetBindings(table);
 		FillTimeBindings(table);
 	}

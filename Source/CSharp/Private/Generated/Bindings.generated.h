@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x19c48ae0ee4ec57dull
-#define SLT_BINDINGS_INPUT_DIGEST 0xb1e38a5a3890be0bull
+#define SLT_BRIDGE_LAYOUT_HASH 0x276deffcc795944eull
+#define SLT_BINDINGS_INPUT_DIGEST 0xb990132a97736c87ull
 
 typedef struct SltString SltString;
 
@@ -44,11 +44,46 @@ typedef struct SltGamepadState {
 	float rightTrigger;
 } SltGamepadState;
 
+typedef struct SltBoneTransform {
+	::Shalltear::Vec3 position;
+	SltQuat rotation;
+	::Shalltear::Vec3 scale;
+} SltBoneTransform;
+
 typedef struct SltBindings {
+	int32_t (*cameraGetFieldOfViewDeg)(uint64_t self, float* outResult);
+	int32_t (*cameraSetFieldOfViewDeg)(uint64_t self, float fieldOfViewDeg);
+	int32_t (*cameraGetNearPlane)(uint64_t self, float* outResult);
+	int32_t (*cameraSetNearPlane)(uint64_t self, float nearPlane);
+	int32_t (*cameraGetFarPlane)(uint64_t self, float* outResult);
+	int32_t (*cameraSetFarPlane)(uint64_t self, float farPlane);
+	int32_t (*cameraGetPriority)(uint64_t self, int32_t* outResult);
+	int32_t (*cameraSetPriority)(uint64_t self, int32_t priority);
+	int32_t (*cameraGetBackgroundType)(uint64_t self, uint8_t* outResult);
+	int32_t (*cameraSetBackgroundType)(uint64_t self, uint8_t backgroundType);
+	int32_t (*cameraGetClearColor)(uint64_t self, ::Shalltear::Color* outResult);
+	int32_t (*cameraSetClearColor)(uint64_t self, float clearColorR, float clearColorG, float clearColorB, float clearColorA);
+	int32_t (*cameraGetCullingMask)(uint64_t self, uint32_t* outResult);
+	int32_t (*cameraSetCullingMask)(uint64_t self, uint32_t cullingMask);
+	int32_t (*cameraGetViewportVector)(uint64_t self, SltVec4* outResult);
+	int32_t (*cameraSetViewportVector)(uint64_t self, float valueX, float valueY, float valueZ, float valueW);
+	int32_t (*cameraGetIso)(uint64_t self, int32_t* outResult);
+	int32_t (*cameraSetIso)(uint64_t self, int32_t iso);
+	int32_t (*cameraGetShutterSpeed)(uint64_t self, float* outResult);
+	int32_t (*cameraSetShutterSpeed)(uint64_t self, float shutterSpeed);
+	int32_t (*cameraGetAperture)(uint64_t self, float* outResult);
+	int32_t (*cameraSetAperture)(uint64_t self, float aperture);
+	int32_t (*cameraGetPassCount)(uint64_t self, uint32_t* outResult);
+	int32_t (*cameraGetPass)(uint64_t self, int32_t index, uint64_t* outResult);
+	int32_t (*cameraSetPass)(uint64_t self, int32_t index, uint64_t pass);
+	int32_t (*cameraListFillCameras)(uint64_t* ids, int32_t idsCount);
 	int32_t (*componentGetOwner)(uint64_t self, uint64_t* outResult);
 	int32_t (*componentIsEnabledSelf)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentIsEffectivelyEnabled)(uint64_t self, uint8_t* outResult);
 	int32_t (*componentSetEnabled)(uint64_t self, uint8_t enabled);
+	int32_t (*debugLinesDraw)(float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float colorR, float colorG, float colorB, float colorA, float seconds, uint8_t depthTested);
+	int32_t (*debugLinesDrawRay)(float originX, float originY, float originZ, float directionX, float directionY, float directionZ, float colorR, float colorG, float colorB, float colorA, float seconds, uint8_t depthTested);
+	int32_t (*debugLinesGetCount)(void);
 	int32_t (*eventsSetListening)(int32_t id, uint8_t listening);
 	uint8_t (*inputIsKeyDown)(uint16_t key);
 	uint8_t (*inputWasKeyPressed)(uint16_t key);
@@ -75,8 +110,83 @@ typedef struct SltBindings {
 	float (*inputMapGetAxis1D)(uint32_t map, uint32_t action);
 	::Shalltear::Vec2 (*inputMapGetAxis2D)(uint32_t map, uint32_t action);
 	int32_t (*inputMapGetActionCount)(uint32_t map);
+	int32_t (*lightGetLightType)(uint64_t self, uint8_t* outResult);
+	int32_t (*lightSetLightType)(uint64_t self, uint8_t lightType);
+	int32_t (*lightGetColor)(uint64_t self, ::Shalltear::Color* outResult);
+	int32_t (*lightSetColor)(uint64_t self, float colorR, float colorG, float colorB, float colorA);
+	int32_t (*lightGetIntensity)(uint64_t self, float* outResult);
+	int32_t (*lightSetIntensity)(uint64_t self, float intensity);
+	int32_t (*lightGetRange)(uint64_t self, float* outResult);
+	int32_t (*lightSetRange)(uint64_t self, float range);
+	int32_t (*lightGetSpotAngleDeg)(uint64_t self, float* outResult);
+	int32_t (*lightSetSpotAngleDeg)(uint64_t self, float spotAngleDeg);
+	int32_t (*lightGetInnerSpotAngleDeg)(uint64_t self, float* outResult);
+	int32_t (*lightSetInnerSpotAngleDeg)(uint64_t self, float innerSpotAngleDeg);
+	int32_t (*lightGetCastShadows)(uint64_t self, uint8_t* outResult);
+	int32_t (*lightSetCastShadows)(uint64_t self, uint8_t castShadows);
+	int32_t (*lightGetShadowStrength)(uint64_t self, float* outResult);
+	int32_t (*lightSetShadowStrength)(uint64_t self, float shadowStrength);
+	int32_t (*lightGetShadowBias)(uint64_t self, float* outResult);
+	int32_t (*lightSetShadowBias)(uint64_t self, float shadowBias);
+	int32_t (*lightGetShadowNormalBias)(uint64_t self, float* outResult);
+	int32_t (*lightSetShadowNormalBias)(uint64_t self, float shadowNormalBias);
+	int32_t (*lightGetShadowNearPlane)(uint64_t self, float* outResult);
+	int32_t (*lightSetShadowNearPlane)(uint64_t self, float shadowNearPlane);
+	int32_t (*lightGetShadowCasterBias)(uint64_t self, float* outResult);
+	int32_t (*lightSetShadowCasterBias)(uint64_t self, float shadowCasterBias);
+	int32_t (*lightGetShadowCasterSlopeBias)(uint64_t self, float* outResult);
+	int32_t (*lightSetShadowCasterSlopeBias)(uint64_t self, float shadowCasterSlopeBias);
+	int32_t (*lightGetCookie)(uint64_t self, uint64_t* outResult);
+	int32_t (*lightSetCookie)(uint64_t self, uint64_t cookie);
+	int32_t (*lightGetCookieSize)(uint64_t self, ::Shalltear::Vec2* outResult);
+	int32_t (*lightSetCookieSize)(uint64_t self, float cookieSizeX, float cookieSizeY);
+	int32_t (*lightGetCookieOffset)(uint64_t self, ::Shalltear::Vec2* outResult);
+	int32_t (*lightSetCookieOffset)(uint64_t self, float cookieOffsetX, float cookieOffsetY);
+	int32_t (*lightGetRenderingLayerMask)(uint64_t self, uint32_t* outResult);
+	int32_t (*lightSetRenderingLayerMask)(uint64_t self, uint32_t renderingLayerMask);
+	int32_t (*lightGetShadowLayerMask)(uint64_t self, uint32_t* outResult);
+	int32_t (*lightSetShadowLayerMask)(uint64_t self, uint32_t shadowLayerMask);
 	int32_t (*logGetLevel)(void);
 	int32_t (*logWrite)(int32_t level, SltString category, SltString message, SltString file, int32_t line);
+	int32_t (*materialGetFloat)(uint64_t self, SltString name, float fallback, float* outResult);
+	int32_t (*materialGetColor)(uint64_t self, SltString name, float fallbackR, float fallbackG, float fallbackB, float fallbackA, ::Shalltear::Color* outResult);
+	int32_t (*materialGetTexture)(uint64_t self, SltString name, uint64_t* outResult);
+	int32_t (*materialHasFloat)(uint64_t self, SltString name, uint8_t* outResult);
+	int32_t (*materialHasColor)(uint64_t self, SltString name, uint8_t* outResult);
+	int32_t (*materialHasTexture)(uint64_t self, SltString name, uint8_t* outResult);
+	int32_t (*materialSetFloat)(uint64_t self, SltString name, float value);
+	int32_t (*materialSetColor)(uint64_t self, SltString name, float valueR, float valueG, float valueB, float valueA);
+	int32_t (*materialSetVec2)(uint64_t self, SltString name, float valueX, float valueY);
+	int32_t (*materialSetVec3)(uint64_t self, SltString name, float valueX, float valueY, float valueZ);
+	int32_t (*materialSetInt)(uint64_t self, SltString name, int32_t value);
+	int32_t (*materialSetTexture)(uint64_t self, SltString name, uint64_t texture);
+	int32_t (*materialGetAlphaClipThreshold)(uint64_t self, float* outResult);
+	int32_t (*materialSetAlphaClipThreshold)(uint64_t self, float alphaClipThreshold);
+	int32_t (*materialGetSortingPriority)(uint64_t self, int32_t* outResult);
+	int32_t (*materialSetSortingPriority)(uint64_t self, int32_t sortingPriority);
+	int32_t (*materialSetKeyword)(uint64_t self, SltString keyword, uint8_t enabled);
+	int32_t (*materialHasKeyword)(uint64_t self, SltString keyword, uint8_t* outResult);
+	int32_t (*materialGetKeywordCount)(uint64_t self, int32_t* outResult);
+	int32_t (*materialGetKeyword)(uint64_t self, int32_t index, SltString* outResult);
+	int32_t (*materialCreateInstance)(uint64_t self, uint64_t* outResult);
+	int32_t (*materialDestroyInstance)(uint64_t self);
+	int32_t (*meshGetSubmeshCount)(uint64_t self, int32_t* outResult);
+	int32_t (*meshGetBlendShapeCount)(uint64_t self, int32_t* outResult);
+	int32_t (*meshFindBlendShape)(uint64_t self, SltString name, int32_t* outResult);
+	int32_t (*meshGetBlendShapeName)(uint64_t self, int32_t index, SltString* outResult);
+	int32_t (*meshRendererGetMesh)(uint64_t self, uint64_t* outResult);
+	int32_t (*meshRendererSetMesh)(uint64_t self, uint64_t mesh);
+	int32_t (*meshRendererGetMaterialCount)(uint64_t self, uint32_t* outResult);
+	int32_t (*meshRendererGetMaterial)(uint64_t self, int32_t slot, uint64_t* outResult);
+	int32_t (*meshRendererSetMaterial)(uint64_t self, int32_t slot, uint64_t material);
+	int32_t (*meshRendererGetMaterialInstance)(uint64_t self, int32_t slot, uint64_t* outResult);
+	int32_t (*meshRendererGetRenderedMaterial)(uint64_t self, int32_t slot, uint64_t* outResult);
+	int32_t (*meshRendererGetCastShadows)(uint64_t self, uint8_t* outResult);
+	int32_t (*meshRendererSetCastShadows)(uint64_t self, uint8_t castShadows);
+	int32_t (*meshRendererGetReceiveShadows)(uint64_t self, uint8_t* outResult);
+	int32_t (*meshRendererSetReceiveShadows)(uint64_t self, uint8_t receiveShadows);
+	int32_t (*meshRendererGetRenderingLayerMask)(uint64_t self, uint32_t* outResult);
+	int32_t (*meshRendererSetRenderingLayerMask)(uint64_t self, uint32_t renderingLayerMask);
 	uint8_t (*objectIsAlive)(uint64_t id);
 	uint64_t (*objectGetTypeHash)(uint64_t id);
 	uint64_t (*objectGetParentTypeHash)(uint64_t typeHash);
@@ -120,6 +230,7 @@ typedef struct SltBindings {
 	int32_t (*probeFreeDerivedText)(uint64_t id);
 	int32_t (*probeMakeAsset)(SltString typeName, uint64_t* outResult);
 	int32_t (*probeMakeSkeletonAsset)(uint64_t* outResult);
+	int32_t (*probeMakeMesh)(int32_t blendShapes, uint64_t* outResult);
 	int32_t (*probeFreeAsset)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
@@ -172,10 +283,35 @@ typedef struct SltBindings {
 	int32_t (*skeletonGetExposedBone)(uint64_t self, int32_t index, int32_t* outResult);
 	int32_t (*skeletonGetExposedObject)(uint64_t self, int32_t index, uint64_t* outResult);
 	int32_t (*skeletonUpdatePose)(uint64_t self);
+	int32_t (*skeletonGetLocalPose)(uint64_t self, SltBoneTransform* pose, int32_t poseCount, int32_t* outResult);
+	int32_t (*skeletonWriteBoneLocalPose)(uint64_t self, int32_t bone, float positionX, float positionY, float positionZ, float rotationX, float rotationY, float rotationZ, float rotationW, float scaleX, float scaleY, float scaleZ);
 	int32_t (*skeletonAssetGetBoneCount)(uint64_t self, uint32_t* outResult);
 	int32_t (*skeletonAssetFindBone)(uint64_t self, SltString name, int32_t* outResult);
 	int32_t (*skeletonAssetGetBoneName)(uint64_t self, int32_t index, SltString* outResult);
 	int32_t (*skeletonAssetGetBoneParent)(uint64_t self, int32_t index, int32_t* outResult);
+	int32_t (*skeletonAssetGetRestPose)(uint64_t self, SltBoneTransform* pose, int32_t poseCount, int32_t* outResult);
+	int32_t (*skinnedMeshRendererGetMesh)(uint64_t self, uint64_t* outResult);
+	int32_t (*skinnedMeshRendererSetMesh)(uint64_t self, uint64_t mesh);
+	int32_t (*skinnedMeshRendererGetMaterialCount)(uint64_t self, uint32_t* outResult);
+	int32_t (*skinnedMeshRendererGetMaterial)(uint64_t self, int32_t slot, uint64_t* outResult);
+	int32_t (*skinnedMeshRendererSetMaterial)(uint64_t self, int32_t slot, uint64_t material);
+	int32_t (*skinnedMeshRendererGetMaterialInstance)(uint64_t self, int32_t slot, uint64_t* outResult);
+	int32_t (*skinnedMeshRendererGetRenderedMaterial)(uint64_t self, int32_t slot, uint64_t* outResult);
+	int32_t (*skinnedMeshRendererGetCastShadows)(uint64_t self, uint8_t* outResult);
+	int32_t (*skinnedMeshRendererSetCastShadows)(uint64_t self, uint8_t castShadows);
+	int32_t (*skinnedMeshRendererGetReceiveShadows)(uint64_t self, uint8_t* outResult);
+	int32_t (*skinnedMeshRendererSetReceiveShadows)(uint64_t self, uint8_t receiveShadows);
+	int32_t (*skinnedMeshRendererGetRenderingLayerMask)(uint64_t self, uint32_t* outResult);
+	int32_t (*skinnedMeshRendererSetRenderingLayerMask)(uint64_t self, uint32_t renderingLayerMask);
+	int32_t (*skinnedMeshRendererGetSkin)(uint64_t self, uint64_t* outResult);
+	int32_t (*skinnedMeshRendererSetSkin)(uint64_t self, uint64_t skin);
+	int32_t (*skinnedMeshRendererGetSkeleton)(uint64_t self, uint64_t* outResult);
+	int32_t (*skinnedMeshRendererSetSkeleton)(uint64_t self, uint64_t skeleton);
+	int32_t (*skinnedMeshRendererGetBlendShapeWeightCount)(uint64_t self, uint32_t* outResult);
+	int32_t (*skinnedMeshRendererGetBlendShapeWeight)(uint64_t self, int32_t index, float* outResult);
+	int32_t (*skinnedMeshRendererSetBlendShapeWeight)(uint64_t self, int32_t index, float weight);
+	int32_t (*skinnedMeshRendererSetBlendShapeWeightCount)(uint64_t self, int32_t count);
+	int32_t (*skinnedMeshRendererGetBlendShapeWeights)(uint64_t self, float* weights, int32_t weightsCount, int32_t* outResult);
 	int32_t (*textAssetGetText)(uint64_t self, SltString* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);

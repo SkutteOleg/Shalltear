@@ -9,7 +9,7 @@ public abstract class Asset : EngineObject {
 
 /// <summary>Material asset.</summary>
 [EngineType(ENGINE_TYPE)]
-public sealed class Material : Asset {
+public sealed partial class Material : Asset {
 	internal const string ENGINE_TYPE = "MaterialAsset";
 
 	internal Material(ulong id) {
@@ -19,7 +19,7 @@ public sealed class Material : Asset {
 
 /// <summary>Mesh asset.</summary>
 [EngineType(ENGINE_TYPE)]
-public sealed class Mesh : Asset {
+public sealed partial class Mesh : Asset {
 	internal const string ENGINE_TYPE = "MeshAsset";
 
 	internal Mesh(ulong id) {

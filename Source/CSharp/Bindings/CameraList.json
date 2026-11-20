@@ -1,0 +1,16 @@
+{
+	"area": "CameraList",
+	"include": "RenderingBindings.h",
+	"class": "Shalltear.Interop.CameraListBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "FillCameras",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::FillCameras(ids)",
+			"returns": "i32",
+			"params": [{ "name": "ids", "type": "span<u64>", "out": true }],
+			"leaf": true,
+			"csharp": { "member": "FillCameras", "kind": "method", "access": "internal" }
+		}
+	]
+}

@@ -1,0 +1,312 @@
+{
+	"area": "Light",
+	"include": "RenderingBindings.h",
+	"class": "Shalltear.Light",
+	"instance": "Light",
+	"types": [
+		{ "name": "Light", "cpp": "::Shalltear::Light", "engine": "Light", "base": "Component", "doc": "Lights the scene from its object." }
+	],
+	"enums": [
+		{
+			"name": "LightType",
+			"cpp": "::Shalltear::LightType",
+			"underlying": "u8",
+			"doc": "Shape of a light.",
+			"values": [
+				{ "name": "Directional", "value": 0, "doc": "Parallel rays from 1 direction." },
+				{ "name": "Point", "value": 1, "doc": "Rays from 1 point." },
+				{ "name": "Spot", "value": 2, "doc": "Cone from 1 point." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetLightType",
+			"cpp": "self->GetLightType()",
+			"returns": "LightType",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LightType", "kind": "getter" },
+			"doc": "Shape of the light."
+		},
+		{
+			"id": "SetLightType",
+			"cpp": "self->SetLightType(lightType)",
+			"returns": "void",
+			"params": [{ "name": "lightType", "type": "LightType" }],
+			"csharp": { "member": "LightType", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->GetColor()",
+			"returns": "Color",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Color", "kind": "getter" },
+			"doc": "Color of the light."
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->SetColor(color)",
+			"returns": "void",
+			"params": [{ "name": "color", "type": "Color" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		},
+		{
+			"id": "GetIntensity",
+			"cpp": "self->GetIntensity()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Intensity", "kind": "getter" },
+			"doc": "Brightness multiplier."
+		},
+		{
+			"id": "SetIntensity",
+			"cpp": "self->SetIntensity(intensity)",
+			"returns": "void",
+			"params": [{ "name": "intensity", "type": "f32" }],
+			"csharp": { "member": "Intensity", "kind": "setter" }
+		},
+		{
+			"id": "GetRange",
+			"cpp": "self->GetRange()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Range", "kind": "getter" },
+			"doc": "Reach of a point/spot light."
+		},
+		{
+			"id": "SetRange",
+			"cpp": "self->SetRange(range)",
+			"returns": "void",
+			"params": [{ "name": "range", "type": "f32" }],
+			"csharp": { "member": "Range", "kind": "setter" }
+		},
+		{
+			"id": "GetSpotAngleDeg",
+			"cpp": "self->GetSpotAngleDeg()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SpotAngleDeg", "kind": "getter" },
+			"doc": "Outer cone angle of a spot light in degrees."
+		},
+		{
+			"id": "SetSpotAngleDeg",
+			"cpp": "self->SetSpotAngleDeg(spotAngleDeg)",
+			"returns": "void",
+			"params": [{ "name": "spotAngleDeg", "type": "f32" }],
+			"csharp": { "member": "SpotAngleDeg", "kind": "setter" }
+		},
+		{
+			"id": "GetInnerSpotAngleDeg",
+			"cpp": "self->GetInnerSpotAngleDeg()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "InnerSpotAngleDeg", "kind": "getter" },
+			"doc": "Inner cone angle of a spot light in degrees (full brightness inside)."
+		},
+		{
+			"id": "SetInnerSpotAngleDeg",
+			"cpp": "self->SetInnerSpotAngleDeg(innerSpotAngleDeg)",
+			"returns": "void",
+			"params": [{ "name": "innerSpotAngleDeg", "type": "f32" }],
+			"csharp": { "member": "InnerSpotAngleDeg", "kind": "setter" }
+		},
+		{
+			"id": "GetCastShadows",
+			"cpp": "self->GetCastShadows()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CastShadows", "kind": "getter" },
+			"doc": "Light casts shadows."
+		},
+		{
+			"id": "SetCastShadows",
+			"cpp": "self->SetCastShadows(castShadows)",
+			"returns": "void",
+			"params": [{ "name": "castShadows", "type": "bool" }],
+			"csharp": { "member": "CastShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowStrength",
+			"cpp": "self->GetShadowStrength()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowStrength", "kind": "getter" },
+			"doc": "Darkness of shadows (0 to 1)."
+		},
+		{
+			"id": "SetShadowStrength",
+			"cpp": "self->SetShadowStrength(shadowStrength)",
+			"returns": "void",
+			"params": [{ "name": "shadowStrength", "type": "f32" }],
+			"csharp": { "member": "ShadowStrength", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowBias",
+			"cpp": "self->GetShadowBias()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowBias", "kind": "getter" },
+			"doc": "Depth bias to avoid shadow acne."
+		},
+		{
+			"id": "SetShadowBias",
+			"cpp": "self->SetShadowBias(shadowBias)",
+			"returns": "void",
+			"params": [{ "name": "shadowBias", "type": "f32" }],
+			"csharp": { "member": "ShadowBias", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowNormalBias",
+			"cpp": "self->GetShadowNormalBias()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowNormalBias", "kind": "getter" },
+			"doc": "Normal offset to avoid shadow acne."
+		},
+		{
+			"id": "SetShadowNormalBias",
+			"cpp": "self->SetShadowNormalBias(shadowNormalBias)",
+			"returns": "void",
+			"params": [{ "name": "shadowNormalBias", "type": "f32" }],
+			"csharp": { "member": "ShadowNormalBias", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowNearPlane",
+			"cpp": "self->GetShadowNearPlane()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowNearPlane", "kind": "getter" },
+			"doc": "Near plane of a point/spot light's shadow."
+		},
+		{
+			"id": "SetShadowNearPlane",
+			"cpp": "self->SetShadowNearPlane(shadowNearPlane)",
+			"returns": "void",
+			"params": [{ "name": "shadowNearPlane", "type": "f32" }],
+			"csharp": { "member": "ShadowNearPlane", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowCasterBias",
+			"cpp": "self->GetShadowCasterBias()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowCasterBias", "kind": "getter" },
+			"doc": "Rasterizer depth bias of the shadow pass."
+		},
+		{
+			"id": "SetShadowCasterBias",
+			"cpp": "self->SetShadowCasterBias(shadowCasterBias)",
+			"returns": "void",
+			"params": [{ "name": "shadowCasterBias", "type": "f32" }],
+			"csharp": { "member": "ShadowCasterBias", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowCasterSlopeBias",
+			"cpp": "self->GetShadowCasterSlopeBias()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowCasterSlopeBias", "kind": "getter" },
+			"doc": "Rasterizer slope bias of the shadow pass."
+		},
+		{
+			"id": "SetShadowCasterSlopeBias",
+			"cpp": "self->SetShadowCasterSlopeBias(shadowCasterSlopeBias)",
+			"returns": "void",
+			"params": [{ "name": "shadowCasterSlopeBias", "type": "f32" }],
+			"csharp": { "member": "ShadowCasterSlopeBias", "kind": "setter" }
+		},
+		{
+			"id": "GetCookie",
+			"cpp": "self->GetCookie()",
+			"returns": "Texture",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Cookie", "kind": "getter" },
+			"doc": "Texture masking the light (2D for directional/spot, cube for point)."
+		},
+		{
+			"id": "SetCookie",
+			"cpp": "self->SetCookie(::Shalltear::Handle<::Shalltear::TextureAsset>(cookie))",
+			"returns": "void",
+			"params": [{ "name": "cookie", "type": "Texture", "optional": true }],
+			"csharp": { "member": "Cookie", "kind": "setter" }
+		},
+		{
+			"id": "GetCookieSize",
+			"cpp": "self->GetCookieSize()",
+			"returns": "Vec2",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CookieSize", "kind": "getter" },
+			"doc": "World size of a directional light's cookie."
+		},
+		{
+			"id": "SetCookieSize",
+			"cpp": "self->SetCookieSize(cookieSize)",
+			"returns": "void",
+			"params": [{ "name": "cookieSize", "type": "Vec2" }],
+			"csharp": { "member": "CookieSize", "kind": "setter" }
+		},
+		{
+			"id": "GetCookieOffset",
+			"cpp": "self->GetCookieOffset()",
+			"returns": "Vec2",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CookieOffset", "kind": "getter" },
+			"doc": "Offset of a directional light's cookie."
+		},
+		{
+			"id": "SetCookieOffset",
+			"cpp": "self->SetCookieOffset(cookieOffset)",
+			"returns": "void",
+			"params": [{ "name": "cookieOffset", "type": "Vec2" }],
+			"csharp": { "member": "CookieOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetRenderingLayerMask",
+			"cpp": "self->GetRenderingLayerMask()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RenderingLayerMask", "kind": "getter" },
+			"doc": "Rendering layers reached by the light (1st 8)."
+		},
+		{
+			"id": "SetRenderingLayerMask",
+			"cpp": "self->SetRenderingLayerMask(renderingLayerMask)",
+			"returns": "void",
+			"params": [{ "name": "renderingLayerMask", "type": "u32" }],
+			"csharp": { "member": "RenderingLayerMask", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowLayerMask",
+			"cpp": "self->GetShadowLayerMask()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShadowLayerMask", "kind": "getter" },
+			"doc": "Rendering layers casting this light's shadows."
+		},
+		{
+			"id": "SetShadowLayerMask",
+			"cpp": "self->SetShadowLayerMask(shadowLayerMask)",
+			"returns": "void",
+			"params": [{ "name": "shadowLayerMask", "type": "u32" }],
+			"csharp": { "member": "ShadowLayerMask", "kind": "setter" }
+		}
+	]
+}

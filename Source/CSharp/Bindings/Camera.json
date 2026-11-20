@@ -1,0 +1,227 @@
+{
+	"area": "Camera",
+	"include": "RenderingBindings.h",
+	"class": "Shalltear.Camera",
+	"instance": "Camera",
+	"types": [
+		{ "name": "Camera", "cpp": "::Shalltear::Camera", "engine": "Camera", "base": "Component", "doc": "Renders the scene from its object." },
+		{ "name": "RenderPass", "cpp": "::Shalltear::RenderPass", "engine": "RenderPass", "base": "Asset", "doc": "Render pass asset recorded by a camera." }
+	],
+	"enums": [
+		{
+			"name": "BackgroundType",
+			"cpp": "::Shalltear::BackgroundType",
+			"underlying": "u8",
+			"doc": "What fills a camera's background.",
+			"values": [
+				{ "name": "Sky", "value": 0, "doc": "Sky of the scene's environment." },
+				{ "name": "SolidColor", "value": 1, "doc": "ClearColor." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetFieldOfViewDeg",
+			"cpp": "self->GetFieldOfViewDeg()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FieldOfViewDeg", "kind": "getter" },
+			"doc": "Vertical field of view in degrees."
+		},
+		{
+			"id": "SetFieldOfViewDeg",
+			"cpp": "self->SetFieldOfViewDeg(fieldOfViewDeg)",
+			"returns": "void",
+			"params": [{ "name": "fieldOfViewDeg", "type": "f32" }],
+			"csharp": { "member": "FieldOfViewDeg", "kind": "setter" }
+		},
+		{
+			"id": "GetNearPlane",
+			"cpp": "self->GetNearPlane()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "NearPlane", "kind": "getter" },
+			"doc": "Distance of the near clip plane."
+		},
+		{
+			"id": "SetNearPlane",
+			"cpp": "self->SetNearPlane(nearPlane)",
+			"returns": "void",
+			"params": [{ "name": "nearPlane", "type": "f32" }],
+			"csharp": { "member": "NearPlane", "kind": "setter" }
+		},
+		{
+			"id": "GetFarPlane",
+			"cpp": "self->GetFarPlane()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FarPlane", "kind": "getter" },
+			"doc": "Distance of the far clip plane."
+		},
+		{
+			"id": "SetFarPlane",
+			"cpp": "self->SetFarPlane(farPlane)",
+			"returns": "void",
+			"params": [{ "name": "farPlane", "type": "f32" }],
+			"csharp": { "member": "FarPlane", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->GetPriority()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Priority", "kind": "getter" },
+			"doc": "Order among cameras on the same target (higher drawn later)."
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->SetPriority(priority)",
+			"returns": "void",
+			"params": [{ "name": "priority", "type": "i32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetBackgroundType",
+			"cpp": "self->GetBackgroundType()",
+			"returns": "BackgroundType",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BackgroundType", "kind": "getter" },
+			"doc": "What fills empty pixels."
+		},
+		{
+			"id": "SetBackgroundType",
+			"cpp": "self->SetBackgroundType(backgroundType)",
+			"returns": "void",
+			"params": [{ "name": "backgroundType", "type": "BackgroundType" }],
+			"csharp": { "member": "BackgroundType", "kind": "setter" }
+		},
+		{
+			"id": "GetClearColor",
+			"cpp": "self->GetClearColor()",
+			"returns": "Color",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ClearColor", "kind": "getter" },
+			"doc": "Color of the background when BackgroundType is SolidColor."
+		},
+		{
+			"id": "SetClearColor",
+			"cpp": "self->SetClearColor(clearColor)",
+			"returns": "void",
+			"params": [{ "name": "clearColor", "type": "Color" }],
+			"csharp": { "member": "ClearColor", "kind": "setter" }
+		},
+		{
+			"id": "GetCullingMask",
+			"cpp": "self->GetCullingMask()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CullingMask", "kind": "getter" },
+			"doc": "Layers drawn by the camera."
+		},
+		{
+			"id": "SetCullingMask",
+			"cpp": "self->SetCullingMask(cullingMask)",
+			"returns": "void",
+			"params": [{ "name": "cullingMask", "type": "u32" }],
+			"csharp": { "member": "CullingMask", "kind": "setter" }
+		},
+		{
+			"id": "GetViewportVector",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::GetViewport(*self)",
+			"returns": "Vec4",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ViewportVector", "kind": "getter", "access": "internal" }
+		},
+		{
+			"id": "SetViewportVector",
+			"cpp": "self->SetViewportRect(::Shalltear::RectF(value.x, value.y, value.z, value.w))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec4" }],
+			"csharp": { "member": "ViewportVector", "kind": "setter", "access": "internal" }
+		},
+		{
+			"id": "GetIso",
+			"cpp": "self->GetIso()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Iso", "kind": "getter" },
+			"doc": "Sensor sensitivity used for exposure."
+		},
+		{
+			"id": "SetIso",
+			"cpp": "self->SetIso(iso)",
+			"returns": "void",
+			"params": [{ "name": "iso", "type": "i32" }],
+			"csharp": { "member": "Iso", "kind": "setter" }
+		},
+		{
+			"id": "GetShutterSpeed",
+			"cpp": "self->GetShutterSpeed()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ShutterSpeed", "kind": "getter" },
+			"doc": "Shutter time in seconds used for exposure."
+		},
+		{
+			"id": "SetShutterSpeed",
+			"cpp": "self->SetShutterSpeed(shutterSpeed)",
+			"returns": "void",
+			"params": [{ "name": "shutterSpeed", "type": "f32" }],
+			"csharp": { "member": "ShutterSpeed", "kind": "setter" }
+		},
+		{
+			"id": "GetAperture",
+			"cpp": "self->GetAperture()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Aperture", "kind": "getter" },
+			"doc": "Aperture f-number used for exposure."
+		},
+		{
+			"id": "SetAperture",
+			"cpp": "self->SetAperture(aperture)",
+			"returns": "void",
+			"params": [{ "name": "aperture", "type": "f32" }],
+			"csharp": { "member": "Aperture", "kind": "setter" }
+		},
+		{
+			"id": "GetPassCount",
+			"cpp": "self->GetPassCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "PassCount", "kind": "getter" },
+			"doc": "Number of render pass slots."
+		},
+		{
+			"id": "GetPass",
+			"cpp": "self->GetPass(static_cast<::Shalltear::u32>(index))",
+			"returns": "RenderPass",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetPass", "kind": "method" },
+			"doc": "Render pass in slot index (null when none)."
+		},
+		{
+			"id": "SetPass",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::SetPass(*self, index, pass)",
+			"returns": "void",
+			"params": [
+				{ "name": "index", "type": "i32" },
+				{ "name": "pass", "type": "RenderPass", "optional": true }
+			],
+			"csharp": { "member": "SetPass", "kind": "method" },
+			"doc": "Put pass in slot index, up to PassCount (null to clear the slot)."
+		}
+	]
+}

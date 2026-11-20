@@ -1,0 +1,208 @@
+{
+	"area": "SkinnedMeshRenderer",
+	"include": "RenderingBindings.h",
+	"class": "Shalltear.SkinnedMeshRenderer",
+	"instance": "SkinnedMeshRenderer",
+	"types": [
+		{
+			"name": "SkinnedMeshRenderer",
+			"cpp": "::Shalltear::SkinnedMeshRenderer",
+			"engine": "SkinnedMeshRenderer",
+			"base": "Component",
+			"doc": "Draws a mesh posed by a skeleton."
+		},
+		{
+			"name": "SkinAsset",
+			"cpp": "::Shalltear::SkinAsset",
+			"engine": "SkinAsset",
+			"base": "Asset",
+			"doc": "Joints + bind pose tying a mesh to a skeleton."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetMesh",
+			"cpp": "self->GetMesh()",
+			"returns": "Mesh",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Mesh", "kind": "getter" },
+			"doc": "Mesh drawn (null to draw nothing)."
+		},
+		{
+			"id": "SetMesh",
+			"cpp": "self->SetMesh(::Shalltear::Handle<::Shalltear::MeshAsset>(mesh))",
+			"returns": "void",
+			"params": [{ "name": "mesh", "type": "Mesh", "optional": true }],
+			"csharp": { "member": "Mesh", "kind": "setter" }
+		},
+		{
+			"id": "GetMaterialCount",
+			"cpp": "self->GetMaterialCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MaterialCount", "kind": "getter" },
+			"doc": "Number of bound material slots (not the mesh's submesh count)."
+		},
+		{
+			"id": "GetMaterial",
+			"cpp": "self->GetMaterial(static_cast<::Shalltear::u32>(slot))",
+			"returns": "Material",
+			"params": [{ "name": "slot", "type": "i32" }],
+			"csharp": { "member": "GetMaterial", "kind": "method" },
+			"doc": "Material bound to slot (null when none)."
+		},
+		{
+			"id": "SetMaterial",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::SetMaterial(*self, slot, material)",
+			"returns": "void",
+			"params": [
+				{ "name": "slot", "type": "i32" },
+				{ "name": "material", "type": "Material", "optional": true }
+			],
+			"csharp": { "member": "SetMaterial", "kind": "method" },
+			"doc": "Bind material to slot (null to clear), dropping the slot's copy."
+		},
+		{
+			"id": "GetMaterialInstance",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::GetMaterialInstance(*self, slot)",
+			"returns": "Material",
+			"params": [{ "name": "slot", "type": "i32" }],
+			"csharp": { "member": "GetMaterialInstance", "kind": "method" },
+			"doc": "This renderer's copy of slot's material, made on 1st call (freed with the renderer)."
+		},
+		{
+			"id": "GetRenderedMaterial",
+			"cpp": "self->GetRenderedMaterial(static_cast<::Shalltear::u32>(slot))",
+			"returns": "Material",
+			"params": [{ "name": "slot", "type": "i32" }],
+			"csharp": { "member": "GetRenderedMaterial", "kind": "method" },
+			"doc": "Material drawn in slot (its copy when made, else the bound one)."
+		},
+		{
+			"id": "GetCastShadows",
+			"cpp": "self->GetCastShadows()",
+			"returns": "ShadowCasting",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CastShadows", "kind": "getter" },
+			"doc": "How the mesh casts shadows."
+		},
+		{
+			"id": "SetCastShadows",
+			"cpp": "self->SetCastShadows(castShadows)",
+			"returns": "void",
+			"params": [{ "name": "castShadows", "type": "ShadowCasting" }],
+			"csharp": { "member": "CastShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetReceiveShadows",
+			"cpp": "self->GetReceiveShadows()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReceiveShadows", "kind": "getter" },
+			"doc": "Shadows fall on the mesh."
+		},
+		{
+			"id": "SetReceiveShadows",
+			"cpp": "self->SetReceiveShadows(receiveShadows)",
+			"returns": "void",
+			"params": [{ "name": "receiveShadows", "type": "bool" }],
+			"csharp": { "member": "ReceiveShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetRenderingLayerMask",
+			"cpp": "self->GetRenderingLayerMask()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RenderingLayerMask", "kind": "getter" },
+			"doc": "Rendering layers the mesh is in."
+		},
+		{
+			"id": "SetRenderingLayerMask",
+			"cpp": "self->SetRenderingLayerMask(renderingLayerMask)",
+			"returns": "void",
+			"params": [{ "name": "renderingLayerMask", "type": "u32" }],
+			"csharp": { "member": "RenderingLayerMask", "kind": "setter" }
+		},
+		{
+			"id": "GetSkin",
+			"cpp": "self->GetSkin()",
+			"returns": "SkinAsset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Skin", "kind": "getter" },
+			"doc": "Joints tying the mesh to Skeleton."
+		},
+		{
+			"id": "SetSkin",
+			"cpp": "self->SetSkin(::Shalltear::Handle<::Shalltear::SkinAsset>(skin))",
+			"returns": "void",
+			"params": [{ "name": "skin", "type": "SkinAsset", "optional": true }],
+			"csharp": { "member": "Skin", "kind": "setter" }
+		},
+		{
+			"id": "GetSkeleton",
+			"cpp": "self->GetSkeleton()",
+			"returns": "Skeleton",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Skeleton", "kind": "getter" },
+			"doc": "Skeleton posing the mesh."
+		},
+		{
+			"id": "SetSkeleton",
+			"cpp": "self->SetSkeleton(::Shalltear::Handle<::Shalltear::Skeleton>(skeleton))",
+			"returns": "void",
+			"params": [{ "name": "skeleton", "type": "Skeleton", "optional": true }],
+			"csharp": { "member": "Skeleton", "kind": "setter" }
+		},
+		{
+			"id": "GetBlendShapeWeightCount",
+			"cpp": "self->GetBlendShapeWeightCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BlendShapeWeightCount", "kind": "getter" },
+			"doc": "Number of blend shape weights held."
+		},
+		{
+			"id": "GetBlendShapeWeight",
+			"cpp": "self->GetBlendShapeWeight(static_cast<::Shalltear::u32>(index))",
+			"returns": "f32",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetBlendShapeWeight", "kind": "method" },
+			"doc": "Weight of blend shape index, 0 to 100 (0 when not held)."
+		},
+		{
+			"id": "SetBlendShapeWeight",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::SetBlendShapeWeight(*self, index, weight)",
+			"returns": "void",
+			"params": [
+				{ "name": "index", "type": "i32" },
+				{ "name": "weight", "type": "f32" }
+			],
+			"csharp": { "member": "SetBlendShapeWeight", "kind": "method" },
+			"doc": "Set the weight of the mesh's blend shape index, 0 to 100."
+		},
+		{
+			"id": "SetBlendShapeWeightCount",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::SetBlendShapeWeightCount(*self, count)",
+			"returns": "void",
+			"params": [{ "name": "count", "type": "i32" }],
+			"csharp": { "member": "SetBlendShapeWeightCount", "kind": "method" },
+			"doc": "Resize the weights to count, up to the mesh's blend shape count (new ones 0)."
+		},
+		{
+			"id": "GetBlendShapeWeights",
+			"cpp": "::Shalltear::CSharpImpl::RenderingBindings::ReadBlendShapeWeights(*self, weights)",
+			"returns": "i32",
+			"params": [{ "name": "weights", "type": "span<f32>", "out": true }],
+			"csharp": { "member": "GetBlendShapeWeights", "kind": "method" },
+			"doc": "Copy the weights into weights. Returns how many are held (may exceed weights.Length)."
+		}
+	]
+}

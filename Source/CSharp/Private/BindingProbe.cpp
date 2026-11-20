@@ -7,6 +7,8 @@
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/TextAsset.h"
+#include "Shalltear/Core/Graphics/MeshAsset.h"
+#include "Shalltear/Core/Graphics/PrimitiveMesh.h"
 #include "Shalltear/Core/Graphics/SkeletonAsset.h"
 #include "Shalltear/Core/Math/MathUtil.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
@@ -364,6 +366,16 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		skeleton->restPose.resize(2);
 		_made.push_back(skeleton->GetInstanceId());
 		return skeleton->GetInstanceId();
+	}
+
+	u64 MakeMesh(i32 blendShapes) {
+		MeshAsset* mesh = New<MeshAsset>(MemTag::Scripting);
+		BuildPrimitiveMesh(PrimitiveShape::Cube, *mesh);
+		for (i32 index = 0; index < blendShapes; ++index) {
+			mesh->blendShapes.emplace_back().name = std::format("Shape{}", index);
+		}
+		_made.push_back(mesh->GetInstanceId());
+		return mesh->GetInstanceId();
 	}
 
 	void FreeAsset(u64 id) {

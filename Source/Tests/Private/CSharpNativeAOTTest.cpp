@@ -332,6 +332,13 @@ TEST(CSharpNativeAOTTest, ReleaseLibraryDropsThreadChecks) {
 #endif
 }
 
+TEST(CSharpNativeAOTTest, PlayersDrawNoDebugLines) {
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	ASSERT_EQ(run.exitCode, 0) << run.output;
+	ASSERT_TRUE(run.cases.contains("RenderingProbe.CountsDrawnLines")) << run.output;
+	EXPECT_EQ(run.cases.at("RenderingProbe.CountsDrawnLines").second, "lines 0");
+}
+
 TEST(CSharpNativeAOTTest, ComponentsRunTheirHooks) {
 	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll", TestHelpers::CSHARP_AOT_COMPONENTS_FLAG);
 	ASSERT_EQ(run.exitCode, 0) << run.output;

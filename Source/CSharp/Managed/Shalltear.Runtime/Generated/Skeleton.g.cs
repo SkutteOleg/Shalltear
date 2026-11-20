@@ -8,6 +8,17 @@ using Shalltear.Interop;
 
 namespace Shalltear;
 
+/// <summary>Position, rotation + scale of a bone in its parent's space.</summary>
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+public partial struct BoneTransform {
+	/// <summary>Position.</summary>
+	public Vec3 position;
+	/// <summary>Rotation.</summary>
+	public Quat rotation;
+	/// <summary>Scale.</summary>
+	public Vec3 scale;
+}
+
 /// <summary>Bones of a skinned object.</summary>
 [EngineType(ENGINE_TYPE)]
 public sealed partial class Skeleton : Component {
@@ -102,6 +113,31 @@ public unsafe partial class Skeleton {
 		int status = Bindings.table.skeletonUpdatePose(_id);
 		if (status != Bridge.OK) {
 			throw Bridge.Failure(status, "Skeleton.UpdatePose");
+		}
+	}
+
+	/// <summary>Copy each bone's pose in its parent's space into pose. Returns the bone count (may exceed pose.Length).</summary>
+	public int GetLocalPose(Span<BoneTransform> pose) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Skeleton.GetLocalPose");
+		}
+		fixed (BoneTransform* poseData = pose) {
+			int result;
+			int status = Bindings.table.skeletonGetLocalPose(_id, poseData, pose.Length, &result);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "Skeleton.GetLocalPose");
+			}
+			return result;
+		}
+	}
+
+	internal void WriteBoneLocalPose(int bone, Vec3 position, Quat rotation, Vec3 scale) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Skeleton.WriteBoneLocalPose");
+		}
+		int status = Bindings.table.skeletonWriteBoneLocalPose(_id, bone, position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, scale.x, scale.y, scale.z);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "Skeleton.WriteBoneLocalPose");
 		}
 	}
 }

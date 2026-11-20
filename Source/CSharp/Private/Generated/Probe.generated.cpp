@@ -240,6 +240,14 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeMakeMesh(int32_t blendShapes, uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint64_t>(::Shalltear::CSharpImpl::BindingProbe::MakeMesh(blendShapes));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ProbeFreeAsset(uint64_t id) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id);
@@ -290,6 +298,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeFreeDerivedText = &ProbeFreeDerivedText;
 		table.probeMakeAsset = &ProbeMakeAsset;
 		table.probeMakeSkeletonAsset = &ProbeMakeSkeletonAsset;
+		table.probeMakeMesh = &ProbeMakeMesh;
 		table.probeFreeAsset = &ProbeFreeAsset;
 		table.probeRunFrames = &ProbeRunFrames;
 	}

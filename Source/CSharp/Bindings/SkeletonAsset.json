@@ -36,6 +36,14 @@
 			"params": [{ "name": "index", "type": "i32" }],
 			"csharp": { "member": "GetBoneParent", "kind": "method" },
 			"doc": "Parent of the bone at index (-1 for a root)."
+		},
+		{
+			"id": "GetRestPose",
+			"cpp": "::Shalltear::CSharpImpl::SkeletonBindings::ReadRestPose(*self, pose)",
+			"returns": "i32",
+			"params": [{ "name": "pose", "type": "span<BoneTransform>", "out": true }],
+			"csharp": { "member": "GetRestPose", "kind": "method" },
+			"doc": "Copy each bone's rest pose into pose. Returns the bone count (may exceed pose.Length)."
 		}
 	]
 }

@@ -1,3 +1,4 @@
+#include "DebugLines.h"
 #include "NativeAOTHost.h"
 #include "ScriptRuntime.h"
 
@@ -39,6 +40,7 @@ namespace Shalltear::CSharpImpl {
 			ReleasePlayerStart();
 #endif
 			ScriptRuntime::Tick();
+			DebugLines::EndFrame();
 		}
 
 	} // anonymous namespace
@@ -63,6 +65,7 @@ namespace Shalltear::CSharpImpl {
 		ReleasePlayerStart();
 #endif
 		ScriptRuntime::Detach();
+		DebugLines::Clear();
 	}
 
 } // namespace Shalltear::CSharpImpl

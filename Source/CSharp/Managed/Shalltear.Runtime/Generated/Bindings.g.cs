@@ -9,10 +9,39 @@ namespace Shalltear.Interop;
 
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct SltBindings {
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetFieldOfViewDeg;
+	public delegate* unmanaged<ulong, float, int> cameraSetFieldOfViewDeg;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetNearPlane;
+	public delegate* unmanaged<ulong, float, int> cameraSetNearPlane;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetFarPlane;
+	public delegate* unmanaged<ulong, float, int> cameraSetFarPlane;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> cameraGetPriority;
+	public delegate* unmanaged<ulong, int, int> cameraSetPriority;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> cameraGetBackgroundType;
+	public delegate* unmanaged<ulong, byte, int> cameraSetBackgroundType;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Color*, int> cameraGetClearColor;
+	public delegate* unmanaged<ulong, float, float, float, float, int> cameraSetClearColor;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> cameraGetCullingMask;
+	public delegate* unmanaged<ulong, uint, int> cameraSetCullingMask;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec4*, int> cameraGetViewportVector;
+	public delegate* unmanaged<ulong, float, float, float, float, int> cameraSetViewportVector;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> cameraGetIso;
+	public delegate* unmanaged<ulong, int, int> cameraSetIso;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetShutterSpeed;
+	public delegate* unmanaged<ulong, float, int> cameraSetShutterSpeed;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetAperture;
+	public delegate* unmanaged<ulong, float, int> cameraSetAperture;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> cameraGetPassCount;
+	public delegate* unmanaged<ulong, int, ulong*, int> cameraGetPass;
+	public delegate* unmanaged<ulong, int, ulong, int> cameraSetPass;
+	public delegate* unmanaged[SuppressGCTransition]<ulong*, int, int> cameraListFillCameras;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> componentGetOwner;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEnabledSelf;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> componentIsEffectivelyEnabled;
 	public delegate* unmanaged<ulong, byte, int> componentSetEnabled;
+	public delegate* unmanaged<float, float, float, float, float, float, float, float, float, float, float, byte, int> debugLinesDraw;
+	public delegate* unmanaged<float, float, float, float, float, float, float, float, float, float, float, byte, int> debugLinesDrawRay;
+	public delegate* unmanaged[SuppressGCTransition]<int> debugLinesGetCount;
 	public delegate* unmanaged<int, byte, int> eventsSetListening;
 	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputIsKeyDown;
 	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputWasKeyPressed;
@@ -39,8 +68,83 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged[SuppressGCTransition]<uint, uint, float> inputMapGetAxis1D;
 	public delegate* unmanaged[SuppressGCTransition]<uint, uint, Vec2> inputMapGetAxis2D;
 	public delegate* unmanaged[SuppressGCTransition]<uint, int> inputMapGetActionCount;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> lightGetLightType;
+	public delegate* unmanaged<ulong, byte, int> lightSetLightType;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Color*, int> lightGetColor;
+	public delegate* unmanaged<ulong, float, float, float, float, int> lightSetColor;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetIntensity;
+	public delegate* unmanaged<ulong, float, int> lightSetIntensity;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetRange;
+	public delegate* unmanaged<ulong, float, int> lightSetRange;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetSpotAngleDeg;
+	public delegate* unmanaged<ulong, float, int> lightSetSpotAngleDeg;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetInnerSpotAngleDeg;
+	public delegate* unmanaged<ulong, float, int> lightSetInnerSpotAngleDeg;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> lightGetCastShadows;
+	public delegate* unmanaged<ulong, byte, int> lightSetCastShadows;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetShadowStrength;
+	public delegate* unmanaged<ulong, float, int> lightSetShadowStrength;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetShadowBias;
+	public delegate* unmanaged<ulong, float, int> lightSetShadowBias;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetShadowNormalBias;
+	public delegate* unmanaged<ulong, float, int> lightSetShadowNormalBias;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetShadowNearPlane;
+	public delegate* unmanaged<ulong, float, int> lightSetShadowNearPlane;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetShadowCasterBias;
+	public delegate* unmanaged<ulong, float, int> lightSetShadowCasterBias;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> lightGetShadowCasterSlopeBias;
+	public delegate* unmanaged<ulong, float, int> lightSetShadowCasterSlopeBias;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> lightGetCookie;
+	public delegate* unmanaged<ulong, ulong, int> lightSetCookie;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec2*, int> lightGetCookieSize;
+	public delegate* unmanaged<ulong, float, float, int> lightSetCookieSize;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec2*, int> lightGetCookieOffset;
+	public delegate* unmanaged<ulong, float, float, int> lightSetCookieOffset;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> lightGetRenderingLayerMask;
+	public delegate* unmanaged<ulong, uint, int> lightSetRenderingLayerMask;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> lightGetShadowLayerMask;
+	public delegate* unmanaged<ulong, uint, int> lightSetShadowLayerMask;
 	public delegate* unmanaged[SuppressGCTransition]<int> logGetLevel;
 	public delegate* unmanaged<int, SltString, SltString, SltString, int, int> logWrite;
+	public delegate* unmanaged<ulong, SltString, float, float*, int> materialGetFloat;
+	public delegate* unmanaged<ulong, SltString, float, float, float, float, Color*, int> materialGetColor;
+	public delegate* unmanaged<ulong, SltString, ulong*, int> materialGetTexture;
+	public delegate* unmanaged<ulong, SltString, byte*, int> materialHasFloat;
+	public delegate* unmanaged<ulong, SltString, byte*, int> materialHasColor;
+	public delegate* unmanaged<ulong, SltString, byte*, int> materialHasTexture;
+	public delegate* unmanaged<ulong, SltString, float, int> materialSetFloat;
+	public delegate* unmanaged<ulong, SltString, float, float, float, float, int> materialSetColor;
+	public delegate* unmanaged<ulong, SltString, float, float, int> materialSetVec2;
+	public delegate* unmanaged<ulong, SltString, float, float, float, int> materialSetVec3;
+	public delegate* unmanaged<ulong, SltString, int, int> materialSetInt;
+	public delegate* unmanaged<ulong, SltString, ulong, int> materialSetTexture;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> materialGetAlphaClipThreshold;
+	public delegate* unmanaged<ulong, float, int> materialSetAlphaClipThreshold;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> materialGetSortingPriority;
+	public delegate* unmanaged<ulong, int, int> materialSetSortingPriority;
+	public delegate* unmanaged<ulong, SltString, byte, int> materialSetKeyword;
+	public delegate* unmanaged<ulong, SltString, byte*, int> materialHasKeyword;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> materialGetKeywordCount;
+	public delegate* unmanaged<ulong, int, SltString*, int> materialGetKeyword;
+	public delegate* unmanaged<ulong, ulong*, int> materialCreateInstance;
+	public delegate* unmanaged<ulong, int> materialDestroyInstance;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> meshGetSubmeshCount;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, int*, int> meshGetBlendShapeCount;
+	public delegate* unmanaged<ulong, SltString, int*, int> meshFindBlendShape;
+	public delegate* unmanaged<ulong, int, SltString*, int> meshGetBlendShapeName;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> meshRendererGetMesh;
+	public delegate* unmanaged<ulong, ulong, int> meshRendererSetMesh;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> meshRendererGetMaterialCount;
+	public delegate* unmanaged<ulong, int, ulong*, int> meshRendererGetMaterial;
+	public delegate* unmanaged<ulong, int, ulong, int> meshRendererSetMaterial;
+	public delegate* unmanaged<ulong, int, ulong*, int> meshRendererGetMaterialInstance;
+	public delegate* unmanaged<ulong, int, ulong*, int> meshRendererGetRenderedMaterial;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> meshRendererGetCastShadows;
+	public delegate* unmanaged<ulong, byte, int> meshRendererSetCastShadows;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> meshRendererGetReceiveShadows;
+	public delegate* unmanaged<ulong, byte, int> meshRendererSetReceiveShadows;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> meshRendererGetRenderingLayerMask;
+	public delegate* unmanaged<ulong, uint, int> meshRendererSetRenderingLayerMask;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong> objectGetTypeHash;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong> objectGetParentTypeHash;
@@ -84,6 +188,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, int> probeFreeDerivedText;
 	public delegate* unmanaged<SltString, ulong*, int> probeMakeAsset;
 	public delegate* unmanaged<ulong*, int> probeMakeSkeletonAsset;
+	public delegate* unmanaged<int, ulong*, int> probeMakeMesh;
 	public delegate* unmanaged<ulong, int> probeFreeAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
@@ -136,10 +241,35 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, int, int*, int> skeletonGetExposedBone;
 	public delegate* unmanaged<ulong, int, ulong*, int> skeletonGetExposedObject;
 	public delegate* unmanaged<ulong, int> skeletonUpdatePose;
+	public delegate* unmanaged<ulong, BoneTransform*, int, int*, int> skeletonGetLocalPose;
+	public delegate* unmanaged<ulong, int, float, float, float, float, float, float, float, float, float, float, int> skeletonWriteBoneLocalPose;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> skeletonAssetGetBoneCount;
 	public delegate* unmanaged<ulong, SltString, int*, int> skeletonAssetFindBone;
 	public delegate* unmanaged<ulong, int, SltString*, int> skeletonAssetGetBoneName;
 	public delegate* unmanaged<ulong, int, int*, int> skeletonAssetGetBoneParent;
+	public delegate* unmanaged<ulong, BoneTransform*, int, int*, int> skeletonAssetGetRestPose;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> skinnedMeshRendererGetMesh;
+	public delegate* unmanaged<ulong, ulong, int> skinnedMeshRendererSetMesh;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> skinnedMeshRendererGetMaterialCount;
+	public delegate* unmanaged<ulong, int, ulong*, int> skinnedMeshRendererGetMaterial;
+	public delegate* unmanaged<ulong, int, ulong, int> skinnedMeshRendererSetMaterial;
+	public delegate* unmanaged<ulong, int, ulong*, int> skinnedMeshRendererGetMaterialInstance;
+	public delegate* unmanaged<ulong, int, ulong*, int> skinnedMeshRendererGetRenderedMaterial;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> skinnedMeshRendererGetCastShadows;
+	public delegate* unmanaged<ulong, byte, int> skinnedMeshRendererSetCastShadows;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> skinnedMeshRendererGetReceiveShadows;
+	public delegate* unmanaged<ulong, byte, int> skinnedMeshRendererSetReceiveShadows;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> skinnedMeshRendererGetRenderingLayerMask;
+	public delegate* unmanaged<ulong, uint, int> skinnedMeshRendererSetRenderingLayerMask;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> skinnedMeshRendererGetSkin;
+	public delegate* unmanaged<ulong, ulong, int> skinnedMeshRendererSetSkin;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> skinnedMeshRendererGetSkeleton;
+	public delegate* unmanaged<ulong, ulong, int> skinnedMeshRendererSetSkeleton;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> skinnedMeshRendererGetBlendShapeWeightCount;
+	public delegate* unmanaged<ulong, int, float*, int> skinnedMeshRendererGetBlendShapeWeight;
+	public delegate* unmanaged<ulong, int, float, int> skinnedMeshRendererSetBlendShapeWeight;
+	public delegate* unmanaged<ulong, int, int> skinnedMeshRendererSetBlendShapeWeightCount;
+	public delegate* unmanaged<ulong, float*, int, int*, int> skinnedMeshRendererGetBlendShapeWeights;
 	public delegate* unmanaged<ulong, SltString*, int> textAssetGetText;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
@@ -152,7 +282,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0x19c48ae0ee4ec57d;
+	internal const ulong LAYOUT_HASH = 0x276deffcc795944e;
 
 	internal static SltBindings table;
 
@@ -243,6 +373,9 @@ internal static unsafe class Bindings {
 		}
 		if (sizeof(GamepadState) != 32) {
 			return "GamepadState size " + sizeof(GamepadState) + " (engine 32)";
+		}
+		if (sizeof(BoneTransform) != 40) {
+			return "BoneTransform size " + sizeof(BoneTransform) + " (engine 40)";
 		}
 		return null;
 	}

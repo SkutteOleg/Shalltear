@@ -13,6 +13,17 @@
 			"doc": "Bone names, parents + rest pose of a rig."
 		}
 	],
+	"structs": [
+		{
+			"name": "BoneTransform",
+			"doc": "Position, rotation + scale of a bone in its parent's space.",
+			"fields": [
+				{ "name": "position", "type": "Vec3", "doc": "Position." },
+				{ "name": "rotation", "type": "Quat", "doc": "Rotation." },
+				{ "name": "scale", "type": "Vec3", "doc": "Scale." }
+			]
+		}
+	],
 	"functions": [
 		{
 			"id": "GetSkeletonAsset",
@@ -62,6 +73,26 @@
 			"params": [],
 			"csharp": { "member": "UpdatePose", "kind": "method" },
 			"doc": "Recompute all bone poses now."
+		},
+		{
+			"id": "GetLocalPose",
+			"cpp": "::Shalltear::CSharpImpl::SkeletonBindings::ReadLocalPose(*self, pose)",
+			"returns": "i32",
+			"params": [{ "name": "pose", "type": "span<BoneTransform>", "out": true }],
+			"csharp": { "member": "GetLocalPose", "kind": "method" },
+			"doc": "Copy each bone's pose in its parent's space into pose. Returns the bone count (may exceed pose.Length)."
+		},
+		{
+			"id": "WriteBoneLocalPose",
+			"cpp": "::Shalltear::CSharpImpl::SkeletonBindings::WriteBoneLocalPose(*self, bone, position, rotation, scale)",
+			"returns": "void",
+			"params": [
+				{ "name": "bone", "type": "i32" },
+				{ "name": "position", "type": "Vec3" },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "scale", "type": "Vec3" }
+			],
+			"csharp": { "member": "WriteBoneLocalPose", "kind": "method", "access": "internal" }
 		}
 	]
 }
