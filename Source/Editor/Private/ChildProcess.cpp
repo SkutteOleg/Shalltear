@@ -27,6 +27,19 @@ namespace Shalltear {
 		std::mutex _contributionMutex;
 		std::vector<Contribution> _contributions;
 
+		void CollectEnvironment(std::span<const ChildVariable> variables, Vector<EditorPlatform::SpawnOptions::Variable>& out) {
+			EditorPlatform::CollectChildEnvironment(out);
+			for (const ChildVariable& variable : variables) {
+				const auto same =
+					std::find_if(out.begin(), out.end(), [&variable](const EditorPlatform::SpawnOptions::Variable& set) { return set.name == variable.name; });
+				if (same != out.end()) {
+					same->value = variable.value;
+				} else {
+					out.push_back({variable.name, variable.value});
+				}
+			}
+		}
+
 	} // anonymous namespace
 
 	namespace ChildEnvironment {
@@ -85,9 +98,9 @@ namespace Shalltear {
 		return "\"" + value + "\"";
 	}
 
-	bool StartDetachedProcess(const str& commandLine, const str& workingDirectory) {
+	bool StartDetachedProcess(const str& commandLine, const str& workingDirectory, std::span<const ChildVariable> variables) {
 		Vector<EditorPlatform::SpawnOptions::Variable> environment{GetMemoryResource(MemTag::Editor)};
-		EditorPlatform::CollectChildEnvironment(environment);
+		CollectEnvironment(variables, environment);
 		EditorPlatform::SpawnOptions options;
 		options.workingDirectory = workingDirectory;
 		options.setVariables = environment;
@@ -111,16 +124,7 @@ namespace Shalltear {
 		}
 
 		Vector<EditorPlatform::SpawnOptions::Variable> environment{GetMemoryResource(MemTag::Editor)};
-		EditorPlatform::CollectChildEnvironment(environment);
-		for (const ChildVariable& variable : variables) {
-			const auto same = std::find_if(environment.begin(), environment.end(),
-										   [&variable](const EditorPlatform::SpawnOptions::Variable& set) { return set.name == variable.name; });
-			if (same != environment.end()) {
-				same->value = variable.value;
-			} else {
-				environment.push_back({variable.name, variable.value});
-			}
-		}
+		CollectEnvironment(variables, environment);
 		EditorPlatform::SpawnOptions options;
 		options.workingDirectory = workingDirectory;
 		options.captureOutput = true;

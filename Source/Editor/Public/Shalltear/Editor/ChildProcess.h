@@ -15,12 +15,12 @@ namespace Shalltear {
 
 	SHALLTEAR_EDITOR_API str QuoteCommandArgument(const str& value);
 
-	SHALLTEAR_EDITOR_API bool StartDetachedProcess(const str& commandLine, const str& workingDirectory);
-
 	struct ChildVariable {
 		str name;
 		str value;
 	};
+
+	SHALLTEAR_EDITOR_API bool StartDetachedProcess(const str& commandLine, const str& workingDirectory, std::span<const ChildVariable> variables = {});
 
 	class SHALLTEAR_EDITOR_API ChildProcess {
 	public:

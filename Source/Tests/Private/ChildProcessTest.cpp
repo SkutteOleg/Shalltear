@@ -107,6 +107,25 @@ TEST_F(ChildProcessTest, DetachedChildGetsContributedVariables) {
 	EXPECT_NE(seen.find("[carried]"), str::npos) << seen;
 }
 
+TEST_F(ChildProcessTest, DetachedChildTakesVariablesGivenAtStart) {
+	const std::filesystem::path receipt =
+		std::filesystem::temp_directory_path() / ("shalltear_detached_given_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+	str unset;
+	const str command = TestPlatform::GetEnvironmentProbeCommand("SLT_TEST_CHILD_DETACHED", receipt.generic_string(), unset);
+	ChildEnvironment::Set("SLT_TEST_CHILD_DETACHED", "contributed", &_firstOwner);
+	const ChildVariable given[] = {{"SLT_TEST_CHILD_DETACHED", "given"}};
+	ASSERT_TRUE(StartDetachedProcess(command, {}, given));
+
+	str seen;
+	for (u32 attempt = 0; attempt < 400 && seen.find(']') == str::npos; ++attempt) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		seen = FileSystem::ReadTextFile(Path(receipt.generic_string()));
+	}
+	std::error_code ec;
+	std::filesystem::remove(receipt, ec);
+	EXPECT_NE(seen.find("[given]"), str::npos) << seen;
+}
+
 TEST_F(ChildProcessTest, SearchPathEntriesLeadPATH) {
 	const str inherited = TestPlatform::GetEnvironment("PATH");
 	const str separator(1, TestPlatform::GetSearchPathSeparator());

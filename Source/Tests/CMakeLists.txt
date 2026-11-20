@@ -35,6 +35,9 @@ target_link_libraries(ShalltearTests
         GTest::gtest
 )
 
+add_executable(ShalltearToolStandIn Helpers/ToolStandIn.c)
+add_dependencies(ShalltearTests ShalltearToolStandIn)
+
 target_include_directories(ShalltearTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 
 target_include_directories(ShalltearTests PRIVATE ${CMAKE_SOURCE_DIR}/Source/Core/Private)

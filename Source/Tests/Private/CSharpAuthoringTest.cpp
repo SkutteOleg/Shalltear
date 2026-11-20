@@ -416,6 +416,42 @@ TEST_F(CSharpAuthoringTest, BuildServersOutliveCompileStopAtShutdown) {
 	EXPECT_FALSE(runs);
 }
 
+TEST_F(CSharpAuthoringTest, ShutdownChildCarriesToolchainVariables) {
+	const fs::path tool = fs::path(FileSystem::GetExecutablePath().ToString()).parent_path() / ("ShalltearToolStandIn" SLT_TEST_EXE_SUFFIX);
+	ASSERT_TRUE(fs::is_regular_file(tool)) << tool;
+	const fs::path root = _root / "sdk";
+	fs::create_directories(root);
+	ASSERT_TRUE(fs::copy_file(tool, root / _editor->muxerName));
+	const fs::path receipt = _root / "receipt.txt";
+	const str receiptText = receipt.generic_string();
+	DeviceLossTest::ScopedEnvironment receiptPath("SLT_TEST_STAND_IN_RECEIPT", receiptText.c_str());
+	DeviceLossTest::ScopedEnvironment names("SLT_TEST_STAND_IN_VARIABLES", "DOTNET_ROOT,DOTNET_CLI_TELEMETRY_OPTOUT,DOTNET_NOLOGO");
+	DeviceLossTest::ScopedEnvironment inheritedRoot("DOTNET_ROOT", "inherited-root");
+	DeviceLossTest::ScopedEnvironment inheritedOptOut("DOTNET_CLI_TELEMETRY_OPTOUT", "0");
+	DeviceLossTest::ScopedEnvironment inheritedLogo("DOTNET_NOLOGO", "0");
+
+	_options.projectPath = _project.generic_string();
+	_options.projectFile = "Space_Game.Scripts.csproj";
+	_options.sdkRoot = root.generic_string();
+	_options.buildServers = true;
+	_options.watchSources = false;
+	_options.openBuild = false;
+	_editor->beginAuthoring(_options, &_authoringOwner);
+	CompileStatus::RequestCompile();
+	ASSERT_TRUE(PumpUntil(1, 60.0));
+	_editor->shutdownAuthoring();
+	_options.buildServers = false;
+
+	const str wanted = "RUN build-server shutdown\nDOTNET_ROOT=" + _options.sdkRoot + "\nDOTNET_CLI_TELEMETRY_OPTOUT=1\nDOTNET_NOLOGO=1\nEND\n";
+	str seen;
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(20);
+	while ((seen.find("RUN build-server shutdown") == str::npos || !seen.ends_with("END\n")) && std::chrono::steady_clock::now() < deadline) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		seen = FileSystem::ReadTextFile(Path(receiptText));
+	}
+	EXPECT_NE(seen.find(wanted), str::npos) << seen;
+}
+
 TEST_F(CSharpAuthoringTest, CompileWithoutBuildServersLeavesNone) {
 	if (!Prepare(false)) {
 		GTEST_SKIP() << "pinned .NET SDK not found";

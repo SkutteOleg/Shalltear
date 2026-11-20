@@ -266,7 +266,13 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		_pendingStamp.clear();
 		_loadedOutputTime = 0;
 		if (_active && _startedServers && _options.buildServers) {
-			StartDetachedProcess(QuoteCommandArgument(DotNetToolchain::GetMuxerPath(_options.sdkRoot)) + " build-server shutdown", _options.projectPath);
+			const ChildVariable variables[] = {
+				{"DOTNET_ROOT", _options.sdkRoot},
+				{"DOTNET_CLI_TELEMETRY_OPTOUT", "1"},
+				{"DOTNET_NOLOGO", "1"},
+			};
+			StartDetachedProcess(QuoteCommandArgument(DotNetToolchain::GetMuxerPath(_options.sdkRoot)) + " build-server shutdown", _options.projectPath,
+								 variables);
 		}
 		if (_active) {
 			CompileStatus::UnregisterOwnedBy(_owner);
