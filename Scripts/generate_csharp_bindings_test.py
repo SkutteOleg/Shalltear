@@ -385,6 +385,11 @@ class BindingsTest(unittest.TestCase):
 		broken = dict(SETTER, params=[{"name": "event", "type": "f32"}])
 		self.assertEqual("Game.json: SetSpeed: parameter 'event' is a C# keyword. Rename it", self.refusal([broken]))
 
+	def test_instance_parameter_is_refused(self):
+		twice = dict(LABEL, params=[{"name": "self", "type": "SceneObject"}])
+		self.assertEqual("Game.json: GetLabel: parameter 'self' is the SceneObject passed by the area. Leave it out",
+						 self.refusal([twice], instance="SceneObject"))
+
 	def test_trailing_optional_objects_default_to_null(self):
 		place = dict(ATTACH, params=[{"name": "target", "type": "SceneObject", "optional": True}, {"name": "slot", "type": "i32"},
 									 {"name": "parent", "type": "SceneObject", "optional": True},
@@ -392,6 +397,29 @@ class BindingsTest(unittest.TestCase):
 					 cpp="::Game::Place(target, slot, parent, anchor)")
 		managed = bindings.render_managed_area(bindings.parse_area(self.write([place])))
 		self.assertIn("\tpublic static SceneObject? Attach(SceneObject? target, int slot, SceneObject? parent = null, SceneObject? anchor = null) {\n", managed)
+
+	def test_trailing_scalars_and_enums_take_defaults(self):
+		mode = {"name": "Mode", "cpp": "::Game::Mode", "underlying": "u8", "doc": "How it moves.",
+				"values": [{"name": "Walk", "value": 0, "doc": "Slow."}, {"name": "Run", "value": 1, "doc": "Fast."}]}
+		move = dict(ATTACH, params=[{"name": "target", "type": "SceneObject"}, {"name": "fade", "type": "f32", "default": -1},
+									{"name": "mode", "type": "Mode", "default": "Run"}, {"name": "loop", "type": "bool", "default": True},
+									{"name": "half", "type": "f64", "default": 0.5}, {"name": "parent", "type": "SceneObject", "optional": True}],
+					cpp="::Game::Move(*target, fade, mode, loop, half, parent)")
+		managed = bindings.render_managed_area(bindings.parse_area(self.write([move], enums=[mode])))
+		self.assertIn("Attach(SceneObject target, float fade = -1f, Mode mode = Mode.Run, bool loop = true, double half = 0.5, "
+					  "SceneObject? parent = null) {\n", managed)
+
+	def test_default_is_refused_where_csharp_takes_none(self):
+		early = dict(ATTACH, params=[{"name": "target", "type": "SceneObject"}, {"name": "slot", "type": "i32", "default": 0},
+									 {"name": "parent", "type": "SceneObject"}])
+		self.assertEqual("Game.json: Attach: 'default' on 'slot' needs one on each later parameter", self.refusal([early]))
+		unsigned = dict(SETTER, params=[{"name": "speed", "type": "u32", "default": -1}], csharp={"member": "Push", "kind": "method"})
+		self.assertEqual("Game.json: SetSpeed: 'default' of 'speed' must be a number of type u32", self.refusal([unsigned]))
+		text = dict(LABEL, id="Find", returns="i32", params=[{"name": "name", "type": "string", "default": "x"}],
+					csharp={"member": "Find", "kind": "method"})
+		self.assertEqual("Game.json: Find: 'default' is for a scalar or an enum, 'name' is string", self.refusal([text]))
+		setter = dict(SETTER, params=[{"name": "speed", "type": "f32", "default": 1}])
+		self.assertEqual("Game.json: SetSpeed: 'default' needs a method without 'relay'", self.refusal([setter]))
 
 	def test_digest_follows_schemas_and_script(self):
 		script = self.directory / "script.py"

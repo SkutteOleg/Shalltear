@@ -122,6 +122,8 @@ CSHARP_CASES = (
 	('Shalltear.Physics3D.xml', build_sdk.SHIP),
 	('Shalltear.Audio.dll', build_sdk.SHIP),
 	('Shalltear.Audio.xml', build_sdk.SHIP),
+	('Shalltear.Animation.dll', build_sdk.SHIP),
+	('Shalltear.Animation.xml', build_sdk.SHIP),
 	('Shalltear.Generators.dll', build_sdk.SHIP),
 	('Renamer/Shalltear.Renamer.dll', build_sdk.SHIP),
 	('Renamer/Shalltear.Renamer.runtimeconfig.json', build_sdk.SHIP),

@@ -1,0 +1,41 @@
+{
+	"area": "SkeletonAsset",
+	"include": "SkeletonBindings.h",
+	"class": "Shalltear.SkeletonAsset",
+	"instance": "SkeletonAsset",
+	"functions": [
+		{
+			"id": "GetBoneCount",
+			"cpp": "self->GetBoneCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BoneCount", "kind": "getter" },
+			"doc": "Number of bones."
+		},
+		{
+			"id": "FindBone",
+			"cpp": "self->FindBone(name)",
+			"returns": "i32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindBone", "kind": "method" },
+			"doc": "Bone with this name (-1 when none)."
+		},
+		{
+			"id": "GetBoneName",
+			"cpp": "::Shalltear::CSharpImpl::SkeletonBindings::GetBoneName(*self, index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetBoneName", "kind": "method" },
+			"doc": "Name of the bone at index."
+		},
+		{
+			"id": "GetBoneParent",
+			"cpp": "::Shalltear::CSharpImpl::SkeletonBindings::GetBoneParent(*self, index)",
+			"returns": "i32",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetBoneParent", "kind": "method" },
+			"doc": "Parent of the bone at index (-1 for a root)."
+		}
+	]
+}

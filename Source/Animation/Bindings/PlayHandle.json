@@ -1,0 +1,87 @@
+{
+	"area": "PlayHandle",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.Interop.PlayHandleBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).IsValid()",
+			"returns": "bool",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" }
+			],
+			"csharp": { "member": "IsValid", "kind": "method" }
+		},
+		{
+			"id": "GetClip",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).GetClip()",
+			"returns": "AnimationClip",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" }
+			],
+			"csharp": { "member": "GetClip", "kind": "method" }
+		},
+		{
+			"id": "GetTime",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).GetTime()",
+			"returns": "f32",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" }
+			],
+			"csharp": { "member": "GetTime", "kind": "method" }
+		},
+		{
+			"id": "SetTime",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).SetTime(seconds)",
+			"returns": "void",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" },
+				{ "name": "seconds", "type": "f32" }
+			],
+			"csharp": { "member": "SetTime", "kind": "method" }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).GetSpeed()",
+			"returns": "f32",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" }
+			],
+			"csharp": { "member": "GetSpeed", "kind": "method" }
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).SetSpeed(value)",
+			"returns": "void",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetSpeed", "kind": "method" }
+		},
+		{
+			"id": "Stop",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::MakePlay(animatorId, layer, id).Stop()",
+			"returns": "void",
+			"params": [
+				{ "name": "animatorId", "type": "u64" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" }
+			],
+			"csharp": { "member": "Stop", "kind": "method" }
+		}
+	]
+}

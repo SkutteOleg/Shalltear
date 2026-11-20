@@ -34,9 +34,9 @@ namespace Shalltear::CSharpConformance {
 	}
 
 #ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
-	inline constexpr int32_t PASS_SET_SIZE = 62;
+	inline constexpr int32_t PASS_SET_SIZE = 73;
 #else
-	inline constexpr int32_t PASS_SET_SIZE = 75;
+	inline constexpr int32_t PASS_SET_SIZE = 86;
 #endif
 
 	inline bool IsInPassSet(std::string_view caseName) {
@@ -49,7 +49,7 @@ namespace Shalltear::CSharpConformance {
 	}
 
 	bool StandUpPackages(const void* owner);
-	bool UnloadBridges();
+	bool UnloadBridge(std::string_view name);
 
 	class StagedAssets {
 	public:

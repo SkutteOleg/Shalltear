@@ -1,0 +1,43 @@
+{
+	"area": "RetargetProfile",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.RetargetProfile",
+	"instance": "RetargetProfile",
+	"types": [
+		{
+			"name": "RetargetProfile",
+			"cpp": "::Shalltear::RetargetProfile",
+			"engine": "RetargetProfile",
+			"base": "Asset",
+			"doc": "Bone roles of a rig, for playing clips on other rigs."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetSkeleton",
+			"cpp": "self->skeleton",
+			"returns": "SkeletonAsset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Skeleton", "kind": "getter" },
+			"doc": "Rig described by the profile."
+		},
+		{
+			"id": "GetChainCount",
+			"cpp": "self->chains.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ChainCount", "kind": "getter" },
+			"doc": "Number of bone chains."
+		},
+		{
+			"id": "HasChain",
+			"cpp": "self->FindChain(role) != nullptr",
+			"returns": "bool",
+			"params": [{ "name": "role", "type": "string" }],
+			"csharp": { "member": "HasChain", "kind": "method" },
+			"doc": "True when a chain has this role."
+		}
+	]
+}

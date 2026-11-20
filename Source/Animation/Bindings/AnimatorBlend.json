@@ -1,0 +1,22 @@
+{
+	"area": "AnimatorBlend",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.AnimatorBlend",
+	"doc": "Blend tree weights of an animator controller.",
+	"functions": [
+		{
+			"id": "Weights",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::BlendWeights(*controller, node, sample, values, weights)",
+			"returns": "i32",
+			"params": [
+				{ "name": "controller", "type": "AnimatorController" },
+				{ "name": "node", "type": "i32" },
+				{ "name": "sample", "type": "Vec2" },
+				{ "name": "values", "type": "span<f32>" },
+				{ "name": "weights", "type": "span<f32>", "out": true }
+			],
+			"csharp": { "member": "Weights", "kind": "method" },
+			"doc": "Weights of a blend node's children at sample (values = 1 per parameter). Returns the child count."
+		}
+	]
+}

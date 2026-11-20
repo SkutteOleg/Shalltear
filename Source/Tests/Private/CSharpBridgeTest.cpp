@@ -231,9 +231,40 @@ TEST_F(CSharpRuntimeFixture, ThrowingPhysicsListenerIsReported) {
 	rig.reset();
 }
 
+TEST_F(CSharpRuntimeFixture, ThrowingAnimationHandlerIsReported) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	ASSERT_TRUE(assets->IsStaged());
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+
+	str message;
+	ASSERT_EQ(Run("AnimationProbe.HandlerThrows", message), SLT_OK) << message;
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by an animation handler"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"heard 0.5"}));
+	SceneSystem::Terminate();
+	assets.reset();
+}
+
+TEST_F(CSharpRuntimeFixture, ScriptsUnloadAfterTheirBridge) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
+	str message;
+	ASSERT_EQ(Run("AnimationProbe.KeepsListening", message), SLT_OK) << message;
+
+	ASSERT_TRUE(CSharpConformance::UnloadBridge("AnimationCSharp"));
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
+	SceneSystem::Terminate();
+}
+
 TEST_F(CSharpRuntimeFixture, ScriptsNeedTheirPackagesBindings) {
 	ASSERT_TRUE(Attach()) << _error;
-	ASSERT_TRUE(CSharpConformance::UnloadBridges());
+	ASSERT_TRUE(CSharpConformance::UnloadBridge("Physics3DCSharp"));
 	EXPECT_FALSE(LoadConformance());
 	EXPECT_EQ(_log.Delivered().Count("Shalltear.Physics3D has no bindings in this engine. Enable the package"), 1u) << _log.Delivered().Joined();
 	EXPECT_EQ(_hooks->getManaged().getConformanceTestCount(), 0);

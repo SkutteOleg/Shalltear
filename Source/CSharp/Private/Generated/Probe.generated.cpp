@@ -223,6 +223,31 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeMakeAsset(SltString typeNameIn, uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view typeName = View(typeNameIn);
+				*outResult = static_cast<uint64_t>(::Shalltear::CSharpImpl::BindingProbe::MakeAsset(typeName));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeMakeSkeletonAsset(uint64_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<uint64_t>(::Shalltear::CSharpImpl::BindingProbe::MakeSkeletonAsset());
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeFreeAsset(uint64_t id) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ProbeRunFrames(int32_t count) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::BindingProbe::RunFrames(count);
@@ -263,6 +288,9 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeFindAsset = &ProbeFindAsset;
 		table.probeMakeDerivedText = &ProbeMakeDerivedText;
 		table.probeFreeDerivedText = &ProbeFreeDerivedText;
+		table.probeMakeAsset = &ProbeMakeAsset;
+		table.probeMakeSkeletonAsset = &ProbeMakeSkeletonAsset;
+		table.probeFreeAsset = &ProbeFreeAsset;
 		table.probeRunFrames = &ProbeRunFrames;
 	}
 

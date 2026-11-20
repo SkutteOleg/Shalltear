@@ -9,6 +9,8 @@ internal static partial class ObjectCache {
 		Wrap(Scene.ENGINE_TYPE, static id => new Scene(id));
 		Wrap(SceneAsset.ENGINE_TYPE, static id => new SceneAsset(id));
 		Wrap(Prefab.ENGINE_TYPE, static id => new Prefab(id));
+		Wrap(Skeleton.ENGINE_TYPE, static id => new Skeleton(id));
+		Wrap(SkeletonAsset.ENGINE_TYPE, static id => new SkeletonAsset(id));
 		Wrap(TextAsset.ENGINE_TYPE, static id => new TextAsset(id));
 	}
 }

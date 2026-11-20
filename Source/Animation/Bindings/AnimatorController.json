@@ -1,0 +1,98 @@
+{
+	"area": "AnimatorController",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.AnimatorController",
+	"instance": "AnimatorController",
+	"types": [
+		{
+			"name": "AnimatorController",
+			"cpp": "::Shalltear::AnimatorController",
+			"engine": "AnimatorController",
+			"base": "Asset",
+			"doc": "States, transitions + parameters of a state machine."
+		}
+	],
+	"enums": [
+		{
+			"name": "AnimatorParameterKind",
+			"cpp": "::Shalltear::AnimatorParameterKind",
+			"underlying": "u8",
+			"doc": "Kind of a controller parameter.",
+			"values": [
+				{ "name": "Float", "value": 0, "doc": "Number." },
+				{ "name": "Int", "value": 1, "doc": "Whole number." },
+				{ "name": "Bool", "value": 2, "doc": "On/off." },
+				{ "name": "Trigger", "value": 3, "doc": "On until used by a transition." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "FindParameter",
+			"cpp": "self->FindParameter(name)",
+			"returns": "i32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindParameter", "kind": "method" },
+			"doc": "Index of the parameter with this name (-1 when none)."
+		},
+		{
+			"id": "FindState",
+			"cpp": "self->FindState(name)",
+			"returns": "i32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindState", "kind": "method" },
+			"doc": "Index of the state with this name (-1 when none)."
+		},
+		{
+			"id": "GetParameterCount",
+			"cpp": "self->parameters.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ParameterCount", "kind": "getter" },
+			"doc": "Number of parameters."
+		},
+		{
+			"id": "GetParameterName",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::Parameter(*self, index).name",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetParameterName", "kind": "method" },
+			"doc": "Name of the parameter at index."
+		},
+		{
+			"id": "GetParameterKind",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::Parameter(*self, index).kind",
+			"returns": "AnimatorParameterKind",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetParameterKind", "kind": "method" },
+			"doc": "Kind of the parameter at index."
+		},
+		{
+			"id": "GetStateCount",
+			"cpp": "self->states.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "StateCount", "kind": "getter" },
+			"doc": "Number of states."
+		},
+		{
+			"id": "GetStateName",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::State(*self, index).name",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetStateName", "kind": "method" },
+			"doc": "Name of the state at index."
+		},
+		{
+			"id": "GetLayerCount",
+			"cpp": "self->layers.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LayerCount", "kind": "getter" },
+			"doc": "Number of layers."
+		}
+	]
+}

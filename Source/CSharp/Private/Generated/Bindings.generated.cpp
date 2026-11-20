@@ -69,6 +69,8 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillSceneBindings(SltBindings& table);
 	void FillSceneObjectBindings(SltBindings& table);
 	void FillSceneSystemBindings(SltBindings& table);
+	void FillSkeletonBindings(SltBindings& table);
+	void FillSkeletonAssetBindings(SltBindings& table);
 	void FillTextAssetBindings(SltBindings& table);
 	void FillTimeBindings(SltBindings& table);
 
@@ -83,6 +85,8 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillSceneBindings(table);
 		FillSceneObjectBindings(table);
 		FillSceneSystemBindings(table);
+		FillSkeletonBindings(table);
+		FillSkeletonAssetBindings(table);
 		FillTextAssetBindings(table);
 		FillTimeBindings(table);
 	}

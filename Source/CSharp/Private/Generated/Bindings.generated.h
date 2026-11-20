@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x4da5e291eb5c2cf6ull
-#define SLT_BINDINGS_INPUT_DIGEST 0xbb1ba651ecb88de4ull
+#define SLT_BRIDGE_LAYOUT_HASH 0x19c48ae0ee4ec57dull
+#define SLT_BINDINGS_INPUT_DIGEST 0xb1e38a5a3890be0bull
 
 typedef struct SltString SltString;
 
@@ -118,6 +118,9 @@ typedef struct SltBindings {
 	int32_t (*probeFindAsset)(SltString path, uint64_t* outResult);
 	int32_t (*probeMakeDerivedText)(uint64_t* outResult);
 	int32_t (*probeFreeDerivedText)(uint64_t id);
+	int32_t (*probeMakeAsset)(SltString typeName, uint64_t* outResult);
+	int32_t (*probeMakeSkeletonAsset)(uint64_t* outResult);
+	int32_t (*probeFreeAsset)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
 	int32_t (*sceneSetName)(uint64_t self, SltString name);
@@ -163,6 +166,16 @@ typedef struct SltBindings {
 	int32_t (*sceneSystemSetPrimaryScene)(uint64_t scene);
 	int32_t (*sceneSystemIsPrefabLinked)(uint64_t target, uint8_t* outResult);
 	int32_t (*sceneSystemIsPrefabInstanceRoot)(uint64_t target, uint8_t* outResult);
+	int32_t (*skeletonGetSkeletonAsset)(uint64_t self, uint64_t* outResult);
+	int32_t (*skeletonSetSkeletonAsset)(uint64_t self, uint64_t skeletonAsset);
+	int32_t (*skeletonGetExposedBoneCount)(uint64_t self, uint32_t* outResult);
+	int32_t (*skeletonGetExposedBone)(uint64_t self, int32_t index, int32_t* outResult);
+	int32_t (*skeletonGetExposedObject)(uint64_t self, int32_t index, uint64_t* outResult);
+	int32_t (*skeletonUpdatePose)(uint64_t self);
+	int32_t (*skeletonAssetGetBoneCount)(uint64_t self, uint32_t* outResult);
+	int32_t (*skeletonAssetFindBone)(uint64_t self, SltString name, int32_t* outResult);
+	int32_t (*skeletonAssetGetBoneName)(uint64_t self, int32_t index, SltString* outResult);
+	int32_t (*skeletonAssetGetBoneParent)(uint64_t self, int32_t index, int32_t* outResult);
 	int32_t (*textAssetGetText)(uint64_t self, SltString* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);

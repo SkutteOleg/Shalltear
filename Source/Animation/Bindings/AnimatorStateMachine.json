@@ -1,0 +1,170 @@
+{
+	"area": "AnimatorStateMachine",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.AnimatorStateMachine",
+	"instance": "AnimatorStateMachine",
+	"types": [
+		{
+			"name": "AnimatorStateMachine",
+			"cpp": "::Shalltear::AnimatorStateMachine",
+			"engine": "AnimatorStateMachine",
+			"base": "Component",
+			"doc": "Drives its object's Animator from an animator controller's states."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetController",
+			"cpp": "self->GetController()",
+			"returns": "AnimatorController",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Controller", "kind": "getter" },
+			"doc": "States + parameters to run."
+		},
+		{
+			"id": "SetController",
+			"cpp": "self->SetController(::Shalltear::Handle<::Shalltear::AnimatorController>(controller))",
+			"returns": "void",
+			"params": [{ "name": "controller", "type": "AnimatorController", "optional": true }],
+			"csharp": { "member": "Controller", "kind": "setter" }
+		},
+		{
+			"id": "SetFloat",
+			"cpp": "self->SetFloat(name, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetFloat", "kind": "method" },
+			"doc": "Set a Float parameter. False when there is none."
+		},
+		{
+			"id": "SetInt",
+			"cpp": "self->SetInt(name, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "i32" }
+			],
+			"csharp": { "member": "SetInt", "kind": "method" },
+			"doc": "Set an Int parameter. False when there is none."
+		},
+		{
+			"id": "SetBool",
+			"cpp": "self->SetBool(name, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "bool" }
+			],
+			"csharp": { "member": "SetBool", "kind": "method" },
+			"doc": "Set a Bool parameter. False when there is none."
+		},
+		{
+			"id": "SetTrigger",
+			"cpp": "self->SetTrigger(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "SetTrigger", "kind": "method" },
+			"doc": "Set a Trigger (cleared by the triggered transition). False when there is none."
+		},
+		{
+			"id": "ResetTrigger",
+			"cpp": "self->ResetTrigger(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "ResetTrigger", "kind": "method" },
+			"doc": "Clear a Trigger. False when there is none."
+		},
+		{
+			"id": "GetFloat",
+			"cpp": "self->GetFloat(name)",
+			"returns": "f32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GetFloat", "kind": "method" },
+			"doc": "Value of a Float parameter (0 when none)."
+		},
+		{
+			"id": "GetInt",
+			"cpp": "self->GetInt(name)",
+			"returns": "i32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GetInt", "kind": "method" },
+			"doc": "Value of an Int parameter (0 when none)."
+		},
+		{
+			"id": "GetBool",
+			"cpp": "self->GetBool(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GetBool", "kind": "method" },
+			"doc": "Value of a Bool parameter (false when none)."
+		},
+		{
+			"id": "Play",
+			"cpp": "self->Play(state, fade, layer)",
+			"returns": "bool",
+			"params": [
+				{ "name": "state", "type": "string" },
+				{ "name": "fade", "type": "f32", "default": -1 },
+				{ "name": "layer", "type": "i32", "default": 0 }
+			],
+			"csharp": { "member": "Play", "kind": "method" },
+			"doc": "Enter state on layer, fading over fade seconds. False when there is no such state."
+		},
+		{
+			"id": "Travel",
+			"cpp": "self->Travel(state, layer)",
+			"returns": "bool",
+			"params": [
+				{ "name": "state", "type": "string" },
+				{ "name": "layer", "type": "i32", "default": 0 }
+			],
+			"csharp": { "member": "Travel", "kind": "method" },
+			"doc": "Walk transitions to state on layer. False when unreachable."
+		},
+		{
+			"id": "GetCurrentState",
+			"cpp": "self->GetCurrentState(layer)",
+			"returns": "i32",
+			"params": [{ "name": "layer", "type": "i32" }],
+			"csharp": { "member": "GetCurrentState", "kind": "method" },
+			"doc": "Index of the current state of layer (-1 when none). Same indices as AnimatorController.FindState."
+		},
+		{
+			"id": "GetNormalizedTime",
+			"cpp": "self->GetNormalizedTime(layer)",
+			"returns": "f32",
+			"params": [{ "name": "layer", "type": "i32" }],
+			"csharp": { "member": "GetNormalizedTime", "kind": "method" },
+			"doc": "Position in the current state of layer (+1 per cycle)."
+		},
+		{
+			"id": "GetTravelRemaining",
+			"cpp": "self->GetTravelRemaining(layer)",
+			"returns": "u32",
+			"params": [{ "name": "layer", "type": "i32" }],
+			"csharp": { "member": "GetTravelRemaining", "kind": "method" },
+			"doc": "States left on the path of a Travel."
+		},
+		{
+			"id": "Tick",
+			"cpp": "self->Tick(deltaTime)",
+			"returns": "void",
+			"params": [{ "name": "deltaTime", "type": "f32" }],
+			"csharp": { "member": "Tick", "kind": "method" },
+			"doc": "Run transitions for deltaTime seconds now."
+		},
+		{
+			"id": "GetAnimator",
+			"cpp": "self->GetAnimator()",
+			"returns": "Animator",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Animator", "kind": "getter" },
+			"doc": "Animator of its object (null when none)."
+		}
+	]
+}

@@ -7,8 +7,12 @@
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/TextAsset.h"
+#include "Shalltear/Core/Graphics/SkeletonAsset.h"
 #include "Shalltear/Core/Math/MathUtil.h"
+#include "Shalltear/Core/Reflection/TypeRegistry.h"
 
+#include <algorithm>
+#include <format>
 #include <iterator>
 #include <mutex>
 #include <stdexcept>
@@ -201,6 +205,7 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		std::vector<str> _records;
 		i32 _touches = 0;
 		DriverFn _driver = nullptr;
+		std::vector<u64> _made;
 		AssetFinderFn _assetFinder = nullptr;
 
 	} // anonymous namespace
@@ -336,6 +341,39 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	void FreeDerivedText(u64 id) {
 		if (Object* made = ObjectRegistry::Resolve(id); made && made->GetType() == DerivedText::GetReflectType()) {
 			Delete(static_cast<DerivedText*>(made));
+		}
+	}
+
+	u64 MakeAsset(std::string_view typeName) {
+		const TypeInfo* type = TypeRegistry::FindType(StringHash(typeName));
+		Object* made =
+			type && TypeRegistry::IsDerivedFrom(type, Asset::GetReflectType()) ? TypeRegistry::CreateObjectInstance(type, MemTag::Scripting) : nullptr;
+		if (!made) {
+			throw std::runtime_error(std::format("no creatable asset class named {}", typeName));
+		}
+		_made.push_back(made->GetInstanceId());
+		return made->GetInstanceId();
+	}
+
+	u64 MakeSkeletonAsset() {
+		SkeletonAsset* skeleton = New<SkeletonAsset>(MemTag::Scripting);
+		skeleton->boneNames.emplace_back("Root");
+		skeleton->boneNames.emplace_back("Child");
+		skeleton->parents.push_back(-1);
+		skeleton->parents.push_back(0);
+		skeleton->restPose.resize(2);
+		_made.push_back(skeleton->GetInstanceId());
+		return skeleton->GetInstanceId();
+	}
+
+	void FreeAsset(u64 id) {
+		const auto found = std::find(_made.begin(), _made.end(), id);
+		if (found == _made.end()) {
+			return;
+		}
+		_made.erase(found);
+		if (Object* made = ObjectRegistry::Resolve(id)) {
+			TypeRegistry::DestroyObjectInstance(made);
 		}
 	}
 

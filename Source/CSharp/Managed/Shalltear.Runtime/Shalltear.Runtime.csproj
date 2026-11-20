@@ -18,5 +18,6 @@
 		<InternalsVisibleTo Include="GameScripts" />
 		<InternalsVisibleTo Include="Shalltear.Physics3D" />
 		<InternalsVisibleTo Include="Shalltear.Audio" />
+		<InternalsVisibleTo Include="Shalltear.Animation" />
 	</ItemGroup>
 </Project>

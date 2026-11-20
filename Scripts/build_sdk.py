@@ -133,7 +133,8 @@ ENGINE_LICENSE = "MIT"
 CSHARP_RULES = (
 	Rule(('Shalltear.Runtime.dll', 'Shalltear.Runtime.xml', 'Shalltear.Runtime.runtimeconfig.json'),
 		 SHIP, ENGINE_LICENSE, 'C# runtime the editor hosts + script projects reference'),
-	Rule(('Shalltear.Physics3D.dll', 'Shalltear.Physics3D.xml', 'Shalltear.Audio.dll', 'Shalltear.Audio.xml'), SHIP, ENGINE_LICENSE,
+	Rule(('Shalltear.Physics3D.dll', 'Shalltear.Physics3D.xml', 'Shalltear.Audio.dll', 'Shalltear.Audio.xml', 'Shalltear.Animation.dll',
+		  'Shalltear.Animation.xml'), SHIP, ENGINE_LICENSE,
 		 'C# APIs of packages (referenced by script projects)'),
 	Rule(('Shalltear.Generators.dll',), SHIP, ENGINE_LICENSE,
 		 'source generator a script compile loads'),

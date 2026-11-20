@@ -1,0 +1,262 @@
+{
+	"area": "SpringBone",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.SpringBone",
+	"instance": "SpringBone",
+	"types": [
+		{
+			"name": "SpringBone",
+			"cpp": "::Shalltear::SpringBone",
+			"engine": "SpringBone",
+			"base": "Component",
+			"doc": "Bones swinging after their animated pose (hair, tails, cloth)."
+		},
+		{
+			"name": "SpringBoneCollider",
+			"cpp": "::Shalltear::SpringBoneCollider",
+			"engine": "SpringBoneCollider",
+			"base": "Component",
+			"doc": "Sphere/capsule blocking spring bones."
+		}
+	],
+	"enums": [
+		{
+			"name": "SpringBoneHingeAxis",
+			"cpp": "::Shalltear::SpringBoneHingeAxis",
+			"underlying": "u8",
+			"doc": "Swing axis of a spring bone chain.",
+			"values": [
+				{ "name": "None", "value": 0, "doc": "Any direction." },
+				{ "name": "X", "value": 1, "doc": "Local x." },
+				{ "name": "Y", "value": 2, "doc": "Local y." },
+				{ "name": "Z", "value": 3, "doc": "Local z." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetRootBone",
+			"cpp": "std::string_view(self->GetRootBone())",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "RootBone", "kind": "getter" },
+			"doc": "Chain root in the object's Skeleton (bones below included)."
+		},
+		{
+			"id": "SetRootBone",
+			"cpp": "self->SetRootBone(::Shalltear::str(rootBone))",
+			"returns": "void",
+			"params": [{ "name": "rootBone", "type": "string" }],
+			"csharp": { "member": "RootBone", "kind": "setter" }
+		},
+		{
+			"id": "GetStiffness",
+			"cpp": "self->GetStiffness()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Stiffness", "kind": "getter" },
+			"doc": "Share of the distance to the animated pose closed per step."
+		},
+		{
+			"id": "SetStiffness",
+			"cpp": "self->SetStiffness(stiffness)",
+			"returns": "void",
+			"params": [{ "name": "stiffness", "type": "f32" }],
+			"csharp": { "member": "Stiffness", "kind": "setter" }
+		},
+		{
+			"id": "GetDamping",
+			"cpp": "self->GetDamping()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Damping", "kind": "getter" },
+			"doc": "Share of velocity lost per step."
+		},
+		{
+			"id": "SetDamping",
+			"cpp": "self->SetDamping(damping)",
+			"returns": "void",
+			"params": [{ "name": "damping", "type": "f32" }],
+			"csharp": { "member": "Damping", "kind": "setter" }
+		},
+		{
+			"id": "GetGravity",
+			"cpp": "self->GetGravity()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Gravity", "kind": "getter" },
+			"doc": "Acceleration on each bone."
+		},
+		{
+			"id": "SetGravity",
+			"cpp": "self->SetGravity(gravity)",
+			"returns": "void",
+			"params": [{ "name": "gravity", "type": "Vec3" }],
+			"csharp": { "member": "Gravity", "kind": "setter" }
+		},
+		{
+			"id": "GetGust",
+			"cpp": "self->GetGust()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Gust", "kind": "getter" },
+			"doc": "Peak acceleration of the wind (scaled by smooth noise)."
+		},
+		{
+			"id": "SetGust",
+			"cpp": "self->SetGust(gust)",
+			"returns": "void",
+			"params": [{ "name": "gust", "type": "Vec3" }],
+			"csharp": { "member": "Gust", "kind": "setter" }
+		},
+		{
+			"id": "GetGustFrequency",
+			"cpp": "self->GetGustFrequency()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "GustFrequency", "kind": "getter" },
+			"doc": "Speed of the wind's noise in Hz."
+		},
+		{
+			"id": "SetGustFrequency",
+			"cpp": "self->SetGustFrequency(gustFrequency)",
+			"returns": "void",
+			"params": [{ "name": "gustFrequency", "type": "f32" }],
+			"csharp": { "member": "GustFrequency", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxAngleDeg",
+			"cpp": "self->GetMaxAngleDeg()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MaxAngleDeg", "kind": "getter" },
+			"doc": "Widest swing from the animated direction in degrees."
+		},
+		{
+			"id": "SetMaxAngleDeg",
+			"cpp": "self->SetMaxAngleDeg(maxAngleDeg)",
+			"returns": "void",
+			"params": [{ "name": "maxAngleDeg", "type": "f32" }],
+			"csharp": { "member": "MaxAngleDeg", "kind": "setter" }
+		},
+		{
+			"id": "GetHingeAxis",
+			"cpp": "self->GetHingeAxis()",
+			"returns": "SpringBoneHingeAxis",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "HingeAxis", "kind": "getter" },
+			"doc": "Swing axis of the chain (in the chain root's local space)."
+		},
+		{
+			"id": "SetHingeAxis",
+			"cpp": "self->SetHingeAxis(hingeAxis)",
+			"returns": "void",
+			"params": [{ "name": "hingeAxis", "type": "SpringBoneHingeAxis" }],
+			"csharp": { "member": "HingeAxis", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->GetRadius()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Radius", "kind": "getter" },
+			"doc": "Bone thickness for collisions."
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->SetRadius(radius)",
+			"returns": "void",
+			"params": [{ "name": "radius", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->GetWeight()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Weight", "kind": "getter" },
+			"doc": "Share of the swing applied (0 = animated pose)."
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->SetWeight(weight)",
+			"returns": "void",
+			"params": [{ "name": "weight", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetStepRate",
+			"cpp": "self->GetStepRate()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "StepRate", "kind": "getter" },
+			"doc": "Simulation steps per second."
+		},
+		{
+			"id": "SetStepRate",
+			"cpp": "self->SetStepRate(stepRate)",
+			"returns": "void",
+			"params": [{ "name": "stepRate", "type": "f32" }],
+			"csharp": { "member": "StepRate", "kind": "setter" }
+		},
+		{
+			"id": "GetColliderCount",
+			"cpp": "self->GetColliderCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ColliderCount", "kind": "getter" },
+			"doc": "Number of colliders."
+		},
+		{
+			"id": "GetCollider",
+			"cpp": "self->GetCollider(static_cast<::Shalltear::u32>(index))",
+			"returns": "SpringBoneCollider",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetCollider", "kind": "method" },
+			"doc": "Collider at index (null when out of range)."
+		},
+		{
+			"id": "AddCollider",
+			"cpp": "self->AddCollider(::Shalltear::Handle<::Shalltear::SpringBoneCollider>(collider))",
+			"returns": "void",
+			"params": [{ "name": "collider", "type": "SpringBoneCollider" }],
+			"csharp": { "member": "AddCollider", "kind": "method" },
+			"doc": "Keep the chain out of collider."
+		},
+		{
+			"id": "ClearColliders",
+			"cpp": "self->ClearColliders()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearColliders", "kind": "method" },
+			"doc": "Remove all colliders."
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reset", "kind": "method" },
+			"doc": "Put all bones back on their animated pose."
+		},
+		{
+			"id": "Simulate",
+			"cpp": "self->Simulate(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "Simulate", "kind": "method" },
+			"doc": "Run deltaSeconds of simulation now."
+		}
+	]
+}

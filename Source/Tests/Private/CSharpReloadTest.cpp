@@ -930,6 +930,26 @@ TEST_F(CSharpReloadTest, SceneHandlersDropAtUnload) {
 	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
 }
 
+TEST_F(CSharpReloadTest, AnimationHandlersDropAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	str message;
+	ASSERT_EQ(Run("AnimationProbe.KeepsListening", message), SLT_OK) << message;
+	ASSERT_EQ(Run("AnimationProbe.CountsKeepersSubscribers", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"subscribers 1"}));
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	ASSERT_EQ(Run("AnimationProbe.CountsKeepersSubscribers", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"subscribers 0"}));
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+}
+
 TEST_F(CSharpReloadTest, InputMapsEndAtUnload) {
 	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
 	ASSERT_TRUE(fs::is_regular_file(conformance));

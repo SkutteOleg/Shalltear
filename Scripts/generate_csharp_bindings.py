@@ -54,7 +54,7 @@ CLASS_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*(\.[A-Za-z][A-Za-z0-9]*)+\Z")
 SPAN = re.compile(r"span<([A-Za-z0-9]+)>\Z")
 AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions", "types", "enums", "structs", "handles"}
 FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable"}
-PARAM_KEYS = {"name", "type", "out", "optional"}
+PARAM_KEYS = {"name", "type", "out", "optional", "default"}
 CSHARP_KEYS = {"member", "kind", "conditional", "relay", "access"}
 TYPE_KEYS = {"name", "cpp", "engine", "base", "doc", "abstract"}
 ENUM_KEYS = {"name", "cpp", "underlying", "values", "doc", "flags"}
@@ -78,13 +78,14 @@ class SchemaError(Exception):
 
 
 class Param:
-	def __init__(self, name, kind, type_name, out=False, optional=False, implicit=False):
+	def __init__(self, name, kind, type_name, out=False, optional=False, implicit=False, default=None):
 		self.name = name
 		self.kind = kind
 		self.type = type_name
 		self.out = out
 		self.optional = optional
 		self.implicit = implicit
+		self.default = default
 
 
 class Function:
@@ -160,6 +161,29 @@ def classify(type_name, catalog):
 	return None, type_name
 
 
+def parse_default(entry, kind, type_name, catalog, where):
+	value, name = entry["default"], entry["name"]
+	if kind == "enum" and not catalog.enums[type_name].handle:
+		names = [listed for listed, _, _ in catalog.enums[type_name].values]
+		if value not in names:
+			raise SchemaError(f"{where}: 'default' of '{name}' is {value!r}. Use {', '.join(names)}")
+		return f"{type_name}.{value}"
+	if kind != "scalar":
+		raise SchemaError(f"{where}: 'default' is for a scalar or an enum, '{name}' is {type_name}")
+	if type_name == "bool":
+		if not isinstance(value, bool):
+			raise SchemaError(f"{where}: 'default' of '{name}' must be true/false")
+		return "true" if value else "false"
+	if isinstance(value, bool) or not isinstance(value, (int, float)) or (type_name not in ("f32", "f64") and not isinstance(value, int)):
+		raise SchemaError(f"{where}: 'default' of '{name}' must be a number of type {type_name}")
+	if type_name in ("f32", "f64"):
+		text = f"{int(value)}" if float(value).is_integer() else repr(float(value))
+		return text + ("f" if type_name == "f32" else ".0" if float(value).is_integer() else "")
+	if value < 0 and type_name.startswith("u"):
+		raise SchemaError(f"{where}: 'default' of '{name}' must be a number of type {type_name}")
+	return str(value)
+
+
 def check_keys(found, allowed, required, path, where):
 	unknown = sorted(set(found) - allowed)
 	if unknown:
@@ -210,7 +234,13 @@ def parse_function(raw, area, path, catalog):
 			raise SchemaError(f"{path.name}: {where}: parameter name must be letters/digits")
 		if entry["name"] in CSHARP_KEYWORDS:
 			raise SchemaError(f"{path.name}: {where}: parameter '{entry['name']}' is a C# keyword. Rename it")
-		function.params.append(Param(entry["name"], kind, type_name, entry.get("out", False), entry.get("optional", False)))
+		if entry["name"] == "self" and area.instance:
+			raise SchemaError(f"{path.name}: {where}: parameter 'self' is the {area.instance} passed by the area. Leave it out")
+		default = parse_default(entry, kind, type_name, catalog, f"{path.name}: {where}") if "default" in entry else None
+		function.params.append(Param(entry["name"], kind, type_name, entry.get("out", False), entry.get("optional", False), default=default))
+	for index, param in enumerate(function.params):
+		if param.default is not None and any(later.default is None and not later.optional for later in function.params[index + 1:]):
+			raise SchemaError(f"{path.name}: {where}: 'default' on '{param.name}' needs one on each later parameter")
 
 	csharp = raw["csharp"]
 	check_keys(csharp, CSHARP_KEYS, {"member", "kind"}, path, where)
@@ -225,6 +255,8 @@ def parse_function(raw, area, path, catalog):
 		raise SchemaError(f"{path.name}: {where}: 'kind' is '{function.kind}'. Use getter/setter/method")
 	if function.relay and function.kind != "method":
 		raise SchemaError(f"{path.name}: {where}: 'relay' needs a method")
+	if (function.relay or function.kind == "setter") and any(param.default is not None for param in function.params):
+		raise SchemaError(f"{path.name}: {where}: 'default' needs a method without 'relay'")
 	if function.kind == "getter" and (function.params or function.return_kind == "void"):
 		raise SchemaError(f"{path.name}: {where}: getter must take nothing + return a value")
 	if function.kind == "setter" and (len(function.params) != 1 or function.return_kind != "void"):
@@ -441,7 +473,8 @@ def load_files(paths, binding_set=None, catalog=None):
 								if isinstance(entry, dict) and entry.get("abstract") is True and isinstance(entry.get("name"), str))
 	for path, raw in raws:
 		read.append((path, raw, parse_types(raw, path, catalog), parse_enums(raw, path, catalog)))
-	areas = [build_area(path, raw, catalog, types, enums, parse_structs(raw, path, catalog)) for path, raw, types, enums in read]
+	structs = [parse_structs(raw, path, catalog) for path, raw, _, _ in read]
+	areas = [build_area(path, raw, catalog, types, enums, declared) for (path, raw, types, enums), declared in zip(read, structs)]
 	for area in areas:
 		area.set = binding_set
 	return areas
@@ -859,10 +892,10 @@ def cs_parameters(function):
 		elif param.kind == "span":
 			parts.append(f"{'Span' if param.out else 'ReadOnlySpan'}<{span_element(param, function.catalog, 'api')}> {param.name}")
 		elif param.kind == "object":
-			trailing = not function.relay and all(later.kind == "object" and later.optional for later in listed[index:])
+			trailing = not function.relay and all((later.kind == "object" and later.optional) or later.default is not None for later in listed[index:])
 			parts.append(f"{param.type}? {param.name}{' = null' if trailing else ''}" if param.optional else f"{param.type} {param.name}")
 		else:
-			parts.append(f"{cs_api_type(param.kind, param.type)} {param.name}")
+			parts.append(f"{cs_api_type(param.kind, param.type)} {param.name}{'' if param.default is None else ' = ' + param.default}")
 	if function.relay:
 		parts.append("string member")
 	return ", ".join(parts)

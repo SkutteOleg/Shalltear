@@ -1,0 +1,67 @@
+{
+	"area": "Skeleton",
+	"include": "SkeletonBindings.h",
+	"class": "Shalltear.Skeleton",
+	"instance": "Skeleton",
+	"types": [
+		{ "name": "Skeleton", "cpp": "::Shalltear::Skeleton", "engine": "Skeleton", "base": "Component", "doc": "Bones of a skinned object." },
+		{
+			"name": "SkeletonAsset",
+			"cpp": "::Shalltear::SkeletonAsset",
+			"engine": "SkeletonAsset",
+			"base": "Asset",
+			"doc": "Bone names, parents + rest pose of a rig."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetSkeletonAsset",
+			"cpp": "self->GetSkeleton()",
+			"returns": "SkeletonAsset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SkeletonAsset", "kind": "getter" },
+			"doc": "Rig of the bones."
+		},
+		{
+			"id": "SetSkeletonAsset",
+			"cpp": "self->SetSkeleton(::Shalltear::Handle<::Shalltear::SkeletonAsset>(skeletonAsset))",
+			"returns": "void",
+			"params": [{ "name": "skeletonAsset", "type": "SkeletonAsset", "optional": true }],
+			"csharp": { "member": "SkeletonAsset", "kind": "setter" }
+		},
+		{
+			"id": "GetExposedBoneCount",
+			"cpp": "self->GetExposedBoneCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ExposedBoneCount", "kind": "getter" },
+			"doc": "Number of bones exposed as scene objects."
+		},
+		{
+			"id": "GetExposedBone",
+			"cpp": "self->GetExposedBone(static_cast<::Shalltear::u32>(index))",
+			"returns": "i32",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetExposedBone", "kind": "method" },
+			"doc": "Bone index of the exposed bone at index (-1 when out of range)."
+		},
+		{
+			"id": "GetExposedObject",
+			"cpp": "self->GetExposedObject(static_cast<::Shalltear::u32>(index))",
+			"returns": "SceneObject",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetExposedObject", "kind": "method" },
+			"doc": "Scene object of the exposed bone at index (null when out of range)."
+		},
+		{
+			"id": "UpdatePose",
+			"cpp": "self->UpdatePose()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "UpdatePose", "kind": "method" },
+			"doc": "Recompute all bone poses now."
+		}
+	]
+}

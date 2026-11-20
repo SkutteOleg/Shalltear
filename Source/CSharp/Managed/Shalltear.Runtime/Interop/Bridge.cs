@@ -127,10 +127,23 @@ internal static unsafe class Bridge {
 		return table;
 	}
 
+	internal static bool HoldsBindings(string name, ulong layoutHash, int size, void* table) {
+		byte[] bytes = Encoding.UTF8.GetBytes(name);
+		void* found;
+		fixed (byte* ptr = bytes) {
+			return _engine.findBindings(new SltString { ptr = ptr, length = bytes.Length }, layoutHash, size, &found) == OK && found == table;
+		}
+	}
+
+	[SkipLocalsInit]
 	internal static ulong HashOf(string name) {
 		ulong hash = 0xcbf29ce484222325UL;
-		foreach (byte value in Encoding.UTF8.GetBytes(name)) {
-			hash = (hash ^ value) * 0x00000100000001b3UL;
+		Span<byte> bytes = stackalloc byte[4];
+		foreach (Rune rune in name.EnumerateRunes()) {
+			int count = rune.EncodeToUtf8(bytes);
+			for (int index = 0; index < count; ++index) {
+				hash = (hash ^ bytes[index]) * 0x00000100000001b3UL;
+			}
 		}
 		return hash;
 	}
@@ -241,6 +254,7 @@ internal static unsafe class Bridge {
 
 	[UnmanagedCallersOnly]
 	static void Shutdown() {
+		UnloadHooks.Run();
 		ScriptEvents.Forget();
 		InputActionMap.Forget();
 		ScriptTypes.Clear();

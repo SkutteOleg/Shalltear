@@ -210,6 +210,10 @@ namespace Shalltear {
 		void SetSpeed(f32 value);
 
 		void Stop();
+
+		Handle<Animator> GetAnimator() const { return _animator; }
+		i32 GetLayer() const { return _layer; }
+		u32 GetId() const { return _id; }
 	private:
 		const AnimationLayer* Resolve() const;
 		AnimationLayer* ResolveMutable() const;

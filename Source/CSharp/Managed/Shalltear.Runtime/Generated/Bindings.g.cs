@@ -82,6 +82,9 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<SltString, ulong*, int> probeFindAsset;
 	public delegate* unmanaged<ulong*, int> probeMakeDerivedText;
 	public delegate* unmanaged<ulong, int> probeFreeDerivedText;
+	public delegate* unmanaged<SltString, ulong*, int> probeMakeAsset;
+	public delegate* unmanaged<ulong*, int> probeMakeSkeletonAsset;
+	public delegate* unmanaged<ulong, int> probeFreeAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
 	public delegate* unmanaged<ulong, SltString, int> sceneSetName;
@@ -127,6 +130,16 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, int> sceneSystemSetPrimaryScene;
 	public delegate* unmanaged<ulong, byte*, int> sceneSystemIsPrefabLinked;
 	public delegate* unmanaged<ulong, byte*, int> sceneSystemIsPrefabInstanceRoot;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> skeletonGetSkeletonAsset;
+	public delegate* unmanaged<ulong, ulong, int> skeletonSetSkeletonAsset;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> skeletonGetExposedBoneCount;
+	public delegate* unmanaged<ulong, int, int*, int> skeletonGetExposedBone;
+	public delegate* unmanaged<ulong, int, ulong*, int> skeletonGetExposedObject;
+	public delegate* unmanaged<ulong, int> skeletonUpdatePose;
+	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> skeletonAssetGetBoneCount;
+	public delegate* unmanaged<ulong, SltString, int*, int> skeletonAssetFindBone;
+	public delegate* unmanaged<ulong, int, SltString*, int> skeletonAssetGetBoneName;
+	public delegate* unmanaged<ulong, int, int*, int> skeletonAssetGetBoneParent;
 	public delegate* unmanaged<ulong, SltString*, int> textAssetGetText;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
@@ -139,7 +152,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0x4da5e291eb5c2cf6;
+	internal const ulong LAYOUT_HASH = 0x19c48ae0ee4ec57d;
 
 	internal static SltBindings table;
 

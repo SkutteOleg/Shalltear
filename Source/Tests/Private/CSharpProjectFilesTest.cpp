@@ -425,8 +425,9 @@ TEST_F(CSharpProjectFilesTest, BuildSeesOnlyEnabledPackages) {
 	if (!UseRealToolchain()) {
 		GTEST_SKIP() << "pinned .NET SDK not found";
 	}
-	ASSERT_EQ(_options.packageAssemblies.size(), 1u);
-	EXPECT_EQ(_options.packageAssemblies[0], "Shalltear.Physics3D");
+	ASSERT_EQ(_options.packageAssemblies.size(), 2u);
+	EXPECT_EQ(_options.packageAssemblies[0], "Shalltear.Animation");
+	EXPECT_EQ(_options.packageAssemblies[1], "Shalltear.Physics3D");
 	Put("Assets/Scripts/Bumper.cs", "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Bumper : Behavior, IPhysicsListener {\n"
 									"\tpublic Rigidbody? body;\n\n\tpublic void OnCollisionEnter(in Collision collision) {\n"
 									"\t\tbody = collision.Rigidbody;\n\t}\n}\n");

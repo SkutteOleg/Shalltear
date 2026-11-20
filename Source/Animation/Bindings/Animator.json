@@ -1,0 +1,358 @@
+{
+	"area": "Animator",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.Animator",
+	"instance": "Animator",
+	"types": [
+		{
+			"name": "Animator",
+			"cpp": "::Shalltear::Animator",
+			"engine": "Animator",
+			"base": "Component",
+			"doc": "Plays animation clips on its object + the objects below."
+		}
+	],
+	"enums": [
+		{
+			"name": "AnimatorUpdateMode",
+			"cpp": "::Shalltear::AnimatorUpdateMode",
+			"underlying": "u8",
+			"doc": "Clock of an animator.",
+			"values": [
+				{ "name": "Normal", "value": 0, "doc": "Scaled game time, per frame." },
+				{ "name": "AnimatePhysics", "value": 1, "doc": "Per fixed step." },
+				{ "name": "UnscaledTime", "value": 2, "doc": "Real time, per frame." }
+			]
+		},
+		{
+			"name": "AnimationBlendMode",
+			"cpp": "::Shalltear::AnimationBlendMode",
+			"underlying": "u8",
+			"doc": "How a layer's pose joins the layers below.",
+			"values": [
+				{ "name": "Override", "value": 0, "doc": "Replaces them (by its weight)." },
+				{ "name": "Additive", "value": 1, "doc": "Adds to them." }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "AnimationEvent",
+			"doc": "Event key a playing clip passed.",
+			"fields": [
+				{ "name": "nameHash", "type": "u64", "access": "internal" },
+				{ "name": "clipId", "type": "u64", "access": "internal" },
+				{ "name": "layer", "type": "i32", "doc": "Layer that played the clip." },
+				{ "name": "time", "type": "f32", "doc": "Key's time in the clip." },
+				{ "name": "value", "type": "Vec4", "doc": "Key's value." }
+			]
+		},
+		{
+			"name": "PlayHandle",
+			"doc": "1 clip or blend started by Play (valid until another Play on its layer).",
+			"fields": [
+				{ "name": "animatorId", "type": "u64", "access": "internal" },
+				{ "name": "layer", "type": "i32", "access": "internal" },
+				{ "name": "id", "type": "u32", "access": "internal" }
+			]
+		},
+		{
+			"name": "AnimationMotion",
+			"doc": "1 clip of a blend.",
+			"fields": [
+				{ "name": "clipId", "type": "u64", "access": "internal" },
+				{ "name": "weight", "type": "f32", "doc": "Share of the blend." },
+				{ "name": "speed", "type": "f32", "doc": "Playback speed of this clip." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetClip",
+			"cpp": "self->GetClip()",
+			"returns": "AnimationClip",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Clip", "kind": "getter" },
+			"doc": "Clip played when the component is enabled."
+		},
+		{
+			"id": "SetClip",
+			"cpp": "self->SetClip(::Shalltear::Handle<::Shalltear::AnimationClip>(clip))",
+			"returns": "void",
+			"params": [{ "name": "clip", "type": "AnimationClip", "optional": true }],
+			"csharp": { "member": "Clip", "kind": "setter" }
+		},
+		{
+			"id": "GetPlayAutomatically",
+			"cpp": "self->GetPlayAutomatically()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "PlayAutomatically", "kind": "getter" },
+			"doc": "Plays Clip when the component is enabled."
+		},
+		{
+			"id": "SetPlayAutomatically",
+			"cpp": "self->SetPlayAutomatically(playAutomatically)",
+			"returns": "void",
+			"params": [{ "name": "playAutomatically", "type": "bool" }],
+			"csharp": { "member": "PlayAutomatically", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "self->GetSpeed()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Speed", "kind": "getter" },
+			"doc": "Playback speed of all layers (1 = clip speed)."
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "self->SetSpeed(speed)",
+			"returns": "void",
+			"params": [{ "name": "speed", "type": "f32" }],
+			"csharp": { "member": "Speed", "kind": "setter" }
+		},
+		{
+			"id": "GetUpdateMode",
+			"cpp": "self->GetUpdateMode()",
+			"returns": "AnimatorUpdateMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "UpdateMode", "kind": "getter" },
+			"doc": "Which clock moves the animation."
+		},
+		{
+			"id": "SetUpdateMode",
+			"cpp": "self->SetUpdateMode(updateMode)",
+			"returns": "void",
+			"params": [{ "name": "updateMode", "type": "AnimatorUpdateMode" }],
+			"csharp": { "member": "UpdateMode", "kind": "setter" }
+		},
+		{
+			"id": "GetApplyRootMotion",
+			"cpp": "self->GetApplyRootMotion()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ApplyRootMotion", "kind": "getter" },
+			"doc": "Root bone's motion moves the object."
+		},
+		{
+			"id": "SetApplyRootMotion",
+			"cpp": "self->SetApplyRootMotion(applyRootMotion)",
+			"returns": "void",
+			"params": [{ "name": "applyRootMotion", "type": "bool" }],
+			"csharp": { "member": "ApplyRootMotion", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->GetPriority()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Priority", "kind": "getter" },
+			"doc": "Share of screen height covered by the object (for the update budget)."
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->SetPriority(priority)",
+			"returns": "void",
+			"params": [{ "name": "priority", "type": "f32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "PlayClip",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::PlayClip(*self, clip, fade, layer, played)",
+			"returns": "void",
+			"params": [
+				{ "name": "clip", "type": "AnimationClip", "optional": true },
+				{ "name": "fade", "type": "f32" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "played", "type": "span<PlayHandle>", "out": true }
+			],
+			"csharp": { "member": "PlayClip", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "PlayMotions",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::PlayMotions(*self, motions, fade, layer, played)",
+			"returns": "void",
+			"params": [
+				{ "name": "motions", "type": "span<AnimationMotion>" },
+				{ "name": "fade", "type": "f32" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "played", "type": "span<PlayHandle>", "out": true }
+			],
+			"csharp": { "member": "PlayMotions", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Stop",
+			"cpp": "self->Stop()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Stop", "kind": "method" },
+			"doc": "Stop all layers."
+		},
+		{
+			"id": "GetIsPlaying",
+			"cpp": "self->IsPlaying()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPlaying", "kind": "getter" },
+			"doc": "True while a layer plays."
+		},
+		{
+			"id": "GetTime",
+			"cpp": "self->GetTime()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Time", "kind": "getter" },
+			"doc": "Playback position of the base layer in seconds."
+		},
+		{
+			"id": "SetTime",
+			"cpp": "self->SetTime(time)",
+			"returns": "void",
+			"params": [{ "name": "time", "type": "f32" }],
+			"csharp": { "member": "Time", "kind": "setter" }
+		},
+		{
+			"id": "Evaluate",
+			"cpp": "self->Evaluate(deltaTime)",
+			"returns": "void",
+			"params": [{ "name": "deltaTime", "type": "f32" }],
+			"csharp": { "member": "Evaluate", "kind": "method" },
+			"doc": "Advance by deltaTime seconds + pose the objects now."
+		},
+		{
+			"id": "GetSkeleton",
+			"cpp": "self->GetSkeleton()",
+			"returns": "Skeleton",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Skeleton", "kind": "getter" },
+			"doc": "Skeleton posed by the clips (null when none)."
+		},
+		{
+			"id": "GetBoundTrackCount",
+			"cpp": "self->GetBoundTrackCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BoundTrackCount", "kind": "getter" },
+			"doc": "Tracks of the playing clips bound to a target."
+		},
+		{
+			"id": "AddLayer",
+			"cpp": "self->AddLayer()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "AddLayer", "kind": "method" },
+			"doc": "Add a layer. Returns its index."
+		},
+		{
+			"id": "GetLayerCount",
+			"cpp": "self->GetLayerCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LayerCount", "kind": "getter" },
+			"doc": "Number of layers."
+		},
+		{
+			"id": "RemoveLayer",
+			"cpp": "self->RemoveLayer(index)",
+			"returns": "bool",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "RemoveLayer", "kind": "method" },
+			"doc": "Remove the layer at index (never the base layer)."
+		},
+		{
+			"id": "GetIsTransitioning",
+			"cpp": "self->IsTransitioning()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsTransitioning", "kind": "getter" },
+			"doc": "True while a fade between clips runs."
+		},
+		{
+			"id": "GetSubscriberCount",
+			"cpp": "self->GetSubscriberCount()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SubscriberCount", "kind": "getter" },
+			"doc": "Number of event subscribers."
+		},
+		{
+			"id": "GetRootMotionDelta",
+			"cpp": "self->GetRootMotionDelta()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RootMotionDelta", "kind": "getter" },
+			"doc": "Root motion of the last evaluation."
+		},
+		{
+			"id": "GetRootRotationDelta",
+			"cpp": "self->GetRootRotationDelta()",
+			"returns": "Quat",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RootRotationDelta", "kind": "getter" },
+			"doc": "Root rotation of the last evaluation."
+		},
+		{
+			"id": "GetIsExtractingRootMotion",
+			"cpp": "self->IsExtractingRootMotion()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "IsExtractingRootMotion", "kind": "getter" },
+			"doc": "True while the root bone's motion is taken out of the pose."
+		},
+		{
+			"id": "SetRetarget",
+			"cpp": "self->SetRetarget(::Shalltear::Handle<::Shalltear::RetargetProfile>(source), ::Shalltear::Handle<::Shalltear::RetargetProfile>(target))",
+			"returns": "void",
+			"params": [
+				{ "name": "source", "type": "RetargetProfile" },
+				{ "name": "target", "type": "RetargetProfile" }
+			],
+			"csharp": { "member": "SetRetarget", "kind": "method" },
+			"doc": "Play clips made for source's rig on target's rig."
+		},
+		{
+			"id": "ClearRetarget",
+			"cpp": "self->ClearRetarget()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearRetarget", "kind": "method" },
+			"doc": "Play clips on the rig they were made for."
+		},
+		{
+			"id": "GetIsRetargeting",
+			"cpp": "self->IsRetargeting()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsRetargeting", "kind": "getter" },
+			"doc": "True between SetRetarget and ClearRetarget."
+		},
+		{
+			"id": "Listen",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::Listen(*self, key)",
+			"returns": "u32",
+			"params": [{ "name": "key", "type": "u64" }],
+			"csharp": { "member": "Listen", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "Unlisten",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::Unlisten(*self, token)",
+			"returns": "u64",
+			"params": [{ "name": "token", "type": "u32" }],
+			"csharp": { "member": "Unlisten", "kind": "method", "access": "internal", "relay": true }
+		}
+	]
+}

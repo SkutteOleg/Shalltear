@@ -1,0 +1,128 @@
+{
+	"area": "AnimationClip",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.AnimationClip",
+	"instance": "AnimationClip",
+	"types": [
+		{
+			"name": "AnimationClip",
+			"cpp": "::Shalltear::AnimationClip",
+			"engine": "AnimationClip",
+			"base": "Asset",
+			"doc": "Keyed tracks played by an Animator."
+		}
+	],
+	"enums": [
+		{
+			"name": "AnimationLoopMode",
+			"cpp": "::Shalltear::AnimationLoopMode",
+			"underlying": "u8",
+			"doc": "What a clip does at its end.",
+			"values": [
+				{ "name": "None", "value": 0, "doc": "Stops." },
+				{ "name": "Loop", "value": 1, "doc": "Starts over." },
+				{ "name": "PingPong", "value": 2, "doc": "Plays back + forth." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetLength",
+			"cpp": "self->length",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Length", "kind": "getter" },
+			"doc": "Length in seconds."
+		},
+		{
+			"id": "SetLength",
+			"cpp": "self->length = length",
+			"returns": "void",
+			"params": [{ "name": "length", "type": "f32" }],
+			"csharp": { "member": "Length", "kind": "setter" }
+		},
+		{
+			"id": "GetFrameRate",
+			"cpp": "self->frameRate",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "FrameRate", "kind": "getter" },
+			"doc": "Frame rate of the clip's keys."
+		},
+		{
+			"id": "SetFrameRate",
+			"cpp": "self->frameRate = frameRate",
+			"returns": "void",
+			"params": [{ "name": "frameRate", "type": "f32" }],
+			"csharp": { "member": "FrameRate", "kind": "setter" }
+		},
+		{
+			"id": "GetLoop",
+			"cpp": "self->loop",
+			"returns": "AnimationLoopMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Loop", "kind": "getter" },
+			"doc": "What happens at its end."
+		},
+		{
+			"id": "SetLoop",
+			"cpp": "self->loop = loop",
+			"returns": "void",
+			"params": [{ "name": "loop", "type": "AnimationLoopMode" }],
+			"csharp": { "member": "Loop", "kind": "setter" }
+		},
+		{
+			"id": "GetAdditiveReferenceTime",
+			"cpp": "self->additiveReferenceTime",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AdditiveReferenceTime", "kind": "getter" },
+			"doc": "Time of the pose subtracted by an additive layer."
+		},
+		{
+			"id": "SetAdditiveReferenceTime",
+			"cpp": "self->additiveReferenceTime = additiveReferenceTime",
+			"returns": "void",
+			"params": [{ "name": "additiveReferenceTime", "type": "f32" }],
+			"csharp": { "member": "AdditiveReferenceTime", "kind": "setter" }
+		},
+		{
+			"id": "GetBakeRootMotionIntoPose",
+			"cpp": "self->bakeRootMotionIntoPose",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BakeRootMotionIntoPose", "kind": "getter" },
+			"doc": "Root bone's motion baked into the pose."
+		},
+		{
+			"id": "SetBakeRootMotionIntoPose",
+			"cpp": "self->bakeRootMotionIntoPose = bakeRootMotionIntoPose",
+			"returns": "void",
+			"params": [{ "name": "bakeRootMotionIntoPose", "type": "bool" }],
+			"csharp": { "member": "BakeRootMotionIntoPose", "kind": "setter" }
+		},
+		{
+			"id": "GetSkeleton",
+			"cpp": "self->skeleton",
+			"returns": "SkeletonAsset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Skeleton", "kind": "getter" },
+			"doc": "Rig the clip was made for (null for a property clip)."
+		},
+		{
+			"id": "GetTrackCount",
+			"cpp": "self->tracks.size()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "TrackCount", "kind": "getter" },
+			"doc": "Number of tracks."
+		}
+	]
+}

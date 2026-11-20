@@ -285,6 +285,42 @@ internal static unsafe partial class BindingProbe {
 		}
 	}
 
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static ulong MakeAsset(string typeName) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.MakeAsset");
+		}
+		using UTF8Scratch typeNameText = new(typeName, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		ulong result;
+		int status = Bindings.table.probeMakeAsset(typeNameText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
+	internal static ulong MakeSkeletonAsset() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.MakeSkeletonAsset");
+		}
+		ulong result;
+		int status = Bindings.table.probeMakeSkeletonAsset(&result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
+	internal static void FreeAsset(ulong id) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.FreeAsset");
+		}
+		int status = Bindings.table.probeFreeAsset(id);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
+
 	internal static void RunFrames(int count) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.RunFrames");

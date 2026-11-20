@@ -1,0 +1,253 @@
+{
+	"area": "AnimationLayer",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.Interop.AnimationLayerBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "GetMotionCount",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).GetMotionCount()",
+			"returns": "u32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetMotionCount", "kind": "method", "relay": true }
+		},
+		{
+			"id": "ReadMotion",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::ReadMotion(*self, layer, index, motion)",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "motion", "type": "span<AnimationMotion>", "out": true }
+			],
+			"csharp": { "member": "ReadMotion", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetMotionWeight",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).SetMotionWeight(static_cast<::Shalltear::u32>(index), value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetMotionWeight", "kind": "method", "relay": true }
+		},
+		{
+			"id": "IsPlaying",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).IsPlaying()",
+			"returns": "bool",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "IsPlaying", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetClip",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).GetClip()",
+			"returns": "AnimationClip",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetClip", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).weight",
+			"returns": "f32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetWeight", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).weight = value",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetWeight", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).speed",
+			"returns": "f32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetSpeed", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).speed = value",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetSpeed", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetBlend",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).blend",
+			"returns": "AnimationBlendMode",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetBlend", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetBlend",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).blend = value",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "value", "type": "AnimationBlendMode" }
+			],
+			"csharp": { "member": "SetBlend", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetMaskSubtree",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).SetMaskSubtree(*skeleton, rootBone, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "skeleton", "type": "SkeletonAsset" },
+				{ "name": "rootBone", "type": "string" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetMaskSubtree", "kind": "method", "relay": true }
+		},
+		{
+			"id": "ClearMask",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).ClearMask()",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "ClearMask", "kind": "method", "relay": true }
+		},
+		{
+			"id": "WeightForBone",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).WeightForBone(bone)",
+			"returns": "f32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "bone", "type": "i32" }
+			],
+			"csharp": { "member": "WeightForBone", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetMaskLength",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).mask.size()",
+			"returns": "i32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetMaskLength", "kind": "method", "relay": true }
+		},
+		{
+			"id": "ReadMask",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::ReadMask(*self, layer, weights)",
+			"returns": "i32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "weights", "type": "span<f32>", "out": true }
+			],
+			"csharp": { "member": "ReadMask", "kind": "method", "relay": true }
+		},
+		{
+			"id": "WriteMask",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::WriteMask(*self, layer, weights)",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "weights", "type": "span<f32>" }
+			],
+			"csharp": { "member": "WriteMask", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetTime",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).GetTime()",
+			"returns": "f32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetTime", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetTime",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).SetTime(seconds)",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "seconds", "type": "f32" }
+			],
+			"csharp": { "member": "SetTime", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetNormalizedTime",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).GetNormalizedTime()",
+			"returns": "f32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetNormalizedTime", "kind": "method", "relay": true }
+		},
+		{
+			"id": "SetNormalizedTime",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).SetNormalizedTime(normalized)",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "normalized", "type": "f32" }
+			],
+			"csharp": { "member": "SetNormalizedTime", "kind": "method", "relay": true }
+		},
+		{
+			"id": "Stop",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).Stop()",
+			"returns": "void",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "Stop", "kind": "method", "relay": true }
+		},
+		{
+			"id": "GetBoundTrackCount",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::GetLayer(*self, layer).GetBoundTrackCount()",
+			"returns": "u32",
+			"params": [
+				{ "name": "self", "type": "Animator" },
+				{ "name": "layer", "type": "i32" }
+			],
+			"csharp": { "member": "GetBoundTrackCount", "kind": "method", "relay": true }
+		}
+	]
+}

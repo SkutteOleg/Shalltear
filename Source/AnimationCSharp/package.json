@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.animation.csharp",
+	"version": "1.0.0",
+	"displayName": "Animation for C#",
+	"description": "The C# API of Animation.",
+	"kind": "engine",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.animation": "1.0.0",
+		"dev.shalltear.csharp": "1.0.0"
+	}
+}

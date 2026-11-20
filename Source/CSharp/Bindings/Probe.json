@@ -244,6 +244,27 @@
 			"csharp": { "member": "FreeDerivedText", "kind": "method" }
 		},
 		{
+			"id": "MakeAsset",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::MakeAsset(typeName)",
+			"returns": "u64",
+			"params": [{ "name": "typeName", "type": "string" }],
+			"csharp": { "member": "MakeAsset", "kind": "method" }
+		},
+		{
+			"id": "MakeSkeletonAsset",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::MakeSkeletonAsset()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MakeSkeletonAsset", "kind": "method" }
+		},
+		{
+			"id": "FreeAsset",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "FreeAsset", "kind": "method" }
+		},
+		{
 			"id": "RunFrames",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::RunFrames(count)",
 			"returns": "void",

@@ -1,0 +1,22 @@
+{
+	"area": "AnimationEvents",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.Interop.AnimationEventBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "Attach",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::AttachEvents(entry)",
+			"returns": "void",
+			"params": [{ "name": "entry", "type": "i64" }],
+			"csharp": { "member": "Attach", "kind": "method" }
+		},
+		{
+			"id": "ForgetAll",
+			"cpp": "::Shalltear::CSharpImpl::AnimationBindings::UnlistenAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ForgetAll", "kind": "method" }
+		}
+	]
+}

@@ -8,6 +8,12 @@
         "resolved": "10.0.15",
         "contentHash": "u0WnRcZgBZYHlVFpbe/3Adpmb9rmNJ8/fmEwqc/xjB7fFppq+gfaLJd3Sdaw+J02zV0eP/T9dneQ3Dv5jWw6bw=="
       },
+      "shalltear.animation": {
+        "type": "Project",
+        "dependencies": {
+          "Shalltear.Runtime": "[1.0.0, )"
+        }
+      },
       "shalltear.physics3d": {
         "type": "Project",
         "dependencies": {

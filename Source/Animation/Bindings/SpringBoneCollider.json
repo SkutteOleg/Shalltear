@@ -1,0 +1,84 @@
+{
+	"area": "SpringBoneCollider",
+	"include": "AnimationBindings.h",
+	"class": "Shalltear.SpringBoneCollider",
+	"instance": "SpringBoneCollider",
+	"enums": [
+		{
+			"name": "SpringBoneColliderShape",
+			"cpp": "::Shalltear::SpringBoneColliderShape",
+			"underlying": "u8",
+			"doc": "Shape of a spring bone collider.",
+			"values": [
+				{ "name": "Sphere", "value": 0, "doc": "Sphere." },
+				{ "name": "Capsule", "value": 1, "doc": "Capsule." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetShape",
+			"cpp": "self->GetShape()",
+			"returns": "SpringBoneColliderShape",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Shape", "kind": "getter" },
+			"doc": "Sphere/capsule."
+		},
+		{
+			"id": "SetShape",
+			"cpp": "self->SetShape(shape)",
+			"returns": "void",
+			"params": [{ "name": "shape", "type": "SpringBoneColliderShape" }],
+			"csharp": { "member": "Shape", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->GetRadius()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Radius", "kind": "getter" },
+			"doc": "Radius."
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->SetRadius(radius)",
+			"returns": "void",
+			"params": [{ "name": "radius", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetHeight",
+			"cpp": "self->GetHeight()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Height", "kind": "getter" },
+			"doc": "Capsule length along local y, caps included."
+		},
+		{
+			"id": "SetHeight",
+			"cpp": "self->SetHeight(height)",
+			"returns": "void",
+			"params": [{ "name": "height", "type": "f32" }],
+			"csharp": { "member": "Height", "kind": "setter" }
+		},
+		{
+			"id": "GetCenter",
+			"cpp": "self->GetCenter()",
+			"returns": "Vec3",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Center", "kind": "getter" },
+			"doc": "Center in local space."
+		},
+		{
+			"id": "SetCenter",
+			"cpp": "self->SetCenter(center)",
+			"returns": "void",
+			"params": [{ "name": "center", "type": "Vec3" }],
+			"csharp": { "member": "Center", "kind": "setter" }
+		}
+	]
+}
