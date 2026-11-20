@@ -330,6 +330,12 @@ TEST_F(ModuleSystemTest, TerminateUnloadsEverything) {
 
 namespace {
 
+	bool IsBeingDeleted(const std::filesystem::path& path) {
+		std::error_code ec;
+		(void)std::filesystem::status(path, ec);
+		return static_cast<bool>(ec);
+	}
+
 	u32 CountCacheCopiesOf(std::string_view stem) {
 		u32 count = 0;
 		std::error_code ec;
@@ -340,7 +346,7 @@ namespace {
 		const std::string prefix = std::string(stem) + "-";
 		for (const auto& entry : it) {
 			const std::string name = entry.path().filename().string();
-			if (entry.path().extension() == SLT_TEST_DLL_SUFFIX && name.rfind(prefix, 0) == 0) {
+			if (entry.path().extension() == SLT_TEST_DLL_SUFFIX && name.rfind(prefix, 0) == 0 && !IsBeingDeleted(entry.path())) {
 				++count;
 			}
 		}
@@ -357,7 +363,7 @@ namespace {
 		const std::string prefix = std::string(stem) + "-";
 		for (const auto& entry : it) {
 			const std::string name = entry.path().filename().string();
-			if (entry.path().extension() == SLT_TEST_DLL_SUFFIX && name.rfind(prefix, 0) == 0) {
+			if (entry.path().extension() == SLT_TEST_DLL_SUFFIX && name.rfind(prefix, 0) == 0 && !IsBeingDeleted(entry.path())) {
 				names.push_back(str(name));
 			}
 		}
