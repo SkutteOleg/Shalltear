@@ -125,8 +125,8 @@ TEST(CSharpPackageTest, LoadsAndUnloads) {
 
 TEST(CSharpPackageTest, ManagedOutputsExist) {
 	const std::filesystem::path managed = ManagedDirectory();
-	for (const char* name : {"Shalltear.Runtime.dll", "Shalltear.Runtime.xml", "Shalltear.Physics3D.dll", "Shalltear.Physics3D.xml", "Shalltear.Generators.dll",
-							 "Shalltear.Conformance.dll"}) {
+	for (const char* name : {"Shalltear.Runtime.dll", "Shalltear.Runtime.xml", "Shalltear.Physics3D.dll", "Shalltear.Physics3D.xml", "Shalltear.Audio.dll",
+							 "Shalltear.Audio.xml", "Shalltear.Generators.dll", "Shalltear.Conformance.dll", "Shalltear.Conformance.Audio.dll"}) {
 		std::error_code ec;
 		EXPECT_GT(std::filesystem::file_size(managed / name, ec), 0u) << name;
 	}

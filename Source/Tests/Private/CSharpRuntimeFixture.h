@@ -32,7 +32,7 @@ namespace Shalltear::CSharpTests {
 			ModuleSystem::Initialize();
 			_package = ModuleSystem::Load(Path(str("CSharp") + SLT_TEST_DLL_SUFFIX), ModuleLoadPolicy::InPlace);
 			ASSERT_TRUE(ModuleSystem::IsLoaded(_package));
-			ASSERT_TRUE(CSharpConformance::StandUpPackages(nullptr));
+			ASSERT_TRUE(LoadPackages());
 			const auto get = reinterpret_cast<CSharpImpl::GetScriptTestHooksFn>(
 				ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_package), CSharpImpl::SCRIPT_TEST_HOOKS_SYMBOL));
 			ASSERT_NE(get, nullptr);
@@ -47,6 +47,10 @@ namespace Shalltear::CSharpTests {
 			BuildStepRegistry::Shutdown();
 		}
 
+		virtual bool LoadPackages() { return CSharpConformance::StandUpPackages(nullptr); }
+
+		virtual const char* GetConformanceAssembly() const { return "Shalltear.Conformance.dll"; }
+
 		SltInitializeFn Host() {
 			if (const SltInitializeFn entry = _hooks->getHostEntry()) {
 				return entry;
@@ -60,9 +64,8 @@ namespace Shalltear::CSharpTests {
 		}
 
 		bool LoadConformance() {
-			const str path = (std::filesystem::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" /
-							  "Shalltear.Conformance.dll")
-								 .generic_string();
+			const str path =
+				(std::filesystem::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / GetConformanceAssembly()).generic_string();
 			const SltString paths[] = {SltString{path.data(), static_cast<int32_t>(path.size())}};
 			return _hooks->getManaged().loadUserAssemblies(paths, 1) == SLT_OK;
 		}

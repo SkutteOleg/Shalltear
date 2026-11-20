@@ -1,0 +1,257 @@
+{
+	"area": "AudioReverbFilter",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioReverbFilter",
+	"instance": "AudioReverbFilter",
+	"types": [
+		{
+			"name": "AudioReverbFilter",
+			"cpp": "::Shalltear::AudioReverbFilter",
+			"engine": "AudioReverbFilter",
+			"base": "AudioFilter",
+			"doc": "Reverb on its object's sources."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetReverbPreset",
+			"cpp": "self->GetReverbPreset()",
+			"returns": "AudioReverbPreset",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReverbPreset", "kind": "getter" },
+			"doc": "Preset (User = the values below)."
+		},
+		{
+			"id": "SetReverbPreset",
+			"cpp": "self->SetReverbPreset(reverbPreset)",
+			"returns": "void",
+			"params": [{ "name": "reverbPreset", "type": "AudioReverbPreset" }],
+			"csharp": { "member": "ReverbPreset", "kind": "setter" }
+		},
+		{
+			"id": "GetDryLevel",
+			"cpp": "self->GetDryLevel()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DryLevel", "kind": "getter" },
+			"doc": "Level of the sound itself in millibels."
+		},
+		{
+			"id": "SetDryLevel",
+			"cpp": "self->SetDryLevel(dryLevel)",
+			"returns": "void",
+			"params": [{ "name": "dryLevel", "type": "f32" }],
+			"csharp": { "member": "DryLevel", "kind": "setter" }
+		},
+		{
+			"id": "GetRoom",
+			"cpp": "self->GetRoom()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Room", "kind": "getter" },
+			"doc": "Room effect level in millibels."
+		},
+		{
+			"id": "SetRoom",
+			"cpp": "self->SetRoom(room)",
+			"returns": "void",
+			"params": [{ "name": "room", "type": "f32" }],
+			"csharp": { "member": "Room", "kind": "setter" }
+		},
+		{
+			"id": "GetRoomHF",
+			"cpp": "self->GetRoomHF()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RoomHF", "kind": "getter" },
+			"doc": "Room effect level at high frequencies in millibels."
+		},
+		{
+			"id": "SetRoomHF",
+			"cpp": "self->SetRoomHF(roomHF)",
+			"returns": "void",
+			"params": [{ "name": "roomHF", "type": "f32" }],
+			"csharp": { "member": "RoomHF", "kind": "setter" }
+		},
+		{
+			"id": "GetRoomLF",
+			"cpp": "self->GetRoomLF()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RoomLF", "kind": "getter" },
+			"doc": "Room effect level at low frequencies in millibels."
+		},
+		{
+			"id": "SetRoomLF",
+			"cpp": "self->SetRoomLF(roomLF)",
+			"returns": "void",
+			"params": [{ "name": "roomLF", "type": "f32" }],
+			"csharp": { "member": "RoomLF", "kind": "setter" }
+		},
+		{
+			"id": "GetDecayTime",
+			"cpp": "self->GetDecayTime()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DecayTime", "kind": "getter" },
+			"doc": "Decay time in seconds."
+		},
+		{
+			"id": "SetDecayTime",
+			"cpp": "self->SetDecayTime(decayTime)",
+			"returns": "void",
+			"params": [{ "name": "decayTime", "type": "f32" }],
+			"csharp": { "member": "DecayTime", "kind": "setter" }
+		},
+		{
+			"id": "GetDecayHFRatio",
+			"cpp": "self->GetDecayHFRatio()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DecayHFRatio", "kind": "getter" },
+			"doc": "Decay at high frequencies as a ratio of DecayTime."
+		},
+		{
+			"id": "SetDecayHFRatio",
+			"cpp": "self->SetDecayHFRatio(decayHFRatio)",
+			"returns": "void",
+			"params": [{ "name": "decayHFRatio", "type": "f32" }],
+			"csharp": { "member": "DecayHFRatio", "kind": "setter" }
+		},
+		{
+			"id": "GetReflectionsLevel",
+			"cpp": "self->GetReflectionsLevel()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReflectionsLevel", "kind": "getter" },
+			"doc": "Level of the early reflections in millibels."
+		},
+		{
+			"id": "SetReflectionsLevel",
+			"cpp": "self->SetReflectionsLevel(reflectionsLevel)",
+			"returns": "void",
+			"params": [{ "name": "reflectionsLevel", "type": "f32" }],
+			"csharp": { "member": "ReflectionsLevel", "kind": "setter" }
+		},
+		{
+			"id": "GetReverbLevel",
+			"cpp": "self->GetReverbLevel()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReverbLevel", "kind": "getter" },
+			"doc": "Level of the late reverb in millibels."
+		},
+		{
+			"id": "SetReverbLevel",
+			"cpp": "self->SetReverbLevel(reverbLevel)",
+			"returns": "void",
+			"params": [{ "name": "reverbLevel", "type": "f32" }],
+			"csharp": { "member": "ReverbLevel", "kind": "setter" }
+		},
+		{
+			"id": "GetReflectionsDelay",
+			"cpp": "self->GetReflectionsDelay()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReflectionsDelay", "kind": "getter" },
+			"doc": "Delay of the early reflections in seconds."
+		},
+		{
+			"id": "SetReflectionsDelay",
+			"cpp": "self->SetReflectionsDelay(reflectionsDelay)",
+			"returns": "void",
+			"params": [{ "name": "reflectionsDelay", "type": "f32" }],
+			"csharp": { "member": "ReflectionsDelay", "kind": "setter" }
+		},
+		{
+			"id": "GetReverbDelay",
+			"cpp": "self->GetReverbDelay()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReverbDelay", "kind": "getter" },
+			"doc": "Delay of the late reverb in seconds."
+		},
+		{
+			"id": "SetReverbDelay",
+			"cpp": "self->SetReverbDelay(reverbDelay)",
+			"returns": "void",
+			"params": [{ "name": "reverbDelay", "type": "f32" }],
+			"csharp": { "member": "ReverbDelay", "kind": "setter" }
+		},
+		{
+			"id": "GetHFReference",
+			"cpp": "self->GetHFReference()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "HFReference", "kind": "getter" },
+			"doc": "High frequency reference in Hz."
+		},
+		{
+			"id": "SetHFReference",
+			"cpp": "self->SetHFReference(hfReference)",
+			"returns": "void",
+			"params": [{ "name": "hfReference", "type": "f32" }],
+			"csharp": { "member": "HFReference", "kind": "setter" }
+		},
+		{
+			"id": "GetLFReference",
+			"cpp": "self->GetLFReference()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LFReference", "kind": "getter" },
+			"doc": "Low frequency reference in Hz."
+		},
+		{
+			"id": "SetLFReference",
+			"cpp": "self->SetLFReference(lfReference)",
+			"returns": "void",
+			"params": [{ "name": "lfReference", "type": "f32" }],
+			"csharp": { "member": "LFReference", "kind": "setter" }
+		},
+		{
+			"id": "GetDiffusion",
+			"cpp": "self->GetDiffusion()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Diffusion", "kind": "getter" },
+			"doc": "Echo density of the late reverb in percent."
+		},
+		{
+			"id": "SetDiffusion",
+			"cpp": "self->SetDiffusion(diffusion)",
+			"returns": "void",
+			"params": [{ "name": "diffusion", "type": "f32" }],
+			"csharp": { "member": "Diffusion", "kind": "setter" }
+		},
+		{
+			"id": "GetDensity",
+			"cpp": "self->GetDensity()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Density", "kind": "getter" },
+			"doc": "Modal density of the late reverb in percent."
+		},
+		{
+			"id": "SetDensity",
+			"cpp": "self->SetDensity(density)",
+			"returns": "void",
+			"params": [{ "name": "density", "type": "f32" }],
+			"csharp": { "member": "Density", "kind": "setter" }
+		}
+	]
+}

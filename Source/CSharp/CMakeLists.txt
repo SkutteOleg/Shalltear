@@ -124,7 +124,27 @@ if(WIN32)
 				"${CMAKE_SOURCE_DIR}/EngineAssets/CSharp/Shalltear.CSharp.targets"
 			COMMENT "Publishing C# conformance suite as a native lib"
 			VERBATIM)
-		add_custom_target(CSharpConformanceAOT DEPENDS "${sltAOTLibrary}")
+
+		set(sltAudioAOTProject "${sltManagedDir}/Shalltear.ConformanceAudioAOT/Shalltear.ConformanceAudioAOT.csproj")
+		set(sltAudioAOTLibrary "${sltManagedOutput}/aot/Shalltear.ConformanceAudioAOT.dll")
+		# after 1st publish (same OutDir)
+		add_custom_command(
+			OUTPUT "${sltAudioAOTLibrary}"
+			COMMAND ${CMAKE_COMMAND} -E env
+				"DOTNET_ROOT=${sltDotNetRoot}" DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_CLI_UI_LANGUAGE=en-us
+				"${sltDotNet}" msbuild "${sltAudioAOTProject}" -restore -t:Publish
+				-nologo -v:q -tl:off -clp:NoSummary -warnaserror -nodeReuse:false
+				-p:Configuration=${sltManagedConfig} -p:UseSharedCompilation=false -p:RuntimeIdentifier=win-x64
+				"-p:ShalltearManagedRoot=${sltManagedRoot}/" "-p:ShalltearManagedOutput=${sltManagedOutput}/"
+				"-p:ShalltearLinkerDir=${sltToolchainBin}/" "-p:ShalltearNativeDir=${sltNativeDir}/"
+				"-p:PublishDir=${sltManagedRoot}/aot-publish-audio/"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				"${sltManagedRoot}/aot-publish-audio/Shalltear.ConformanceAudioAOT.dll" "${sltAudioAOTLibrary}"
+			DEPENDS "${sltAOTLibrary}" "${sltManagedStamp}" "${sltShim}" ${sltNativeLibs} "${sltAudioAOTProject}"
+				"${CMAKE_SOURCE_DIR}/EngineAssets/CSharp/Shalltear.CSharp.targets"
+			COMMENT "Publishing C# audio conformance suite as a native lib"
+			VERBATIM)
+		add_custom_target(CSharpConformanceAOT DEPENDS "${sltAOTLibrary}" "${sltAudioAOTLibrary}")
 	endif()
 endif()
 

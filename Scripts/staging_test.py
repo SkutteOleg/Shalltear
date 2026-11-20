@@ -120,6 +120,8 @@ CSHARP_CASES = (
 	('Shalltear.Runtime.runtimeconfig.json', build_sdk.SHIP),
 	('Shalltear.Physics3D.dll', build_sdk.SHIP),
 	('Shalltear.Physics3D.xml', build_sdk.SHIP),
+	('Shalltear.Audio.dll', build_sdk.SHIP),
+	('Shalltear.Audio.xml', build_sdk.SHIP),
 	('Shalltear.Generators.dll', build_sdk.SHIP),
 	('Renamer/Shalltear.Renamer.dll', build_sdk.SHIP),
 	('Renamer/Shalltear.Renamer.runtimeconfig.json', build_sdk.SHIP),
@@ -129,6 +131,7 @@ CSHARP_CASES = (
 	('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.SHIP),
 	('native/libs/kernel32.lib', build_sdk.SHIP),
 	('Shalltear.Conformance.dll', build_sdk.DROP),
+	('Shalltear.Conformance.Audio.dll', build_sdk.DROP),
 )
 
 CSHARP_UNGOVERNED = (

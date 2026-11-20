@@ -1,0 +1,126 @@
+{
+	"area": "AudioClip",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioClip",
+	"instance": "AudioClip",
+	"types": [
+		{
+			"name": "AudioResource",
+			"cpp": "::Shalltear::AudioResource",
+			"engine": "AudioResource",
+			"base": "Asset",
+			"doc": "Anything playable by an audio source.",
+			"abstract": true
+		},
+		{ "name": "AudioClip", "cpp": "::Shalltear::AudioClip", "engine": "AudioClip", "base": "AudioResource", "doc": "Recorded sound." },
+		{
+			"name": "AudioContainer",
+			"cpp": "::Shalltear::AudioContainer",
+			"engine": "AudioContainer",
+			"base": "AudioResource",
+			"doc": "Resource playing other resources.",
+			"abstract": true
+		},
+		{
+			"name": "AudioRandomContainer",
+			"cpp": "::Shalltear::AudioRandomContainer",
+			"engine": "AudioRandomContainer",
+			"base": "AudioContainer",
+			"doc": "Plays 1 of its resources in turn or at random."
+		},
+		{
+			"name": "AudioLayeredContainer",
+			"cpp": "::Shalltear::AudioLayeredContainer",
+			"engine": "AudioLayeredContainer",
+			"base": "AudioContainer",
+			"doc": "Plays its resources together."
+		},
+		{
+			"name": "AudioInteractiveContainer",
+			"cpp": "::Shalltear::AudioInteractiveContainer",
+			"engine": "AudioInteractiveContainer",
+			"base": "AudioContainer",
+			"doc": "Music moving between clips on the beat."
+		}
+	],
+	"enums": [
+		{
+			"name": "AudioClipLoadType",
+			"cpp": "::Shalltear::AudioClipLoadType",
+			"underlying": "u8",
+			"doc": "How a clip's samples are held in memory.",
+			"values": [
+				{ "name": "DecompressOnLoad", "value": 0, "doc": "Decoded once at load." },
+				{ "name": "CompressedInMemory", "value": 1, "doc": "Decoded as it plays." },
+				{ "name": "Streaming", "value": 2, "doc": "Read from disk as it plays." }
+			]
+		},
+		{
+			"name": "AudioCompressionFormat",
+			"cpp": "::Shalltear::AudioCompressionFormat",
+			"underlying": "u8",
+			"doc": "How a clip's samples are stored.",
+			"values": [
+				{ "name": "PCM", "value": 0, "doc": "Not compressed." },
+				{ "name": "QOA", "value": 1, "doc": "QOA." },
+				{ "name": "Opus", "value": 2, "doc": "Opus." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetFrequency",
+			"cpp": "self->GetFrequency()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Frequency", "kind": "getter" },
+			"doc": "Sample rate in Hz."
+		},
+		{
+			"id": "GetChannels",
+			"cpp": "self->GetChannels()",
+			"returns": "u32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Channels", "kind": "getter" },
+			"doc": "Number of channels."
+		},
+		{
+			"id": "GetSamples",
+			"cpp": "self->GetSamples()",
+			"returns": "u64",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Samples", "kind": "getter" },
+			"doc": "Length in sample frames."
+		},
+		{
+			"id": "GetLength",
+			"cpp": "self->GetLength()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Length", "kind": "getter" },
+			"doc": "Length in seconds."
+		},
+		{
+			"id": "GetLoadType",
+			"cpp": "self->GetLoadType()",
+			"returns": "AudioClipLoadType",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LoadType", "kind": "getter" },
+			"doc": "How its samples are held in memory."
+		},
+		{
+			"id": "GetCompressionFormat",
+			"cpp": "self->GetCompressionFormat()",
+			"returns": "AudioCompressionFormat",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CompressionFormat", "kind": "getter" },
+			"doc": "How its samples are stored."
+		}
+	]
+}

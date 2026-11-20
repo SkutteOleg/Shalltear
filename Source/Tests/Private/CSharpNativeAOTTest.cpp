@@ -128,6 +128,49 @@ int Shalltear::TestHelpers::RunCSharpAOTComponents(const char* library) {
 	return 0;
 }
 
+int Shalltear::TestHelpers::RunCSharpAOTAudio(const char* library) {
+	JobSystem::Initialize();
+	LogManager::Initialize({true, false});
+	TypeRegistry::InitializePrimitives();
+	TypeRegistry::RegisterPendingTypes();
+	int32_t count = -1;
+	{
+		const CSharpConformance::AudioStore store;
+		static char packages = 0;
+		CSharpConformance::StandUpAudio(&packages);
+		str error;
+		if (library && CSharpImpl::NativeAOTHost::Start(library, error)) {
+			SceneSystem::Initialize();
+			{
+				const CSharpConformance::AudioRig rig(&CSharpImpl::BindingProbe::SetDriver, &CSharpImpl::BindingProbe::SetAssetFinder);
+				std::printf("ASSETS staged=%d\n", rig.IsStaged());
+				SceneSystem::CreateScene("World");
+				const SltManagedAPI& managed = CSharpImpl::ScriptRuntime::GetManaged();
+				count = managed.getConformanceTestCount();
+				for (int32_t index = 0; index < count; ++index) {
+					SltString name{};
+					managed.getConformanceTestName(index, &name);
+					const str caseName(View(name));
+					SltString message{};
+					const int32_t result = managed.runConformanceTest(index, &message);
+					std::printf("CASE %d %s | %.*s\n", result, caseName.c_str(), static_cast<int>(View(message).size()), View(message).data());
+					std::fflush(stdout);
+				}
+				SceneSystem::Terminate();
+			}
+			CSharpImpl::ScriptRuntime::Detach();
+		} else {
+			std::printf("START FAILED %s\n", error.c_str());
+		}
+		CSharpConformance::ShutDownAudio();
+		FrameStages::UnregisterOwnedBy(&packages);
+	}
+	LogManager::Terminate();
+	JobSystem::Terminate();
+	std::printf("DONE %d\n", count);
+	return count < 0 ? 2 : 0;
+}
+
 int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	JobSystem::Initialize();
 	LogManager::Initialize({true, false});
@@ -213,6 +256,18 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 	}
 	EXPECT_GE(ran, CSharpConformance::PASS_SET_SIZE) << run.output;
 	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
+}
+
+TEST(CSharpNativeAOTTest, AudioConformanceSuitePasses) {
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAudioAOT.dll", TestHelpers::CSHARP_AOT_AUDIO_FLAG);
+	ASSERT_EQ(run.exitCode, 0) << run.output;
+	EXPECT_TRUE(run.Has("ASSETS staged=1")) << run.output;
+	for (const auto& [name, outcome] : run.cases) {
+		EXPECT_EQ(outcome.first, SLT_OK) << name << ": " << outcome.second;
+	}
+	EXPECT_EQ(static_cast<int32_t>(run.cases.size()), CSharpConformance::AUDIO_CASES) << run.output;
+	EXPECT_TRUE(run.Has(std::format("DONE {}", run.cases.size()))) << run.output;
+	EXPECT_FALSE(run.Has("[ERROR]")) << run.output;
 }
 
 TEST(CSharpNativeAOTTest, FrameEndSweepsTheCache) {

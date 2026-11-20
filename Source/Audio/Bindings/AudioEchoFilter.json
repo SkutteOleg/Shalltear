@@ -1,0 +1,81 @@
+{
+	"area": "AudioEchoFilter",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioEchoFilter",
+	"instance": "AudioEchoFilter",
+	"types": [
+		{
+			"name": "AudioEchoFilter",
+			"cpp": "::Shalltear::AudioEchoFilter",
+			"engine": "AudioEchoFilter",
+			"base": "AudioFilter",
+			"doc": "Repeats the sound after a delay."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetDelay",
+			"cpp": "self->GetDelay()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Delay", "kind": "getter" },
+			"doc": "Delay in ms."
+		},
+		{
+			"id": "SetDelay",
+			"cpp": "self->SetDelay(delay)",
+			"returns": "void",
+			"params": [{ "name": "delay", "type": "f32" }],
+			"csharp": { "member": "Delay", "kind": "setter" }
+		},
+		{
+			"id": "GetDecayRatio",
+			"cpp": "self->GetDecayRatio()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DecayRatio", "kind": "getter" },
+			"doc": "Volume of each echo relative to the one before, 0 to 1."
+		},
+		{
+			"id": "SetDecayRatio",
+			"cpp": "self->SetDecayRatio(decayRatio)",
+			"returns": "void",
+			"params": [{ "name": "decayRatio", "type": "f32" }],
+			"csharp": { "member": "DecayRatio", "kind": "setter" }
+		},
+		{
+			"id": "GetWetMix",
+			"cpp": "self->GetWetMix()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "WetMix", "kind": "getter" },
+			"doc": "Volume of the echoes, 0 to 1."
+		},
+		{
+			"id": "SetWetMix",
+			"cpp": "self->SetWetMix(wetMix)",
+			"returns": "void",
+			"params": [{ "name": "wetMix", "type": "f32" }],
+			"csharp": { "member": "WetMix", "kind": "setter" }
+		},
+		{
+			"id": "GetDryMix",
+			"cpp": "self->GetDryMix()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DryMix", "kind": "getter" },
+			"doc": "Volume of the sound itself, 0 to 1."
+		},
+		{
+			"id": "SetDryMix",
+			"cpp": "self->SetDryMix(dryMix)",
+			"returns": "void",
+			"params": [{ "name": "dryMix", "type": "f32" }],
+			"csharp": { "member": "DryMix", "kind": "setter" }
+		}
+	]
+}

@@ -66,6 +66,39 @@ namespace Shalltear::CSharpConformance {
 	};
 
 	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);
+	using AssetFinderFn = u64 (*)(std::string_view path);
+
+	inline constexpr int32_t AUDIO_CASES = 10;
+
+	class AudioStore {
+	public:
+		AudioStore();
+		~AudioStore();
+
+		AudioStore(const AudioStore&) = delete;
+		AudioStore& operator=(const AudioStore&) = delete;
+	private:
+		std::filesystem::path _root;
+	};
+
+	bool StandUpAudio(const void* owner);
+	void ShutDownAudio();
+
+	class AudioRig {
+	public:
+		AudioRig(void (*setDriver)(DriverFn), void (*setAssetFinder)(AssetFinderFn));
+		~AudioRig();
+
+		AudioRig(const AudioRig&) = delete;
+		AudioRig& operator=(const AudioRig&) = delete;
+
+		bool IsStaged() const { return _staged; }
+	private:
+		void (*_setDriver)(DriverFn);
+		void (*_setAssetFinder)(AssetFinderFn);
+		std::filesystem::path _root;
+		bool _staged = false;
+	};
 
 	class InputRig {
 	public:

@@ -1,0 +1,145 @@
+{
+	"area": "AudioChorusFilter",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioChorusFilter",
+	"instance": "AudioChorusFilter",
+	"types": [
+		{
+			"name": "AudioChorusFilter",
+			"cpp": "::Shalltear::AudioChorusFilter",
+			"engine": "AudioChorusFilter",
+			"base": "AudioFilter",
+			"doc": "Thickens the sound with delayed copies."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetDryMix",
+			"cpp": "self->GetDryMix()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DryMix", "kind": "getter" },
+			"doc": "Volume of the sound itself, 0 to 1."
+		},
+		{
+			"id": "SetDryMix",
+			"cpp": "self->SetDryMix(dryMix)",
+			"returns": "void",
+			"params": [{ "name": "dryMix", "type": "f32" }],
+			"csharp": { "member": "DryMix", "kind": "setter" }
+		},
+		{
+			"id": "GetWetMix1",
+			"cpp": "self->GetWetMix1()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "WetMix1", "kind": "getter" },
+			"doc": "Volume of the 1st copy, 0 to 1."
+		},
+		{
+			"id": "SetWetMix1",
+			"cpp": "self->SetWetMix1(wetMix1)",
+			"returns": "void",
+			"params": [{ "name": "wetMix1", "type": "f32" }],
+			"csharp": { "member": "WetMix1", "kind": "setter" }
+		},
+		{
+			"id": "GetWetMix2",
+			"cpp": "self->GetWetMix2()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "WetMix2", "kind": "getter" },
+			"doc": "Volume of the 2nd copy, 0 to 1."
+		},
+		{
+			"id": "SetWetMix2",
+			"cpp": "self->SetWetMix2(wetMix2)",
+			"returns": "void",
+			"params": [{ "name": "wetMix2", "type": "f32" }],
+			"csharp": { "member": "WetMix2", "kind": "setter" }
+		},
+		{
+			"id": "GetWetMix3",
+			"cpp": "self->GetWetMix3()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "WetMix3", "kind": "getter" },
+			"doc": "Volume of the 3rd copy, 0 to 1."
+		},
+		{
+			"id": "SetWetMix3",
+			"cpp": "self->SetWetMix3(wetMix3)",
+			"returns": "void",
+			"params": [{ "name": "wetMix3", "type": "f32" }],
+			"csharp": { "member": "WetMix3", "kind": "setter" }
+		},
+		{
+			"id": "GetDelay",
+			"cpp": "self->GetDelay()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Delay", "kind": "getter" },
+			"doc": "Delay of the copies in ms."
+		},
+		{
+			"id": "SetDelay",
+			"cpp": "self->SetDelay(delay)",
+			"returns": "void",
+			"params": [{ "name": "delay", "type": "f32" }],
+			"csharp": { "member": "Delay", "kind": "setter" }
+		},
+		{
+			"id": "GetRate",
+			"cpp": "self->GetRate()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Rate", "kind": "getter" },
+			"doc": "Speed of the wobble in Hz."
+		},
+		{
+			"id": "SetRate",
+			"cpp": "self->SetRate(rate)",
+			"returns": "void",
+			"params": [{ "name": "rate", "type": "f32" }],
+			"csharp": { "member": "Rate", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->GetDepth()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Depth", "kind": "getter" },
+			"doc": "Depth of the wobble, 0 to 1."
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->SetDepth(depth)",
+			"returns": "void",
+			"params": [{ "name": "depth", "type": "f32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetFeedback",
+			"cpp": "self->GetFeedback()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Feedback", "kind": "getter" },
+			"doc": "Share of the output fed back in, 0 to 1."
+		},
+		{
+			"id": "SetFeedback",
+			"cpp": "self->SetFeedback(feedback)",
+			"returns": "void",
+			"params": [{ "name": "feedback", "type": "f32" }],
+			"csharp": { "member": "Feedback", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,64 @@
+{
+	"area": "AudioLowPassFilter",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioLowPassFilter",
+	"instance": "AudioLowPassFilter",
+	"types": [
+		{
+			"name": "AudioFilter",
+			"cpp": "::Shalltear::AudioFilter",
+			"engine": "AudioFilter",
+			"base": "Component",
+			"doc": "Effect on the sources of its object (on everything heard when on the listener's).",
+			"abstract": true
+		},
+		{
+			"name": "AudioLowPassFilter",
+			"cpp": "::Shalltear::AudioLowPassFilter",
+			"engine": "AudioLowPassFilter",
+			"base": "AudioFilter",
+			"doc": "Cuts high frequencies."
+		},
+		{
+			"name": "AudioDistortionFilter",
+			"cpp": "::Shalltear::AudioDistortionFilter",
+			"engine": "AudioDistortionFilter",
+			"base": "AudioFilter",
+			"doc": "Distorts the sound."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetCutoffFrequency",
+			"cpp": "self->GetCutoffFrequency()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CutoffFrequency", "kind": "getter" },
+			"doc": "Cutoff frequency in Hz. Curve removed when set."
+		},
+		{
+			"id": "SetCutoffFrequency",
+			"cpp": "self->SetCutoffFrequency(cutoffFrequency)",
+			"returns": "void",
+			"params": [{ "name": "cutoffFrequency", "type": "f32" }],
+			"csharp": { "member": "CutoffFrequency", "kind": "setter" }
+		},
+		{
+			"id": "GetLowpassResonanceQ",
+			"cpp": "self->GetLowpassResonanceQ()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LowpassResonanceQ", "kind": "getter" },
+			"doc": "Resonance at the cutoff (1 = none)."
+		},
+		{
+			"id": "SetLowpassResonanceQ",
+			"cpp": "self->SetLowpassResonanceQ(lowpassResonanceQ)",
+			"returns": "void",
+			"params": [{ "name": "lowpassResonanceQ", "type": "f32" }],
+			"csharp": { "member": "LowpassResonanceQ", "kind": "setter" }
+		}
+	]
+}

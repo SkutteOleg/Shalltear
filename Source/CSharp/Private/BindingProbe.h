@@ -50,6 +50,8 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 
 	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);
 	void SetDriver(DriverFn driver);
+	using AssetFinderFn = u64 (*)(std::string_view path);
+	void SetAssetFinder(AssetFinderFn finder);
 	i32 Drive(i32 op, i32 first, i32 second);
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

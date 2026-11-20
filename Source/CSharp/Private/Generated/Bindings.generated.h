@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #define SLT_BRIDGE_LAYOUT_HASH 0x4da5e291eb5c2cf6ull
-#define SLT_BINDINGS_INPUT_DIGEST 0x4a6b8dca0c876902ull
+#define SLT_BINDINGS_INPUT_DIGEST 0xbb1ba651ecb88de4ull
 
 typedef struct SltString SltString;
 

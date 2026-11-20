@@ -33,6 +33,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpImpl::BindingProbe::TakeRecords,
 		&CSharpImpl::InternLogOrigin,
 		&CSharpImpl::BindingProbe::SetDriver,
+		&CSharpImpl::BindingProbe::SetAssetFinder,
 		&CSharpImpl::InputMaps::GetAliveCount,
 		CSharpEditor::DotNetPinData::RUNTIME_VERSION,
 	};

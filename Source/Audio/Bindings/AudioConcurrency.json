@@ -1,0 +1,114 @@
+{
+	"area": "AudioConcurrency",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioConcurrency",
+	"instance": "AudioConcurrency",
+	"types": [
+		{
+			"name": "AudioConcurrency",
+			"cpp": "::Shalltear::AudioConcurrency",
+			"engine": "AudioConcurrency",
+			"base": "Asset",
+			"doc": "Limit on how many sounds of a kind play at once."
+		}
+	],
+	"enums": [
+		{
+			"name": "AudioConcurrencyRule",
+			"cpp": "::Shalltear::AudioConcurrencyRule",
+			"underlying": "u8",
+			"doc": "What gives way when a concurrency limit is reached.",
+			"values": [
+				{ "name": "PreventNew", "value": 0, "doc": "New sound doesn't start." },
+				{ "name": "StopOldest", "value": 1, "doc": "Oldest stops." },
+				{ "name": "StopFarthestThenPreventNew", "value": 2, "doc": "Farthest stops (the new one when it is the farthest)." },
+				{ "name": "StopFarthestThenOldest", "value": 3, "doc": "Farthest stops (the oldest when the new one is the farthest)." },
+				{ "name": "StopLowestPriority", "value": 4, "doc": "Least important stops." },
+				{ "name": "StopQuietest", "value": 5, "doc": "Quietest stops." },
+				{ "name": "StopLowestPriorityThenPreventNew", "value": 6, "doc": "Least important stops (the new one when it is the least important)." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetMaxCount",
+			"cpp": "self->maxCount",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MaxCount", "kind": "getter" },
+			"doc": "Most sounds playing at once."
+		},
+		{
+			"id": "SetMaxCount",
+			"cpp": "self->maxCount = maxCount",
+			"returns": "void",
+			"params": [{ "name": "maxCount", "type": "i32" }],
+			"csharp": { "member": "MaxCount", "kind": "setter" }
+		},
+		{
+			"id": "GetLimitToOwner",
+			"cpp": "self->limitToOwner",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "LimitToOwner", "kind": "getter" },
+			"doc": "Count per object (not per scene)."
+		},
+		{
+			"id": "SetLimitToOwner",
+			"cpp": "self->limitToOwner = limitToOwner",
+			"returns": "void",
+			"params": [{ "name": "limitToOwner", "type": "bool" }],
+			"csharp": { "member": "LimitToOwner", "kind": "setter" }
+		},
+		{
+			"id": "GetResolutionRule",
+			"cpp": "self->resolutionRule",
+			"returns": "AudioConcurrencyRule",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ResolutionRule", "kind": "getter" },
+			"doc": "What gives way when the limit is reached."
+		},
+		{
+			"id": "SetResolutionRule",
+			"cpp": "self->resolutionRule = resolutionRule",
+			"returns": "void",
+			"params": [{ "name": "resolutionRule", "type": "AudioConcurrencyRule" }],
+			"csharp": { "member": "ResolutionRule", "kind": "setter" }
+		},
+		{
+			"id": "GetRetriggerTime",
+			"cpp": "self->retriggerTime",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RetriggerTime", "kind": "getter" },
+			"doc": "Seconds before the same sound may start again."
+		},
+		{
+			"id": "SetRetriggerTime",
+			"cpp": "self->retriggerTime = retriggerTime",
+			"returns": "void",
+			"params": [{ "name": "retriggerTime", "type": "f32" }],
+			"csharp": { "member": "RetriggerTime", "kind": "setter" }
+		},
+		{
+			"id": "GetVoiceStealReleaseTime",
+			"cpp": "self->voiceStealReleaseTime",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "VoiceStealReleaseTime", "kind": "getter" },
+			"doc": "Fade in seconds of a sound giving way."
+		},
+		{
+			"id": "SetVoiceStealReleaseTime",
+			"cpp": "self->voiceStealReleaseTime = voiceStealReleaseTime",
+			"returns": "void",
+			"params": [{ "name": "voiceStealReleaseTime", "type": "f32" }],
+			"csharp": { "member": "VoiceStealReleaseTime", "kind": "setter" }
+		}
+	]
+}

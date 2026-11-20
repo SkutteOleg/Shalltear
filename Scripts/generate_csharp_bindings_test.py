@@ -508,6 +508,33 @@ class BindingsTest(unittest.TestCase):
 		self.assertEqual("Game.json: Hit: field 'first' can't be Point. Use a scalar, a value type, an enum or a struct",
 						 self.refusal([fill], structs=[hit, point]))
 
+	def test_handle_crosses_as_one_integer(self):
+		voice = {"name": "Voice", "cpp": "::Game::Voice", "doc": "1 voice."}
+		moment = {"name": "Moment", "cpp": "::Game::Moment", "doc": "A time.", "value": {"name": "frames", "doc": "Frames since start."}}
+		start = {"id": "Start", "cpp": "::Game::Start(at)", "returns": "Voice", "params": [{"name": "at", "type": "Moment"}],
+				 "csharp": {"member": "Start", "kind": "method"}, "doc": "Start at a time."}
+		ends = {"id": "GetEnd", "cpp": "::Game::GetEnd(voice)", "returns": "Moment", "params": [{"name": "voice", "type": "Voice"}],
+				"csharp": {"member": "GetEnd", "kind": "method"}, "doc": "When it ends."}
+		area = bindings.parse_area(self.write([start, ends], handles=[voice, moment]))
+		self.assertIn("\tint32_t (*gameStart)(uint64_t at, uint64_t* outResult);\n", bindings.render_native_header([area], 0))
+		native = bindings.render_native_area(area)
+		self.assertIn("\tstatic_assert(sizeof(::Game::Voice) == sizeof(uint64_t) && std::is_trivially_copyable_v<::Game::Voice>);\n", native)
+		self.assertIn("\t\t\tconst ::Game::Moment at = std::bit_cast<::Game::Moment>(atIn);\n", native)
+		self.assertIn("\t\t\t\t*outResult = std::bit_cast<uint64_t>(::Game::Start(at));\n", native)
+		managed = bindings.render_managed_area(area)
+		self.assertIn("/// <summary>1 voice.</summary>\npublic readonly partial struct Voice : IEquatable<Voice> {\n\tinternal readonly ulong _bits;\n\n"
+					  "\tinternal Voice(ulong bits) {\n\t\t_bits = bits;\n\t}\n", managed)
+		self.assertIn("public readonly partial struct Moment : IEquatable<Moment> {\n\t/// <summary>Frames since start.</summary>\n"
+					  "\tpublic readonly ulong frames;\n\n\t/// <summary>Frames since start.</summary>\n\tpublic Moment(ulong frames) {\n", managed)
+		self.assertIn("\tpublic static Voice Start(Moment at) {\n", managed)
+		self.assertIn("gameStart(at.frames, &result);", managed)
+		self.assertIn("\t\treturn new Voice(result);\n", managed)
+		self.assertIn("gameGetEnd(voice._bits, &result);", managed)
+		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([bindings.parse_area(self.write([start, ends], handles=[moment, voice]))]))
+		self.assertEqual("Game.json: Voice: type is declared twice", self.refusal([start, ends], handles=[voice, moment, voice]))
+		self.assertEqual("Game.json: Voice: unknown key 'underlying'. Use cpp, doc, name, value",
+						 self.refusal([start, ends], handles=[dict(voice, underlying="u32"), moment]))
+
 	def test_hand_written_asset_wrapper_is_returned(self):
 		skin = {"id": "GetSkin", "cpp": "::Game::GetSkin()", "returns": "Mesh", "params": [], "csharp": {"member": "Skin", "kind": "getter"}, "doc": "Skin."}
 		dress = {"id": "SetSkin", "cpp": "::Game::SetSkin(skin)", "returns": "void", "params": [{"name": "skin", "type": "Mesh", "optional": True}],

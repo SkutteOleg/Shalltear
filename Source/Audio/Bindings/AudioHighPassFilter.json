@@ -1,0 +1,49 @@
+{
+	"area": "AudioHighPassFilter",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioHighPassFilter",
+	"instance": "AudioHighPassFilter",
+	"types": [
+		{
+			"name": "AudioHighPassFilter",
+			"cpp": "::Shalltear::AudioHighPassFilter",
+			"engine": "AudioHighPassFilter",
+			"base": "AudioFilter",
+			"doc": "Cuts low frequencies."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetCutoffFrequency",
+			"cpp": "self->GetCutoffFrequency()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "CutoffFrequency", "kind": "getter" },
+			"doc": "Cutoff frequency in Hz."
+		},
+		{
+			"id": "SetCutoffFrequency",
+			"cpp": "self->SetCutoffFrequency(cutoffFrequency)",
+			"returns": "void",
+			"params": [{ "name": "cutoffFrequency", "type": "f32" }],
+			"csharp": { "member": "CutoffFrequency", "kind": "setter" }
+		},
+		{
+			"id": "GetHighpassResonanceQ",
+			"cpp": "self->GetHighpassResonanceQ()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "HighpassResonanceQ", "kind": "getter" },
+			"doc": "Resonance at the cutoff (1 = none)."
+		},
+		{
+			"id": "SetHighpassResonanceQ",
+			"cpp": "self->SetHighpassResonanceQ(highpassResonanceQ)",
+			"returns": "void",
+			"params": [{ "name": "highpassResonanceQ", "type": "f32" }],
+			"csharp": { "member": "HighpassResonanceQ", "kind": "setter" }
+		}
+	]
+}

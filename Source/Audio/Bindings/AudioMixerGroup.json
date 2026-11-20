@@ -1,0 +1,28 @@
+{
+	"area": "AudioMixerGroup",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioMixerGroup",
+	"instance": "AudioMixerGroup",
+	"types": [
+		{ "name": "AudioMixerGroup", "cpp": "::Shalltear::AudioMixerGroup", "engine": "AudioMixerGroup", "base": "Asset", "doc": "1 group of an audio mixer." }
+	],
+	"functions": [
+		{
+			"id": "GetAudioMixer",
+			"cpp": "self->GetAudioMixer()",
+			"returns": "AudioMixer",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AudioMixer", "kind": "getter" },
+			"doc": "Group's mixer."
+		},
+		{
+			"id": "GetGroupId",
+			"cpp": "std::string_view(self->GetGroupId())",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "GroupId", "kind": "getter" },
+			"doc": "Group's id in its mixer."
+		}
+	]
+}

@@ -1,0 +1,345 @@
+{
+	"area": "Audio",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.Audio",
+	"doc": "Audio clock, global volume + playing voices.",
+	"enums": [
+		{
+			"name": "AudioQuantization",
+			"cpp": "::Shalltear::AudioQuantization",
+			"underlying": "u8",
+			"doc": "Musical boundary to wait for.",
+			"values": [
+				{ "name": "Immediate", "value": 0, "doc": "No wait." },
+				{ "name": "NextBeat", "value": 1, "doc": "Next beat." },
+				{ "name": "NextBar", "value": 2, "doc": "Next bar." }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "AudioMusicClock",
+			"doc": "Tempo of a playing piece of music.",
+			"fields": [
+				{ "name": "origin", "type": "AudioTime", "doc": "When beat 0 fell." },
+				{ "name": "beatsPerMinute", "type": "f64", "doc": "Tempo (0 = none)." },
+				{ "name": "beatsPerBar", "type": "u32", "doc": "Beats in a bar." },
+				{ "name": "sampleRate", "type": "u32", "doc": "Clock's sample rate." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetTime",
+			"cpp": "::Shalltear::Audio::GetTime()",
+			"returns": "AudioTime",
+			"params": [],
+			"csharp": { "member": "Time", "kind": "getter" },
+			"doc": "Now on the audio clock."
+		},
+		{
+			"id": "GetOutputSampleRate",
+			"cpp": "::Shalltear::Audio::GetOutputSampleRate()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "OutputSampleRate", "kind": "getter" },
+			"doc": "Sample rate of the output in Hz."
+		},
+		{
+			"id": "GetGlobalVolume",
+			"cpp": "::Shalltear::Audio::GetGlobalVolume()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "GlobalVolume", "kind": "getter" },
+			"doc": "Volume of everything heard, 0 to 1."
+		},
+		{
+			"id": "SetGlobalVolume",
+			"cpp": "::Shalltear::Audio::SetGlobalVolume(volume)",
+			"returns": "bool",
+			"params": [{ "name": "volume", "type": "f32" }],
+			"csharp": { "member": "SetGlobalVolume", "kind": "method" },
+			"doc": "Set the volume of everything heard. False when the project's settings can't be changed now."
+		},
+		{
+			"id": "Stop",
+			"cpp": "::Shalltear::Audio::Stop(voice)",
+			"returns": "void",
+			"params": [{ "name": "voice", "type": "AudioVoice" }],
+			"csharp": { "member": "Stop", "kind": "method" },
+			"doc": "Stop a voice."
+		},
+		{
+			"id": "Pause",
+			"cpp": "::Shalltear::Audio::Pause(voice)",
+			"returns": "void",
+			"params": [{ "name": "voice", "type": "AudioVoice" }],
+			"csharp": { "member": "Pause", "kind": "method" },
+			"doc": "Pause a voice."
+		},
+		{
+			"id": "UnPause",
+			"cpp": "::Shalltear::Audio::UnPause(voice)",
+			"returns": "void",
+			"params": [{ "name": "voice", "type": "AudioVoice" }],
+			"csharp": { "member": "UnPause", "kind": "method" },
+			"doc": "Go on after Pause."
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "::Shalltear::Audio::SetVolume(voice, volume)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "volume", "type": "f32" }
+			],
+			"csharp": { "member": "SetVolume", "kind": "method" },
+			"doc": "Volume of a voice, 0 to 1."
+		},
+		{
+			"id": "SetPitch",
+			"cpp": "::Shalltear::Audio::SetPitch(voice, pitch)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "pitch", "type": "f32" }
+			],
+			"csharp": { "member": "SetPitch", "kind": "method" },
+			"doc": "Playback speed of a voice."
+		},
+		{
+			"id": "SetStereoPan",
+			"cpp": "::Shalltear::Audio::SetStereoPan(voice, stereoPan)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "stereoPan", "type": "f32" }
+			],
+			"csharp": { "member": "SetStereoPan", "kind": "method" },
+			"doc": "Pan of a voice, -1 left to 1 right."
+		},
+		{
+			"id": "SetLoop",
+			"cpp": "::Shalltear::Audio::SetLoop(voice, loop)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "loop", "type": "bool" }
+			],
+			"csharp": { "member": "SetLoop", "kind": "method" },
+			"doc": "Whether a voice starts over at its end."
+		},
+		{
+			"id": "SetReverbZoneMix",
+			"cpp": "::Shalltear::Audio::SetReverbZoneMix(voice, reverbZoneMix)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "reverbZoneMix", "type": "f32" }
+			],
+			"csharp": { "member": "SetReverbZoneMix", "kind": "method" },
+			"doc": "Share of a voice sent to reverb zones."
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "::Shalltear::Audio::SetPosition(voice, position, velocity)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "position", "type": "Vec3" },
+				{ "name": "velocity", "type": "Vec3" }
+			],
+			"csharp": { "member": "SetPosition", "kind": "method" },
+			"doc": "Where a 3D voice is + how fast it moves."
+		},
+		{
+			"id": "SetEffectParameter",
+			"cpp": "::Shalltear::Audio::SetEffectParameter(voice, index, parameter, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "index", "type": "u32" },
+				{ "name": "parameter", "type": "u32" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetEffectParameter", "kind": "method" },
+			"doc": "Set a parameter of the voice's effect at index."
+		},
+		{
+			"id": "SetBypassEffects",
+			"cpp": "::Shalltear::Audio::SetBypassEffects(voice, bypass)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "bypass", "type": "bool" }
+			],
+			"csharp": { "member": "SetBypassEffects", "kind": "method" },
+			"doc": "Skip the voice's effects."
+		},
+		{
+			"id": "SetBypassListenerEffects",
+			"cpp": "::Shalltear::Audio::SetBypassListenerEffects(voice, bypass)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "bypass", "type": "bool" }
+			],
+			"csharp": { "member": "SetBypassListenerEffects", "kind": "method" },
+			"doc": "Skip the listener's effects for a voice."
+		},
+		{
+			"id": "GetTimeSamples",
+			"cpp": "::Shalltear::Audio::GetTimeSamples(voice)",
+			"returns": "u64",
+			"params": [{ "name": "voice", "type": "AudioVoice" }],
+			"csharp": { "member": "GetTimeSamples", "kind": "method" },
+			"doc": "Playback position of a voice in sample frames."
+		},
+		{
+			"id": "SetTimeSamples",
+			"cpp": "::Shalltear::Audio::SetTimeSamples(voice, sample)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "sample", "type": "u64" }
+			],
+			"csharp": { "member": "SetTimeSamples", "kind": "method" },
+			"doc": "Move a voice to a sample frame."
+		},
+		{
+			"id": "IsPlaying",
+			"cpp": "::Shalltear::Audio::IsPlaying(voice)",
+			"returns": "bool",
+			"params": [{ "name": "voice", "type": "AudioVoice" }],
+			"csharp": { "member": "IsPlaying", "kind": "method" },
+			"doc": "True while a voice plays (false while paused)."
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "::Shalltear::Audio::SetPriority(voice, priority)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "priority", "type": "i32" }
+			],
+			"csharp": { "member": "SetPriority", "kind": "method" },
+			"doc": "0 most important, 256 least."
+		},
+		{
+			"id": "IsVirtual",
+			"cpp": "::Shalltear::Audio::IsVirtual(voice)",
+			"returns": "bool",
+			"params": [{ "name": "voice", "type": "AudioVoice" }],
+			"csharp": { "member": "IsVirtual", "kind": "method" },
+			"doc": "True while a voice plays unheard."
+		},
+		{
+			"id": "SetScheduledStartTime",
+			"cpp": "::Shalltear::Audio::SetScheduledStartTime(voice, time)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "time", "type": "AudioTime" }
+			],
+			"csharp": { "member": "SetScheduledStartTime", "kind": "method" },
+			"doc": "Move the start of a scheduled voice."
+		},
+		{
+			"id": "SetScheduledEndTime",
+			"cpp": "::Shalltear::Audio::SetScheduledEndTime(voice, time)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "time", "type": "AudioTime" }
+			],
+			"csharp": { "member": "SetScheduledEndTime", "kind": "method" },
+			"doc": "Stop a voice at time."
+		},
+		{
+			"id": "SwitchToClip",
+			"cpp": "::Shalltear::Audio::SwitchToClip(voice, clip)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "clip", "type": "string" }
+			],
+			"csharp": { "member": "SwitchToClip", "kind": "method" },
+			"doc": "Move an interactive container's voice to the clip with this name."
+		},
+		{
+			"id": "SetLayerVolume",
+			"cpp": "::Shalltear::Audio::SetLayerVolume(voice, layer, volume)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "layer", "type": "u32" },
+				{ "name": "volume", "type": "f32" }
+			],
+			"csharp": { "member": "SetLayerVolume", "kind": "method" },
+			"doc": "Volume of 1 layer of a layered container's voice."
+		},
+		{
+			"id": "SetGeneratorParameter",
+			"cpp": "::Shalltear::Audio::SetGeneratorParameter(voice, index, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "index", "type": "u32" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetGeneratorParameter", "kind": "method" },
+			"doc": "Set a parameter of a generator's voice."
+		},
+		{
+			"id": "ReadMusicClock",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::ReadMusicClock(voice, clock)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "AudioVoice" },
+				{ "name": "clock", "type": "span<AudioMusicClock>", "out": true }
+			],
+			"csharp": { "member": "ReadMusicClock", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "ClockBeat",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::ClockBeat(clock, time)",
+			"returns": "i64",
+			"params": [
+				{ "name": "clock", "type": "span<AudioMusicClock>" },
+				{ "name": "time", "type": "AudioTime" }
+			],
+			"csharp": { "member": "ClockBeat", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "ClockBar",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::ClockBar(clock, time)",
+			"returns": "i64",
+			"params": [
+				{ "name": "clock", "type": "span<AudioMusicClock>" },
+				{ "name": "time", "type": "AudioTime" }
+			],
+			"csharp": { "member": "ClockBar", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "ClockBeatTime",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::ClockBeatTime(clock, beat)",
+			"returns": "AudioTime",
+			"params": [
+				{ "name": "clock", "type": "span<AudioMusicClock>" },
+				{ "name": "beat", "type": "i64" }
+			],
+			"csharp": { "member": "ClockBeatTime", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "ClockNextBoundary",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::ClockNextBoundary(clock, boundary, after)",
+			"returns": "AudioTime",
+			"params": [
+				{ "name": "clock", "type": "span<AudioMusicClock>" },
+				{ "name": "boundary", "type": "AudioQuantization" },
+				{ "name": "after", "type": "AudioTime" }
+			],
+			"csharp": { "member": "ClockNextBoundary", "kind": "method", "access": "internal" }
+		}
+	]
+}

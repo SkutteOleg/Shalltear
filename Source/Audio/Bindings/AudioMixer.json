@@ -1,0 +1,86 @@
+{
+	"area": "AudioMixer",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioMixer",
+	"instance": "AudioMixer",
+	"types": [
+		{
+			"name": "AudioMixer",
+			"cpp": "::Shalltear::AudioMixer",
+			"engine": "AudioMixer",
+			"base": "Asset",
+			"doc": "Mixing groups for sounds, with snapshots of their values."
+		}
+	],
+	"functions": [
+		{
+			"id": "FindSnapshot",
+			"cpp": "self->FindSnapshot(name)",
+			"returns": "AudioMixerSnapshot",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindSnapshot", "kind": "method" },
+			"doc": "Snapshot by name (null when none)."
+		},
+		{
+			"id": "FindGroups",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::FindGroups(*self, subPath, ids)",
+			"returns": "i32",
+			"params": [
+				{ "name": "subPath", "type": "string" },
+				{ "name": "ids", "type": "span<u64>", "out": true }
+			],
+			"csharp": { "member": "FindGroups", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "TransitionToSnapshot",
+			"cpp": "self->TransitionToSnapshot(snapshotId, timeToReach)",
+			"returns": "bool",
+			"params": [
+				{ "name": "snapshotId", "type": "string" },
+				{ "name": "timeToReach", "type": "f32" }
+			],
+			"csharp": { "member": "TransitionToSnapshot", "kind": "method" },
+			"doc": "Move to the snapshot with this id over timeToReach seconds."
+		},
+		{
+			"id": "TransitionToWeights",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::TransitionToWeights(*self, snapshots, weights, timeToReach)",
+			"returns": "bool",
+			"params": [
+				{ "name": "snapshots", "type": "span<u64>" },
+				{ "name": "weights", "type": "span<f32>" },
+				{ "name": "timeToReach", "type": "f32" }
+			],
+			"csharp": { "member": "TransitionToWeights", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "SetFloat",
+			"cpp": "self->SetFloat(name, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetFloat", "kind": "method" },
+			"doc": "Set an exposed parameter (snapshots ignored until ClearFloat). False when there is no such parameter."
+		},
+		{
+			"id": "ReadFloat",
+			"cpp": "::Shalltear::CSharpImpl::AudioBindings::ReadFloat(*self, name, value)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "value", "type": "span<f32>", "out": true }
+			],
+			"csharp": { "member": "ReadFloat", "kind": "method", "access": "internal", "relay": true }
+		},
+		{
+			"id": "ClearFloat",
+			"cpp": "self->ClearFloat(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "ClearFloat", "kind": "method" },
+			"doc": "Return an exposed parameter to the snapshots. False when there is no such parameter."
+		}
+	]
+}

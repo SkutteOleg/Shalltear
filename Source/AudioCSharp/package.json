@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.audio.csharp",
+	"version": "1.0.0",
+	"displayName": "Audio for C#",
+	"description": "The C# API of Audio.",
+	"kind": "engine",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.audio": "1.0.0",
+		"dev.shalltear.csharp": "1.0.0"
+	}
+}

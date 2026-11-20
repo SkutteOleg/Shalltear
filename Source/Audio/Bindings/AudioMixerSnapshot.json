@@ -1,0 +1,42 @@
+{
+	"area": "AudioMixerSnapshot",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioMixerSnapshot",
+	"instance": "AudioMixerSnapshot",
+	"types": [
+		{
+			"name": "AudioMixerSnapshot",
+			"cpp": "::Shalltear::AudioMixerSnapshot",
+			"engine": "AudioMixerSnapshot",
+			"base": "Asset",
+			"doc": "Stored values of a mixer's groups."
+		}
+	],
+	"functions": [
+		{
+			"id": "TransitionTo",
+			"cpp": "self->TransitionTo(timeToReach)",
+			"returns": "bool",
+			"params": [{ "name": "timeToReach", "type": "f32" }],
+			"csharp": { "member": "TransitionTo", "kind": "method" },
+			"doc": "Move the mixer to this snapshot over timeToReach seconds."
+		},
+		{
+			"id": "GetAudioMixer",
+			"cpp": "self->GetAudioMixer()",
+			"returns": "AudioMixer",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "AudioMixer", "kind": "getter" },
+			"doc": "Snapshot's mixer."
+		},
+		{
+			"id": "GetSnapshotId",
+			"cpp": "std::string_view(self->GetSnapshotId())",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SnapshotId", "kind": "getter" },
+			"doc": "Snapshot's id in its mixer."
+		}
+	]
+}

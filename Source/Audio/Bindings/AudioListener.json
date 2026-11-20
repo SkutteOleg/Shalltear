@@ -1,0 +1,49 @@
+{
+	"area": "AudioListener",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioListener",
+	"instance": "AudioListener",
+	"types": [
+		{
+			"name": "AudioListener",
+			"cpp": "::Shalltear::AudioListener",
+			"engine": "AudioListener",
+			"base": "Component",
+			"doc": "Where the scene is heard from."
+		}
+	],
+	"functions": [
+		{
+			"id": "GetOutputAudioMixerGroup",
+			"cpp": "self->GetOutputAudioMixerGroup()",
+			"returns": "AudioMixerGroup",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "OutputAudioMixerGroup", "kind": "getter" },
+			"doc": "Mixer group for everything heard."
+		},
+		{
+			"id": "SetOutputAudioMixerGroup",
+			"cpp": "self->SetOutputAudioMixerGroup(::Shalltear::Handle<::Shalltear::AudioMixerGroup>(outputAudioMixerGroup))",
+			"returns": "void",
+			"params": [{ "name": "outputAudioMixerGroup", "type": "AudioMixerGroup", "optional": true }],
+			"csharp": { "member": "OutputAudioMixerGroup", "kind": "setter" }
+		},
+		{
+			"id": "GetVelocityUpdateMode",
+			"cpp": "self->GetVelocityUpdateMode()",
+			"returns": "AudioVelocityUpdateMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "VelocityUpdateMode", "kind": "getter" },
+			"doc": "When the velocity for Doppler is sampled."
+		},
+		{
+			"id": "SetVelocityUpdateMode",
+			"cpp": "self->SetVelocityUpdateMode(velocityUpdateMode)",
+			"returns": "void",
+			"params": [{ "name": "velocityUpdateMode", "type": "AudioVelocityUpdateMode" }],
+			"csharp": { "member": "VelocityUpdateMode", "kind": "setter" }
+		}
+	]
+}

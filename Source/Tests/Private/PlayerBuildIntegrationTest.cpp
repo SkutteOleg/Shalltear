@@ -1295,9 +1295,9 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	constexpr const char* PACKAGE_ARCHIVE = "CSharp.a";
 	constexpr const char* PACKAGE_OBJECT = "ScriptRuntime.cpp.o";
 	constexpr const char* PACKAGE_SYMBOL = "Shalltear::CSharpImpl::";
-	constexpr const char* BRIDGED_PACKAGES = "dev.shalltear.physics3d";
-	constexpr const char* BRIDGED_OBJECT = "PhysicsWorld.cpp.o";
-	constexpr const char* BRIDGE_OBJECT = "PhysicsBindings.cpp.o";
+	constexpr const char* BRIDGED_PACKAGES = "dev.shalltear.audio;dev.shalltear.physics3d";
+	constexpr const char* BRIDGED_OBJECTS[] = {"AudioSystem.cpp.o", "PhysicsWorld.cpp.o"};
+	constexpr const char* BRIDGE_OBJECTS[] = {"AudioBindings.cpp.o", "PhysicsBindings.cpp.o"};
 
 	std::filesystem::path project = _root / "ScriptlessProject";
 	std::filesystem::create_directories(project / "Assets");
@@ -1337,8 +1337,12 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	const str plain = ReadAllBytes(plainMap);
 	ASSERT_NE(plain.find("TypeRegistry.cpp.o"), str::npos) << plainLog;
 	ASSERT_NE(plain.find("Shalltear::TypeRegistry::"), str::npos) << plainLog;
-	EXPECT_NE(plain.find(BRIDGED_OBJECT), str::npos) << plainLog;
-	EXPECT_EQ(plain.find(BRIDGE_OBJECT), str::npos);
+	for (const char* object : BRIDGED_OBJECTS) {
+		EXPECT_NE(plain.find(object), str::npos) << object << plainLog;
+	}
+	for (const char* object : BRIDGE_OBJECTS) {
+		EXPECT_EQ(plain.find(object), str::npos) << object;
+	}
 	EXPECT_EQ(plain.find(PACKAGE_OBJECT), str::npos);
 	EXPECT_EQ(plain.find(PACKAGE_SYMBOL), str::npos);
 	EXPECT_EQ(plain.find("NativeAOTHost"), str::npos);
@@ -1363,7 +1367,9 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	const str scripted = ReadAllBytes(scriptedMap);
 	EXPECT_NE(scripted.find(PACKAGE_OBJECT), str::npos) << scriptedLog;
 	EXPECT_NE(scripted.find(PACKAGE_SYMBOL), str::npos) << scriptedLog;
-	EXPECT_NE(scripted.find(BRIDGE_OBJECT), str::npos) << scriptedLog;
+	for (const char* object : BRIDGE_OBJECTS) {
+		EXPECT_NE(scripted.find(object), str::npos) << object << scriptedLog;
+	}
 }
 
 TEST_F(PlayerBuildIntegrationTest, DisabledPackageLinkRefused) {

@@ -1,0 +1,24 @@
+{
+	"area": "AudioDistortionFilter",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioDistortionFilter",
+	"instance": "AudioDistortionFilter",
+	"functions": [
+		{
+			"id": "GetDistortionLevel",
+			"cpp": "self->GetDistortionLevel()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DistortionLevel", "kind": "getter" },
+			"doc": "Amount of distortion, 0 to 1."
+		},
+		{
+			"id": "SetDistortionLevel",
+			"cpp": "self->SetDistortionLevel(distortionLevel)",
+			"returns": "void",
+			"params": [{ "name": "distortionLevel", "type": "f32" }],
+			"csharp": { "member": "DistortionLevel", "kind": "setter" }
+		}
+	]
+}

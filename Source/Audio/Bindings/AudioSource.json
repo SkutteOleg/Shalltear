@@ -1,0 +1,564 @@
+{
+	"area": "AudioSource",
+	"include": "AudioBindings.h",
+	"class": "Shalltear.AudioSource",
+	"instance": "AudioSource",
+	"types": [
+		{
+			"name": "AudioSource",
+			"cpp": "::Shalltear::AudioSource",
+			"engine": "AudioSource",
+			"base": "Component",
+			"doc": "Plays an audio resource from its object's position."
+		}
+	],
+	"enums": [
+		{
+			"name": "AudioRolloffMode",
+			"cpp": "::Shalltear::AudioRolloffMode",
+			"underlying": "u8",
+			"doc": "How a source's volume falls with distance.",
+			"values": [
+				{ "name": "Logarithmic", "value": 0, "doc": "Halves with each doubling of distance." },
+				{ "name": "Linear", "value": 1, "doc": "Straight line from min to max distance." },
+				{ "name": "Custom", "value": 2, "doc": "Source's curve." }
+			]
+		},
+		{
+			"name": "AudioVelocityUpdateMode",
+			"cpp": "::Shalltear::AudioVelocityUpdateMode",
+			"underlying": "u8",
+			"doc": "When velocity for Doppler is sampled.",
+			"values": [
+				{ "name": "Auto", "value": 0, "doc": "Fixed for a rigid body, else per frame." },
+				{ "name": "Fixed", "value": 1, "doc": "Per fixed step." },
+				{ "name": "Dynamic", "value": 2, "doc": "Per frame." }
+			]
+		}
+	],
+	"handles": [
+		{ "name": "AudioVoice", "cpp": "::Shalltear::AudioVoice", "doc": "1 playing sound." },
+		{
+			"name": "AudioTime",
+			"cpp": "::Shalltear::AudioTime",
+			"doc": "Time on the audio clock.",
+			"value": { "name": "frames", "doc": "Sample frames since the audio clock started." }
+		}
+	],
+	"functions": [
+		{
+			"id": "GetResource",
+			"cpp": "self->GetResource()",
+			"returns": "AudioResource",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Resource", "kind": "getter" },
+			"doc": "Resource started by Play."
+		},
+		{
+			"id": "SetResource",
+			"cpp": "self->SetResource(::Shalltear::Handle<::Shalltear::AudioResource>(resource))",
+			"returns": "void",
+			"params": [{ "name": "resource", "type": "AudioResource", "optional": true }],
+			"csharp": { "member": "Resource", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputAudioMixerGroup",
+			"cpp": "self->GetOutputAudioMixerGroup()",
+			"returns": "AudioMixerGroup",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "OutputAudioMixerGroup", "kind": "getter" },
+			"doc": "Mixer group for the sound (null = straight to the listener)."
+		},
+		{
+			"id": "SetOutputAudioMixerGroup",
+			"cpp": "self->SetOutputAudioMixerGroup(::Shalltear::Handle<::Shalltear::AudioMixerGroup>(outputAudioMixerGroup))",
+			"returns": "void",
+			"params": [{ "name": "outputAudioMixerGroup", "type": "AudioMixerGroup", "optional": true }],
+			"csharp": { "member": "OutputAudioMixerGroup", "kind": "setter" }
+		},
+		{
+			"id": "GetMute",
+			"cpp": "self->GetMute()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Mute", "kind": "getter" },
+			"doc": "Plays without being heard."
+		},
+		{
+			"id": "SetMute",
+			"cpp": "self->SetMute(mute)",
+			"returns": "void",
+			"params": [{ "name": "mute", "type": "bool" }],
+			"csharp": { "member": "Mute", "kind": "setter" }
+		},
+		{
+			"id": "GetPlayOnAwake",
+			"cpp": "self->GetPlayOnAwake()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "PlayOnAwake", "kind": "getter" },
+			"doc": "Starts when the component is enabled."
+		},
+		{
+			"id": "SetPlayOnAwake",
+			"cpp": "self->SetPlayOnAwake(playOnAwake)",
+			"returns": "void",
+			"params": [{ "name": "playOnAwake", "type": "bool" }],
+			"csharp": { "member": "PlayOnAwake", "kind": "setter" }
+		},
+		{
+			"id": "GetLoop",
+			"cpp": "self->GetLoop()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Loop", "kind": "getter" },
+			"doc": "Starts over at its end."
+		},
+		{
+			"id": "SetLoop",
+			"cpp": "self->SetLoop(loop)",
+			"returns": "void",
+			"params": [{ "name": "loop", "type": "bool" }],
+			"csharp": { "member": "Loop", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->GetPriority()",
+			"returns": "i32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Priority", "kind": "getter" },
+			"doc": "0 most important, 256 least (least important voices go quiet 1st)."
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->SetPriority(priority)",
+			"returns": "void",
+			"params": [{ "name": "priority", "type": "i32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetConcurrency",
+			"cpp": "self->GetConcurrency()",
+			"returns": "AudioConcurrency",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Concurrency", "kind": "getter" },
+			"doc": "Limit on how many of these sounds play at once."
+		},
+		{
+			"id": "SetConcurrency",
+			"cpp": "self->SetConcurrency(::Shalltear::Handle<::Shalltear::AudioConcurrency>(concurrency))",
+			"returns": "void",
+			"params": [{ "name": "concurrency", "type": "AudioConcurrency", "optional": true }],
+			"csharp": { "member": "Concurrency", "kind": "setter" }
+		},
+		{
+			"id": "GetVolume",
+			"cpp": "self->GetVolume()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Volume", "kind": "getter" },
+			"doc": "Volume from 0 to 1."
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "self->SetVolume(volume)",
+			"returns": "void",
+			"params": [{ "name": "volume", "type": "f32" }],
+			"csharp": { "member": "Volume", "kind": "setter" }
+		},
+		{
+			"id": "GetPitch",
+			"cpp": "self->GetPitch()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Pitch", "kind": "getter" },
+			"doc": "Playback speed (1 = as recorded)."
+		},
+		{
+			"id": "SetPitch",
+			"cpp": "self->SetPitch(pitch)",
+			"returns": "void",
+			"params": [{ "name": "pitch", "type": "f32" }],
+			"csharp": { "member": "Pitch", "kind": "setter" }
+		},
+		{
+			"id": "GetStereoPan",
+			"cpp": "self->GetStereoPan()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "StereoPan", "kind": "getter" },
+			"doc": "-1 left to 1 right (2D part of the sound)."
+		},
+		{
+			"id": "SetStereoPan",
+			"cpp": "self->SetStereoPan(stereoPan)",
+			"returns": "void",
+			"params": [{ "name": "stereoPan", "type": "f32" }],
+			"csharp": { "member": "StereoPan", "kind": "setter" }
+		},
+		{
+			"id": "GetSpatialBlend",
+			"cpp": "self->GetSpatialBlend()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SpatialBlend", "kind": "getter" },
+			"doc": "0 = 2D, 1 = 3D. Curve removed when set."
+		},
+		{
+			"id": "SetSpatialBlend",
+			"cpp": "self->SetSpatialBlend(spatialBlend)",
+			"returns": "void",
+			"params": [{ "name": "spatialBlend", "type": "f32" }],
+			"csharp": { "member": "SpatialBlend", "kind": "setter" }
+		},
+		{
+			"id": "GetDopplerLevel",
+			"cpp": "self->GetDopplerLevel()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "DopplerLevel", "kind": "getter" },
+			"doc": "How much relative speed bends the pitch (0 = none)."
+		},
+		{
+			"id": "SetDopplerLevel",
+			"cpp": "self->SetDopplerLevel(dopplerLevel)",
+			"returns": "void",
+			"params": [{ "name": "dopplerLevel", "type": "f32" }],
+			"csharp": { "member": "DopplerLevel", "kind": "setter" }
+		},
+		{
+			"id": "GetSpread",
+			"cpp": "self->GetSpread()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Spread", "kind": "getter" },
+			"doc": "Angle the sound is spread over, 0 to 360 degrees. Curve removed when set."
+		},
+		{
+			"id": "SetSpread",
+			"cpp": "self->SetSpread(spread)",
+			"returns": "void",
+			"params": [{ "name": "spread", "type": "f32" }],
+			"csharp": { "member": "Spread", "kind": "setter" }
+		},
+		{
+			"id": "GetMinDistance",
+			"cpp": "self->GetMinDistance()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MinDistance", "kind": "getter" },
+			"doc": "Distance where the sound starts getting quieter."
+		},
+		{
+			"id": "SetMinDistance",
+			"cpp": "self->SetMinDistance(minDistance)",
+			"returns": "void",
+			"params": [{ "name": "minDistance", "type": "f32" }],
+			"csharp": { "member": "MinDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxDistance",
+			"cpp": "self->GetMaxDistance()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "MaxDistance", "kind": "getter" },
+			"doc": "Distance where the sound stops getting quieter."
+		},
+		{
+			"id": "SetMaxDistance",
+			"cpp": "self->SetMaxDistance(maxDistance)",
+			"returns": "void",
+			"params": [{ "name": "maxDistance", "type": "f32" }],
+			"csharp": { "member": "MaxDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetRolloffMode",
+			"cpp": "self->GetRolloffMode()",
+			"returns": "AudioRolloffMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "RolloffMode", "kind": "getter" },
+			"doc": "How volume falls with distance."
+		},
+		{
+			"id": "SetRolloffMode",
+			"cpp": "self->SetRolloffMode(rolloffMode)",
+			"returns": "void",
+			"params": [{ "name": "rolloffMode", "type": "AudioRolloffMode" }],
+			"csharp": { "member": "RolloffMode", "kind": "setter" }
+		},
+		{
+			"id": "GetOcclusion",
+			"cpp": "self->GetOcclusion()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Occlusion", "kind": "getter" },
+			"doc": "0 = heard directly, 1 = fully blocked."
+		},
+		{
+			"id": "SetOcclusion",
+			"cpp": "self->SetOcclusion(occlusion)",
+			"returns": "void",
+			"params": [{ "name": "occlusion", "type": "f32" }],
+			"csharp": { "member": "Occlusion", "kind": "setter" }
+		},
+		{
+			"id": "GetSpatialize",
+			"cpp": "self->GetSpatialize()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Spatialize", "kind": "getter" },
+			"doc": "Sent through the spatializer."
+		},
+		{
+			"id": "SetSpatialize",
+			"cpp": "self->SetSpatialize(spatialize)",
+			"returns": "void",
+			"params": [{ "name": "spatialize", "type": "bool" }],
+			"csharp": { "member": "Spatialize", "kind": "setter" }
+		},
+		{
+			"id": "GetSpatializePostEffects",
+			"cpp": "self->GetSpatializePostEffects()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "SpatializePostEffects", "kind": "getter" },
+			"doc": "Spatialized after the source's effects."
+		},
+		{
+			"id": "SetSpatializePostEffects",
+			"cpp": "self->SetSpatializePostEffects(spatializePostEffects)",
+			"returns": "void",
+			"params": [{ "name": "spatializePostEffects", "type": "bool" }],
+			"csharp": { "member": "SpatializePostEffects", "kind": "setter" }
+		},
+		{
+			"id": "GetBypassEffects",
+			"cpp": "self->GetBypassEffects()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BypassEffects", "kind": "getter" },
+			"doc": "Skips the filters on this object."
+		},
+		{
+			"id": "SetBypassEffects",
+			"cpp": "self->SetBypassEffects(bypassEffects)",
+			"returns": "void",
+			"params": [{ "name": "bypassEffects", "type": "bool" }],
+			"csharp": { "member": "BypassEffects", "kind": "setter" }
+		},
+		{
+			"id": "GetBypassListenerEffects",
+			"cpp": "self->GetBypassListenerEffects()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BypassListenerEffects", "kind": "getter" },
+			"doc": "Skips the filters on the listener."
+		},
+		{
+			"id": "SetBypassListenerEffects",
+			"cpp": "self->SetBypassListenerEffects(bypassListenerEffects)",
+			"returns": "void",
+			"params": [{ "name": "bypassListenerEffects", "type": "bool" }],
+			"csharp": { "member": "BypassListenerEffects", "kind": "setter" }
+		},
+		{
+			"id": "GetBypassReverbZones",
+			"cpp": "self->GetBypassReverbZones()",
+			"returns": "bool",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "BypassReverbZones", "kind": "getter" },
+			"doc": "Skips reverb zones."
+		},
+		{
+			"id": "SetBypassReverbZones",
+			"cpp": "self->SetBypassReverbZones(bypassReverbZones)",
+			"returns": "void",
+			"params": [{ "name": "bypassReverbZones", "type": "bool" }],
+			"csharp": { "member": "BypassReverbZones", "kind": "setter" }
+		},
+		{
+			"id": "GetReverbZoneMix",
+			"cpp": "self->GetReverbZoneMix()",
+			"returns": "f32",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "ReverbZoneMix", "kind": "getter" },
+			"doc": "Share sent to reverb zones. Curve removed when set."
+		},
+		{
+			"id": "SetReverbZoneMix",
+			"cpp": "self->SetReverbZoneMix(reverbZoneMix)",
+			"returns": "void",
+			"params": [{ "name": "reverbZoneMix", "type": "f32" }],
+			"csharp": { "member": "ReverbZoneMix", "kind": "setter" }
+		},
+		{
+			"id": "GetVelocityUpdateMode",
+			"cpp": "self->GetVelocityUpdateMode()",
+			"returns": "AudioVelocityUpdateMode",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "VelocityUpdateMode", "kind": "getter" },
+			"doc": "When the velocity for Doppler is sampled."
+		},
+		{
+			"id": "SetVelocityUpdateMode",
+			"cpp": "self->SetVelocityUpdateMode(velocityUpdateMode)",
+			"returns": "void",
+			"params": [{ "name": "velocityUpdateMode", "type": "AudioVelocityUpdateMode" }],
+			"csharp": { "member": "VelocityUpdateMode", "kind": "setter" }
+		},
+		{
+			"id": "Play",
+			"cpp": "self->Play()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Play", "kind": "method" },
+			"doc": "Start from the beginning."
+		},
+		{
+			"id": "PlayDelayed",
+			"cpp": "self->PlayDelayed(delay)",
+			"returns": "void",
+			"params": [{ "name": "delay", "type": "f32" }],
+			"csharp": { "member": "PlayDelayed", "kind": "method" },
+			"doc": "Start after delay seconds."
+		},
+		{
+			"id": "PlayScheduled",
+			"cpp": "self->PlayScheduled(time)",
+			"returns": "void",
+			"params": [{ "name": "time", "type": "AudioTime" }],
+			"csharp": { "member": "PlayScheduled", "kind": "method" },
+			"doc": "Start at time on the audio clock."
+		},
+		{
+			"id": "PlayOneShot",
+			"cpp": "self->PlayOneShot(::Shalltear::Handle<::Shalltear::AudioResource>(resource), volumeScale)",
+			"returns": "void",
+			"params": [
+				{ "name": "resource", "type": "AudioResource" },
+				{ "name": "volumeScale", "type": "f32" }
+			],
+			"csharp": { "member": "PlayOneShot", "kind": "method" },
+			"doc": "Play resource once over the current sound, at volumeScale times the source's volume."
+		},
+		{
+			"id": "Stop",
+			"cpp": "self->Stop()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Stop", "kind": "method" },
+			"doc": "Stop."
+		},
+		{
+			"id": "Pause",
+			"cpp": "self->Pause()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Pause", "kind": "method" },
+			"doc": "Pause (UnPause to go on)."
+		},
+		{
+			"id": "UnPause",
+			"cpp": "self->UnPause()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "UnPause", "kind": "method" },
+			"doc": "Go on after Pause."
+		},
+		{
+			"id": "GetIsPlaying",
+			"cpp": "self->IsPlaying()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPlaying", "kind": "getter" },
+			"doc": "True while a Play or a one shot is heard (false while paused)."
+		},
+		{
+			"id": "GetIsVirtual",
+			"cpp": "self->IsVirtual()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsVirtual", "kind": "getter" },
+			"doc": "True while playing unheard (voice limit reached)."
+		},
+		{
+			"id": "GetVoice",
+			"cpp": "self->GetVoice()",
+			"returns": "AudioVoice",
+			"params": [],
+			"leaf": true,
+			"csharp": { "member": "Voice", "kind": "getter" },
+			"doc": "Voice of the last Play."
+		},
+		{
+			"id": "SetScheduledStartTime",
+			"cpp": "self->SetScheduledStartTime(time)",
+			"returns": "void",
+			"params": [{ "name": "time", "type": "AudioTime" }],
+			"csharp": { "member": "SetScheduledStartTime", "kind": "method" },
+			"doc": "Move the start of a scheduled Play."
+		},
+		{
+			"id": "SetScheduledEndTime",
+			"cpp": "self->SetScheduledEndTime(time)",
+			"returns": "void",
+			"params": [{ "name": "time", "type": "AudioTime" }],
+			"csharp": { "member": "SetScheduledEndTime", "kind": "method" },
+			"doc": "Stop at time on the audio clock."
+		},
+		{
+			"id": "GetTimeSamples",
+			"cpp": "self->GetTimeSamples()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TimeSamples", "kind": "getter" },
+			"doc": "Playback position in sample frames."
+		},
+		{
+			"id": "SetTimeSamples",
+			"cpp": "self->SetTimeSamples(timeSamples)",
+			"returns": "void",
+			"params": [{ "name": "timeSamples", "type": "u64" }],
+			"csharp": { "member": "TimeSamples", "kind": "setter" }
+		},
+		{
+			"id": "GetTime",
+			"cpp": "self->GetTime()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Time", "kind": "getter" },
+			"doc": "Playback position in seconds."
+		},
+		{
+			"id": "SetTime",
+			"cpp": "self->SetTime(time)",
+			"returns": "void",
+			"params": [{ "name": "time", "type": "f32" }],
+			"csharp": { "member": "Time", "kind": "setter" }
+		}
+	]
+}

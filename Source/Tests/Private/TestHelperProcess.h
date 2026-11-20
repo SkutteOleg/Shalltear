@@ -70,6 +70,10 @@ namespace Shalltear::TestHelpers {
 
 	int RunCSharpAOTComponents(const char* library);
 
+	inline constexpr const char* CSHARP_AOT_AUDIO_FLAG = "--shalltear-csharp-aot-audio";
+
+	int RunCSharpAOTAudio(const char* library);
+
 	inline constexpr const char* CSHARP_AOT_FIELDS_FLAG = "--shalltear-csharp-aot-fields";
 
 	int RunCSharpAOTFields(const char* library);

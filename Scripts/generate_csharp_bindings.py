@@ -52,7 +52,7 @@ LOWERING = 1
 IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9]*\Z")
 CLASS_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*(\.[A-Za-z][A-Za-z0-9]*)+\Z")
 SPAN = re.compile(r"span<([A-Za-z0-9]+)>\Z")
-AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions", "types", "enums", "structs"}
+AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions", "types", "enums", "structs", "handles"}
 FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable"}
 PARAM_KEYS = {"name", "type", "out", "optional"}
 CSHARP_KEYS = {"member", "kind", "conditional", "relay", "access"}
@@ -62,6 +62,8 @@ STRUCT_KEYS = {"name", "doc", "fields"}
 FIELD_KEYS = {"name", "type", "doc", "access"}
 ENUM_VALUE_KEYS = {"name", "value", "doc"}
 ENUM_UNDERLYING = ("u8", "u16", "i32", "u32")
+HANDLE_KEYS = {"name", "cpp", "doc", "value"}
+HANDLE_VALUE_KEYS = {"name", "doc"}
 CSHARP_KEYWORDS = frozenset(
 	"abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event "
 	"explicit extern false finally fixed float for foreach goto if implicit in int interface internal is lock long namespace new null "
@@ -296,6 +298,7 @@ def parse_enums(raw, path, catalog):
 		declared = Area()
 		declared.name, declared.cpp, declared.underlying, declared.doc = entry["name"], entry["cpp"], entry["underlying"], entry["doc"]
 		declared.flags = entry.get("flags", False)
+		declared.handle = False
 		declared.values = []
 		for value in entry["values"]:
 			if not isinstance(value, dict):
@@ -306,6 +309,26 @@ def parse_enums(raw, path, catalog):
 			declared.values.append((value["name"], value["value"], value["doc"]))
 		if not declared.values:
 			raise SchemaError(f"{path.name}: {where}: 'values' is empty")
+		catalog.enums[declared.name] = declared
+		enums.append(declared)
+	for entry in raw.get("handles", []):
+		where = entry.get("name", "handle") if isinstance(entry, dict) else "handle"
+		if not isinstance(entry, dict):
+			raise SchemaError(f"{path.name}: {where}: handle must be an object")
+		check_keys(entry, HANDLE_KEYS, HANDLE_KEYS - {"value"}, path, where)
+		if not isinstance(entry["name"], str) or not IDENTIFIER.match(entry["name"]):
+			raise SchemaError(f"{path.name}: {where}: 'name' must be letters/digits")
+		if entry["name"] in catalog.objects or entry["name"] in catalog.enums:
+			raise SchemaError(f"{path.name}: {where}: type is declared twice")
+		declared = Area()
+		declared.name, declared.cpp, declared.underlying, declared.doc = entry["name"], entry["cpp"], "u64", entry["doc"]
+		declared.flags, declared.handle, declared.values, declared.value = False, True, [], None
+		if "value" in entry:
+			check_keys(entry["value"], HANDLE_VALUE_KEYS, HANDLE_VALUE_KEYS, path, where)
+			if not isinstance(entry["value"]["name"], str) or not IDENTIFIER.match(entry["value"]["name"]) or entry["value"]["name"] in CSHARP_KEYWORDS:
+				raise SchemaError(f"{path.name}: {where}: value name must be letters/digits + no C# keyword")
+			declared.value = (entry["value"]["name"], entry["value"]["doc"])
+		declared.bits = declared.value[0] if declared.value else "_bits"
 		catalog.enums[declared.name] = declared
 		enums.append(declared)
 	return enums
@@ -453,7 +476,8 @@ def layout_hash(areas):
 	lines = [f"lowering {LOWERING}"] + [f"{name}{{{','.join(fields)}}}" for name, fields in VALUES.items()]
 	for area in areas:
 		for declared in area.enums:
-			lines.append(f"enum {declared.name}:{declared.underlying}{{{','.join(f'{name}={value}' for name, value, _ in declared.values)}}}")
+			kind = "handle" if declared.handle else "enum"
+			lines.append(f"{kind} {declared.name}:{declared.underlying}{{{','.join(f'{name}={value}' for name, value, _ in declared.values)}}}")
 		for declared in area.structs:
 			lines.append(f"struct {declared.name}{{{','.join(f'{field.name}:{field.type}' for field in declared.fields)}}}")
 	for area in areas:
@@ -597,7 +621,8 @@ def cpp_locals(function):
 			lines.append(f"const bool {param.name} = {param.name}In != 0;")
 		elif param.kind == "enum":
 			cpp = function.catalog.enums[param.type].cpp
-			lines.append(f"const {cpp} {param.name} = static_cast<{cpp}>({param.name}In);")
+			cast = "std::bit_cast" if function.catalog.enums[param.type].handle else "static_cast"
+			lines.append(f"const {cpp} {param.name} = {cast}<{cpp}>({param.name}In);")
 		elif param.kind == "value":
 			fields = ", ".join(param.name + field.upper() for field in VALUES[param.type])
 			lines.append(f"const ::Shalltear::{param.type} {param.name}({fields});")
@@ -629,7 +654,8 @@ def cpp_result(function):
 	if function.return_kind == "object":
 		return f"IdOf({function.cpp})"
 	if function.return_kind == "enum":
-		return f"static_cast<{c_type('enum', function.returns, function.catalog)}>({function.cpp})"
+		cast = "std::bit_cast" if function.catalog.enums[function.returns].handle else "static_cast"
+		return f"{cast}<{c_type('enum', function.returns, function.catalog)}>({function.cpp})"
 	if function.returns == "bool":
 		return f"static_cast<uint8_t>(({function.cpp}) ? 1 : 0)"
 	return f"static_cast<{SCALARS[function.returns][0]}>({function.cpp})"
@@ -669,7 +695,8 @@ def render_native_area(area):
 		out += ["#ifdef SLT_CSHARP_TEST_HOOKS", ""]
 	out += ["namespace Shalltear::CSharpImpl::Generated {", ""]
 	for declared in area.enums:
-		out.append(f"\tstatic_assert(sizeof({declared.cpp}) == sizeof({SCALARS[declared.underlying][0]}));")
+		trivial = f" && std::is_trivially_copyable_v<{declared.cpp}>" if declared.handle else ""
+		out.append(f"\tstatic_assert(sizeof({declared.cpp}) == sizeof({SCALARS[declared.underlying][0]}){trivial});")
 		out += [f"\tstatic_assert(static_cast<int64_t>({declared.cpp}::{name}) == {value});" for name, value, _ in declared.values]
 		out.append("")
 	out += ["\tnamespace {", ""]
@@ -770,6 +797,8 @@ def cs_call(area, function, setter):
 		name = "value" if setter and not param.implicit else param.name
 		if param.kind == "scalar":
 			arguments.append(f"{name} ? (byte)1 : (byte)0" if param.type == "bool" else name)
+		elif param.kind == "enum" and function.catalog.enums[param.type].handle:
+			arguments.append(f"{name}.{function.catalog.enums[param.type].bits}")
 		elif param.kind == "enum":
 			arguments.append(f"({cs_abi_type(param.kind, param.type, function.catalog)}){name}")
 		elif param.kind == "value":
@@ -791,7 +820,9 @@ def cs_call(area, function, setter):
 
 	body = []
 	is_bool = function.returns == "bool"
-	cast = f"({function.returns})" if function.return_kind == "enum" else ""
+	cast, close = "", ""
+	if function.return_kind == "enum":
+		cast, close = (f"new {function.returns}(", ")") if function.catalog.enums[function.returns].handle else (f"({function.returns})", "")
 	if function.guarded:
 		if function.return_kind != "void":
 			body.append(f"{cs_abi_type(function.return_kind, function.returns, function.catalog)} result;")
@@ -805,13 +836,13 @@ def cs_call(area, function, setter):
 			wrap = WRAPPERS.get(function.returns, f"ObjectCache.Find<{function.returns}>")
 			body.append(f"return {wrap}(result){'' if function.nullable else '!'};")
 		elif function.return_kind != "void":
-			body.append("return result != 0;" if is_bool else f"return {cast}result;")
+			body.append("return result != 0;" if is_bool else f"return {cast}result{close};")
 	else:
 		call = f"{area.set.holder}.table.{function.table_member}({', '.join(arguments)})"
 		if function.return_kind == "void":
 			body.append(call + ";")
 		else:
-			body.append(f"return {call} != 0;" if is_bool else f"return {cast}{call};")
+			body.append(f"return {call} != 0;" if is_bool else f"return {cast}{call}{close};")
 	if pinned:
 		lines += pinned[:-1] + [pinned[-1] + " {"] + ["\t" + line for line in body] + ["}"]
 	else:
@@ -837,9 +868,29 @@ def cs_parameters(function):
 	return ", ".join(parts)
 
 
+def render_handle(declared):
+	name, bits = declared.name, declared.bits
+	out = [f"/// <summary>{xml_text(declared.doc)}</summary>", f"public readonly partial struct {name} : IEquatable<{name}> {{"]
+	if declared.value:
+		out += [f"\t/// <summary>{xml_text(declared.value[1])}</summary>", f"\tpublic readonly ulong {bits};", "",
+				f"\t/// <summary>{xml_text(declared.value[1])}</summary>", f"\tpublic {name}(ulong {bits}) {{", f"\t\tthis.{bits} = {bits};", "\t}"]
+	else:
+		out += [f"\tinternal readonly ulong {bits};", "", f"\tinternal {name}(ulong bits) {{", f"\t\t{bits} = bits;", "\t}"]
+	out += ["", "\t/// <inheritdoc/>", f"\tpublic bool Equals({name} other) {{", f"\t\treturn {bits} == other.{bits};", "\t}", "",
+			"\t/// <inheritdoc/>", "\tpublic override bool Equals(object? other) {", f"\t\treturn other is {name} value && {bits} == value.{bits};", "\t}", "",
+			"\t/// <inheritdoc/>", "\tpublic override int GetHashCode() {", f"\t\treturn {bits}.GetHashCode();", "\t}", "",
+			"\t/// <summary>Same value.</summary>", f"\tpublic static bool operator ==({name} left, {name} right) {{", f"\t\treturn left.{bits} == right.{bits};",
+			"\t}", "", "\t/// <summary>Opposite of ==.</summary>", f"\tpublic static bool operator !=({name} left, {name} right) {{",
+			f"\t\treturn left.{bits} != right.{bits};", "\t}", "}", ""]
+	return out
+
+
 def render_managed_types(area):
 	out = []
 	for declared in area.enums:
+		if declared.handle:
+			out += render_handle(declared)
+			continue
 		out += [f"/// <summary>{xml_text(declared.doc)}</summary>"] + (["[Flags]"] if declared.flags else [])
 		out.append(f"public enum {declared.name} : {SCALARS[declared.underlying][2]} {{")
 		for name, value, doc in declared.values:

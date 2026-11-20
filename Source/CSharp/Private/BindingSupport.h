@@ -7,9 +7,11 @@
 #include "Shalltear/Core/Handle.h"
 #include "Shalltear/Core/Object.h"
 
+#include <bit>
 #include <new>
 #include <span>
 #include <string_view>
+#include <type_traits>
 
 namespace Shalltear::CSharpImpl {
 

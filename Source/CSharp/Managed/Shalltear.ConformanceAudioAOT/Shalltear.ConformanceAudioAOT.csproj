@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<RootNamespace>Shalltear.Generated</RootNamespace>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ShalltearPlayerBuild>true</ShalltearPlayerBuild>
+		<ShalltearRenameScripts>true</ShalltearRenameScripts>
+		<ShalltearRenamerPath>$(ShalltearManagedOutput)Renamer/Shalltear.Renamer.dll</ShalltearRenamerPath>
+		<OutDir>$(ShalltearManagedRoot)aot/</OutDir>
+		<RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="../Shalltear.ConformanceAOT/Exports.cs" Link="Exports.cs" />
+		<Reference Include="Shalltear.Runtime" HintPath="$(ShalltearManagedOutput)Shalltear.Runtime.dll" />
+		<Reference Include="Shalltear.Audio" HintPath="$(ShalltearManagedOutput)Shalltear.Audio.dll" />
+		<Reference Include="Shalltear.Conformance.Audio" HintPath="$(ShalltearManagedOutput)Shalltear.Conformance.Audio.dll" />
+		<ShalltearRenameAssembly Include="Shalltear.Conformance.Audio" />
+	</ItemGroup>
+	<Import Project="$(ShalltearRepoRoot)EngineAssets/CSharp/Shalltear.CSharp.targets" />
+</Project>

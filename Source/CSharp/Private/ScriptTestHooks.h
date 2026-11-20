@@ -26,6 +26,7 @@ namespace Shalltear::CSharpImpl {
 		std::vector<str> (*takeRecords)();
 		const char* (*internLogOrigin)(std::string_view file);
 		void (*setDriver)(i32 (*driver)(i32 op, i32 first, i32 second));
+		void (*setAssetFinder)(u64 (*finder)(std::string_view path));
 		i32 (*getInputMapCount)();
 		const char* runtimeVersion;
 	};
