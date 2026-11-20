@@ -60,12 +60,22 @@ namespace {
 
 	constexpr const char* EXTENSION_SOURCE = R"(#include "Shalltear.h"
 #include "Shalltear/Core/Frame/FrameStages.h"
+#include "Shalltear/Core/Module/ModuleEvents.h"
+
+#include "Game/BuildStamp.h"
 
 using namespace Shalltear;
 
 namespace {
 
 	u32 _endFrameRuns = 0;
+
+	class ReadyProbe final : public Object {
+	public:
+		void OnReady(const EmptyEventPayload&) {
+			SLT_LOG_INFO("PlayerProbe", "SHALLTEAR_EXTENSION_PROBE ready");
+		}
+	};
 
 	void OnEndFrame(const FrameStageArgs&, void*) {
 		if (++_endFrameRuns == 1) {
@@ -78,6 +88,9 @@ namespace {
 		SLT_LOG_INFO("PlayerProbe", "SHALLTEAR_EXTENSION_PROBE registered owned={}",
 					 component && component->ownerModule == owner ? "yes" : "no");
 		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Normal, &OnEndFrame, nullptr, owner);
+		if (BuildStamp::IsPlayer) {
+			ModuleEvents::ExtensionsRegistered.Subscribe(EventBus::GetGlobal(), Handle<ReadyProbe>(New<ReadyProbe>(MemTag::Scene)), &ReadyProbe::OnReady);
+		}
 	}
 
 }
@@ -841,6 +854,11 @@ TEST_F(PlayerBuildIntegrationTest, PipelineRunsStaticPlayer) {
 		EXPECT_NE(registered, str::npos) << log;
 		EXPECT_LT(registered, log.find(PLAYER_MARKER)) << log;
 		EXPECT_EQ(log.find(str(EXTENSION_MARKER) + " registered", registered + 1), str::npos) << log;
+		const size_t ready = log.find(str(EXTENSION_MARKER) + " ready");
+		ASSERT_NE(ready, str::npos) << log;
+		EXPECT_LT(registered, ready) << log;
+		EXPECT_LT(ready, log.find(PLAYER_MARKER)) << log;
+		EXPECT_EQ(log.find(str(EXTENSION_MARKER) + " ready", ready + 1), str::npos) << log;
 		EXPECT_NE(log.find(str(EXTENSION_MARKER) + " stage"), str::npos) << log;
 	};
 	expectGameExtensions(playerLog);

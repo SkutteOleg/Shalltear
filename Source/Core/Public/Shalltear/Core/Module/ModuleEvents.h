@@ -11,6 +11,7 @@ namespace Shalltear {
 
 	namespace ModuleEvents {
 		inline constexpr Event<ImageUnloadingEvent> ImageUnloading{"Module.ImageUnloading"_hash};
-	}
+		inline constexpr Event<> ExtensionsRegistered{"Module.ExtensionsRegistered"_hash};
+	} // namespace ModuleEvents
 
 } // namespace Shalltear

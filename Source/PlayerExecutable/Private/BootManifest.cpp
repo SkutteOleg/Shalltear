@@ -4,6 +4,7 @@
 #include "Shalltear/Core/Asset/PakFormat.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
+#include "Shalltear/Core/Module/ModuleEvents.h"
 #include "Shalltear/Core/Module/ModuleSystem.h"
 #include "Shalltear/Core/Scene/Scene.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
@@ -31,6 +32,7 @@ namespace Shalltear {
 		if (entry) {
 			entry(image);
 		}
+		ModuleEvents::ExtensionsRegistered.Publish(EventBus::GetGlobal(), {});
 	}
 
 	bool LoadBootScene(const BootScene& scene, str& outWhat) {

@@ -8,13 +8,36 @@
 #endif
 
 #include "Shalltear/Core/Frame/FrameStages.h"
+#include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
+#include "Shalltear/Core/Module/ModuleEvents.h"
+#include "Shalltear/Core/Object.h"
 
 namespace Shalltear::CSharpImpl {
 
 	namespace {
 
+#ifndef SLT_WITH_EDITOR
+		class PlayerStart final : public Object {
+		public:
+			void OnExtensionsRegistered(const EmptyEventPayload&) { NativeAOTHost::StartPlayer(); }
+		};
+
+		PlayerStart* _playerStart = nullptr;
+
+		void ReleasePlayerStart() {
+			if (_playerStart) {
+				EventBus::GetGlobal().UnsubscribeAll(_playerStart->GetInstanceId());
+				Delete(_playerStart);
+				_playerStart = nullptr;
+			}
+		}
+#endif
+
 		void TickStage(const FrameStageArgs&, void*) {
+#ifndef SLT_WITH_EDITOR
+			ReleasePlayerStart();
+#endif
 			ScriptRuntime::Tick();
 		}
 
@@ -26,7 +49,9 @@ namespace Shalltear::CSharpImpl {
 		CSharpEditor::CSharpScripts::RegisterImporter(owner);
 		CSharpEditor::CSharpBuildSteps::Register(owner);
 #else
-		NativeAOTHost::StartPlayer();
+		ReleasePlayerStart();
+		_playerStart = New<PlayerStart>(MemTag::Scripting);
+		ModuleEvents::ExtensionsRegistered.Subscribe(EventBus::GetGlobal(), Handle<PlayerStart>(_playerStart), &PlayerStart::OnExtensionsRegistered);
 #endif
 	}
 
@@ -34,6 +59,8 @@ namespace Shalltear::CSharpImpl {
 #ifdef SLT_WITH_EDITOR
 		CSharpEditor::CSharpSetup::Shutdown();
 		CSharpEditor::CSharpBuildSteps::Shutdown();
+#else
+		ReleasePlayerStart();
 #endif
 		ScriptRuntime::Detach();
 	}
