@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="1">
+	<panel id="screen" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%">
+		<!-- LevelController writes the coins + the time left into these two, by their ids -->
+		<panel id="hud" style="position: absolute; left: 24px; top: 24px; flex-direction: column">
+			<panel id="coins">Coins: 0 / 0</panel>
+			<panel id="timer">Time: 0</panel>
+		</panel>
+		<!-- covers the screen, starts hidden with display: none. LevelController shows it on pause + wires its two buttons -->
+		<panel id="pause-menu" style="display: none; position: absolute; left: 0; top: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background-color: #00000099">
+			<panel id="paused" style="margin-bottom: 24px">Paused</panel>
+			<button id="resume" style="width: 240px; margin-bottom: 12px" text="Resume"/>
+			<button id="menu" style="width: 240px" text="Main Menu"/>
+		</panel>
+	</panel>
+</ui>

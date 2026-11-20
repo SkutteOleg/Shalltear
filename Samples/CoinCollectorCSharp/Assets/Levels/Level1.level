@@ -1,0 +1,12 @@
+{
+	"_type": "LevelDefinition",
+	"assetId": "52fa4a4c07864f9d-f67771b2d4f7b7f9",
+	"virtualPath": "project://Assets/Levels/Level1.level",
+	"timeLimit": 30,
+	"coinsToWin": 5,
+	"nextLevel": {
+		"_handle": true,
+		"pointeeType": "SceneAsset",
+		"assetId": "14adb63f3c772e97-28fb8cb678c04a91"
+	}
+}

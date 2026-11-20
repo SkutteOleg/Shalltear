@@ -1,0 +1,167 @@
+{
+	"_type": "Scene",
+	"formatVersion": 1,
+	"engineHash": "4b2c9a42e807a091",
+	"name": "Main",
+	"nextLocalId": 8,
+	"objects": [
+		{
+			"id": 1,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Main Camera",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					1,
+					-10
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 2,
+					"type": "54d1b2a64667e32e",
+					"fields": {
+						"_type": "Camera",
+						"_enabledSelf": true,
+						"_fieldOfViewDeg": 60,
+						"_nearPlane": 0.1,
+						"_farPlane": 1000,
+						"_priority": 0,
+						"_clearColor": [
+							0,
+							0,
+							0,
+							1
+						],
+						"_passes": []
+					}
+				}
+			]
+		},
+		{
+			"id": 3,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Directional Light",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					3,
+					0
+				],
+				"_localRotation": [
+					0.4082179069519043,
+					-0.23456971347332,
+					0.10938165336847305,
+					0.8754260540008545
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 4,
+					"type": "3b0ab4b52326316f",
+					"fields": {
+						"_type": "Light",
+						"_enabledSelf": true,
+						"_lightType": "Directional",
+						"_color": [
+							1,
+							1,
+							1,
+							1
+						],
+						"_intensity": 1,
+						"_range": 10,
+						"_spotAngleDeg": 45,
+						"_innerSpotAngleDeg": 0,
+						"_castShadows": true,
+						"_shadowStrength": 1,
+						"_shadowBias": 1,
+						"_shadowNormalBias": 1
+					}
+				}
+			]
+		},
+		{
+			"id": 5,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Menu",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					0,
+					0
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 6,
+					"type": "3e6782c9f68a616c",
+					"fields": {
+						"_type": "UIPanelRenderer",
+						"_enabledSelf": true,
+						"_document": {
+							"_handle": true,
+							"pointeeType": "UIDocumentAsset",
+							"assetId": "b3801035be2c0671-9efdec1e520daacf"
+						},
+						"_panelSettings": {
+							"_handle": true,
+							"pointeeType": "UIPanelSettings",
+							"assetId": "c55ec2af081ac740-3624814cd7ff5763"
+						},
+						"_sortOrder": 0
+					}
+				},
+				{
+					"id": 7,
+					"type": "bb6d75fb8b334aaf",
+					"fields": {
+						"_type": "MainMenu",
+						"_enabledSelf": true,
+						"firstLevel": {
+							"_handle": true,
+							"pointeeType": "SceneAsset",
+							"assetId": "5aae0f20aa4c46f9-36619d0faa728953"
+						}
+					}
+				}
+			]
+		}
+	]
+}

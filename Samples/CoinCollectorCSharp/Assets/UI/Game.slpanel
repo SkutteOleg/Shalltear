@@ -1,0 +1,27 @@
+{
+	"_type": "UIPanelSettings",
+	"assetId": "c55ec2af081ac740-3624814cd7ff5763",
+	"virtualPath": "project://Assets/UI/Game.slpanel",
+	"scaleMode": "ConstantPhysicalSize",
+	"scale": 1,
+	"referenceDPI": 96,
+	"referenceResolution": [
+		1200,
+		800
+	],
+	"screenMatchMode": "MatchWidthOrHeight",
+	"match": 0,
+	"sortOrder": 0,
+	"font": {
+		"_handle": true,
+		"pointeeType": "0000000000000000",
+		"assetId": "0000000000000000-0000000000000000"
+	},
+	"fontSizePx": 28,
+	"textColor": [
+		1,
+		1,
+		1,
+		1
+	]
+}

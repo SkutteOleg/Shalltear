@@ -1,0 +1,17 @@
+{
+	"_type": "GraphicsProfile",
+	"assetId": "0000000000000000-0000000000000000",
+	"virtualPath": "",
+	"msaa": 4,
+	"renderScale": 1,
+	"tonemap": "Neutral",
+	"lightsPerView": 256,
+	"lightsPerCluster": 32,
+	"shadowDistance": 120,
+	"shadowCascades": 4,
+	"shadowFirstCascadeDistance": 8,
+	"shadowPcfTaps": 7,
+	"shadowAtlasSize": 4096,
+	"transparentReceiveShadows": true,
+	"reflectionProbeResolution": 128
+}

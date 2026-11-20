@@ -1,0 +1,10 @@
+/Library/
+
+/.assets.db
+
+/Builds/
+
+/*.Scripts.csproj
+/*.slnx
+/global.json
+/.vscode/launch.json

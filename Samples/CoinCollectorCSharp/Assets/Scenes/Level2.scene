@@ -1,0 +1,962 @@
+{
+	"_type": "Scene",
+	"formatVersion": 1,
+	"engineHash": "4b2c9a42e807a091",
+	"name": "Level2",
+	"nextLocalId": 37,
+	"objects": [
+		{
+			"id": 1,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Main Camera",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					16,
+					-14
+				],
+				"_localRotation": [
+					0.4226182699203491,
+					0,
+					0,
+					0.9063077569007874
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 2,
+					"type": "54d1b2a64667e32e",
+					"fields": {
+						"_type": "Camera",
+						"_enabledSelf": true,
+						"_fieldOfViewDeg": 60,
+						"_nearPlane": 0.1,
+						"_farPlane": 1000,
+						"_priority": 0,
+						"_clearColor": [
+							0,
+							0,
+							0,
+							1
+						],
+						"_passes": []
+					}
+				},
+				{
+					"id": 3,
+					"type": "d87bfdd87292c2dd",
+					"fields": {
+						"_type": "AudioListener",
+						"_enabledSelf": true,
+						"_output": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						}
+					}
+				}
+			]
+		},
+		{
+			"id": 4,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Directional Light",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					3,
+					0
+				],
+				"_localRotation": [
+					0.4082179069519043,
+					-0.23456971347332,
+					0.10938165336847305,
+					0.8754260540008545
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 5,
+					"type": "3b0ab4b52326316f",
+					"fields": {
+						"_type": "Light",
+						"_enabledSelf": true,
+						"_lightType": "Directional",
+						"_color": [
+							1,
+							1,
+							1,
+							1
+						],
+						"_intensity": 1,
+						"_range": 10,
+						"_spotAngleDeg": 45,
+						"_innerSpotAngleDeg": 0,
+						"_castShadows": true,
+						"_shadowStrength": 1,
+						"_shadowBias": 1,
+						"_shadowNormalBias": 1
+					}
+				}
+			]
+		},
+		{
+			"id": 6,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Floor",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					-0.5,
+					0
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					20,
+					1,
+					20
+				]
+			},
+			"components": [
+				{
+					"id": 7,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "b6887e891b4e3196-2e25592762785c5c"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "c0748261bd29b20e-c2ceb9e7c12fb49e"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 8,
+					"type": "4b197a1863c6766a",
+					"fields": {
+						"_type": "BoxCollider",
+						"_enabledSelf": true,
+						"_isTrigger": false,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_size": [
+							1,
+							1,
+							1
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": 9,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Wall North",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					1,
+					10.5
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					22,
+					2,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 10,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "b6887e891b4e3196-2e25592762785c5c"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "c0748261bd29b20e-c2ceb9e7c12fb49e"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 11,
+					"type": "4b197a1863c6766a",
+					"fields": {
+						"_type": "BoxCollider",
+						"_enabledSelf": true,
+						"_isTrigger": false,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_size": [
+							1,
+							1,
+							1
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": 12,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Wall South",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					1,
+					-10.5
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					22,
+					2,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 13,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "b6887e891b4e3196-2e25592762785c5c"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "c0748261bd29b20e-c2ceb9e7c12fb49e"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 14,
+					"type": "4b197a1863c6766a",
+					"fields": {
+						"_type": "BoxCollider",
+						"_enabledSelf": true,
+						"_isTrigger": false,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_size": [
+							1,
+							1,
+							1
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": 15,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Wall East",
+				"_activeSelf": true,
+				"_localPosition": [
+					10.5,
+					1,
+					0
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					1,
+					2,
+					20
+				]
+			},
+			"components": [
+				{
+					"id": 16,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "b6887e891b4e3196-2e25592762785c5c"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "c0748261bd29b20e-c2ceb9e7c12fb49e"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 17,
+					"type": "4b197a1863c6766a",
+					"fields": {
+						"_type": "BoxCollider",
+						"_enabledSelf": true,
+						"_isTrigger": false,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_size": [
+							1,
+							1,
+							1
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": 18,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Wall West",
+				"_activeSelf": true,
+				"_localPosition": [
+					-10.5,
+					1,
+					0
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					1,
+					2,
+					20
+				]
+			},
+			"components": [
+				{
+					"id": 19,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "b6887e891b4e3196-2e25592762785c5c"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "c0748261bd29b20e-c2ceb9e7c12fb49e"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 20,
+					"type": "4b197a1863c6766a",
+					"fields": {
+						"_type": "BoxCollider",
+						"_enabledSelf": true,
+						"_isTrigger": false,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_size": [
+							1,
+							1,
+							1
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": 21,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Player",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					1,
+					0
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 22,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "bb9d9639330bca71-56d3a345867f5fb1"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "d54dc9bb5a442796-2bdc372776afc532"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 23,
+					"type": "006fa23500222b78",
+					"fields": {
+						"_type": "CapsuleCollider",
+						"_enabledSelf": true,
+						"_isTrigger": false,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_radius": 0.5,
+						"_height": 2,
+						"_direction": "YAxis"
+					}
+				},
+				{
+					"id": 24,
+					"type": "29cb18cabb0743e8",
+					"fields": {
+						"_type": "Rigidbody",
+						"_enabledSelf": true,
+						"_mass": 1,
+						"_linearDamping": 0,
+						"_angularDamping": 0.05,
+						"_automaticCenterOfMass": true,
+						"_centerOfMass": [
+							0,
+							0,
+							0
+						],
+						"_automaticInertiaTensor": true,
+						"_inertiaTensor": [
+							1,
+							1,
+							1
+						],
+						"_inertiaTensorRotation": [
+							0,
+							0,
+							0,
+							1
+						],
+						"_useGravity": true,
+						"_isKinematic": false,
+						"_interpolation": "None",
+						"_collisionDetectionMode": "Continuous",
+						"_carryRiders": false,
+						"_sleepThreshold": 0.05,
+						"_freezePositionX": false,
+						"_freezePositionY": false,
+						"_freezePositionZ": false,
+						"_freezeRotationX": true,
+						"_freezeRotationY": true,
+						"_freezeRotationZ": true
+					}
+				},
+				{
+					"id": 25,
+					"type": "49614875a12ac3e8",
+					"fields": {
+						"_type": "PlayerController",
+						"_enabledSelf": true,
+						"speed": 6,
+						"pickupSound": {
+							"_handle": true,
+							"pointeeType": "AudioClip",
+							"assetId": "85e4527d7194daa2-8708485b11804936"
+						}
+					}
+				},
+				{
+					"id": 26,
+					"type": "917cf03ffe5623a4",
+					"fields": {
+						"_type": "AudioSource",
+						"_enabledSelf": true,
+						"_resource": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_output": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_mute": false,
+						"_spatialize": false,
+						"_spatializePostEffects": false,
+						"_bypassEffects": false,
+						"_bypassListenerEffects": false,
+						"_bypassReverbZones": false,
+						"_playOnAwake": true,
+						"_loop": false,
+						"_priority": 128,
+						"_concurrency": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_volume": 1,
+						"_pitch": 1,
+						"_stereoPan": 0,
+						"_spatialBlend": 0,
+						"_reverbZoneMix": 1,
+						"_dopplerLevel": 1,
+						"_spread": 0,
+						"_rolloffMode": "Logarithmic",
+						"_minDistance": 1,
+						"_maxDistance": 500,
+						"_customRolloffCurve": {
+							"_type": "AnimationCurve",
+							"keys": [
+								{
+									"_type": "Keyframe",
+									"time": 0,
+									"value": 1,
+									"inTangent": 0,
+									"outTangent": 0,
+									"inTangentMode": "Free",
+									"outTangentMode": "Free",
+									"broken": false
+								},
+								{
+									"_type": "Keyframe",
+									"time": 1,
+									"value": 0,
+									"inTangent": 0,
+									"outTangent": 0,
+									"inTangentMode": "Free",
+									"outTangentMode": "Free",
+									"broken": false
+								}
+							],
+							"preWrapMode": "Clamp",
+							"postWrapMode": "Clamp"
+						},
+						"_spatialBlendCurve": {
+							"_type": "AnimationCurve",
+							"keys": [],
+							"preWrapMode": "Clamp",
+							"postWrapMode": "Clamp"
+						},
+						"_spreadCurve": {
+							"_type": "AnimationCurve",
+							"keys": [],
+							"preWrapMode": "Clamp",
+							"postWrapMode": "Clamp"
+						},
+						"_reverbZoneMixCurve": {
+							"_type": "AnimationCurve",
+							"keys": [],
+							"preWrapMode": "Clamp",
+							"postWrapMode": "Clamp"
+						},
+						"_occlusion": 0
+					}
+				}
+			]
+		},
+		{
+			"id": 30,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							-7,
+							0.75,
+							7
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 31,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							0,
+							0.75,
+							8
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 32,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							7,
+							0.75,
+							7
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 33,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							-8,
+							0.75,
+							0
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 34,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							8,
+							0.75,
+							0
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 35,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							-7,
+							0.75,
+							-7
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 36,
+			"kind": "instance",
+			"parent": 0,
+			"prefab": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+			"overrides": {
+				"properties": [
+					{
+						"target": {
+							"file": "6ff3d498bd1f2b3a-2eada7f7b20d5f1f",
+							"id": 1
+						},
+						"path": [
+							"405321c54dbb079a"
+						],
+						"t": "e4b8150818d964a2",
+						"v": [
+							7,
+							0.75,
+							-7
+						]
+					}
+				]
+			}
+		},
+		{
+			"id": 27,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Level",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					0,
+					0
+				],
+				"_localRotation": [
+					0,
+					0,
+					0,
+					1
+				],
+				"_localScale": [
+					1,
+					1,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 28,
+					"type": "3e6782c9f68a616c",
+					"fields": {
+						"_type": "UIPanelRenderer",
+						"_enabledSelf": true,
+						"_document": {
+							"_handle": true,
+							"pointeeType": "UIDocumentAsset",
+							"assetId": "479f103be5160102-62c7434fb8546ab1"
+						},
+						"_panelSettings": {
+							"_handle": true,
+							"pointeeType": "UIPanelSettings",
+							"assetId": "c55ec2af081ac740-3624814cd7ff5763"
+						},
+						"_sortOrder": 0
+					}
+				},
+				{
+					"id": 29,
+					"type": "bcc396c50fd69309",
+					"fields": {
+						"_type": "LevelController",
+						"_enabledSelf": true,
+						"level": {
+							"_handle": true,
+							"pointeeType": "LevelDefinition",
+							"assetId": "bb83fd598e2a8464-58ec0415ec779196"
+						},
+						"player": {
+							"_handle": true,
+							"pointeeType": "SceneObject",
+							"assetId": "0000000000000015-534c544c4f43414c"
+						},
+						"menuScene": {
+							"_handle": true,
+							"pointeeType": "SceneAsset",
+							"assetId": "5c40494e3797690a-3a8fd21c65ba6f72"
+						}
+					}
+				}
+			]
+		}
+	]
+}

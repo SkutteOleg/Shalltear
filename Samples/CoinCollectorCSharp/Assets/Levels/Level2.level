@@ -1,0 +1,12 @@
+{
+	"_type": "LevelDefinition",
+	"assetId": "bb83fd598e2a8464-58ec0415ec779196",
+	"virtualPath": "project://Assets/Levels/Level2.level",
+	"timeLimit": 25,
+	"coinsToWin": 7,
+	"nextLevel": {
+		"_handle": true,
+		"pointeeType": "0000000000000000",
+		"assetId": "0000000000000000-0000000000000000"
+	}
+}

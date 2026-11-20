@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="1">
+	<panel id="menu" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center">
+		<panel id="title" style="margin-bottom: 32px">Coin Collector</panel>
+		<!-- MainMenu finds this button by its id and loads the first level when it is clicked -->
+		<button id="play" style="width: 200px" text="Play"/>
+	</panel>
+</ui>

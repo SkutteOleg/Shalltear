@@ -1,0 +1,32 @@
+{
+	"shader": "5d0eee565c0eb506-d813bbcaa86ba3a8",
+	"floats": {
+		"metallic": 0,
+		"roughness": 0.5,
+		"reflectance": 0.5,
+		"normalScale": 1,
+		"occlusionStrength": 1
+	},
+	"colors": {
+		"baseColor": [
+			1,
+			0.78,
+			0.1,
+			1
+		]
+	},
+	"vec3s": {
+		"emissive": [
+			0,
+			0,
+			0
+		]
+	},
+	"textures": {
+		"baseColorTexture": "0000000000000000-0000000000000000",
+		"metallicRoughnessTexture": "0000000000000000-0000000000000000",
+		"normalTexture": "0000000000000000-0000000000000000",
+		"occlusionTexture": "0000000000000000-0000000000000000",
+		"emissiveTexture": "0000000000000000-0000000000000000"
+	}
+}

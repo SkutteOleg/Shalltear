@@ -1,0 +1,99 @@
+{
+	"_type": "Prefab",
+	"formatVersion": 1,
+	"engineHash": "4b2c9a42e807a091",
+	"name": "Coin",
+	"nextLocalId": 5,
+	"prefab": {
+		"base": "0000000000000000-0000000000000000",
+		"overrides": {}
+	},
+	"objects": [
+		{
+			"id": 1,
+			"parent": 0,
+			"type": "17ce5e12f0f23588",
+			"fields": {
+				"_type": "SceneObject",
+				"name": "Coin",
+				"_activeSelf": true,
+				"_localPosition": [
+					0,
+					0.75,
+					0
+				],
+				"_localRotation": [
+					0.7071067690849304,
+					0,
+					0,
+					0.7071067690849304
+				],
+				"_localScale": [
+					1,
+					0.10000000149011612,
+					1
+				]
+			},
+			"components": [
+				{
+					"id": 2,
+					"type": "8587f37ce75aebfb",
+					"fields": {
+						"_type": "MeshRenderer",
+						"_enabledSelf": true,
+						"_mesh": {
+							"_handle": true,
+							"pointeeType": "MeshAsset",
+							"assetId": "9e31e1b713e68569-7cc67ca3a1785992"
+						},
+						"_materials": [
+							{
+								"_handle": true,
+								"pointeeType": "MaterialAsset",
+								"assetId": "6a7ca869a1418d36-ec5c34e98fe37377"
+							}
+						],
+						"_renderingLayerMask": 1
+					}
+				},
+				{
+					"id": 3,
+					"type": "4b197a1863c6766a",
+					"fields": {
+						"_type": "BoxCollider",
+						"_enabledSelf": true,
+						"_isTrigger": true,
+						"_material": {
+							"_handle": true,
+							"pointeeType": "0000000000000000",
+							"assetId": "0000000000000000-0000000000000000"
+						},
+						"_categories": "Default",
+						"_collidesWithMode": "AllExcept",
+						"_collidesWith": "",
+						"_center": [
+							0,
+							0,
+							0
+						],
+						"_size": [
+							1,
+							1,
+							1
+						]
+					}
+				},
+				{
+					"id": 4,
+					"type": "3668f19d1adc44ec",
+					"fields": {
+						"_type": "Coin",
+						"_enabledSelf": true,
+						"value": 1,
+						"degreesPerSecond": 90
+					}
+				}
+			]
+		}
+	]
+}

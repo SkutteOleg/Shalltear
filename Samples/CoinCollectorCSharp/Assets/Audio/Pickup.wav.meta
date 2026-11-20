@@ -1,0 +1,16 @@
+{
+	"assetId": "85e4527d7194daa2-8708485b11804936",
+	"type": "7a64fabec53640f7",
+	"importer": {
+		"type": "7a64fabec53640f7",
+		"settings": {
+			"forceToMono": false,
+			"normalize": true,
+			"loadType": "DecompressOnLoad",
+			"compressionFormat": "Opus",
+			"sampleRateSetting": "PreserveSampleRate",
+			"sampleRateOverride": 44100,
+			"quality": 0.699999988079071
+		}
+	}
+}
