@@ -12,7 +12,7 @@ public static unsafe partial class ShadowFields {
 #pragma warning disable CS1591
 	const int STACK_CHARS = 256;
 
-	public static void Write(nint field, string? value, Behavior script, int cache) {
+	public static void Write(nint field, string? value, EngineObject script, int cache) {
 		string?[] synced = script._texts ??= new string?[script._scriptType!._texts];
 		if (ReferenceEquals(synced[cache], value)) {
 			return;
@@ -21,7 +21,7 @@ public static unsafe partial class ShadowFields {
 		synced[cache] = value;
 	}
 
-	public static void Read(nint field, ref string value, Behavior script, int cache) {
+	public static void Read(nint field, ref string value, EngineObject script, int cache) {
 		string?[] synced = script._texts ??= new string?[script._scriptType!._texts];
 		Read(field, ref value);
 		synced[cache] = value;
@@ -59,12 +59,12 @@ public static unsafe partial class ShadowFields {
 	}
 
 	public static void ReadScript<T>(nint field, out T value, string member)
-		where T : Component {
+		where T : EngineObject {
 		value = ScriptOf<T>(*(ulong*)field, member)!;
 	}
 
 	static T? ScriptOf<T>(ulong id, string member)
-		where T : Component {
+		where T : EngineObject {
 		if (id == 0) {
 			return null;
 		}
@@ -190,19 +190,19 @@ public static unsafe partial class ShadowFields {
 	}
 
 	public static void ReadScripts<T>(nint field, ref List<T> list, string member)
-		where T : Component {
+		where T : EngineObject {
 		ulong* data = (ulong*)Bridge.ListData(field, out int count);
 		FindScripts(data, Prepare(ref list, count), member);
 	}
 
 	public static void ReadScripts<T>(nint field, ref T[] array, string member)
-		where T : Component {
+		where T : EngineObject {
 		ulong* data = (ulong*)Bridge.ListData(field, out int count);
 		FindScripts(data, Prepare(ref array, count), member);
 	}
 
 	static void FindScripts<T>(ulong* data, Span<T> target, string member)
-		where T : Component {
+		where T : EngineObject {
 		for (int index = 0; index < target.Length; ++index) {
 			target[index] = ScriptOf<T>(data[index], member)!;
 		}

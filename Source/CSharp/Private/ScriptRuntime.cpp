@@ -3,14 +3,18 @@
 #include "ScriptLog.h"
 
 #include "ManagedBehavior.h"
+#include "ManagedDataAsset.h"
 #include "InputMaps.h"
 #include "ManagedTypes.h"
 #include "PackageBindings.h"
 #include "ScriptEvents.h"
 #include "ShadowStorage.h"
 
+#include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Module/TypeReplacement.h"
 #include "Shalltear/Core/Object.h"
+#include "Shalltear/Core/Reflection/TypeRegistry.h"
 
 #include <algorithm>
 #include <format>
@@ -95,7 +99,11 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 
 		intptr_t ScriptOf(uint64_t id) noexcept {
 			Object* object = ObjectRegistry::Resolve(id);
-			return object && object->GetType()->ownerModule == ManagedTypes::GetOwnerToken() ? static_cast<ManagedBehavior*>(object)->GetInstance() : 0;
+			if (!object || object->GetType()->ownerModule != ManagedTypes::GetOwnerToken()) {
+				return 0;
+			}
+			return TypeRegistry::IsDerivedFrom(object->GetType(), Asset::GetReflectType()) ? static_cast<ManagedDataAsset*>(object)->GetInstance()
+																						   : static_cast<ManagedBehavior*>(object)->GetInstance();
 		}
 
 		int32_t FindBindings(SltString name, uint64_t layoutHash, int32_t size, const void** outTable) noexcept {
@@ -177,7 +185,17 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		if (!_attached) {
 			return;
 		}
-		UnloadUserAssemblies();
+		bool unloaded = false;
+		if (ManagedTypes::HasLiveAssets()) {
+			const auto unload = [](void* user) {
+				*static_cast<bool*>(user) = true;
+				return UnloadUserAssemblies() == SLT_OK;
+			};
+			TypeReplacement::Replace(ManagedTypes::GetOwnerToken(), unload, &unloaded);
+		}
+		if (!unloaded) {
+			UnloadUserAssemblies();
+		}
 		_managed.shutdown();
 		ScriptEvents::Reset();
 		_managed = {};

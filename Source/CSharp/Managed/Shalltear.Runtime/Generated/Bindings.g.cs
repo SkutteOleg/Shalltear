@@ -9,6 +9,17 @@ namespace Shalltear.Interop;
 
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct SltBindings {
+	public delegate* unmanaged<SltString, ulong*, int> assetDatabaseLoadKey;
+	public delegate* unmanaged<ulong, int> assetDatabaseUnloadKey;
+	public delegate* unmanaged<ulong, int> assetDatabaseSaveKey;
+	public delegate* unmanaged<SltString, ulong, ulong*, int> assetDatabaseCreateKey;
+	public delegate* unmanaged<SltString, SltString*, int> assetDatabaseLookupPath;
+	public delegate* unmanaged<SltString, SltString*, int> assetDatabaseLookupAssetId;
+	public delegate* unmanaged<int*, int> assetDatabaseCollectGarbage;
+	public delegate* unmanaged<ulong, SltString*, int> assetInfoGetPath;
+	public delegate* unmanaged<ulong, SltString*, int> assetInfoGetAssetId;
+	public delegate* unmanaged<ulong, byte*, int> assetInfoGetLoadState;
+	public delegate* unmanaged<ulong, int*, int> assetInfoGetRefCount;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetFieldOfViewDeg;
 	public delegate* unmanaged<ulong, float, int> cameraSetFieldOfViewDeg;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> cameraGetNearPlane;
@@ -192,6 +203,8 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, ulong, int> probeClickElement;
 	public delegate* unmanaged<ulong, ulong, byte*, int> probeHasClickHandler;
 	public delegate* unmanaged<ulong, int> probeUpdateUI;
+	public delegate* unmanaged<SltString, SltString*, int> probeImporterLabel;
+	public delegate* unmanaged<SltString, SltString*, int> probeImporterFileName;
 	public delegate* unmanaged<ulong, int> probeFreeAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
@@ -363,7 +376,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0x63762ecdb0963cc6;
+	internal const ulong LAYOUT_HASH = 0xc2eadc48c9cf622f;
 
 	internal static SltBindings table;
 

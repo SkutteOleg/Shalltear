@@ -286,6 +286,20 @@
 			"csharp": { "member": "UpdateUI", "kind": "method" }
 		},
 		{
+			"id": "ImporterLabel",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::ImporterLabel(extension)",
+			"returns": "string",
+			"params": [{ "name": "extension", "type": "string" }],
+			"csharp": { "member": "ImporterLabel", "kind": "method" }
+		},
+		{
+			"id": "ImporterFileName",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::ImporterFileName(extension)",
+			"returns": "string",
+			"params": [{ "name": "extension", "type": "string" }],
+			"csharp": { "member": "ImporterFileName", "kind": "method" }
+		},
+		{
 			"id": "FreeAsset",
 			"cpp": "::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id)",
 			"returns": "void",

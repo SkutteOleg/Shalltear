@@ -7,6 +7,8 @@ namespace Shalltear;
 /// <summary>Object owned by engine (== null once destroyed).</summary>
 public abstract class EngineObject {
 	internal ulong _id;
+	internal ScriptType? _scriptType;
+	internal string?[]? _texts;
 
 	private protected EngineObject() {}
 

@@ -9,7 +9,7 @@ namespace Shalltear.Interop;
 
 /// <summary>Called by generated code.</summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public delegate void ScriptFieldSync(Behavior behavior, nint shadow);
+public delegate void ScriptFieldSync(EngineObject owner, nint shadow);
 
 /// <summary>Called by generated code.</summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
@@ -54,7 +54,7 @@ public readonly struct ScriptEnumConstant {
 }
 
 internal sealed class ScriptType {
-	internal Func<Behavior>? _factory;
+	internal Func<EngineObject>? _factory;
 	internal ScriptFieldSync[] _push = [];
 	internal ScriptFieldSync[] _pull = [];
 	internal int _texts;
@@ -65,6 +65,7 @@ internal sealed class ScriptType {
 public static unsafe class ScriptTypes {
 	const uint TYPE_ABSTRACT = 1;
 	const uint TYPE_NORMALIZE = 2;
+	const uint TYPE_DATA_ASSET = 4;
 
 	static readonly List<ScriptType> _types = new();
 	static readonly Dictionary<ulong, ScriptType> _byHash = new();
@@ -132,10 +133,10 @@ public static unsafe class ScriptTypes {
 	}
 
 	/// <summary>Registers 1 component class (parents before children) + writes field offsets.</summary>
-	public static void Register<T>(string name, ulong nameHash, ulong parentHash, bool isAbstract, uint hookMask, uint tickMask, Func<Behavior>? factory,
+	public static void Register<T>(string name, ulong nameHash, ulong parentHash, bool isAbstract, uint hookMask, uint tickMask, Func<EngineObject>? factory,
 								   string? script, ReadOnlySpan<ScriptField> fields, Span<int> offsets, ScriptFieldSync? push, ScriptFieldSync? pull,
-								   bool normalizes, int texts, out int textBase)
-		where T : Behavior {
+								   bool normalizes, int texts, out int textBase, string? assetMenu = null, string? assetExtension = null)
+		where T : EngineObject {
 		textBase = 0;
 		if (!Bridge.IsAttached) {
 			return;
@@ -152,7 +153,8 @@ public static unsafe class ScriptTypes {
 			type._pull = [..type._pull, pull];
 		}
 
-		byte[] text = new byte[TextBytes(name, fields) + Encoding.UTF8.GetByteCount(script ?? "")];
+		byte[] text = new byte[TextBytes(name, fields) + Encoding.UTF8.GetByteCount(script ?? "") + Encoding.UTF8.GetByteCount(assetMenu ?? "") +
+							   Encoding.UTF8.GetByteCount(assetExtension ?? "")];
 		SltFieldDesc[] descs = new SltFieldDesc[Math.Max(fields.Length, 1)];
 		bool registered;
 		fixed (byte* textStart = text)
@@ -165,7 +167,7 @@ public static unsafe class ScriptTypes {
 			desc.nameHash = nameHash;
 			desc.parentHash = parentHash;
 			desc.managedTypeId = _types.Count;
-			desc.flags = (isAbstract ? TYPE_ABSTRACT : 0) | (normalizes ? TYPE_NORMALIZE : 0);
+			desc.flags = (isAbstract ? TYPE_ABSTRACT : 0) | (normalizes ? TYPE_NORMALIZE : 0) | (typeof(DataAsset).IsAssignableFrom(typeof(T)) ? TYPE_DATA_ASSET : 0);
 			desc.hookMask = hookMask;
 			desc.tickMask = tickMask;
 			desc.listenerMask = 0;
@@ -175,6 +177,8 @@ public static unsafe class ScriptTypes {
 			desc.fields = descStart;
 			desc.fieldCount = fields.Length;
 			desc.script = Put(script, ref at, textEnd);
+			desc.assetMenu = Put(assetMenu, ref at, textEnd);
+			desc.assetExtension = Put(assetExtension, ref at, textEnd);
 			registered = Bridge.RegisterManagedType(&desc);
 		}
 		_types.Add(type);
@@ -183,6 +187,7 @@ public static unsafe class ScriptTypes {
 		}
 		_byHash[nameHash] = type;
 		ScriptIndex<T>.value = _types.Count;
+		ScriptTypeHash<T>.value = nameHash;
 		for (int index = 0; index < fields.Length; ++index) {
 			offsets[index] = descs[index].offset;
 		}
@@ -239,10 +244,10 @@ public static unsafe class ScriptTypes {
 			if (type._factory == null) {
 				return 0;
 			}
-			Behavior behavior = type._factory();
-			behavior._id = nativeId;
-			behavior._scriptType = type;
-			return GCHandle.ToIntPtr(GCHandle.Alloc(behavior));
+			EngineObject script = type._factory();
+			script._id = nativeId;
+			script._scriptType = type;
+			return GCHandle.ToIntPtr(GCHandle.Alloc(script));
 		} catch (Exception exception) {
 			Bridge.Report(exception);
 			return 0;
@@ -270,9 +275,9 @@ public static unsafe class ScriptTypes {
 	[UnmanagedCallersOnly]
 	internal static void PushFields(nint instance, byte* shadow) {
 		try {
-			Behavior behavior = Unsafe.As<Behavior>(GCHandle.FromIntPtr(instance).Target!);
-			foreach (ScriptFieldSync push in behavior._scriptType!._push) {
-				push(behavior, (nint)shadow);
+			EngineObject script = Unsafe.As<EngineObject>(GCHandle.FromIntPtr(instance).Target!);
+			foreach (ScriptFieldSync push in script._scriptType!._push) {
+				push(script, (nint)shadow);
 			}
 		} catch (Exception exception) {
 			Bridge.Report(exception);
@@ -282,10 +287,10 @@ public static unsafe class ScriptTypes {
 	[UnmanagedCallersOnly]
 	internal static void PullFields(nint instance, byte* shadow, ulong nativeId) {
 		try {
-			Behavior behavior = Unsafe.As<Behavior>(GCHandle.FromIntPtr(instance).Target!);
-			behavior._id = nativeId;
-			foreach (ScriptFieldSync pull in behavior._scriptType!._pull) {
-				pull(behavior, (nint)shadow);
+			EngineObject script = Unsafe.As<EngineObject>(GCHandle.FromIntPtr(instance).Target!);
+			script._id = nativeId;
+			foreach (ScriptFieldSync pull in script._scriptType!._pull) {
+				pull(script, (nint)shadow);
 			}
 		} catch (Exception exception) {
 			Bridge.Report(exception);

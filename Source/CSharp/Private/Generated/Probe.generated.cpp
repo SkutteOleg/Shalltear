@@ -284,6 +284,24 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeImporterLabel(SltString extensionIn, SltString* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view extension = View(extensionIn);
+				*outResult = ScriptRuntime::KeepString(::Shalltear::CSharpImpl::BindingProbe::ImporterLabel(extension));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeImporterFileName(SltString extensionIn, SltString* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view extension = View(extensionIn);
+				*outResult = ScriptRuntime::KeepString(::Shalltear::CSharpImpl::BindingProbe::ImporterFileName(extension));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t ProbeFreeAsset(uint64_t id) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::BindingProbe::FreeAsset(id);
@@ -338,6 +356,8 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeClickElement = &ProbeClickElement;
 		table.probeHasClickHandler = &ProbeHasClickHandler;
 		table.probeUpdateUI = &ProbeUpdateUI;
+		table.probeImporterLabel = &ProbeImporterLabel;
+		table.probeImporterFileName = &ProbeImporterFileName;
 		table.probeFreeAsset = &ProbeFreeAsset;
 		table.probeRunFrames = &ProbeRunFrames;
 	}

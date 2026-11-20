@@ -63,6 +63,8 @@ namespace Shalltear::CSharpImpl::Generated {
 	static_assert(offsetof(SltBoneTransform, rotation) == 12);
 	static_assert(offsetof(SltBoneTransform, scale) == 28);
 
+	void FillAssetDatabaseBindings(SltBindings& table);
+	void FillAssetInfoBindings(SltBindings& table);
 	void FillCameraBindings(SltBindings& table);
 	void FillCameraListBindings(SltBindings& table);
 	void FillComponentBindings(SltBindings& table);
@@ -91,6 +93,8 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillUIPanelSettingsBindings(SltBindings& table);
 
 	void FillBindings(SltBindings& table) {
+		FillAssetDatabaseBindings(table);
+		FillAssetInfoBindings(table);
 		FillCameraBindings(table);
 		FillCameraListBindings(table);
 		FillComponentBindings(table);

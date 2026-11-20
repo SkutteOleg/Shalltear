@@ -40,6 +40,12 @@ namespace Shalltear::CSharpConformance {
 
 		constexpr const char* GLOW = R"({"shader": "0000000000000000-0000000000000000", "floats": {}, "colors": {}, "textures": {}})";
 
+		str Recipe(const Guid& plate) {
+			return std::format(R"({{"_type": "Shalltear.Conformance.Recipe", "servings": 4, "title": "Stew", "weight": 2.5, "steps": ["chop", "boil"],
+"plate": {{"_handle": true, "pointeeType": "MaterialAsset", "assetId": "{}"}}}})",
+							   plate.ToString());
+		}
+
 		str Controller(const Guid& clip) {
 			return std::format(R"({{
 "parameters": [
@@ -119,6 +125,11 @@ namespace Shalltear::CSharpConformance {
 		}
 #endif
 		AssetDatabase::ScanProjectDirectory();
+		if (AssetImporterRegistry::FindByExtension(".recipe")) {
+			const Guid glow = AssetDatabase::LookupGuid(Path("project://Assets/Glow.mat"));
+			_staged = glow.IsValid() && FileSystem::WriteTextFile(Path("project://Assets/Soup.recipe"), Recipe(glow)) && _staged;
+			AssetDatabase::ScanProjectDirectory();
+		}
 	}
 
 	StagedAssets::~StagedAssets() {

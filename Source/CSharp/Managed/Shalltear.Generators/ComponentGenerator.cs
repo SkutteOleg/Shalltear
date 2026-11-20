@@ -14,6 +14,8 @@ namespace Shalltear.Generators;
 [Generator]
 public sealed class ComponentGenerator : IIncrementalGenerator {
 	const string BEHAVIOR = "Shalltear.Behavior";
+	const string DATA_ASSET = "Shalltear.DataAsset";
+	const string ASSET_MENU = "Shalltear.AssetMenuAttribute";
 	const string ENGINE_OBJECT = "Shalltear.EngineObject";
 	const string ENGINE_TYPE = "Shalltear.Interop.EngineTypeAttribute";
 	const string LIST = "System.Collections.Generic.List<T>";
@@ -168,6 +170,9 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public string qualified = "";
 		public string parent = "";
 		public bool isAbstract;
+		public bool asset;
+		public string menu = "";
+		public string extension = "";
 		public uint hookMask;
 		public int depth;
 		public int slots;
@@ -180,7 +185,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		string? _key;
 
 		string Key() {
-			return _key ??= string.Join("|", name, qualified, parent, isAbstract, hookMask, depth, slots, script) + "[" + string.Join(";", fields.Select(static field => field.Key())) +
+			return _key ??= string.Join("|", name, qualified, parent, isAbstract, asset, menu, extension, hookMask, depth, slots, script) + "[" + string.Join(";", fields.Select(static field => field.Key())) +
 							"][" + string.Join(";", enums.Select(static type => type.Key())) + "][" + string.Join(";", values.Select(static type => type.Key())) + "][" +
 							string.Join(";", problems.Select(static problem => problem.field + ">" + problem.type)) + "]";
 		}
@@ -290,8 +295,10 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		bool behavior = false;
 		bool own = true;
 		for (INamedTypeSymbol? level = type; level != null; level = level.BaseType) {
-			if (level.ToDisplayString(_plain) == BEHAVIOR) {
+			string root = level.ToDisplayString(_plain);
+			if (root == BEHAVIOR || root == DATA_ASSET) {
 				behavior = true;
+				component.asset = root == DATA_ASSET;
 				break;
 			}
 			for (int hook = 0; hook < _hooks.Length; ++hook) {
@@ -316,6 +323,12 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		}
 		if (!behavior) {
 			return null;
+		}
+		AttributeData? menu = type.GetAttributes().FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == ASSET_MENU);
+		if (component.asset && menu != null && menu.ConstructorArguments.Length == 2 && menu.ConstructorArguments[0].Value is string label &&
+			menu.ConstructorArguments[1].Value is string extension) {
+			component.menu = label;
+			component.extension = extension;
 		}
 		component.fields = fields.ToImmutableArray();
 		component.enums = collector.enums.Values.OrderBy(static type => type.name, StringComparer.Ordinal).ToImmutableArray();
@@ -436,7 +449,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			if (engine != null && engine.ConstructorArguments.Length == 1 && engine.ConstructorArguments[0].Value is string engineName) {
 				return new FieldType { kind = KIND_OBJECT, reference = Reference.Engine, element = qualified, typeName = engineName, slots = 1 };
 			}
-			if (DerivesFrom(named, BEHAVIOR) && IsRegistered(named)) {
+			if ((DerivesFrom(named, BEHAVIOR) || DerivesFrom(named, DATA_ASSET)) && IsRegistered(named)) {
 				return new FieldType { kind = KIND_OBJECT, reference = Reference.Script, element = qualified, typeName = name, slots = 1 };
 			}
 			return null;
@@ -795,8 +808,9 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				ScriptOf(component, target.scriptRoot),
 			};
 			string register = "\t\t" + TYPES + ".Register<" + component.qualified + ">(" + string.Join(", ", head);
+			string assetArguments = component.asset ? ", assetMenu: " + Literal(component.menu) + ", assetExtension: " + Literal(component.extension) : "";
 			if (component.fields.Length == 0) {
-				calls.Append(register).Append(", default, default, null, null, false, 0, out _);\n");
+				calls.Append(register).Append(", default, default, null, null, false, 0, out _").Append(assetArguments).Append(");\n");
 				continue;
 			}
 
@@ -834,7 +848,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				offsets.Append("\t\t").Append(offset).Append(" = offsets[").Append(slot.ToString(CultureInfo.InvariantCulture)).Append("];\n");
 			}
 			foreach ((string name, StringBuilder body) in new[] { ("Push", push), ("Pull", pull) }) {
-				text.Append("\n\tstatic void ").Append(name).Append(index).Append("(global::Shalltear.Behavior behavior, nint shadow) {\n");
+				text.Append("\n\tstatic void ").Append(name).Append(index).Append("(global::Shalltear.EngineObject behavior, nint shadow) {\n");
 				text.Append("\t\t").Append(component.qualified).Append(" script = (").Append(component.qualified).Append(")behavior;\n");
 				text.Append(body).Append("\t}\n");
 			}
@@ -842,7 +856,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			text.Append("\t\tglobal::System.Span<int> offsets = stackalloc int[").Append(component.fields.Length).Append("];\n");
 			text.Append(register).Append(", new global::Shalltear.Interop.ScriptField[] {\n").Append(specs);
 			text.Append("\t\t}, offsets, Push").Append(index).Append(", Pull").Append(index).Append(", ");
-			text.Append(component.fields.Any(static field => field.kind.normalizes) ? "true" : "false").Append(", ").Append(texts).Append(", out _textBase").Append(index).Append(");\n");
+			text.Append(component.fields.Any(static field => field.kind.normalizes) ? "true" : "false").Append(", ").Append(texts).Append(", out _textBase").Append(index).Append(assetArguments).Append(");\n");
 			text.Append(offsets).Append("\t}\n");
 			calls.Append("\t\tRegister").Append(index).Append("();\n");
 		}

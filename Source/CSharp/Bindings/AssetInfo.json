@@ -1,0 +1,36 @@
+{
+	"area": "AssetInfo",
+	"include": "AssetBindings.h",
+	"class": "Shalltear.Interop.AssetBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "GetPath",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::GetPath(id)",
+			"returns": "string",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "GetPath", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "GetAssetId",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::GetAssetId(id)",
+			"returns": "string",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "GetAssetId", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "GetLoadState",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::GetLoadState(id)",
+			"returns": "AssetLoadState",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "GetLoadState", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "GetRefCount",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::GetRefCount(id)",
+			"returns": "i32",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "GetRefCount", "kind": "method", "access": "internal" }
+		}
+	]
+}

@@ -5,6 +5,8 @@
 #include "CSharpRuntimeFixture.h"
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Asset/AssetImporter.h"
+#include "Shalltear/Core/Asset/DataAsset.h"
 #include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Graphics/RenderSystem.h"
 #include "Shalltear/Core/Reflection.h"
@@ -169,6 +171,63 @@ TEST_F(CSharpRuntimeFixture, NamelessTypeNeedsItsHash) {
 	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
 	EXPECT_EQ(TypeRegistry::FindType(StringHash("Bare.Gear")), nullptr);
 	EXPECT_EQ(TypeRegistry::FindType(StringHash("Bare.Tuning")), nullptr);
+}
+
+TEST_F(CSharpRuntimeFixture, DataAssetTypesAreChecked) {
+	ASSERT_TRUE(Attach()) << _error;
+	const SltEngineAPI engine = _hooks->makeEngineAPI();
+	const auto describe = [](std::string_view name, std::string_view extension, uint64_t parent, uint32_t flags) {
+		SltTypeDesc desc{};
+		desc.name = SltString{name.data(), static_cast<int32_t>(name.size())};
+		desc.nameHash = StringHash(name).GetValue();
+		desc.parentHash = parent;
+		desc.flags = flags;
+		desc.assetMenu = SltString{"Bare/Note", 9};
+		desc.assetExtension = SltString{extension.data(), static_cast<int32_t>(extension.size())};
+		return desc;
+	};
+	const SltTypeDesc dotless = describe("Bare.Dotless", "note", 0, SLT_TYPE_DATA_ASSET);
+	EXPECT_EQ(engine.registerManagedType(&dotless), SLT_ERR_REFUSED);
+	const SltTypeDesc note = describe("Bare.Note", ".note", 0, SLT_TYPE_DATA_ASSET);
+	ASSERT_EQ(engine.registerManagedType(&note), SLT_OK);
+	const IAssetImporter* importer = AssetImporterRegistry::FindByExtension(".note");
+	ASSERT_NE(importer, nullptr);
+	EXPECT_EQ(importer->GetCreateMenuLabel(), "Bare/Note");
+	EXPECT_EQ(importer->GetCreateDefaultFileName(), "New Note.note");
+	const TypeInfo* registered = TypeRegistry::FindType(StringHash("Bare.Note"));
+	ASSERT_NE(registered, nullptr);
+	EXPECT_TRUE(TypeRegistry::IsDerivedFrom(registered, DataAsset::GetReflectType()));
+	EXPECT_EQ(registered->flags & TypeFlagComponent, 0u);
+	const SltTypeDesc copy = describe("Bare.Copy", ".note", 0, SLT_TYPE_DATA_ASSET);
+	EXPECT_EQ(engine.registerManagedType(&copy), SLT_ERR_REFUSED);
+	const SltTypeDesc mixed = describe("Bare.Mixed", "", note.nameHash, 0);
+	EXPECT_EQ(engine.registerManagedType(&mixed), SLT_ERR_REFUSED);
+	const SltTypeDesc menuless = describe("Bare.Menuless", "", note.nameHash, SLT_TYPE_DATA_ASSET);
+	EXPECT_EQ(engine.registerManagedType(&menuless), SLT_OK);
+	EXPECT_EQ(_log.Delivered().Count("C# data asset 'Bare.Dotless' has extension 'note'. Use a dot + a name, like .level"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_log.Delivered().Count("C# data asset 'Bare.Copy' has extension .note (taken by another importer). Pick another extension"), 1u);
+	EXPECT_EQ(_log.Delivered().Count("C# type 'Bare.Mixed' and its parent are not both data assets. Rebuild the scripts"), 1u);
+
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+	EXPECT_EQ(AssetImporterRegistry::FindByExtension(".note"), nullptr);
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("Bare.Note")), nullptr);
+}
+
+TEST_F(CSharpRuntimeFixture, DetachEndsLoadedDataAssets) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	std::optional<CSharpConformance::StagedAssets> assets(std::in_place);
+	ASSERT_TRUE(assets->IsStaged());
+	Asset* soup = AssetDatabase::LoadAsset(Path("project://Assets/Soup.recipe"));
+	ASSERT_NE(soup, nullptr);
+	const u64 id = soup->GetInstanceId();
+	SceneSystem::Terminate();
+
+	_hooks->detach();
+	EXPECT_EQ(ObjectRegistry::Resolve(id), nullptr);
+	assets.reset();
+	EXPECT_EQ(_log.Delivered().CountAtLeast(LogLevel::Error), 0u) << _log.Delivered().Joined();
 }
 
 TEST_F(CSharpRuntimeFixture, ConformanceSuitePasses) {

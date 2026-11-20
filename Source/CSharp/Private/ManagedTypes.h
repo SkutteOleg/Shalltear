@@ -4,6 +4,7 @@
 #include "ScriptBridge.h"
 #include "ShadowStorage.h"
 
+#include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/Reflection/TypeInfo.h"
 #include "Shalltear/Core/Types.h"
 
@@ -14,6 +15,7 @@
 namespace Shalltear::CSharpImpl {
 
 	class ManagedBehavior;
+	class ManagedDataAsset;
 
 	struct ManagedType {
 		const TypeInfo* info = nullptr;
@@ -29,6 +31,8 @@ namespace Shalltear::CSharpImpl {
 		u32 slotEnd = 0;
 		bool hasFields = false;
 		bool normalizes = false;
+		bool asset = false;
+		IAssetImporter* importer = nullptr;
 	};
 
 	namespace ManagedTypes {
@@ -49,18 +53,24 @@ namespace Shalltear::CSharpImpl {
 
 		const void* GetOwnerToken();
 		u32 GetLiveCount();
+		bool HasLiveAssets();
 		void ForEachType(void (*visit)(const ManagedType& type, void* user), void* user);
 		void SetTypeObserver(const TypeObserver& observer);
 
 		void Link(ManagedBehavior& proxy);
 		void Unlink(ManagedBehavior& proxy);
+		void Link(ManagedDataAsset& proxy);
+		void Unlink(ManagedDataAsset& proxy);
 
 		void LinkDirty(ManagedBehavior& proxy);
 		void UnlinkDirty(ManagedBehavior& proxy);
+		void LinkDirty(ManagedDataAsset& proxy);
+		void UnlinkDirty(ManagedDataAsset& proxy);
 		SHALLTEAR_CSHARP_API void PullDirty();
 		SHALLTEAR_CSHARP_API extern ManagedBehavior* dirtyHead;
+		SHALLTEAR_CSHARP_API extern ManagedDataAsset* dirtyAssetHead;
 		inline void FlushDirty() {
-			if (dirtyHead) {
+			if (dirtyHead || dirtyAssetHead) {
 				PullDirty();
 			}
 		}

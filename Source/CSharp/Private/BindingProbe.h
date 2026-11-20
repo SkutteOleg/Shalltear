@@ -51,6 +51,8 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	u64 MakeAsset(std::string_view typeName);
 	u64 MakeSkeletonAsset();
 	u64 MakeMesh(i32 blendShapes);
+	std::string_view ImporterLabel(std::string_view extension);
+	std::string_view ImporterFileName(std::string_view extension);
 	void ClickElement(UIPanelRenderer& panel, u64 element);
 	void UpdateUI(UIPanelRenderer& panel);
 	bool HasClickHandler(UIPanelRenderer& panel, u64 element);

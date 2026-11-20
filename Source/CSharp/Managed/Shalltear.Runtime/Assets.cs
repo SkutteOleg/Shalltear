@@ -5,6 +5,18 @@ namespace Shalltear;
 /// <summary>Asset loaded by engine.</summary>
 public abstract class Asset : EngineObject {
 	private protected Asset() {}
+
+	/// <summary>Project path of the asset's file ("" for one made in memory).</summary>
+	public string Path => AssetBindings.GetPath(_id);
+
+	/// <summary>Id of the asset's file as text ("" for one made in memory).</summary>
+	public string AssetId => AssetBindings.GetAssetId(_id);
+
+	/// <summary>Where the asset is in loading.</summary>
+	public AssetLoadState LoadState => AssetBindings.GetLoadState(_id);
+
+	/// <summary>Number of references keeping the asset loaded.</summary>
+	public int RefCount => AssetBindings.GetRefCount(_id);
 }
 
 /// <summary>Material asset.</summary>

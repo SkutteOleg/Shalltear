@@ -12,6 +12,10 @@ internal static class EngineTypeOf<T> {
 	internal static ulong hash;
 }
 
+internal static class ScriptTypeHash<T> {
+	internal static ulong value;
+}
+
 internal static partial class ObjectCache {
 	internal const int SLICE = 256;
 	internal const int STACK_IDS = 64;
@@ -47,6 +51,10 @@ internal static partial class ObjectCache {
 		}
 		if (_wrappers.TryGetValue(id, out EngineObject? wrapper)) {
 			return wrapper;
+		}
+		nint script = Bridge.ScriptOf(id);
+		if (script != 0) {
+			return GCHandle.FromIntPtr(script).Target as EngineObject;
 		}
 		Func<ulong, EngineObject>? create = null;
 		for (ulong type = ObjectBindings.GetTypeHash(id); type != 0 && !_factories.TryGetValue(type, out create);) {

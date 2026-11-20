@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0x63762ecdb0963cc6ull
-#define SLT_BINDINGS_INPUT_DIGEST 0xc646e7a2014cc1c7ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xc2eadc48c9cf622full
+#define SLT_BINDINGS_INPUT_DIGEST 0xd8ad4d6caf1b9bf1ull
 
 typedef struct SltString SltString;
 
@@ -51,6 +51,17 @@ typedef struct SltBoneTransform {
 } SltBoneTransform;
 
 typedef struct SltBindings {
+	int32_t (*assetDatabaseLoadKey)(SltString path, uint64_t* outResult);
+	int32_t (*assetDatabaseUnloadKey)(uint64_t id);
+	int32_t (*assetDatabaseSaveKey)(uint64_t id);
+	int32_t (*assetDatabaseCreateKey)(SltString path, uint64_t typeHash, uint64_t* outResult);
+	int32_t (*assetDatabaseLookupPath)(SltString assetId, SltString* outResult);
+	int32_t (*assetDatabaseLookupAssetId)(SltString path, SltString* outResult);
+	int32_t (*assetDatabaseCollectGarbage)(int32_t* outResult);
+	int32_t (*assetInfoGetPath)(uint64_t id, SltString* outResult);
+	int32_t (*assetInfoGetAssetId)(uint64_t id, SltString* outResult);
+	int32_t (*assetInfoGetLoadState)(uint64_t id, uint8_t* outResult);
+	int32_t (*assetInfoGetRefCount)(uint64_t id, int32_t* outResult);
 	int32_t (*cameraGetFieldOfViewDeg)(uint64_t self, float* outResult);
 	int32_t (*cameraSetFieldOfViewDeg)(uint64_t self, float fieldOfViewDeg);
 	int32_t (*cameraGetNearPlane)(uint64_t self, float* outResult);
@@ -234,6 +245,8 @@ typedef struct SltBindings {
 	int32_t (*probeClickElement)(uint64_t panel, uint64_t element);
 	int32_t (*probeHasClickHandler)(uint64_t panel, uint64_t element, uint8_t* outResult);
 	int32_t (*probeUpdateUI)(uint64_t panel);
+	int32_t (*probeImporterLabel)(SltString extension, SltString* outResult);
+	int32_t (*probeImporterFileName)(SltString extension, SltString* outResult);
 	int32_t (*probeFreeAsset)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);

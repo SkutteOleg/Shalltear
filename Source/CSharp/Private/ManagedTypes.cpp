@@ -2,7 +2,10 @@
 
 #include "FieldKinds.h"
 #include "ManagedBehavior.h"
+#include "ManagedDataAsset.h"
 
+#include "Shalltear/Core/Asset/AssetImporter.h"
+#include "Shalltear/Core/Asset/DataAsset.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Reflection/Primitives.h"
@@ -33,6 +36,8 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		constexpr size_t THUNK_COUNT = 1024;
 		constexpr u32 FIRST_SLOT = static_cast<u32>((sizeof(ManagedBehavior) + 15) / 16 * 2);
 		static_assert(FIRST_SLOT + SLT_FIELD_SLOT_LIMIT <= THUNK_COUNT);
+		constexpr u32 FIRST_ASSET_SLOT = static_cast<u32>((sizeof(ManagedDataAsset) + 15) / 16 * 2);
+		static_assert(FIRST_ASSET_SLOT + SLT_FIELD_SLOT_LIMIT <= THUNK_COUNT);
 
 		template <size_t N>
 		void* AtSlot(void* instance) {
@@ -103,6 +108,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		std::unordered_map<u64, HandleType*> _handles;
 		std::map<std::pair<i32, u64>, ListType*> _lists;
 		ManagedBehavior* _live = nullptr;
+		ManagedDataAsset* _liveAssets = nullptr;
 		TypeObserver _observer;
 		Counters _counters;
 		i32 _lifecycleDepth = 0;
@@ -141,6 +147,55 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			void* memory = Allocate(info->size, tag, info->alignment);
 			std::memset(static_cast<u8*>(memory) + sizeof(ManagedBehavior), 0, info->size - sizeof(ManagedBehavior));
 			return new (memory) ManagedBehavior(*found->second);
+		}
+
+		Object* CreateAsset(const TypeInfo* info, MemTag tag) {
+			const auto found = _byInfo.find(info);
+			if (found == _byInfo.end()) {
+				return nullptr;
+			}
+			void* memory = Allocate(info->size, tag, info->alignment);
+			std::memset(static_cast<u8*>(memory) + sizeof(ManagedDataAsset), 0, info->size - sizeof(ManagedDataAsset));
+			return new (memory) ManagedDataAsset(*found->second);
+		}
+
+		class ManagedAssetImporter final : public IAssetImporter {
+		public:
+			ManagedAssetImporter(const ManagedType& type, std::string_view menu, std::string_view extension)
+				: _type(type), _menu(menu), _fileName(std::format("New {}{}", menu.substr(menu.find_last_of('/') + 1), extension)) {}
+
+			StringHash GetAssetType() const override { return _type.info->name; }
+
+			Asset* Import(const Path& sourcePath) override {
+				Asset* asset = CreateAsset();
+				if (asset && !asset->Import(sourcePath)) {
+					TypeRegistry::DestroyObjectInstance(asset);
+					return nullptr;
+				}
+				return asset;
+			}
+
+			bool CanCreateAsset() const override { return !_menu.empty(); }
+			std::string_view GetCreateMenuLabel() const override { return _menu; }
+			std::string_view GetCreateDefaultFileName() const override { return _fileName; }
+
+			Asset* CreateAsset() override { return static_cast<Asset*>(TypeRegistry::CreateObjectInstance(_type.info, MemTag::Asset)); }
+		private:
+			const ManagedType& _type;
+			str _menu;
+			str _fileName;
+		};
+
+		bool CheckExtension(const str& name, std::string_view extension) {
+			if (extension.size() < 2 || extension[0] != '.' || extension.find_first_of("./\\ ", 1) != std::string_view::npos) {
+				SLT_LOG_ERROR("C#", "C# data asset '{}' has extension '{}'. Use a dot + a name, like .level", name, extension);
+				return false;
+			}
+			if (AssetImporterRegistry::FindByExtension(extension)) {
+				SLT_LOG_ERROR("C#", "C# data asset '{}' has extension {} (taken by another importer). Pick another extension", name, extension);
+				return false;
+			}
+			return true;
 		}
 
 		const TypeInfo* HandleFor(u64 pointeeHash) {
@@ -304,6 +359,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 	} // anonymous namespace
 
 	ManagedBehavior* dirtyHead = nullptr;
+	ManagedDataAsset* dirtyAssetHead = nullptr;
 
 	i32 Register(const SltTypeDesc& desc) {
 		if (!NameMatches("type", View(desc.name), desc.nameHash)) {
@@ -315,7 +371,12 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			return SLT_ERR_REFUSED;
 		}
 
-		const TypeInfo* parent = Behavior::GetReflectType();
+		const bool asset = (desc.flags & SLT_TYPE_DATA_ASSET) != 0;
+		const std::string_view extension = View(desc.assetExtension);
+		if (asset && !extension.empty() && !(desc.flags & SLT_TYPE_ABSTRACT) && !CheckExtension(name, extension)) {
+			return SLT_ERR_REFUSED;
+		}
+		const TypeInfo* parent = asset ? DataAsset::GetReflectType() : Behavior::GetReflectType();
 		const ManagedType* managedParent = nullptr;
 		if (desc.parentHash != 0) {
 			parent = TypeRegistry::FindType(StringHash(desc.parentHash));
@@ -325,21 +386,26 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 				return SLT_ERR_REFUSED;
 			}
 			managedParent = found->second;
+			if (managedParent->asset != asset) {
+				SLT_LOG_ERROR("C#", "C# type '{}' and its parent are not both data assets. Rebuild the scripts", name);
+				return SLT_ERR_REFUSED;
+			}
 		}
 
 		ManagedType* type = New<ManagedType>(MemTag::Scripting);
 		if (managedParent) {
 			type->inits = managedParent->inits;
 		}
-		u32 slot = managedParent ? managedParent->slotEnd : FIRST_SLOT;
+		const u32 first = asset ? FIRST_ASSET_SLOT : FIRST_SLOT;
+		u32 slot = managedParent ? managedParent->slotEnd : first;
 		u32 alignment = 16;
 		std::vector<Laid> laid;
 		if (!LayOut(name, desc.fields, desc.fieldCount, slot, alignment, type->inits, laid)) {
 			Delete(type);
 			return SLT_ERR_REFUSED;
 		}
-		if (slot > FIRST_SLOT + SLT_FIELD_SLOT_LIMIT) {
-			SLT_LOG_ERROR("C#", "C# type '{}' has too many serialized fields ({} slot(s), max {}). Remove some", name, slot - FIRST_SLOT,
+		if (slot > first + SLT_FIELD_SLOT_LIMIT) {
+			SLT_LOG_ERROR("C#", "C# type '{}' has too many serialized fields ({} slot(s), max {}). Remove some", name, slot - first,
 						  SLT_FIELD_SLOT_LIMIT);
 			Delete(type);
 			return SLT_ERR_REFUSED;
@@ -354,16 +420,19 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		type->slotEnd = slot;
 		type->hasFields = desc.fieldCount > 0 || (managedParent && managedParent->hasFields);
 		type->normalizes = (desc.flags & SLT_TYPE_NORMALIZE) != 0 || (managedParent && managedParent->normalizes);
+		type->asset = asset;
 
 		ReflectBuilder builder(StringHash(desc.nameHash), (static_cast<size_t>(slot) * SLOT_BYTES + 15) / 16 * 16, 16);
 		builder.SetParent(parent);
-		builder.SetFlags(TypeFlagComponent | ((desc.flags & SLT_TYPE_ABSTRACT) ? TypeFlagAbstract : 0u));
-		builder.SetCreateTypedFn(&Create);
+		builder.SetFlags((asset ? 0u : TypeFlagComponent) | ((desc.flags & SLT_TYPE_ABSTRACT) ? TypeFlagAbstract : 0u));
+		builder.SetCreateTypedFn(asset ? &CreateAsset : &Create);
 		if (type->hasFields) {
-			builder.SetFieldSyncFn(&ManagedBehavior::SyncFields);
+			builder.SetFieldSyncFn(asset ? &ManagedDataAsset::SyncFields : &ManagedBehavior::SyncFields);
 		}
 		builder.SetDisplayName(ShortName(type->name));
-		builder.AddAttribute(BehaviorTicksAttribute, Variant(static_cast<i64>(desc.tickMask)));
+		if (!asset) {
+			builder.AddAttribute(BehaviorTicksAttribute, Variant(static_cast<i64>(desc.tickMask)));
+		}
 		for (i32 index = 0; index < desc.fieldCount; ++index) {
 			const SltFieldDesc& field = desc.fields[index];
 			const std::string_view fieldName = View(field.name);
@@ -376,6 +445,10 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			return SLT_ERR_REFUSED;
 		}
 
+		if (asset && !extension.empty() && !(desc.flags & SLT_TYPE_ABSTRACT)) {
+			type->importer = New<ManagedAssetImporter>(MemTag::Scripting, *type, View(desc.assetMenu), extension);
+			AssetImporterRegistry::Register(type->info->name, type->importer, {extension}, &_TOKEN);
+		}
 		_types.push_back(type);
 		_byInfo[type->info] = type;
 		if (_byIndex.size() <= static_cast<size_t>(desc.managedTypeId)) {
@@ -473,6 +546,12 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			proxy->ReleaseInstance();
 			++orphans;
 		}
+		const u32 components = orphans;
+		for (ManagedDataAsset* proxy = _liveAssets; proxy; proxy = proxy->next) {
+			proxy->ReleaseInstance();
+			++orphans;
+		}
+		AssetImporterRegistry::UnregisterOwnedBy(&_TOKEN);
 		if (_observer.released) {
 			_observer.released(&_TOKEN);
 		}
@@ -492,6 +571,9 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		TypeRegistry::UnregisterOwnedBy(&_TOKEN);
 		for (ManagedType* type : _types) {
 			if (type->liveCount == 0) {
+				if (type->importer) {
+					Delete(static_cast<ManagedAssetImporter*>(type->importer));
+				}
 				Delete(type);
 			}
 		}
@@ -521,8 +603,8 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		_values.clear();
 		_handles.clear();
 		_lists.clear();
-		if (orphans > 0) {
-			SLT_LOG_ERROR("C#", "{} C# component(s) alive at script unload (hooks stopped)", orphans);
+		if (components > 0) {
+			SLT_LOG_ERROR("C#", "{} C# component(s) alive at script unload (hooks stopped)", components);
 		}
 	}
 
@@ -549,6 +631,10 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		return count;
 	}
 
+	bool HasLiveAssets() {
+		return _liveAssets != nullptr;
+	}
+
 	void SetTypeObserver(const TypeObserver& observer) {
 		_observer = observer;
 	}
@@ -569,6 +655,45 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		}
 		if (proxy.next) {
 			proxy.next->previous = proxy.previous;
+		}
+	}
+
+	void Link(ManagedDataAsset& proxy) {
+		proxy.next = _liveAssets;
+		if (_liveAssets) {
+			_liveAssets->previous = &proxy;
+		}
+		_liveAssets = &proxy;
+	}
+
+	void Unlink(ManagedDataAsset& proxy) {
+		if (proxy.previous) {
+			proxy.previous->next = proxy.next;
+		} else {
+			_liveAssets = proxy.next;
+		}
+		if (proxy.next) {
+			proxy.next->previous = proxy.previous;
+		}
+	}
+
+	void LinkDirty(ManagedDataAsset& proxy) {
+		proxy.dirtyPrevious = nullptr;
+		proxy.dirtyNext = dirtyAssetHead;
+		if (dirtyAssetHead) {
+			dirtyAssetHead->dirtyPrevious = &proxy;
+		}
+		dirtyAssetHead = &proxy;
+	}
+
+	void UnlinkDirty(ManagedDataAsset& proxy) {
+		if (proxy.dirtyPrevious) {
+			proxy.dirtyPrevious->dirtyNext = proxy.dirtyNext;
+		} else {
+			dirtyAssetHead = proxy.dirtyNext;
+		}
+		if (proxy.dirtyNext) {
+			proxy.dirtyNext->dirtyPrevious = proxy.dirtyPrevious;
 		}
 	}
 
@@ -595,6 +720,9 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 	void PullDirty() {
 		while (dirtyHead) {
 			dirtyHead->Pull();
+		}
+		while (dirtyAssetHead) {
+			dirtyAssetHead->Pull();
 		}
 	}
 

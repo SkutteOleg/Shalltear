@@ -63,6 +63,8 @@ internal unsafe struct SltTypeDesc {
 	public SltFieldDesc* fields;
 	public int fieldCount;
 	public SltString script;
+	public SltString assetMenu;
+	public SltString assetExtension;
 }
 
 [StructLayout(LayoutKind.Sequential)]

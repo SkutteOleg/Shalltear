@@ -358,6 +358,34 @@ internal static unsafe partial class BindingProbe {
 		}
 	}
 
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static string ImporterLabel(string extension) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.ImporterLabel");
+		}
+		using UTF8Scratch extensionText = new(extension, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		SltString result;
+		int status = Bindings.table.probeImporterLabel(extensionText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return Bridge.Text(result);
+	}
+
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static string ImporterFileName(string extension) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.ImporterFileName");
+		}
+		using UTF8Scratch extensionText = new(extension, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		SltString result;
+		int status = Bindings.table.probeImporterFileName(extensionText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return Bridge.Text(result);
+	}
+
 	internal static void FreeAsset(ulong id) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("BindingProbe.FreeAsset");

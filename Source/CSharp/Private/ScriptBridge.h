@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 12
+#define SLT_BRIDGE_ABI_VERSION 13
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -28,6 +28,7 @@ extern "C" {
 
 #define SLT_TYPE_ABSTRACT 1u
 #define SLT_TYPE_NORMALIZE 2u
+#define SLT_TYPE_DATA_ASSET 4u
 
 // must match ComponentGenerator.cs
 typedef enum SltFieldKind {
@@ -121,6 +122,8 @@ typedef struct SltTypeDesc {
 	int32_t fieldCount;
 	// source file from project root (empty in a player)
 	SltString script;
+	SltString assetMenu;
+	SltString assetExtension;
 } SltTypeDesc;
 
 typedef struct SltEngineAPI {

@@ -6,6 +6,7 @@
 
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/Asset/TextAsset.h"
 #include "Shalltear/Core/Graphics/MeshAsset.h"
 #include "Shalltear/Core/Graphics/PrimitiveMesh.h"
@@ -409,6 +410,16 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 		if (UI::Context* context = panel.GetContext()) {
 			context->Update();
 		}
+	}
+
+	std::string_view ImporterLabel(std::string_view extension) {
+		const IAssetImporter* importer = AssetImporterRegistry::FindByExtension(extension);
+		return importer ? importer->GetCreateMenuLabel() : std::string_view{};
+	}
+
+	std::string_view ImporterFileName(std::string_view extension) {
+		const IAssetImporter* importer = AssetImporterRegistry::FindByExtension(extension);
+		return importer ? importer->GetCreateDefaultFileName() : std::string_view{};
 	}
 
 	void FreeAsset(u64 id) {

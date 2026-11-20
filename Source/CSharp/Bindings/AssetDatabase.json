@@ -1,0 +1,78 @@
+{
+	"area": "AssetDatabase",
+	"include": "AssetBindings.h",
+	"class": "Shalltear.AssetDatabase",
+	"doc": "Loading/releasing/making/saving of project assets.",
+	"enums": [
+		{
+			"name": "AssetLoadState",
+			"cpp": "::Shalltear::AssetLoadState",
+			"underlying": "u8",
+			"doc": "Where an asset is in loading.",
+			"values": [
+				{ "name": "Unloaded", "value": 0, "doc": "Not loaded." },
+				{ "name": "Loading", "value": 1, "doc": "Being read." },
+				{ "name": "Loaded", "value": 2, "doc": "Ready." },
+				{ "name": "Failed", "value": 3, "doc": "Couldn't be read." },
+				{ "name": "HotReloading", "value": 4, "doc": "Being read again after its file changed." }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "LoadKey",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::Load(path)",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "LoadKey", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "UnloadKey",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::Unload(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "UnloadKey", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "SaveKey",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::Save(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "SaveKey", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "CreateKey",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::Create(path, typeHash)",
+			"returns": "u64",
+			"params": [
+				{ "name": "path", "type": "string" },
+				{ "name": "typeHash", "type": "u64" }
+			],
+			"csharp": { "member": "CreateKey", "kind": "method", "access": "internal" }
+		},
+		{
+			"id": "LookupPath",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::LookupPath(assetId)",
+			"returns": "string",
+			"params": [{ "name": "assetId", "type": "string" }],
+			"csharp": { "member": "LookupPath", "kind": "method" },
+			"doc": "Path of the file with assetId (\"\" when none)."
+		},
+		{
+			"id": "LookupAssetId",
+			"cpp": "::Shalltear::CSharpImpl::AssetBindings::LookupAssetId(path)",
+			"returns": "string",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "LookupAssetId", "kind": "method" },
+			"doc": "Id of the asset file at path (\"\" when none)."
+		},
+		{
+			"id": "CollectGarbage",
+			"cpp": "static_cast<::Shalltear::i32>(::Shalltear::AssetDatabase::CollectGarbage())",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "CollectGarbage", "kind": "method" },
+			"doc": "Free unreferenced loaded assets (returns how many)."
+		}
+	]
+}
