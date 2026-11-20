@@ -74,6 +74,10 @@ namespace Shalltear::TestHelpers {
 
 	int RunCSharpAOTFields(const char* library);
 
+	inline constexpr const char* CSHARP_SHIM_FLAG = "--shalltear-csharp-shim";
+
+	int RunCSharpShimProbe(const char* library, const char* map, const char* mode);
+
 	void RestoreNodeShader();
 
 } // namespace Shalltear::TestHelpers

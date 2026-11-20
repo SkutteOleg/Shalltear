@@ -15,4 +15,9 @@
 		<ShalltearRenameAssembly Include="Shalltear.Conformance" />
 	</ItemGroup>
 	<Import Project="$(ShalltearRepoRoot)EngineAssets/CSharp/Shalltear.CSharp.targets" />
+	<Target Name="ShalltearAddLinkMap" BeforeTargets="LinkNative" Condition="$(RuntimeIdentifier.StartsWith('win'))">
+		<ItemGroup>
+			<LinkerArg Include="/MAP:&quot;$(NativeIntermediateOutputPath)$(TargetName).map&quot;" />
+		</ItemGroup>
+	</Target>
 </Project>

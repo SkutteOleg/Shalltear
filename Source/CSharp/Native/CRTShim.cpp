@@ -9,6 +9,10 @@ constexpr unsigned long PROCESS_DETACH = 0;
 constexpr unsigned long PROCESS_ATTACH = 1;
 constexpr unsigned long THREAD_ATTACH = 2;
 constexpr int EXIT_CAPACITY = 512;
+constexpr Size DEFAULT_COOKIE = 0x00002B992DDFA232ull;
+constexpr Size COOKIE_MASK = 0x0000FFFFFFFFFFFFull;
+constexpr unsigned int FAIL_STACK_COOKIE = 2;
+constexpr unsigned int FAIL_RANGE_CHECK = 8;
 
 extern "C" {
 
@@ -16,21 +20,24 @@ void* malloc(Size);
 void free(void*);
 int __stdcall DllMain(void*, unsigned long, void*);
 __declspec(dllimport) int __stdcall QueryPerformanceCounter(long long*);
+__declspec(dllimport) void __stdcall GetSystemTimeAsFileTime(Size*);
+__declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
+__declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
 // compiler-rt's stack probe (same contract)
 void ___chkstk_ms();
 
-Size __security_cookie = 0x00002B992DDFA232ull;
+Size __security_cookie = DEFAULT_COOKIE;
 int _fltused = 0x9875;
 unsigned long _tls_index = 0;
 
 void __security_check_cookie(Size cookie) {
 	if (cookie != __security_cookie) {
-		__builtin_trap();
+		__fastfail(FAIL_STACK_COOKIE);
 	}
 }
 
 void __report_rangecheckfailure() {
-	__builtin_trap();
+	__fastfail(FAIL_RANGE_CHECK);
 }
 
 int __GSHandlerCheck(void*, void*, void*, void*) {
@@ -124,11 +131,20 @@ void __stdcall __dyn_tls_init(void*, unsigned long reason, void*) {
 }
 __declspec(allocate(".CRT$XLC")) TLSCallbackFn __dyn_tls_init_callback = __dyn_tls_init;
 
+static void SeedCookie() {
+	Size time = 0;
+	long long ticks = 0;
+	GetSystemTimeAsFileTime(&time);
+	QueryPerformanceCounter(&ticks);
+	Size seed = reinterpret_cast<Size>(&seed) ^ time ^ GetCurrentProcessId() ^ (static_cast<Size>(GetCurrentThreadId()) << 32);
+	seed ^= static_cast<Size>(ticks) * 0x9E3779B97F4A7C15ull;
+	seed &= COOKIE_MASK;
+	__security_cookie = seed == 0 || seed == DEFAULT_COOKIE ? DEFAULT_COOKIE + 1 : seed;
+}
+
 int __stdcall _DllMainCRTStartup(void* instance, unsigned long reason, void* reserved) {
 	if (reason == PROCESS_ATTACH) {
-		long long ticks = 0;
-		QueryPerformanceCounter(&ticks);
-		__security_cookie ^= static_cast<Size>(ticks) * 0x9E3779B97F4A7C15ull;
+		SeedCookie();
 		for (InitFn* initializer = &__xi_a + 1; initializer < &__xi_z; ++initializer) {
 			if (*initializer && (*initializer)() != 0) {
 				return 0;

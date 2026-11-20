@@ -580,6 +580,12 @@ namespace TestPlatform {
 				outExitCode = TestHelpers::RunDataAssetReloadProbe(arg + 1 < argc ? argv[arg + 1] : nullptr);
 				return true;
 			}
+#ifdef SLT_TEST_CSHARP_AOT
+			if (std::strcmp(argv[arg], TestHelpers::CSHARP_SHIM_FLAG) == 0 && arg + 3 < argc) {
+				outExitCode = TestHelpers::RunCSharpShimProbe(argv[arg + 1], argv[arg + 2], argv[arg + 3]);
+				return true;
+			}
+#endif
 		}
 		return false;
 	}

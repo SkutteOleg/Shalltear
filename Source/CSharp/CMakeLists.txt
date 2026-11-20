@@ -104,9 +104,10 @@ if(WIN32)
 		set(sltAOTProject "${sltManagedDir}/Shalltear.ConformanceAOT/Shalltear.ConformanceAOT.csproj")
 		set(sltAOTLibrary "${sltManagedOutput}/aot/Shalltear.ConformanceAOT.dll")
 		set(sltAOTInputs "${sltManagedOutput}/aot/Shalltear.ConformanceAOT.rsp")
+		set(sltAOTMap "${sltManagedOutput}/aot/Shalltear.ConformanceAOT.map")
 		set(sltAOTNative "${sltManagedRoot}/obj/${sltSDKVersion}/Shalltear.ConformanceAOT/${sltManagedConfig}/${sltTargetFramework}/win-x64/native")
 		add_custom_command(
-			OUTPUT "${sltAOTLibrary}" "${sltAOTInputs}"
+			OUTPUT "${sltAOTLibrary}" "${sltAOTInputs}" "${sltAOTMap}"
 			COMMAND ${CMAKE_COMMAND} -E env
 				"DOTNET_ROOT=${sltDotNetRoot}" DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_CLI_UI_LANGUAGE=en-us
 				"${sltDotNet}" msbuild "${sltAOTProject}" -restore -t:Publish
@@ -118,6 +119,7 @@ if(WIN32)
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 				"${sltManagedRoot}/aot-publish/Shalltear.ConformanceAOT.dll" "${sltAOTLibrary}"
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${sltAOTNative}/link.rsp" "${sltAOTInputs}"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${sltAOTNative}/Shalltear.ConformanceAOT.map" "${sltAOTMap}"
 			DEPENDS "${sltManagedStamp}" "${sltShim}" ${sltNativeLibs} "${sltAOTProject}"
 				"${CMAKE_SOURCE_DIR}/EngineAssets/CSharp/Shalltear.CSharp.targets"
 			COMMENT "Publishing C# conformance suite as a native lib"
