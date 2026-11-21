@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <format>
 #include <sstream>
 
 namespace Shalltear::CSharpEditor::CSharpProjectFiles {
@@ -82,9 +83,81 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 			return escaped;
 		}
 
-		bool Render(const char* name, const Options& options, bool xml, str& out) {
+		str EscapeItem(const str& text) {
+			str escaped;
+			for (const char c : text) {
+				if (c == '%' || c == ';' || c == '$' || c == '@' || c == '\'' || c == '*' || c == '?') {
+					escaped += std::format("%{:02X}", static_cast<u32>(static_cast<unsigned char>(c)));
+				} else {
+					escaped.push_back(c);
+				}
+			}
+			return EscapeXML(escaped);
+		}
+
+		str Excluding(const Vector<str>& folders) {
+			str excluded;
+			for (const str& folder : folders) {
+				excluded += excluded.empty() ? "" : ";";
+				excluded += EscapeItem(folder) + "/**/*.cs";
+			}
+			return excluded.empty() ? str() : " Exclude=\"" + excluded + "\"";
+		}
+
+		str ReferenceTo(const CSharpAssemblies::Definition& definition, bool conditional) {
+			str condition;
+			if (conditional && !definition.platforms.empty()) {
+				condition = " Condition=\"'$(ShalltearTargetPlatform)' == ''";
+				for (const str& platform : definition.platforms) {
+					condition += " Or '$(ShalltearTargetPlatform)' == '" + EscapeXML(platform) + "'";
+				}
+				condition += "\"";
+			}
+			return "\t\t<ProjectReference Include=\"" + GetAssemblyProjectFile(definition.name) + "\" Private=\"false\"" + condition + " />\n";
+		}
+
+		void AddDefaultTokens(const Options& options, Vector<ScriptProjectOps::TemplateToken>& tokens) {
+			Vector<str> folders{GetMemoryResource(MemTag::Editor)};
+			str references;
+			str projects;
+			for (const CSharpAssemblies::Definition& definition : options.assemblies.definitions) {
+				folders.push_back(definition.folder);
+				projects += "\t<Project Path=\"" + GetAssemblyProjectFile(definition.name) + "\" />\n";
+				if (!definition.editorOnly) {
+					references += ReferenceTo(definition, true);
+				}
+			}
+			tokens.push_back({"COMPILE_EXCLUDE", Excluding(folders)});
+			tokens.push_back({"PROJECT_REFERENCES", references});
+			tokens.push_back({"SOLUTION_PROJECTS", projects});
+		}
+
+		void AddAssemblyTokens(const Options& options, const CSharpAssemblies::Definition& definition, Vector<ScriptProjectOps::TemplateToken>& tokens) {
+			str references;
+			for (const str& reference : definition.references) {
+				if (const CSharpAssemblies::Definition* found = CSharpAssemblies::Find(options.assemblies, reference)) {
+					references += ReferenceTo(*found, false);
+				}
+			}
+			str defines;
+			for (const str& symbol : definition.defines) {
+				defines += ";" + symbol;
+			}
+			tokens.push_back({"ASSEMBLY_NAME", definition.name});
+			tokens.push_back({"SOURCE_FOLDER", EscapeItem(definition.folder)});
+			tokens.push_back({"DEFINES", defines});
+			tokens.push_back({"COMPILE_EXCLUDE", Excluding(definition.nestedFolders)});
+			tokens.push_back({"PROJECT_REFERENCES", references});
+		}
+
+		bool Render(const char* name, const Options& options, bool xml, str& out, const CSharpAssemblies::Definition* definition = nullptr) {
 			const auto path = [xml](const str& value) { return xml ? EscapeXML(value) : EscapeJSON(value); };
 			Vector<ScriptProjectOps::TemplateToken> tokens{GetMemoryResource(MemTag::Editor)};
+			if (definition) {
+				AddAssemblyTokens(options, *definition, tokens);
+			} else {
+				AddDefaultTokens(options, tokens);
+			}
 			tokens.push_back({"PROJECT_NAME", SafeName(options.projectName)});
 			tokens.push_back({"ENGINE_ROOT", path(options.engineRoot)});
 			tokens.push_back({"MANAGED_DIRECTORY", path(options.managedDirectory)});
@@ -179,11 +252,28 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		options.pin = DotNetToolchain::GetPin();
 		options.allowUnsafeCode = CSharpSettings::GetProject().allowUnsafeCode;
 		options.invariantGlobalization = CSharpSettings::GetProject().invariantGlobalization;
+		options.assemblies = CSharpAssemblies::Scan(projectPath, SafeName(options.projectName) + ".Scripts");
 		return options;
 	}
 
 	str GetProjectFile(const Options& options) {
 		return SafeName(options.projectName) + ".Scripts.csproj";
+	}
+
+	str GetAssemblyProjectFile(std::string_view assemblyName) {
+		return str(assemblyName) + ".Scripts.csproj";
+	}
+
+	str GetBuildFile(const Options& options) {
+		return options.assemblies.definitions.empty() ? GetProjectFile(options) : GetSolutionFile(options);
+	}
+
+	void GetAssemblyNames(const Options& options, Vector<str>& out) {
+		out.clear();
+		for (const CSharpAssemblies::Definition& definition : options.assemblies.definitions) {
+			out.push_back(definition.name);
+		}
+		out.push_back(SafeName(options.projectName) + ".Scripts");
 	}
 
 	str GetSolutionFile(const Options& options) {
@@ -218,6 +308,23 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 
 		bool written = WriteIfDifferent(options, "Library/CSharp/Generated/Shalltear.Paths.props", paths, out);
 		written = WriteIfDifferent(options, GetProjectFile(options), project, out) && written;
+		HashSet<str> kept{GetMemoryResource(MemTag::Editor)};
+		kept.insert(GetProjectFile(options));
+		for (const CSharpAssemblies::Definition& definition : options.assemblies.definitions) {
+			str assembly;
+			if (!Render("CSharpAssembly.csproj", options, true, assembly, &definition)) {
+				return false;
+			}
+			kept.insert(GetAssemblyProjectFile(definition.name));
+			written = WriteIfDifferent(options, GetAssemblyProjectFile(definition.name), assembly, out) && written;
+		}
+		for (fs::directory_iterator it(root, ec), end; !ec && it != end; it.increment(ec)) {
+			const str name = it->path().filename().generic_string();
+			if (name.ends_with(".Scripts.csproj") && !kept.contains(name) && ReadIfPresent(it->path()).starts_with("<!-- GENERATED by Shalltear editor")) {
+				std::error_code removed;
+				fs::remove(it->path(), removed);
+			}
+		}
 		written = WriteIfDifferent(options, GetSolutionFile(options), solution, out) && written;
 
 		const str existingGlobal = ReadIfPresent(root / "global.json");

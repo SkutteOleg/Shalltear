@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<PackageId>Fixture.Greeter</PackageId>
+		<Version>1.0.0</Version>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(FixtureNativeLibrary)' != ''">
+		<None Include="$(FixtureNativeLibrary)" Pack="true" PackagePath="runtimes/$(FixtureRuntime)/native/" />
+	</ItemGroup>
+</Project>

@@ -14,6 +14,10 @@ namespace Shalltear::CSharpEditor {
 	struct CompileOptions {
 		str projectPath;
 		str projectFile;
+		str buildFile;
+		Vector<str> assemblyProjects{GetMemoryResource(MemTag::Editor)};
+		// names, references before the assemblies using them
+		Vector<str> assemblies{GetMemoryResource(MemTag::Editor)};
 		str muxer;
 		str pinStamp;
 		ScriptOptimization optimization = ScriptOptimization::Debug;
@@ -48,6 +52,10 @@ namespace Shalltear::CSharpEditor {
 		const Vector<CSharpDiagnostics::Diagnostic>& GetDiagnostics() const { return _diagnostics; }
 
 		str GetOutputAssembly() const;
+
+		void GetOutputAssemblies(Vector<str>& out) const;
+
+		i64 ReadOutputTime() const;
 
 		str ComputeRestoreStamp() const;
 	private:

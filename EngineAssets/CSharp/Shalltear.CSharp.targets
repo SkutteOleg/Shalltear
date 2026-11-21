@@ -11,6 +11,7 @@
 		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
 		<UseSystemResourceKeys>true</UseSystemResourceKeys>
 		<TrimmerSingleWarn>false</TrimmerSingleWarn>
+		<WarningsAsErrors>$(WarningsAsErrors);IL2104;IL3053</WarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
@@ -61,6 +62,14 @@
 			<IlcCompileInput Include="@(_ShalltearRenameInput->'$(ShalltearRenameRoot)assemblies/%(Filename)%(Extension)')" />
 			<IlcReference Remove="@(_ShalltearRenameReplaced)" />
 			<IlcReference Include="@(_ShalltearRenameCopies)" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="ShalltearSummarizePackageWarnings" BeforeTargets="WriteIlcRspFileForCompilation" Condition="'$(ShalltearPlayerBuild)' == 'true'">
+		<ItemGroup>
+			<_ShalltearPackageAssembly Include="@(ManagedAssemblyToLink)" Condition="'%(ManagedAssemblyToLink.NuGetPackageId)' != '' and !$([System.String]::Copy('%(ManagedAssemblyToLink.NuGetPackageId)').StartsWith('Microsoft.NETCore.App')) and !$([System.String]::Copy('%(ManagedAssemblyToLink.NuGetPackageId)').StartsWith('runtime.'))" />
+			<ManagedAssemblyToLink Remove="@(_ShalltearPackageAssembly)" />
+			<ManagedAssemblyToLink Include="@(_ShalltearPackageAssembly)" TrimmerSingleWarn="true" />
 		</ItemGroup>
 	</Target>
 

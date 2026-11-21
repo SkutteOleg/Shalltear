@@ -71,10 +71,38 @@ namespace Shalltear::CSharpEditor {
 			.generic_string();
 	}
 
+	void CSharpCompile::GetOutputAssemblies(Vector<str>& out) const {
+		out.clear();
+		if (_options.assemblies.empty()) {
+			out.push_back(GetOutputAssembly());
+			return;
+		}
+		for (const str& assembly : _options.assemblies) {
+			out.push_back((fs::path(_options.projectPath) / "Library" / "CSharp" / "bin" / (assembly + ".dll")).generic_string());
+		}
+	}
+
+	i64 CSharpCompile::ReadOutputTime() const {
+		Vector<str> outputs{GetMemoryResource(MemTag::Editor)};
+		GetOutputAssemblies(outputs);
+		i64 combined = 0;
+		for (const str& output : outputs) {
+			const i64 time = ReadWriteTime(output);
+			if (time == 0) {
+				return 0;
+			}
+			combined = combined * 31 + time;
+		}
+		return combined;
+	}
+
 	str CSharpCompile::ComputeRestoreStamp() const {
 		const fs::path root(_options.projectPath);
 		SHA512 hash;
 		Add(hash, ReadIfPresent(root / _options.projectFile));
+		for (const str& project : _options.assemblyProjects) {
+			Add(hash, ReadIfPresent(root / project));
+		}
 		Add(hash, ReadIfPresent(root / PathsFile));
 		Add(hash, ReadIfPresent(root / UserFile));
 		Add(hash, _options.pinStamp);
@@ -94,7 +122,7 @@ namespace Shalltear::CSharpEditor {
 		if (_state == CompileState::Succeeded) {
 			_previousWarnings = _diagnostics;
 		}
-		_outputTimeBefore = ReadWriteTime(GetOutputAssembly());
+		_outputTimeBefore = ReadOutputTime();
 		_diagnostics.clear();
 		_seen.clear();
 		_errorCount = 0;
@@ -136,7 +164,8 @@ namespace Shalltear::CSharpEditor {
 	void CSharpCompile::BeginRestore() {
 		PublishState(CompileState::Configuring);
 		++_restoreCount;
-		if (!StartChild(std::format("restore {} -nologo -v q -p:ShalltearBuildRoot={}", QuoteCommandArgument(_options.projectFile), BuildRoot))) {
+		const str& built = _options.buildFile.empty() ? _options.projectFile : _options.buildFile;
+		if (!StartChild(std::format("restore {} -nologo -v q -p:ShalltearBuildRoot={}", QuoteCommandArgument(built), BuildRoot))) {
 			Fail("restore");
 		}
 	}
@@ -147,7 +176,8 @@ namespace Shalltear::CSharpEditor {
 		const char* configuration = _options.optimization == ScriptOptimization::Release ? "Release" : "Debug";
 		if (!StartChild(std::format("build {} -c {} -nologo -v q -clp:NoSummary -p:GenerateFullPaths=true -p:ShalltearBuildRoot={} "
 									"-p:ShalltearAOTAnalysis={} --no-restore",
-									QuoteCommandArgument(_options.projectFile), configuration, BuildRoot, _options.aotAnalysis))) {
+									QuoteCommandArgument(_options.buildFile.empty() ? _options.projectFile : _options.buildFile), configuration, BuildRoot,
+									_options.aotAnalysis))) {
 			Fail("compile");
 		}
 	}
@@ -212,7 +242,7 @@ namespace Shalltear::CSharpEditor {
 
 		_lastDurationSeconds = static_cast<f64>(Time::GetTicks() - _startTicks) / static_cast<f64>(Time::GetTicksPerSecond());
 		if (exitCode == 0) {
-			if (_outputTimeBefore != 0 && ReadWriteTime(GetOutputAssembly()) == _outputTimeBefore) {
+			if (_outputTimeBefore != 0 && ReadOutputTime() == _outputTimeBefore) {
 				_diagnostics = _previousWarnings;
 				_warningCount = static_cast<u32>(_diagnostics.size());
 			}

@@ -15,6 +15,8 @@
 #include "Shalltear/Editor/EditorEvents.h"
 #include "Shalltear/Editor/TypeNameOps.h"
 
+#include <vector>
+
 namespace Shalltear::CSharpEditor::CSharpReload {
 
 	namespace {
@@ -38,7 +40,7 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 			void OnPlayStarting(const EditorPlayStartingEvent& event);
 		};
 
-		str _assembly;
+		std::vector<str> _assemblies;
 		Listener* _listener = nullptr;
 		bool _active = false;
 		bool _pending = false;
@@ -57,8 +59,7 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 			if (ScriptRuntime::UnloadUserAssemblies() != SLT_OK) {
 				SLT_LOG_WARN("C#", "previous scripts are still referenced after unload (memory not freed)");
 			}
-			const str paths[] = {_assembly};
-			const i32 loaded = swap.source == Source::File ? ScriptRuntime::LoadUserAssemblies(paths) : ScriptRuntime::LoadKeptUserAssemblies();
+			const i32 loaded = swap.source == Source::File ? ScriptRuntime::LoadUserAssemblies(_assemblies) : ScriptRuntime::LoadKeptUserAssemblies();
 			if (loaded == SLT_OK) {
 				swap.outcome = Outcome::Loaded;
 				return true;
@@ -152,7 +153,7 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 
 	void Begin(const str& assembly) {
 		Shutdown();
-		_assembly = assembly;
+		_assemblies.assign(1, assembly);
 		_active = true;
 		_listener = New<Listener>(MemTag::Editor);
 		EditorEvents::PlayModeChanged.Subscribe(EventBus::GetGlobal(), Handle<Listener>(_listener), &Listener::OnPlayModeChanged);
@@ -165,7 +166,7 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 			Delete(_listener);
 			_listener = nullptr;
 		}
-		_assembly.clear();
+		_assemblies = {};
 		_active = false;
 		_pending = false;
 		_held = false;
@@ -176,6 +177,12 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 		_reloadCount = 0;
 		_lastMigrated = 0;
 		_lastMilliseconds = 0.0;
+	}
+
+	void SetAssemblies(std::span<const str> assemblies) {
+		if (_active && !assemblies.empty()) {
+			_assemblies.assign(assemblies.begin(), assemblies.end());
+		}
 	}
 
 	void Pump() {

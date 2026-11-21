@@ -13,8 +13,8 @@
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>
 	<ItemGroup>
-		<Compile Include="Assets/**/*.cs" />
-	</ItemGroup>
+		<Compile Include="Assets/**/*.cs"{{COMPILE_EXCLUDE}} />
+{{PROJECT_REFERENCES}}	</ItemGroup>
 	<Import Project="CSharp.props" Condition="Exists('CSharp.props')" />
 	<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 	<Import Project="$(ShalltearSDKRoot)/EngineAssets/CSharp/Shalltear.CSharp.targets" />

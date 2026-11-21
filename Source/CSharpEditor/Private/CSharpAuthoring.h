@@ -30,6 +30,8 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 
 	void NotifySourceChanged();
 
+	void NotifyDefinitionsChanged();
+
 	bool IsHoldingReports();
 
 } // namespace Shalltear::CSharpEditor::CSharpAuthoring

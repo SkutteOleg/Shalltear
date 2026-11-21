@@ -2,6 +2,7 @@
 
 #if defined(SHALLTEAR_SHARED)
 
+#include "CSharpPackageFixtures.h"
 #include "CSharpRuntimeFixture.h"
 #include "EditorTestHooks.h"
 #include "ScopedSettingsStore.h"
@@ -51,7 +52,8 @@ namespace {
 		"\tprotected override void OnEnable() {\n"
 		"\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE enabled speed=\" + speed.ToString(CultureInfo.InvariantCulture) + \" gear=\" + (int)gear +\n"
 		"\t\t\t\t\t\t\t\t\" label=\" + label + \" grip=\" + tuning.grip.ToString(CultureInfo.InvariantCulture) + \" laps=\" + tuning.laps +\n"
-		"\t\t\t\t\t\t\t\t\" steps=\" + steps.Count + \" owner=\" + Owner.Name);\n\t}\n\n"
+		"\t\t\t\t\t\t\t\t\" steps=\" + steps.Count + \" owner=\" + Owner.Name);\n"
+		"\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE kit=\" + Scripted.Kit.Counter.Next() + \" \" + Fixture.Greeter.Hello.To(\"player\"));\n\t}\n\n"
 		"\tprotected override void OnUpdate() {\n\t\tif (++_frames == 2) {\n"
 		"\t\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE frame \" + _frames + \" where=\" + Where() + \" turn=\" + turnRateDegrees);\n"
 		"\t\t}\n\t}\n}\n";
@@ -70,6 +72,21 @@ namespace {
 		"\t\t\tbool hit = Physics.Raycast(new Ray(new Vec3(0f, 5f, 0f), new Vec3(0f, -1f, 0f)), out RaycastHit found);\n"
 		"\t\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE ray hit=\" + hit + \" object=\" + (hit ? found.Object!.Name : \"none\"));\n"
 		"\t\t}\n\t}\n\n\tpublic void OnCollisionEnter(in Collision collision) {\n\t\t_frames += 100;\n\t}\n}\n";
+
+	constexpr const char* TOOL_MARKER = "TOOL_ONLY_MARKER";
+	constexpr const char* SERVER_MARKER = "SERVER_ONLY_MARKER";
+	constexpr const char* NATIVE_LIBRARY = "FixtureNative" SLT_TEST_DLL_SUFFIX;
+
+	constexpr const char* COUNTER = "namespace Scripted.Kit;\n\npublic static class Counter {\n\tstatic int _next;\n\n\tpublic static int Next() {\n\t\treturn ++_next;\n\t}\n}\n";
+
+	constexpr const char* TOOL_ONLY = "using Shalltear;\n\nnamespace Scripted.Tools;\n\npublic sealed class ToolOnly : Behavior {\n\tprotected override void OnEnable() {\n"
+									  "\t\tLog.Info(\"PlayerProbe\", \"TOOL_ONLY_MARKER\");\n\t}\n}\n";
+
+	constexpr const char* SERVER_ONLY = "using Shalltear;\n\nnamespace Scripted.Server;\n\npublic sealed class ServerOnly : Behavior {\n\tprotected override void OnEnable() {\n"
+										"\t\tLog.Info(\"PlayerProbe\", \"SERVER_ONLY_MARKER\");\n\t}\n}\n";
+
+	constexpr const char* UNSAFE_USER = "using Shalltear;\n\nnamespace Scripted;\n\npublic sealed class UnsafeUser : Behavior {\n\tprotected override void OnEnable() {\n"
+										"\t\tLog.Info(\"PlayerProbe\", \"made \" + Fixture.Unsafe.Finder.MakeListOf(\"System.Int32\"));\n\t}\n}\n";
 
 	constexpr const char* POINTER = "namespace Scripted;\n\npublic static class Pointer {\n\tpublic static unsafe int Read(int* at) {\n\t\treturn *at;\n\t}\n}\n";
 
@@ -203,6 +220,7 @@ namespace {
 		str buildLog;
 		str playerLog;
 		int playerExit = -1;
+		PackageFeed feed;
 	};
 
 	Suite* _suite = nullptr;
@@ -249,6 +267,23 @@ namespace {
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Pointer.cs", std::ios::binary) << POINTER;
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Bumper.cs", std::ios::binary) << BUMPER;
 			std::ofstream(suite.project / "Assets" / "Scenes" / "Main.scene", std::ios::binary) << SceneText();
+			for (const char* folder : {"Kit", "Tools", "Server"}) {
+				fs::create_directories(suite.project / "Assets" / "Scripts" / folder);
+			}
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Kit" / "Kit.slassembly", std::ios::binary) << "{\"assemblyName\": \"Scripted.Kit\"}";
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Kit" / "Counter.cs", std::ios::binary) << COUNTER;
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Tools" / "Tools.slassembly", std::ios::binary)
+				<< "{\"assemblyName\": \"Scripted.Tools\", \"editorOnly\": true}";
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Tools" / "ToolOnly.cs", std::ios::binary) << TOOL_ONLY;
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Server" / "Server.slassembly", std::ios::binary)
+				<< "{\"assemblyName\": \"Scripted.Server\", \"platforms\": [\"WindowsServer\"]}";
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Server" / "ServerOnly.cs", std::ios::binary) << SERVER_ONLY;
+			suite.feed.root = suite.root / "nuget";
+			fs::create_directories(suite.feed.root);
+			const fs::path native = suite.feed.root / NATIVE_LIBRARY;
+			fs::copy_file(fs::path(suite.editor).parent_path() / ("CSharp" SLT_TEST_DLL_SUFFIX), native, ec);
+			ASSERT_TRUE(PackFixturePackage(suite.feed, "Fixture.Greeter", native, "win-x64")) << suite.feed.log;
+			std::ofstream(suite.project / "CSharp.props", std::ios::binary) << suite.feed.MakeUserProps("Fixture.Greeter");
 			for (const char* target : {"Windows", "WindowsServer"}) {
 				BuildProfile profile;
 				profile.name = target;
@@ -344,6 +379,33 @@ TEST_F(CSharpPlayerBuildTest, CSharpPlayerRunsComponent) {
 	EXPECT_NE(line.find("Talker.cs turn=30"), str::npos) << line;
 	EXPECT_EQ(line.find("Scripted Game"), str::npos) << line;
 	EXPECT_EQ(_suite->playerLog.find("[ERROR]"), str::npos) << _suite->playerLog;
+}
+
+TEST_F(CSharpPlayerBuildTest, PlayerRunsAssemblyDefinitionsAndPackages) {
+	ASSERT_EQ(_suite->playerExit, 0) << _suite->playerLog;
+	EXPECT_NE(_suite->playerLog.find(str(PROBE_MARKER) + " kit=1 hello player from a package"), str::npos) << _suite->playerLog;
+	const str library = ReadBytes(Library("Windows"));
+	EXPECT_FALSE(Holds(library, TOOL_MARKER));
+	EXPECT_FALSE(Holds(library, SERVER_MARKER));
+	EXPECT_TRUE(fs::is_regular_file(Staging("Windows") / NATIVE_LIBRARY)) << _suite->buildLog;
+	EXPECT_FALSE(fs::exists(Staging("Windows") / "Fixture.Greeter.dll"));
+}
+
+TEST_F(CSharpPlayerBuildTest, UnsafePackageFailsThePlayerBuild) {
+	ASSERT_TRUE(PackFixturePackage(_suite->feed, "Fixture.Unsafe")) << _suite->feed.log;
+	const fs::path script = _suite->project / "Assets" / "Scripts" / "UnsafeUser.cs";
+	std::ofstream(script, std::ios::binary) << UNSAFE_USER;
+	std::ofstream(_suite->project / "CSharp.props", std::ios::binary) << _suite->feed.MakeUserProps("Fixture.Greeter;Fixture.Unsafe");
+	int exitCode = -1;
+	const str log = Build("Windows", exitCode);
+	std::error_code ec;
+	fs::remove(script, ec);
+	std::ofstream(_suite->project / "CSharp.props", std::ios::binary) << _suite->feed.MakeUserProps("Fixture.Greeter");
+	EXPECT_NE(exitCode, 0) << log;
+	EXPECT_NE(log.find("Assembly 'Fixture.Unsafe' produced"), str::npos) << log;
+	EXPECT_NE(log.find("A NuGet package isn't safe to compile ahead of time"), str::npos) << log;
+	EXPECT_EQ(log.find("Assembly 'Fixture.Greeter' produced"), str::npos) << log;
+	EXPECT_NE(log.find("the 'csharp-compile' step failed"), str::npos) << log;
 }
 
 TEST_F(CSharpPlayerBuildTest, CSharpTypesRegisteredBeforeBootScene) {
@@ -533,9 +595,14 @@ TEST_F(CSharpPlayerBuildTest, CSharpServerRunsComponent) {
 	ASSERT_EQ(exitCode, 0) << log;
 	ASSERT_TRUE(fs::is_regular_file(Library("WindowsServer"))) << log;
 	const fs::path scripts = fs::path("Library") / "CSharp" / "Player";
-	const str built = ReadBytes(_suite->project / scripts / "WindowsServer" / "scripts" / "bin" / "ScriptedGame.Scripts.dll");
+	const str built = ReadBytes(_suite->project / scripts / "WindowsServer" / "scripts" / "bin" / "Scripted.Kit.dll");
 	ASSERT_FALSE(built.empty());
-	EXPECT_TRUE(built == ReadBytes(_suite->project / scripts / "Windows" / "scripts" / "bin" / "ScriptedGame.Scripts.dll"));
+	EXPECT_TRUE(built == ReadBytes(_suite->project / scripts / "Windows" / "scripts" / "bin" / "Scripted.Kit.dll"));
+	EXPECT_TRUE(fs::is_regular_file(_suite->project / scripts / "WindowsServer" / "scripts" / "bin" / "Scripted.Server.dll"));
+	EXPECT_FALSE(fs::exists(_suite->project / scripts / "Windows" / "scripts" / "bin" / "Scripted.Server.dll"));
+	const str library = ReadBytes(Library("WindowsServer"));
+	EXPECT_TRUE(Holds(library, SERVER_MARKER));
+	EXPECT_FALSE(Holds(library, TOOL_MARKER));
 	const fs::path server = Staging("WindowsServer") / ("ScriptedGameServer" SLT_TEST_PLAYER_SUFFIX);
 	const str serverLog = TestPlatform::RunCommand("\"" + server.generic_string() + "\" --frames 4", exitCode);
 	ASSERT_EQ(exitCode, 0) << serverLog;

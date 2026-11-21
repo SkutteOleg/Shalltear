@@ -1,5 +1,6 @@
 #include "CSharpScriptEditor.h"
 
+#include "CSharpAssemblies.h"
 #include "CSharpAuthoring.h"
 #include "CSharpScriptAsset.h"
 
@@ -119,6 +120,7 @@ namespace Shalltear::CSharpEditor {
 		ComponentDrops::Register(assetType, [](const Guid& script) { return CSharpScripts::ResolveComponent(script); }, owner);
 		AssetOpeners::Register(".cs", [](const Guid& script) { CSharpScripts::Open(script); }, owner);
 		EditorPreviews::AssetBadges::Register(assetType, EditorIcons::Glyph::AssetScript, ColorToken::AssetShader, owner);
+		EditorPreviews::AssetBadges::Register(CSharpAssemblyDefinition::GetReflectType()->name, EditorIcons::Glyph::PanelPackages, ColorToken::AssetShader, owner);
 		PropertyDrawers::RegisterAssetInspector(assetType, &DrawScriptInspector, owner);
 
 		EditorMenus::MenuItemDesc create;

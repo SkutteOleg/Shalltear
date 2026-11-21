@@ -102,13 +102,21 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return FileSystem::WriteTextFile(Path(file.generic_string()), contents);
 		}
 
-		bool RenderShell(const State& state, const str& assembly) {
+		bool RenderShell(const State& state, const Vector<str>& assemblies) {
 			Vector<ScriptProjectOps::TemplateToken> tokens{GetMemoryResource(MemTag::Editor)};
-			tokens.push_back({"SCRIPT_REFERENCES", std::format("\t\t<Reference Include=\"{0}\" HintPath=\"{1}/bin/{0}.dll\" Aliases=\"Scripts0\" />\n"
-															   "\t\t<ShalltearRenameAssembly Include=\"{0}\" />\n",
-															   assembly, ScriptsFolder)});
-			tokens.push_back({"SCRIPT_ALIASES", "extern alias Scripts0;\n"});
-			tokens.push_back({"SCRIPT_CALLS", "\t\tScripts0::Shalltear.Generated.TypeTable.Register();\n"});
+			str references;
+			str aliases;
+			str calls;
+			for (size_t index = 0; index < assemblies.size(); ++index) {
+				references += std::format("\t\t<Reference Include=\"{0}\" HintPath=\"{1}/bin/{0}.dll\" Aliases=\"Scripts{2}\" />\n"
+										  "\t\t<ShalltearRenameAssembly Include=\"{0}\" />\n",
+										  assemblies[index], ScriptsFolder, index);
+				aliases += std::format("extern alias Scripts{};\n", index);
+				calls += std::format("\t\tScripts{}::Shalltear.Generated.TypeTable.Register();\n", index);
+			}
+			tokens.push_back({"SCRIPT_REFERENCES", references});
+			tokens.push_back({"SCRIPT_ALIASES", aliases});
+			tokens.push_back({"SCRIPT_CALLS", calls});
 			str project;
 			str exports;
 			str tables;
@@ -168,6 +176,12 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					said += "\n" + line;
 				}
 			}
+			for (const CSharpDiagnostics::Diagnostic& diagnostic : state.diagnostics) {
+				if (diagnostic.code == "IL2104" || diagnostic.code == "IL3053") {
+					said += ". A NuGet package isn't safe to compile ahead of time. Replace it (or add its warning code to WarningsNotAsErrors in CSharp.props)";
+					break;
+				}
+			}
 			context.AddIssue(BuildIssueSeverity::Error, "", said);
 			state.stage = Stage::Idle;
 			return BuildStepStatus::Failed;
@@ -183,15 +197,34 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				state.sdkRoot = DotNetToolchain::FindSDKRoot();
 			}
 
-			const str project = CSharpProjectFiles::GetProjectFile(CSharpProjectFiles::GetDefaultOptions(context.projectRoot, state.sdkRoot));
+			const CSharpProjectFiles::Options files = CSharpProjectFiles::GetDefaultOptions(context.projectRoot, state.sdkRoot);
+			const str project = CSharpProjectFiles::GetProjectFile(files);
+			const std::string_view targetId = context.target->GetId();
+			Vector<str> assemblies{GetMemoryResource(MemTag::Editor)};
+			for (const CSharpAssemblies::Definition& definition : files.assemblies.definitions) {
+				if (!CSharpAssemblies::BuildsFor(definition, targetId)) {
+					continue;
+				}
+				for (const str& reference : definition.references) {
+					const CSharpAssemblies::Definition* used = CSharpAssemblies::Find(files.assemblies, reference);
+					if (used && !CSharpAssemblies::BuildsFor(*used, targetId)) {
+						context.AddIssue(BuildIssueSeverity::Error, "",
+										 std::format("'{}' references '{}' (not built for {}). Add the target to its Platforms (or remove the reference)",
+													 definition.file, reference, context.target->GetDisplayName()));
+						return BuildStepStatus::Failed;
+					}
+				}
+				assemblies.push_back(definition.name);
+			}
+			assemblies.push_back(fs::path(project).replace_extension().generic_string());
 			state.root = GetPlayerRoot(context.projectRoot, context.profile->name);
-			if (!RenderShell(state, fs::path(project).replace_extension().generic_string())) {
+			if (!RenderShell(state, assemblies)) {
 				context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't write C# project files under '{}'. Check folder is writable", state.root));
 				return BuildStepStatus::Failed;
 			}
 
-			const str arguments = std::format("msbuild {} -restore -t:Build -p:Configuration={} -p:ShalltearPlayerScripts=true {}", QuoteCommandArgument(project),
-											  context.configuration,
+			const str arguments = std::format("msbuild {} -restore -t:Build -p:Configuration={} -p:ShalltearPlayerScripts=true -p:ShalltearTargetPlatform={} {}",
+											  QuoteCommandArgument(project), context.configuration, targetId,
 											  QuoteCommandArgument(std::format("-p:ShalltearBuildRoot={}/{}/", state.root, ScriptsFolder)));
 			if (!Start(state, context, arguments)) {
 				context.AddIssue(BuildIssueSeverity::Error, "", "C# script compile couldn't be started");
@@ -363,6 +396,18 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			if (ec) {
 				context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", library.generic_string(), ec.message()));
 				return BuildStepStatus::Failed;
+			}
+			const fs::path libraryExtension = library.extension();
+			for (fs::directory_iterator it(publish, ec), end; !ec && it != end; it.increment(ec)) {
+				std::error_code copied;
+				if (!it->is_regular_file(copied) || it->path().extension() != libraryExtension || it->path().filename() == library.filename()) {
+					continue;
+				}
+				fs::copy_file(it->path(), fs::path(context.stagingDir) / it->path().filename(), fs::copy_options::overwrite_existing, copied);
+				if (copied) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", it->path().generic_string(), copied.message()));
+					return BuildStepStatus::Failed;
+				}
 			}
 			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion,
 									  CSharpImpl::NativeAOTHost::GetPlayerLibraryName());

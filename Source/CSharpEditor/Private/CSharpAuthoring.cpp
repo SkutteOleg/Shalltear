@@ -1,5 +1,6 @@
 #include "CSharpAuthoring.h"
 
+#include "CSharpProjectFiles.h"
 #include "CSharpReload.h"
 #include "CSharpSettings.h"
 #include "DotNetToolchain.h"
@@ -15,6 +16,7 @@
 
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileStatus.h"
+#include "Shalltear/Editor/EditorConsole.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -22,6 +24,7 @@
 #include <format>
 #include <mutex>
 #include <optional>
+#include <vector>
 
 namespace Shalltear::CSharpEditor::CSharpAuthoring {
 
@@ -46,7 +49,11 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		bool _holdingReports = false;
 		std::mutex _pendingMutex;
 		bool _pendingCompile = false;
+		bool _definitionsChanged = false;
 		u64 _lastChangeTicks = 0;
+		str _buildFile;
+		std::vector<str> _assemblyProjects;
+		std::vector<str> _assemblyNames;
 
 		f64 SecondsSince(u64 ticks) {
 			return static_cast<f64>(Time::GetTicks() - ticks) / static_cast<f64>(Time::GetTicksPerSecond());
@@ -75,7 +82,8 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			for (fs::recursive_directory_iterator it(root / "Assets", fs::directory_options::skip_permission_denied, ec), end; !ec && it != end;
 				 it.increment(ec)) {
 				std::error_code entry;
-				if (it->is_regular_file(entry) && StringUtil::ToLower(it->path().extension().generic_string()) == ".cs") {
+				const str extension = StringUtil::ToLower(it->path().extension().generic_string());
+				if (it->is_regular_file(entry) && (extension == ".cs" || extension == CSharpAssemblies::Extension)) {
 					rows.push_back(std::format("{} {}", it->path().lexically_relative(root).generic_string(), DescribeFile(it->path())));
 				}
 			}
@@ -114,7 +122,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 
 		bool IsLastBuildCurrent() {
 			std::error_code ec;
-			if (!fs::is_regular_file(fs::path(_compile.GetOutputAssembly()), ec) || !fs::is_regular_file(GetStampFile(), ec)) {
+			if (_compile.ReadOutputTime() == 0 || !fs::is_regular_file(GetStampFile(), ec)) {
 				return false;
 			}
 			return FileSystem::ReadTextFile(Path(GetStampFile().generic_string()), MemTag::Editor) == DescribeBuild();
@@ -129,7 +137,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 
 		void OpenBuild() {
 			if (IsLastBuildCurrent()) {
-				_loadedOutputTime = ReadWriteTime(fs::path(_compile.GetOutputAssembly()));
+				_loadedOutputTime = _compile.ReadOutputTime();
 				CSharpReload::Request();
 				CSharpReload::Pump();
 				return;
@@ -148,7 +156,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 				ReleaseReports();
 				return;
 			}
-			const i64 output = ReadWriteTime(fs::path(_compile.GetOutputAssembly()));
+			const i64 output = _compile.ReadOutputTime();
 			WriteBuildStamp();
 			if (output != _loadedOutputTime) {
 				_loadedOutputTime = output;
@@ -161,6 +169,9 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			CompileOptions compile;
 			compile.projectPath = _options.projectPath;
 			compile.projectFile = _options.projectFile;
+			compile.buildFile = _buildFile;
+			compile.assemblyProjects.assign(_assemblyProjects.begin(), _assemblyProjects.end());
+			compile.assemblies.assign(_assemblyNames.begin(), _assemblyNames.end());
 			compile.muxer = DotNetToolchain::GetMuxerPath(_options.sdkRoot);
 			compile.pinStamp = std::format("{} {} {}", pin.sdkVersion, pin.runtimeVersion, BuildInfo::GetGitCommit());
 			compile.optimization = CSharpSettings::GetUser().codeOptimization;
@@ -169,12 +180,46 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			_compile.Configure(std::move(compile));
 		}
 
+		void ReadAssemblies(bool write) {
+			const CSharpProjectFiles::Options files = CSharpProjectFiles::GetDefaultOptions(_options.projectPath, _options.sdkRoot);
+			for (const CSharpAssemblies::Problem& problem : files.assemblies.problems) {
+				ConsoleOrigin origin;
+				origin.file = (fs::path(_options.projectPath) / problem.file).generic_string();
+				EditorConsole::Push(LogLevel::Error, "C#", std::format("'{}' {}", problem.file, problem.message), origin);
+			}
+			if (write) {
+				CSharpProjectFiles::Result written;
+				CSharpProjectFiles::Write(files, written);
+			}
+			_assemblyProjects.clear();
+			_assemblyNames.clear();
+			_buildFile.clear();
+			if (!files.assemblies.definitions.empty()) {
+				_buildFile = CSharpProjectFiles::GetBuildFile(files);
+				for (const CSharpAssemblies::Definition& definition : files.assemblies.definitions) {
+					_assemblyProjects.push_back(CSharpProjectFiles::GetAssemblyProjectFile(definition.name));
+					_assemblyNames.push_back(definition.name);
+				}
+				_assemblyNames.push_back(fs::path(_options.projectFile).replace_extension().generic_string());
+			}
+			ApplyCompileOptions();
+			Vector<str> outputs{GetMemoryResource(MemTag::Editor)};
+			_compile.GetOutputAssemblies(outputs);
+			CSharpReload::SetAssemblies(outputs);
+		}
+
 		void ArmWatcher() {
 			std::error_code ec;
 			const fs::path assets = fs::path(_options.projectPath) / "Assets";
 			if (fs::is_directory(assets, ec)) {
 				_assetsWatcher.emplace(Path(assets.generic_string()), [](const Path& changed, FileAction) {
-					if (StringUtil::ToLower(changed.GetExtension()) == ".cs") {
+					const str extension = StringUtil::ToLower(changed.GetExtension());
+					if (extension == CSharpAssemblies::Extension) {
+						NotifyDefinitionsChanged();
+					} else if (extension.empty()) {
+						std::lock_guard lock(_pendingMutex);
+						_definitionsChanged = true;
+					} else if (extension == ".cs") {
 						NotifySourceChanged();
 					}
 				});
@@ -229,6 +274,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		}
 		CompileStatus::RegisterSource({"C#", &ReadState, &CompileNow, &ReloadNow, &ReadHeading, nullptr}, owner);
 		CSharpReload::Begin(_compile.GetOutputAssembly());
+		ReadAssemblies(false);
 		if (_options.openBuild) {
 			OpenBuild();
 		}
@@ -278,11 +324,15 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			CompileStatus::UnregisterOwnedBy(_owner);
 		}
 		_startedServers = false;
+		_buildFile.clear();
+		_assemblyProjects = {};
+		_assemblyNames = {};
 		_active = false;
 		_owner = nullptr;
 		_options = {};
 		std::lock_guard lock(_pendingMutex);
 		_pendingCompile = false;
+		_definitionsChanged = false;
 	}
 
 	bool IsActive() {
@@ -297,9 +347,18 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		if (!_active) {
 			return;
 		}
+		bool definitionsChanged = false;
 		{
 			std::lock_guard lock(_pendingMutex);
 			_pendingCompile = false;
+			definitionsChanged = _definitionsChanged;
+			_definitionsChanged = false;
+		}
+		if (definitionsChanged && !_compile.IsBusy()) {
+			ReadAssemblies(true);
+		} else if (definitionsChanged) {
+			std::lock_guard lock(_pendingMutex);
+			_definitionsChanged = true;
 		}
 		ApplyCompileOptions();
 		_startedServers = _compile.Request() || _startedServers;
@@ -312,6 +371,13 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 
 	void NotifySourceChanged() {
 		std::lock_guard lock(_pendingMutex);
+		_pendingCompile = true;
+		_lastChangeTicks = Time::GetTicks();
+	}
+
+	void NotifyDefinitionsChanged() {
+		std::lock_guard lock(_pendingMutex);
+		_definitionsChanged = true;
 		_pendingCompile = true;
 		_lastChangeTicks = Time::GetTicks();
 	}

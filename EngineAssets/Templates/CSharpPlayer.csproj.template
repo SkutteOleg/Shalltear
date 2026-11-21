@@ -17,6 +17,7 @@
 		<PublishDir>$(MSBuildProjectDirectory)/publish/</PublishDir>
 		<PathMap>$(MSBuildProjectDirectory)=.</PathMap>
 	</PropertyGroup>
+	<Import Project="$(MSBuildProjectDirectory)/../../../../CSharp.props" Condition="Exists('$(MSBuildProjectDirectory)/../../../../CSharp.props')" />
 	<ItemGroup>
 		<Compile Include="Exports.g.cs;TypeTables.g.cs" />
 		<Reference Update="Shalltear.Runtime" Private="true" />

@@ -103,6 +103,8 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* Shallt
 		&CSharpAuthoring::IsActive,
 		&CSharpAuthoring::GetCompile,
 		&CSharpAuthoring::NotifySourceChanged,
+		&CSharpAuthoring::NotifyDefinitionsChanged,
+		&CSharpAssemblies::Scan,
 		&CSharpAuthoring::IsHoldingReports,
 		&CSharpReload::Begin,
 		&CSharpReload::Shutdown,

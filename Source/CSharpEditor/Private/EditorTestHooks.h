@@ -51,6 +51,8 @@ namespace Shalltear::CSharpEditor {
 		bool (*isAuthoringActive)();
 		const CSharpCompile& (*getAuthoringCompile)();
 		void (*notifySourceChanged)();
+		void (*notifyDefinitionsChanged)();
+		CSharpAssemblies::Set (*scanAssemblies)(const str& projectPath, std::string_view defaultAssembly);
 		bool (*isHoldingReports)();
 		void (*beginReload)(const str& assembly);
 		void (*shutdownReload)();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CSharpAssemblies.h"
 #include "DotNetToolchain.h"
 
 #include "Shalltear/Core/Containers.h"
@@ -18,6 +19,7 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		str packagesRoot;
 		str editorExecutable;
 		Vector<str> packageAssemblies{GetMemoryResource(MemTag::Editor)};
+		CSharpAssemblies::Set assemblies;
 		DotNetToolchain::Pin pin;
 		bool allowUnsafeCode = false;
 		bool invariantGlobalization = true;
@@ -30,6 +32,13 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 	Options GetDefaultOptions(const str& projectPath, const str& dotnetRoot);
 
 	str GetProjectFile(const Options& options);
+
+	str GetAssemblyProjectFile(std::string_view assemblyName);
+
+	str GetBuildFile(const Options& options);
+
+	// references before the assemblies using them
+	void GetAssemblyNames(const Options& options, Vector<str>& out);
 
 	str GetRootNamespace(const str& projectPath);
 

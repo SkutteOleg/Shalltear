@@ -2,6 +2,8 @@
 
 #include "Shalltear/Core/Types.h"
 
+#include <span>
+
 namespace Shalltear::CSharpEditor::CSharpReload {
 
 	enum class Outcome : u8 {
@@ -12,6 +14,9 @@ namespace Shalltear::CSharpEditor::CSharpReload {
 	};
 
 	void Begin(const str& assembly);
+
+	// paths, references before the assemblies using them
+	void SetAssemblies(std::span<const str> assemblies);
 
 	void Shutdown();
 
