@@ -875,7 +875,7 @@ namespace TestPlatform {
 	}
 
 	bool BuildsCSharpPlayers() {
-		return false;
+		return true;
 	}
 
 	void* AllocateAligned(size_t size, size_t alignment) {

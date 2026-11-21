@@ -1244,7 +1244,7 @@ namespace {
 			}
 			_profile.name = "Windows";
 			context.profile = &_profile;
-			context.target = BuildTargetRegistry::Find("Windows");
+			context.target = BuildTargetRegistry::Find(SLT_TEST_HOST_TARGET);
 			context.projectRoot = _project.generic_string();
 			if (context.configuration.empty()) {
 				context.configuration = "Debug";
@@ -1648,7 +1648,7 @@ TEST_F(CSharpSessionTest, ReleasePlayerCompileRenamesScriptNames) {
 	ASSERT_EQ(RunStep("csharp-validate", context, 10.0), BuildStepStatus::Succeeded);
 	ASSERT_EQ(RunStep("csharp-compile", context, 300.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
 	ASSERT_EQ(RunStep("csharp-stage", context, 10.0), BuildStepStatus::Succeeded);
-	const str library = ReadAll(_project / "Builds" / "Windows" / "GameScripts.dll");
+	const str library = ReadAll(_project / "Builds" / "Windows" / ("GameScripts" SLT_TEST_DLL_SUFFIX));
 	ASSERT_FALSE(library.empty());
 	EXPECT_FALSE(HoldsWord(library, "Spinner"));
 	EXPECT_FALSE(HoldsWord(library, "Saver"));
@@ -1665,7 +1665,7 @@ TEST_F(CSharpSessionTest, ReleasePlayerCompileRenamesScriptNames) {
 	ASSERT_EQ(RunStep("csharp-validate", development, 10.0), BuildStepStatus::Succeeded);
 	ASSERT_EQ(RunStep("csharp-compile", development, 300.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
 	ASSERT_EQ(RunStep("csharp-stage", development, 10.0), BuildStepStatus::Succeeded);
-	EXPECT_TRUE(HoldsWord(ReadAll(_project / "Builds" / "Windows" / "GameScripts.dll"), "Spinner"));
+	EXPECT_TRUE(HoldsWord(ReadAll(_project / "Builds" / "Windows" / ("GameScripts" SLT_TEST_DLL_SUFFIX)), "Spinner"));
 	EXPECT_EQ(_log.Delivered().Count("C# script names renamed: "), 1u) << _log.Delivered().Joined();
 	EXPECT_FALSE(fs::exists(_project / "Library" / "Player" / "Windows" / "symbols" / "GameScripts.map"));
 }
@@ -1691,7 +1691,7 @@ TEST_F(CSharpSessionTest, SettingOffShipsTheNamesAsWritten) {
 		context.configuration = configuration;
 		ASSERT_EQ(RunStep("csharp-validate", context, 10.0), BuildStepStatus::Succeeded);
 		ASSERT_EQ(RunStep("csharp-compile", context, 300.0), BuildStepStatus::Succeeded) << _log.Delivered().Joined();
-		const str library = ReadAll(player / "publish" / "GameScripts.dll");
+		const str library = ReadAll(player / "publish" / ("GameScripts" SLT_TEST_DLL_SUFFIX));
 		EXPECT_TRUE(HoldsWord(library, "Spinner")) << configuration;
 		EXPECT_TRUE(HoldsWord(library, "Saver")) << configuration;
 		EXPECT_FALSE(fs::exists(player / "obj" / "rename")) << configuration;

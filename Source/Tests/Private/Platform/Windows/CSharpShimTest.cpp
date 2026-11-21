@@ -5,6 +5,8 @@
 #include "TestHelperProcess.h"
 #include "TestPlatform.h"
 
+#include "Platform/EditorPlatform.h"
+
 #include "Shalltear/Core/FileSystem.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -13,6 +15,7 @@
 #endif
 #include <windows.h>
 
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -125,6 +128,66 @@ TEST(CSharpWindowsLinkTest, CookieMismatchFailsFast) {
 	const TestPlatform::ProcessResult range = TestPlatform::RunProcess(ProbeCommand("range"), 60000);
 	ASSERT_TRUE(range.exited);
 	EXPECT_EQ(range.exitCode, FAST_FAIL_EXIT);
+}
+
+TEST(CSharpWindowsLinkTest, ImportsOnlySystemLibraries) {
+	const Path library(AOTFile(".dll").generic_string());
+	Vector<str> imported;
+	ASSERT_TRUE(EditorPlatform::ReadImportedLibraries(library, imported));
+	ASSERT_FALSE(imported.empty());
+	for (const str& name : imported) {
+		str lowered = name;
+		for (char& character : lowered) {
+			character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+		}
+		const bool system = lowered == "kernel32.dll" || lowered == "advapi32.dll" || lowered == "bcrypt.dll" || lowered == "ole32.dll" ||
+							lowered.starts_with("api-ms-win-crt-");
+		EXPECT_TRUE(system) << name;
+	}
+}
+
+TEST(CSharpWindowsLinkTest, LinkNamesNoVisualStudioFile) {
+	const str inputs = FileSystem::ReadTextFile(Path(AOTFile(".rsp").generic_string()));
+	ASSERT_FALSE(inputs.empty());
+	EXPECT_EQ(inputs.find("Microsoft Visual Studio"), str::npos);
+	EXPECT_EQ(inputs.find("Windows Kits"), str::npos);
+	EXPECT_NE(inputs.find("CRTShim.obj"), str::npos);
+
+	const std::filesystem::path libraries = AOTFile(".dll").parent_path().parent_path() / "native" / "libs";
+	u32 bare = 0;
+	u32 searchPaths = 0;
+	bool withoutDefaults = false;
+	bool repeatable = false;
+	bool symbolsByName = false;
+	size_t start = 0;
+	while (start < inputs.size()) {
+		size_t end = inputs.find_first_of("\r\n", start);
+		if (end == str::npos) {
+			end = inputs.size();
+		}
+		str token = inputs.substr(start, end - start);
+		start = end + 1;
+		withoutDefaults = withoutDefaults || token == "/NODEFAULTLIB";
+		repeatable = repeatable || token == "/Brepro";
+		symbolsByName = symbolsByName || token == "/PDBALTPATH:%_PDB%";
+		if (token.starts_with("/LIBPATH:")) {
+			++searchPaths;
+			continue;
+		}
+		if (token.size() >= 2 && token.front() == '"' && token.back() == '"') {
+			token = token.substr(1, token.size() - 2);
+		}
+		if (!token.ends_with(".lib") || token.find_first_of("/\\") != str::npos) {
+			continue;
+		}
+		++bare;
+		EXPECT_TRUE(std::filesystem::exists(libraries / token)) << token;
+	}
+	EXPECT_GE(bare, 17u);
+	EXPECT_EQ(searchPaths, 1u);
+	EXPECT_TRUE(withoutDefaults);
+	EXPECT_TRUE(repeatable);
+	EXPECT_TRUE(symbolsByName);
 }
 
 #endif

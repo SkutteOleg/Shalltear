@@ -35,6 +35,20 @@
 		<LinkerArg Include="/PDBALTPATH:%25_PDB%25" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+		<DisableUnsupportedError>true</DisableUnsupportedError>
+		<CppCompilerAndLinker>clang</CppCompilerAndLinker>
+		<LinkerFlavor>lld</LinkerFlavor>
+		<ObjCopyName>llvm-objcopy</ObjCopyName>
+		<SysRoot>$(ShalltearLinuxSysRoot)</SysRoot>
+		<CompressSymbols>false</CompressSymbols>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+		<LinkerArg Include="-rtlib=compiler-rt" />
+		<LinkerArg Include="-unwindlib=libgcc" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
 		<ShalltearRenamerPath Condition="'$(ShalltearRenamerPath)' == ''">$(ShalltearManagedDir)Renamer/Shalltear.Renamer.dll</ShalltearRenamerPath>
 		<ShalltearRenameRoot Condition="'$(ShalltearRenameRoot)' == ''">$(BaseIntermediateOutputPath)rename/</ShalltearRenameRoot>
@@ -79,6 +93,10 @@
 		</PropertyGroup>
 		<Error Condition="!Exists('$(_ShalltearRuntimePack)THIRD-PARTY-NOTICES.TXT')" Text="THIRD-PARTY-NOTICES.TXT was not found in '$(_ShalltearRuntimePack)'. Restore the NativeAOT runtime pack" />
 		<Copy SourceFiles="$(_ShalltearRuntimePack)LICENSE.TXT;$(_ShalltearRuntimePack)THIRD-PARTY-NOTICES.TXT" DestinationFolder="$(PublishDir)notices" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="ShalltearCheckLinuxPack" BeforeTargets="LinkNative" Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+		<Error Condition="!Exists('$(ShalltearLinuxSysRoot)/usr/include')" Text="Linux target pack was not found at '$(ShalltearLinuxSysRoot)'. Run python Scripts/fetch_prebuilt.py --linux" />
 	</Target>
 
 	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true'">

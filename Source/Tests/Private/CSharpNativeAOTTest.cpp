@@ -12,8 +12,6 @@
 #include "NativeAOTHost.h"
 #include "ScriptRuntime.h"
 
-#include "Platform/EditorPlatform.h"
-
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Jobs/JobSystem.h"
@@ -243,7 +241,7 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 }
 
 TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 	EXPECT_TRUE(run.Has("ASSETS staged=1")) << run.output;
 	EXPECT_TRUE(run.Has("INPUT ready=1")) << run.output;
@@ -263,7 +261,7 @@ TEST(CSharpNativeAOTTest, ConformanceSuitePasses) {
 }
 
 TEST(CSharpNativeAOTTest, AudioConformanceSuitePasses) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAudioAOT.dll", TestHelpers::CSHARP_AOT_AUDIO_FLAG);
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAudioAOT" SLT_TEST_DLL_SUFFIX, TestHelpers::CSHARP_AOT_AUDIO_FLAG);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 	EXPECT_TRUE(run.Has("ASSETS staged=1")) << run.output;
 	for (const auto& [name, outcome] : run.cases) {
@@ -275,13 +273,13 @@ TEST(CSharpNativeAOTTest, AudioConformanceSuitePasses) {
 }
 
 TEST(CSharpNativeAOTTest, FrameEndSweepsTheCache) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 	EXPECT_TRUE(run.Has("\nSWEEP 300 44 0")) << run.output;
 }
 
 TEST(CSharpNativeAOTTest, FailuresAndExceptionsAreReported) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 
 	ASSERT_TRUE(run.cases.contains("Probe.Fails")) << run.output;
@@ -302,7 +300,7 @@ TEST(CSharpNativeAOTTest, FailuresAndExceptionsAreReported) {
 }
 
 TEST(CSharpNativeAOTTest, LogReachesEngineLog) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 
 	ASSERT_TRUE(run.cases.contains("LogProbe.WritesEachLevel")) << run.output;
@@ -325,7 +323,7 @@ TEST(CSharpNativeAOTTest, LogReachesEngineLog) {
 }
 
 TEST(CSharpNativeAOTTest, ReleaseLibraryDropsThreadChecks) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 
 	ASSERT_TRUE(run.cases.contains("FeatureProbe.ReportsThreadChecks")) << run.output;
@@ -337,14 +335,14 @@ TEST(CSharpNativeAOTTest, ReleaseLibraryDropsThreadChecks) {
 }
 
 TEST(CSharpNativeAOTTest, PlayersDrawNoDebugLines) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll");
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 	ASSERT_TRUE(run.cases.contains("RenderingProbe.CountsDrawnLines")) << run.output;
 	EXPECT_EQ(run.cases.at("RenderingProbe.CountsDrawnLines").second, "lines 0");
 }
 
 TEST(CSharpNativeAOTTest, ComponentsRunTheirHooks) {
-	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT.dll", TestHelpers::CSHARP_AOT_COMPONENTS_FLAG);
+	const HostRun run = RunHost(AOTDirectory() / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX, TestHelpers::CSHARP_AOT_COMPONENTS_FLAG);
 	ASSERT_EQ(run.exitCode, 0) << run.output;
 	ASSERT_TRUE(run.Has("\nDONE")) << run.output;
 
@@ -381,70 +379,10 @@ TEST(CSharpNativeAOTTest, ComponentsRunTheirHooks) {
 }
 
 TEST(CSharpNativeAOTTest, MissingLibraryNamesTheFile) {
-	const HostRun run = RunHost(AOTDirectory() / "NoSuchScripts.dll");
+	const HostRun run = RunHost(AOTDirectory() / "NoSuchScripts" SLT_TEST_DLL_SUFFIX);
 	EXPECT_EQ(run.exitCode, 2) << run.output;
 	EXPECT_TRUE(run.Has("START FAILED")) << run.output;
-	EXPECT_TRUE(run.Has("NoSuchScripts.dll didn't load")) << run.output;
-}
-
-TEST(CSharpWindowsLinkTest, ImportsOnlySystemLibraries) {
-	const Path library((AOTDirectory() / "Shalltear.ConformanceAOT.dll").generic_string());
-	Vector<str> imported;
-	ASSERT_TRUE(EditorPlatform::ReadImportedLibraries(library, imported));
-	ASSERT_FALSE(imported.empty());
-	for (const str& name : imported) {
-		str lowered = name;
-		for (char& character : lowered) {
-			character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
-		}
-		const bool system = lowered == "kernel32.dll" || lowered == "advapi32.dll" || lowered == "bcrypt.dll" || lowered == "ole32.dll" ||
-							lowered.starts_with("api-ms-win-crt-");
-		EXPECT_TRUE(system) << name;
-	}
-}
-
-TEST(CSharpWindowsLinkTest, LinkNamesNoVisualStudioFile) {
-	const str inputs = FileSystem::ReadTextFile(Path((AOTDirectory() / "Shalltear.ConformanceAOT.rsp").generic_string()));
-	ASSERT_FALSE(inputs.empty());
-	EXPECT_EQ(inputs.find("Microsoft Visual Studio"), str::npos);
-	EXPECT_EQ(inputs.find("Windows Kits"), str::npos);
-	EXPECT_NE(inputs.find("CRTShim.obj"), str::npos);
-
-	const std::filesystem::path libraries = AOTDirectory().parent_path() / "native" / "libs";
-	u32 bare = 0;
-	u32 searchPaths = 0;
-	bool withoutDefaults = false;
-	bool repeatable = false;
-	bool symbolsByName = false;
-	size_t start = 0;
-	while (start < inputs.size()) {
-		size_t end = inputs.find_first_of("\r\n", start);
-		if (end == str::npos) {
-			end = inputs.size();
-		}
-		str token = inputs.substr(start, end - start);
-		start = end + 1;
-		withoutDefaults = withoutDefaults || token == "/NODEFAULTLIB";
-		repeatable = repeatable || token == "/Brepro";
-		symbolsByName = symbolsByName || token == "/PDBALTPATH:%_PDB%";
-		if (token.starts_with("/LIBPATH:")) {
-			++searchPaths;
-			continue;
-		}
-		if (token.size() >= 2 && token.front() == '"' && token.back() == '"') {
-			token = token.substr(1, token.size() - 2);
-		}
-		if (!token.ends_with(".lib") || token.find_first_of("/\\") != str::npos) {
-			continue;
-		}
-		++bare;
-		EXPECT_TRUE(std::filesystem::exists(libraries / token)) << token;
-	}
-	EXPECT_GE(bare, 17u);
-	EXPECT_EQ(searchPaths, 1u);
-	EXPECT_TRUE(withoutDefaults);
-	EXPECT_TRUE(repeatable);
-	EXPECT_TRUE(symbolsByName);
+	EXPECT_TRUE(run.Has("NoSuchScripts" SLT_TEST_DLL_SUFFIX " didn't load")) << run.output;
 }
 
 #endif

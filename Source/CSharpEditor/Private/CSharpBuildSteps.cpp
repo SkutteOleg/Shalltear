@@ -24,6 +24,7 @@
 #include "Shalltear/Editor/CppToolchain.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
+#include <cstdlib>
 #include <filesystem>
 #include <format>
 
@@ -90,7 +91,43 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		}
 
 		std::string_view RuntimeIdentifierOf(std::string_view targetId) {
-			return targetId == "Windows" || targetId == "WindowsServer" ? std::string_view("win-x64") : std::string_view();
+			if (targetId == "Windows" || targetId == "WindowsServer") {
+				return "win-x64";
+			}
+			return targetId == "Linux" || targetId == "LinuxServer" ? std::string_view("linux-x64") : std::string_view();
+		}
+
+		bool IsLinux(std::string_view targetId) {
+			return RuntimeIdentifierOf(targetId).starts_with("linux");
+		}
+
+		// must match GetPlayerLibraryName in NativeAOTHost.h
+		str LibraryNameOf(std::string_view targetId) {
+			return IsLinux(targetId) ? "GameScripts.so" : "GameScripts.dll";
+		}
+
+		str FindCompilerDirectory(const BuildContext& context, str* outToolchainFile = nullptr) {
+			CppToolchain::DiscoveryOptions options;
+			options.sdkRoot = context.sdkRoot;
+			options.probeVersions = false;
+			const CppToolchain::ToolchainInfo toolchain = CppToolchain::Discover(options);
+			if (outToolchainFile) {
+				*outToolchainFile = toolchain.sdkToolchainFile;
+			}
+			return fs::path(toolchain.compiler.path).parent_path().generic_string();
+		}
+
+		// must match CMake/Toolchains/Linux-x64.cmake
+		str FindLinuxSysRoot(const BuildContext& context) {
+			if (const char* pack = std::getenv("SHALLTEAR_LINUX_PACK"); pack && *pack) {
+				return str(pack) + "/sysroot";
+			}
+			str toolchainFile;
+			FindCompilerDirectory(context, &toolchainFile);
+			if (toolchainFile.empty()) {
+				return {};
+			}
+			return (fs::path(toolchainFile).parent_path() / "../../External/Prebuilt/linux-x64/sysroot").lexically_normal().generic_string();
 		}
 
 		bool WriteIfDifferent(const fs::path& file, const str& contents) {
@@ -245,16 +282,18 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
 				arguments += " -p:ShalltearRenameScripts=true";
 			}
-			if (CSharpSettings::GetProject().windowsLinker == WindowsLinker::VisualStudio) {
+			if (IsLinux(context.target->GetId())) {
+				arguments += " " + QuoteCommandArgument("-p:ShalltearLinuxSysRoot=" + FindLinuxSysRoot(context));
+				// ILCompiler finds clang/lld/llvm-objcopy on the search path
+				ChildEnvironment::PrependSearchPath(FindCompilerDirectory(context), &state.stage);
+			} else if (CSharpSettings::GetProject().windowsLinker == WindowsLinker::VisualStudio) {
 				arguments += " -p:ShalltearWindowsLinker=VisualStudio";
 			} else {
-				CppToolchain::DiscoveryOptions options;
-				options.sdkRoot = context.sdkRoot;
-				options.probeVersions = false;
-				const str compiler = CppToolchain::Discover(options).compiler.path;
-				arguments += " " + QuoteCommandArgument("-p:ShalltearLinkerDir=" + fs::path(compiler).parent_path().generic_string() + "/");
+				arguments += " " + QuoteCommandArgument("-p:ShalltearLinkerDir=" + FindCompilerDirectory(context) + "/");
 			}
-			if (!Start(state, context, arguments)) {
+			const bool started = Start(state, context, arguments);
+			ChildEnvironment::UnregisterOwnedBy(&state.stage);
+			if (!started) {
 				context.AddIssue(BuildIssueSeverity::Error, "", "C# native compile couldn't be started");
 				state.stage = Stage::Idle;
 				return BuildStepStatus::Failed;
@@ -336,6 +375,23 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 											 context.target->GetDisplayName()));
 				return BuildStepStatus::Failed;
 			}
+			const bool windowsHost = DotNetToolchain::GetPin().hostRid.starts_with("win");
+			if (!IsLinux(context.target->GetId()) && !windowsHost) {
+				context.AddIssue(BuildIssueSeverity::Error, "target",
+								 std::format("C# scripts for {} compile on a Windows editor only. Build this profile there (or turn off C# Scripting package)",
+											 context.target->GetDisplayName()));
+				return BuildStepStatus::Failed;
+			}
+			if (IsLinux(context.target->GetId())) {
+				const str sysRoot = FindLinuxSysRoot(context);
+				std::error_code found;
+				if (sysRoot.empty() || !fs::is_directory(fs::path(sysRoot) / "usr" / "include", found)) {
+					context.AddIssue(BuildIssueSeverity::Error, "target",
+									 std::format("C# scripts for {} need the Linux target pack ('{}' wasn't found). Run `python Scripts/fetch_prebuilt.py --linux`",
+												 context.target->GetDisplayName(), sysRoot));
+					return BuildStepStatus::Failed;
+				}
+			}
 			CSharpSettings::Declare();
 			state.sdkRoot = DotNetToolchain::FindSDKRoot();
 			if (state.sdkRoot.empty()) {
@@ -391,11 +447,12 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		BuildStepStatus StageStep(BuildContext& context) {
 			const fs::path publish = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / PublishFolder;
-			const fs::path library = publish / CSharpImpl::NativeAOTHost::GetPlayerLibraryName();
+			const str libraryName = LibraryNameOf(context.target->GetId());
+			const fs::path library = publish / libraryName;
 			std::error_code ec;
 			fs::create_directories(fs::path(context.stagingDir), ec);
 			ec.clear();
-			fs::copy_file(library, fs::path(context.stagingDir) / CSharpImpl::NativeAOTHost::GetPlayerLibraryName(), fs::copy_options::overwrite_existing, ec);
+			fs::copy_file(library, fs::path(context.stagingDir) / libraryName, fs::copy_options::overwrite_existing, ec);
 			if (ec) {
 				context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", library.generic_string(), ec.message()));
 				return BuildStepStatus::Failed;
@@ -412,8 +469,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					return BuildStepStatus::Failed;
 				}
 			}
-			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion,
-									  CSharpImpl::NativeAOTHost::GetPlayerLibraryName());
+			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion, libraryName);
 			for (const std::string_view name : {"LICENSE.TXT", "THIRD-PARTY-NOTICES.TXT"}) {
 				const fs::path part = publish / NoticesFolder / name;
 				if (!fs::is_regular_file(part, ec)) {
@@ -430,7 +486,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			const fs::path kept = fs::path(context.intermediateDir) / SymbolsFolder;
 			const fs::path map = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / RenameFolder / NameMap;
 			fs::remove(kept / NameMap, ec);
-			for (const fs::path& symbols : {fs::path(library).replace_extension(".pdb"), map}) {
+			for (const fs::path& symbols : {fs::path(library).replace_extension(".pdb"), fs::path(library.generic_string() + ".dbg"), map}) {
 				if (!fs::is_regular_file(symbols, ec)) {
 					continue;
 				}

@@ -57,6 +57,9 @@ else()
     set(sltTestHostTarget "${CMAKE_SYSTEM_NAME}")
     set(sltTestPlayerSuffix ".${CMAKE_SYSTEM_PROCESSOR}")
 endif()
+if(SHALLTEAR_LINUX_PACK)
+    target_compile_definitions(ShalltearTests PRIVATE SLT_TEST_LINUX_PACK="${SHALLTEAR_LINUX_PACK}")
+endif()
 target_compile_definitions(ShalltearTests PRIVATE
     SHALLTEAR_LOG_STRIP_LEVEL=0
     SLT_TEST_DLL_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}"

@@ -5,6 +5,7 @@
 #include "CSharpPackageFixtures.h"
 #include "CSharpRuntimeFixture.h"
 #include "EditorTestHooks.h"
+#include "LinuxLibraryReader.h"
 #include "ScopedSettingsStore.h"
 #include "TestPlatform.h"
 
@@ -313,8 +314,8 @@ public sealed partial class Reader : Behavior {
 		static void SetUpTestSuite() {
 			_suite = new Suite();
 			Suite& suite = *_suite;
-			if (!TestPlatform::BuildsCSharpPlayers()) {
-				suite.skip = "C# players build for Windows only";
+			if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows") {
+				suite.skip = "this suite reads Windows players";
 				return;
 			}
 			suite.config = str(ScriptProjectOps::GetActiveConfigName());
@@ -436,7 +437,7 @@ public sealed partial class Reader : Behavior {
 			_mixed = new Suite();
 			Suite& suite = *_mixed;
 			if (!TestPlatform::BuildsCSharpPlayers()) {
-				suite.skip = "C# players build for Windows only";
+				suite.skip = "C# players don't build on this host";
 				return;
 			}
 			suite.config = str(ScriptProjectOps::GetActiveConfigName());
@@ -498,12 +499,14 @@ public sealed partial class Reader : Behavior {
 			}
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Reader.cs", std::ios::binary) << READER;
 			std::ofstream(suite.project / "Assets" / "Scenes" / "Main.scene", std::ios::binary) << MixedSceneText();
-			BuildProfile profile;
-			profile.name = "Windows";
-			profile.target = "Windows";
-			profile.SetList("scenes", Vector<str>{"Assets/Scenes/Main.scene"});
-			profile.SetString("configuration", suite.config);
-			ASSERT_TRUE(BuildProfileOps::SaveProfile(BuildProfileOps::GetProfilePath(suite.project.generic_string(), "Windows"), profile));
+			for (const char* name : {"Game", "Server"}) {
+				BuildProfile profile;
+				profile.name = name;
+				profile.target = str(SLT_TEST_HOST_TARGET) + (std::string_view(name) == "Server" ? "Server" : "");
+				profile.SetList("scenes", Vector<str>{"Assets/Scenes/Main.scene"});
+				profile.SetString("configuration", suite.config);
+				ASSERT_TRUE(BuildProfileOps::SaveProfile(BuildProfileOps::GetProfilePath(suite.project.generic_string(), name), profile));
+			}
 
 			FileSystem::Mount("project", Path(suite.project.generic_string()));
 			AssetDatabase::Initialize();
@@ -513,9 +516,9 @@ public sealed partial class Reader : Behavior {
 			FileSystem::Unmount("project");
 			ASSERT_TRUE(indexed);
 
-			suite.buildLog = TestPlatform::RunCommand("\"" + suite.editor + "\" --project \"" + suite.project.generic_string() + "\" --build Windows", suite.buildExit);
+			suite.buildLog = TestPlatform::RunCommand("\"" + suite.editor + "\" --project \"" + suite.project.generic_string() + "\" --build Game", suite.buildExit);
 			if (suite.buildExit == 0) {
-				const fs::path player = suite.project / "Builds" / "Windows" / ("MixedGame" SLT_TEST_PLAYER_SUFFIX);
+				const fs::path player = suite.project / "Builds" / "Game" / ("MixedGame" SLT_TEST_PLAYER_SUFFIX);
 				suite.playerLog = TestPlatform::RunCommand("\"" + player.generic_string() + "\" --frames 8", suite.playerExit);
 			}
 		}
@@ -825,8 +828,52 @@ TEST_F(CSharpMixedPlayerTest, PlayerRunsBothLanguages) {
 	EXPECT_NE(_mixed->playerLog.find(str(MIXED_MARKER) + " native reading=2.5 unit=psi ticks=1 twice=42"), str::npos) << _mixed->playerLog;
 	EXPECT_EQ(_mixed->playerLog.find("[ERROR]"), str::npos) << _mixed->playerLog;
 	EXPECT_EQ(_mixed->buildLog.find("compile FAILED"), str::npos) << _mixed->buildLog;
+	EXPECT_NE(_mixed->buildLog.find("staged file(s) have no managed code"), str::npos) << _mixed->buildLog;
+	EXPECT_TRUE(fs::is_regular_file(_mixed->project / "Builds" / "Game" / LIBRARY)) << _mixed->buildLog;
 	const str wrappers = ReadBytes(_mixed->project / "Library" / "CSharp" / "Generated" / "Native" / "NativeTypes.g.cs");
 	EXPECT_NE(wrappers.find("public sealed class Meter : global::Shalltear.Interop.NativeComponent"), str::npos) << wrappers;
+}
+
+TEST_F(CSharpMixedPlayerTest, ServerRunsBothLanguages) {
+	int exitCode = -1;
+	const str log = TestPlatform::RunCommand("\"" + _mixed->editor + "\" --project \"" + _mixed->project.generic_string() + "\" --build Server", exitCode);
+	ASSERT_EQ(exitCode, 0) << log;
+	const fs::path server = _mixed->project / "Builds" / "Server" / ("MixedGameServer" SLT_TEST_PLAYER_SUFFIX);
+	const str serverLog = TestPlatform::RunCommand("\"" + server.generic_string() + "\" --frames 4", exitCode);
+	ASSERT_EQ(exitCode, 0) << serverLog;
+	EXPECT_NE(serverLog.find(str(MIXED_MARKER) + " managed reading=2.5 scaled=6"), str::npos) << serverLog;
+	EXPECT_NE(serverLog.find(str(MIXED_MARKER) + " native reading=2.5 unit=psi ticks=1 twice=42"), str::npos) << serverLog;
+}
+
+TEST_F(CSharpMixedPlayerTest, LinuxPlayerCrossBuilds) {
+	if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows") {
+		GTEST_SKIP() << "cross build from a Windows editor only";
+	}
+	BuildProfile profile;
+	profile.name = "Linux";
+	profile.target = "Linux";
+	profile.SetList("scenes", Vector<str>{"Assets/Scenes/Main.scene"});
+	profile.SetString("configuration", _mixed->config);
+	ASSERT_TRUE(BuildProfileOps::SaveProfile(BuildProfileOps::GetProfilePath(_mixed->project.generic_string(), "Linux"), profile));
+	int exitCode = -1;
+	const str log = TestPlatform::RunCommand("\"" + _mixed->editor + "\" --project \"" + _mixed->project.generic_string() + "\" --build Linux", exitCode);
+	if (log.find("no STATIC SDK built for Linux") != str::npos) {
+		GTEST_SKIP() << "no static SDK built for Linux";
+	}
+	ASSERT_EQ(exitCode, 0) << log;
+	EXPECT_NE(log.find("staged file(s) have no managed code"), str::npos) << log;
+	const fs::path staging = _mixed->project / "Builds" / "Linux";
+	EXPECT_TRUE(fs::is_regular_file(staging / "MixedGame.x86_64")) << log;
+	TestHelpers::LibraryNeeds needs;
+	ASSERT_TRUE(TestHelpers::ReadLibraryNeeds(staging / "GameScripts.so", needs)) << log;
+	ASSERT_FALSE(needs.libraries.empty());
+	for (const str& name : needs.libraries) {
+		const bool system = name == "libdl.so.2" || name == "libm.so.6" || name == "libpthread.so.0" || name == "libc.so.6" || name == "librt.so.1" ||
+							name == "ld-linux-x86-64.so.2";
+		EXPECT_TRUE(system) << name;
+	}
+	EXPECT_EQ(needs.glibcMajor, 2u);
+	EXPECT_LE(needs.glibcMinor, 31u);
 }
 
 TEST_F(CSharpBuildStepsTest, StepsJoinAtLoadLeaveWithExtensions) {
@@ -861,11 +908,20 @@ TEST_F(CSharpBuildStepsTest, StepsJoinAtLoadLeaveWithExtensions) {
 	EXPECT_NE(Find(steps, "cook-content"), nullptr);
 }
 
-TEST_F(CSharpBuildStepsTest, TargetWithoutCSharpRefusedWithReason) {
+TEST_F(CSharpBuildStepsTest, LinuxTargetNeedsItsPack) {
+	const auto get = reinterpret_cast<CSharpEditor::GetEditorTestHooksFn>(
+		ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_package), CSharpEditor::EDITOR_TEST_HOOKS_SYMBOL));
+	ASSERT_NE(get, nullptr);
+	const CSharpEditor::EditorTestHooks* editor = get();
 	Vector<BuildStepDesc> steps{GetMemoryResource(MemTag::Debug)};
 	BuildStepRegistry::GetSteps(steps);
 	const BuildStepDesc* validate = Find(steps, "csharp-validate");
 	ASSERT_NE(validate, nullptr);
+	const fs::path root = fs::temp_directory_path() / ("slt_cs_pack_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+	fs::create_directories(root / "pack");
+	ScopedSettingsStore store{root};
+	const str pack = (root / "pack").generic_string();
+	const DeviceLossTest::ScopedEnvironment variable("SHALLTEAR_LINUX_PACK", pack.c_str());
 	ResolvedProfile profile;
 	profile.name = "Elsewhere";
 	BuildContext context;
@@ -875,14 +931,45 @@ TEST_F(CSharpBuildStepsTest, TargetWithoutCSharpRefusedWithReason) {
 	EXPECT_EQ(validate->fn(context), BuildStepStatus::Failed);
 	ASSERT_EQ(context.GetIssues().size(), 1u);
 	EXPECT_EQ(context.GetIssues()[0].severity, BuildIssueSeverity::Error);
-	EXPECT_NE(context.GetIssues()[0].message.find("C# scripts don't build for Linux yet. Build this profile for Windows"), str::npos)
-		<< context.GetIssues()[0].message;
+	EXPECT_EQ(context.GetIssues()[0].message, "C# scripts for Linux need the Linux target pack ('" + pack +
+												  "/sysroot' wasn't found). Run `python Scripts/fetch_prebuilt.py --linux`");
 
+	fs::create_directories(root / "pack" / "sysroot" / "usr" / "include");
 	BuildContext server;
 	server.profile = &profile;
 	server.target = BuildTargetRegistry::Find("LinuxServer");
 	ASSERT_NE(server.target, nullptr);
-	EXPECT_EQ(validate->fn(server), BuildStepStatus::Failed);
+	editor->hideSDK(true);
+	const BuildStepStatus status = validate->fn(server);
+	editor->hideSDK(false);
+	EXPECT_EQ(status, BuildStepStatus::Failed);
+	ASSERT_EQ(server.GetIssues().size(), 1u);
+	EXPECT_NE(server.GetIssues()[0].message.find(".NET SDK"), str::npos) << server.GetIssues()[0].message;
+	std::error_code ec;
+	fs::remove_all(root, ec);
+}
+
+TEST_F(CSharpBuildStepsTest, WindowsTargetRefusedOnOtherHosts) {
+	const auto get = reinterpret_cast<CSharpEditor::GetEditorTestHooksFn>(
+		ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_package), CSharpEditor::EDITOR_TEST_HOOKS_SYMBOL));
+	ASSERT_NE(get, nullptr);
+	if (get()->getPin().hostRid.starts_with("win")) {
+		GTEST_SKIP() << "a Windows editor builds Windows targets";
+	}
+	Vector<BuildStepDesc> steps{GetMemoryResource(MemTag::Debug)};
+	BuildStepRegistry::GetSteps(steps);
+	const BuildStepDesc* validate = Find(steps, "csharp-validate");
+	ASSERT_NE(validate, nullptr);
+	ResolvedProfile profile;
+	profile.name = "Elsewhere";
+	BuildContext context;
+	context.profile = &profile;
+	context.target = BuildTargetRegistry::Find("Windows");
+	ASSERT_NE(context.target, nullptr);
+	EXPECT_EQ(validate->fn(context), BuildStepStatus::Failed);
+	ASSERT_EQ(context.GetIssues().size(), 1u);
+	EXPECT_NE(context.GetIssues()[0].message.find("C# scripts for Windows compile on a Windows editor only. Build this profile there"), str::npos)
+		<< context.GetIssues()[0].message;
 }
 
 TEST_F(CSharpBuildStepsTest, MissingSDKFailsValidationWithItsVersion) {
@@ -900,7 +987,7 @@ TEST_F(CSharpBuildStepsTest, MissingSDKFailsValidationWithItsVersion) {
 	profile.name = "Bare";
 	BuildContext context;
 	context.profile = &profile;
-	context.target = BuildTargetRegistry::Find("Windows");
+	context.target = BuildTargetRegistry::Find(SLT_TEST_HOST_TARGET);
 	editor->hideSDK(true);
 	const BuildStepStatus status = validate->fn(context);
 	editor->hideSDK(false);
@@ -921,7 +1008,7 @@ TEST_F(CSharpBuildStepsTest, StageWithoutLibraryFailsWithPath) {
 	profile.name = "Empty";
 	BuildContext context;
 	context.profile = &profile;
-	context.target = BuildTargetRegistry::Find("Windows");
+	context.target = BuildTargetRegistry::Find(SLT_TEST_HOST_TARGET);
 	context.projectRoot = root.generic_string();
 	context.stagingDir = (root / "Builds" / "Empty").generic_string();
 	context.intermediateDir = (root / "Library" / "Player" / "Empty").generic_string();
@@ -931,8 +1018,9 @@ TEST_F(CSharpBuildStepsTest, StageWithoutLibraryFailsWithPath) {
 
 	const fs::path publish = root / "Library" / "CSharp" / "Player" / "Empty" / "publish";
 	fs::create_directories(publish);
+	const str symbols = std::string_view(SLT_TEST_HOST_TARGET) == "Windows" ? str("GameScripts.pdb") : str(LIBRARY) + ".dbg";
 	std::ofstream(publish / LIBRARY, std::ios::binary) << "library";
-	std::ofstream(publish / "GameScripts.pdb", std::ios::binary) << "symbols";
+	std::ofstream(publish / symbols, std::ios::binary) << "symbols";
 	std::ofstream(publish / "Scripted.Scripts.pdb", std::ios::binary) << "managed symbols";
 	BuildContext unnoticed;
 	unnoticed.profile = &profile;
@@ -955,7 +1043,7 @@ TEST_F(CSharpBuildStepsTest, StageWithoutLibraryFailsWithPath) {
 	EXPECT_EQ(stage->fn(staged), BuildStepStatus::Succeeded);
 	EXPECT_TRUE(staged.GetIssues().empty());
 	EXPECT_EQ(ReadBytes(root / "Builds" / "Empty" / LIBRARY), "library");
-	EXPECT_EQ(ReadBytes(root / "Library" / "Player" / "Empty" / "symbols" / "GameScripts.pdb"), "symbols");
+	EXPECT_EQ(ReadBytes(root / "Library" / "Player" / "Empty" / "symbols" / symbols), "symbols");
 	u32 staging = 0;
 	std::error_code ec;
 	for (const fs::directory_entry& entry : fs::recursive_directory_iterator(root / "Builds", ec)) {

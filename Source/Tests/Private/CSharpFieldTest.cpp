@@ -532,7 +532,7 @@ namespace {
 		static const str& Output() {
 			static const str output = [] {
 				const std::filesystem::path library =
-					std::filesystem::path(FileSystem::GetExecutablePath().ToString()).parent_path() / "CSharp" / "aot" / "Shalltear.ConformanceAOT.dll";
+					std::filesystem::path(FileSystem::GetExecutablePath().ToString()).parent_path() / "CSharp" / "aot" / "Shalltear.ConformanceAOT" SLT_TEST_DLL_SUFFIX;
 				int exitCode = -1;
 				str text = TestPlatform::RunCommand("\"" + FileSystem::GetExecutablePath().ToString() + "\" " + TestHelpers::CSHARP_AOT_FIELDS_FLAG +
 														" \"" + library.generic_string() + "\"",
