@@ -1,9 +1,11 @@
 name: CI
 
-# manual only (TODO: ?..), also kept for contributors
-
 on:
+  push:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 # new run cancels stale run (same branch)
 concurrency:
@@ -16,140 +18,36 @@ env:
   # need a GPU (pixel exact, pipeline per node)
   WINDOWS_GPU_ONLY: >-
     SkyPrefilterFixture\.SmoothSkyMatchesOracle|TextureSamplingFixture\.PointSamplesOneTexelAtGrazingAngle|UIRenderFixture\.TabLikeCompositeIsPixelSymmetric|UIRenderFixture\.AuthoredTranslucentTokensCompositeWayCssDoes|AmbientOcclusionRenderFixture\.AfterOpaqueSurvivesPostRow|BC6HSampleFixture\.CodecDecodeMatchesGpu|SwapChainResizeCostTest\.RebuildInvalidatesHandles|NodeShaderGPUFixture\.EveryNodeMatchesReferenceOnGPU
+  LINUX_GPU_ONLY: >-
+    SkyPrefilterFixture\.SmoothSkyMatchesOracle|TextureSamplingFixture\.PointSamplesOneTexelAtGrazingAngle|TextureSamplingFixture\.LevelAndProfileShapeGrazingFootprint|UIRenderFixture\.TabLikeCompositeIsPixelSymmetric|UIRenderFixture\.AuthoredTranslucentTokensCompositeWayCssDoes|AmbientOcclusionRenderFixture\.AfterOpaqueSurvivesPostRow|NodeShaderGPUFixture\.EveryNodeMatchesReferenceOnGPU
 
 jobs:
-  build-test:
-    name: ${{ matrix.name }}
+  checks:
+    name: checks
     runs-on: windows-latest
-    # hung test would hold the runner for 10000 years
-    timeout-minutes: 360
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # the "everyday dev" configuration
-          - name: shared-debug
-            shared: "ON"
-            pch: "OFF"
-            config: Debug
-            header_check: false
-            benchmarks: false
-          # isolated header compiles?
-          - name: shared-debug-nopch
-            shared: "ON"
-            pch: "ON" # SHALLTEAR_DISABLE_PCH value
-            config: Debug
-            header_check: true
-            benchmarks: false
-          # static half of dual mode
-          - name: static-debug
-            shared: "OFF"
-            pch: "OFF"
-            config: Debug
-            header_check: false
-            benchmarks: false
-          # optimized lane, also runs "micro benchmarks"
-          - name: shared-release
-            shared: "ON"
-            pch: "OFF"
-            config: Release
-            header_check: false
-            benchmarks: true
-
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
       # cached by pin content
-      - name: Cache prebuilt binaries
-        uses: actions/cache@v4
+      - name: Restore downloads
+        id: downloads
+        uses: actions/cache/restore@v6
         with:
-          path: External/Prebuilt
-          key: prebuilt-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Source/CSharp/DotNetPin.json') }}
+          path: ~/prebuilt-archives
+          key: prebuilt-windows-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
 
       - name: Fetch prebuilt binaries
-        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet
+        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet --archives "$HOME/prebuilt-archives"
 
-      # fetched binaru goes first because runner's clang++ targets MSVC
-      - name: Put the toolchain on PATH
-        shell: pwsh
-        run: echo "$(Resolve-Path External/Prebuilt/llvm-mingw/bin)" >> $env:GITHUB_PATH
-
-      # fail the build when stale
-      - name: Third-party notices are current
-        run: python Scripts/generate_notices.py --check
-
-      - name: C# bindings are current
-        run: python Scripts/generate_csharp_bindings.py --check
-
-      - name: Redistribution rules classify the whole toolchain
-        working-directory: Scripts
-        run: python staging_test.py
-
-      # VK_DRIVER_FILES ignored by damn loader when elevated (registry only)
-      - name: Register software Vulkan driver
-        shell: pwsh
-        run: |
-          $icd = Get-ChildItem -Recurse External/Prebuilt/lavapipe -Filter lvp_icd.x86_64.json | Select-Object -First 1
-          if (-not $icd) { throw "lavapipe ICD manifest not found" }
-          reg add 'HKLM\SOFTWARE\Khronos\Vulkan\Drivers' /v $icd.FullName /t REG_DWORD /d 0 /f /reg:64
-          if ($LASTEXITCODE -ne 0) { throw "couldn't register $($icd.FullName)" }
-          echo "VK_DRIVER_FILES=$($icd.FullName)" >> $env:GITHUB_ENV
-          echo "VK_LOADER_LAYERS_DISABLE=~all~" >> $env:GITHUB_ENV
-
-      # warnings = errors only here (fresh clones should build)
-      - name: Configure
-        run: >
-          cmake -B build -G Ninja
-          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++
-          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang
-          -DCMAKE_BUILD_TYPE=${{ matrix.config }}
-          -DSHALLTEAR_BUILD_SHARED=${{ matrix.shared }}
-          -DSHALLTEAR_DISABLE_PCH=${{ matrix.pch }}
-          -DSHALLTEAR_WARNINGS_AS_ERRORS=ON
-
-      - name: Build
-        run: cmake --build build --parallel
-
-      - name: Header hygiene (isolated public headers)
-        if: matrix.header_check
-        run: cmake --build build --target ShalltearHeaderCheck --parallel
-
-      - name: Test
-        id: test
-        run: ctest --test-dir build --output-on-failure --timeout 600 -E '^(${{ env.WINDOWS_GPU_ONLY }})$'
-
-      # skipped device tier should fail the lane
-      - name: Device tests ran
-        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-        shell: pwsh
-        run: |
-          $skipped = @(Select-String -CaseSensitive -Path build/Testing/Temporary/LastTest.log -Pattern '^no (Vulkan )?(device|ICD)')
-          if ($skipped.Count -gt 0) {
-            $skipped | Select-Object -First 20 | ForEach-Object { $_.Line }
-            throw "$($skipped.Count) test(s) skipped for want of a device"
-          }
-
-      - name: Benchmarks (informational)
-        if: matrix.benchmarks
-        run: build/bin/ShalltearBenchmarks.exe
-
-  format:
-    name: clang-format
-    runs-on: windows-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache prebuilt binaries
-        uses: actions/cache@v4
+      - name: Keep downloads
+        if: steps.downloads.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
         with:
-          path: External/Prebuilt
-          key: prebuilt-format-${{ hashFiles('Scripts/fetch_prebuilt.py') }}
-
-      - name: Fetch the pinned toolchain
-        run: python Scripts/fetch_prebuilt.py --toolchain --skip-dxc
+          path: ~/prebuilt-archives
+          key: prebuilt-windows-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
 
       # pinned version (the runner's realigns comments)
       - name: Check formatting
@@ -164,3 +62,388 @@ jobs:
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }
           exit $failed
+
+      # fail the build when stale
+      - name: Third-party notices are current
+        run: python Scripts/generate_notices.py --check
+
+      - name: C# bindings are current
+        run: python Scripts/generate_csharp_bindings.py --check
+
+      - name: Script tests
+        working-directory: Scripts
+        shell: pwsh
+        run: |
+          $tests = @(Get-ChildItem -Filter *_test.py)
+          if ($tests.Count -eq 0) { throw "no script tests found" }
+          $failed = 0
+          foreach ($test in $tests) {
+            echo "==== $($test.Name) ===="
+            python $test.Name
+            if ($LASTEXITCODE -ne 0) { $failed = 1 }
+          }
+          exit $failed
+
+  checks-linux:
+    name: checks (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # staging rules describe Windows SDK
+      - name: Script tests
+        working-directory: Scripts
+        run: |
+          failed=0
+          count=0
+          for test in *_test.py; do
+            [ "$test" = staging_test.py ] && continue
+            echo "==== $test ===="
+            python3 "$test" || failed=1
+            count=$((count + 1))
+          done
+          [ "$count" -gt 0 ] || { echo "no script tests found"; exit 1; }
+          exit $failed
+
+  windows:
+    name: ${{ matrix.name }}
+    runs-on: windows-latest
+    # hung test would hold the runner for 10000 years
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # the "everyday dev" configuration
+          - name: shared-debug
+            preset: debug
+            tree: build
+            siblings: static-debug
+            sibling_skips: "|no sibling static"
+            downloads: windows
+            fetch: ""
+            benchmarks: false
+          # static half of dual mode
+          - name: static-debug
+            preset: static-debug
+            tree: build-static
+            siblings: ""
+            sibling_skips: ""
+            downloads: windows
+            fetch: ""
+            benchmarks: false
+          # optimized lane, also runs "micro benchmarks"
+          - name: shared-release
+            preset: release
+            tree: build-release
+            siblings: static-release linux-static-release
+            sibling_skips: "|no sibling static|no static SDK built for Linux"
+            downloads: windows-linux
+            fetch: --linux
+            benchmarks: true
+          - name: static-release
+            preset: static-release
+            tree: build-static-release
+            siblings: ""
+            sibling_skips: ""
+            downloads: windows
+            fetch: ""
+            benchmarks: false
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      # cached by pin content
+      - name: Restore downloads
+        id: downloads
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/prebuilt-archives
+          key: prebuilt-${{ matrix.downloads }}-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
+
+      - name: Fetch prebuilt binaries
+        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet ${{ matrix.fetch }} --archives "$HOME/prebuilt-archives"
+
+      - name: Keep downloads
+        if: steps.downloads.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/prebuilt-archives
+          key: prebuilt-${{ matrix.downloads }}-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
+
+      - name: Restore NuGet packages
+        id: nuget
+        uses: actions/cache/restore@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+
+      # fetched binaru goes first because runner's clang++ targets MSVC
+      - name: Put the toolchain on PATH
+        shell: pwsh
+        run: |
+          echo "$(Resolve-Path External/Prebuilt/llvm-mingw/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/cmake/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/ninja)" >> $env:GITHUB_PATH
+
+      # VK_DRIVER_FILES ignored by damn loader when elevated (registry only)
+      - name: Register software Vulkan driver
+        shell: pwsh
+        run: |
+          $icd = Get-ChildItem -Recurse External/Prebuilt/lavapipe -Filter lvp_icd.x86_64.json | Select-Object -First 1
+          if (-not $icd) { throw "lavapipe ICD manifest not found" }
+          reg add 'HKLM\SOFTWARE\Khronos\Vulkan\Drivers' /v $icd.FullName /t REG_DWORD /d 0 /f /reg:64
+          if ($LASTEXITCODE -ne 0) { throw "couldn't register $($icd.FullName)" }
+          echo "VK_DRIVER_FILES=$($icd.FullName)" >> $env:GITHUB_ENV
+          echo "VK_LOADER_LAYERS_DISABLE=~all~" >> $env:GITHUB_ENV
+
+      # shared editor builds players from these
+      - name: Build sibling trees
+        if: matrix.siblings != ''
+        shell: pwsh
+        run: |
+          foreach ($preset in "${{ matrix.siblings }}".Split(' ')) {
+            echo "==== $preset ===="
+            cmake --preset $preset -DSHALLTEAR_WARNINGS_AS_ERRORS=ON -DSHALLTEAR_BUILD_TESTS=OFF -DSHALLTEAR_BUILD_BENCHMARKS=OFF
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+            cmake --build --preset $preset
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
+
+      # warnings = errors only here (fresh clones should build)
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }} -DSHALLTEAR_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Keep NuGet packages
+        if: steps.nuget.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+
+      - name: Test
+        id: test
+        run: ctest --preset ${{ matrix.preset }} --timeout 600 --no-tests=error -E '^(${{ env.WINDOWS_GPU_ONLY }})$'
+
+      # skipped device tier/player builds should fail the lane
+      - name: Device and player tests ran
+        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
+        shell: pwsh
+        run: |
+          $log = "${{ matrix.tree }}/Testing/Temporary/LastTest.log"
+          $skipped = @(Select-String -CaseSensitive -Path $log -Pattern '^(no (Vulkan )?(device|ICD)${{ matrix.sibling_skips }})')
+          if ($skipped.Count -gt 0) {
+            $skipped | Select-Object -First 20 | ForEach-Object { $_.Line }
+            throw "$($skipped.Count) test(s) skipped for want of a device or sibling tree"
+          }
+
+      - name: Benchmarks (informational)
+        if: matrix.benchmarks
+        run: ${{ matrix.tree }}/bin/ShalltearBenchmarks.exe
+
+      - name: Keep the test log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}-tests
+          path: ${{ matrix.tree }}/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+      - name: Disk space
+        if: always()
+        shell: pwsh
+        run: Get-PSDrive -PSProvider FileSystem | Format-Table Name, Used, Free
+
+  linux:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-shared-debug
+            preset: linux-debug
+            tree: build-linux
+            siblings: linux-static-debug
+            sibling_skips: "|no sibling static"
+          - name: linux-static-debug
+            preset: linux-static-debug
+            tree: build-linux-static
+            siblings: ""
+            sibling_skips: ""
+          - name: linux-shared-release
+            preset: linux-release
+            tree: build-linux-release
+            siblings: linux-static-release
+            sibling_skips: "|no sibling static"
+          - name: linux-static-release
+            preset: linux-static-release
+            tree: build-linux-static-release
+            siblings: ""
+            sibling_skips: ""
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Install the display server and software Vulkan driver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb openbox mesa-vulkan-drivers libvulkan1 \
+            libx11-6 libxi6 libxrandr2 libxcursor1 libxkbcommon0 libasound2t64 libpulse0 libfontconfig1 libcurl4t64
+
+      # cached by pin content
+      - name: Restore downloads
+        id: downloads
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/prebuilt-archives
+          key: prebuilt-linux-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
+
+      - name: Fetch prebuilt binaries
+        run: python3 Scripts/fetch_prebuilt.py --toolchain --dotnet --archives "$HOME/prebuilt-archives"
+
+      - name: Keep downloads
+        if: steps.downloads.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/prebuilt-archives
+          key: prebuilt-linux-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
+
+      - name: Restore NuGet packages
+        id: nuget
+        uses: actions/cache/restore@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+
+      - name: Put the toolchain on PATH
+        run: |
+          echo "$PWD/External/Prebuilt/llvm-mingw/bin" >> "$GITHUB_PATH"
+          echo "$PWD/External/Prebuilt/cmake/bin" >> "$GITHUB_PATH"
+          echo "$PWD/External/Prebuilt/ninja" >> "$GITHUB_PATH"
+
+      - name: Start the display server
+        run: |
+          setsid nohup Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp > "$RUNNER_TEMP/xvfb.log" 2>&1 &
+          sleep 2
+          DISPLAY=:99 setsid nohup openbox > "$RUNNER_TEMP/openbox.log" 2>&1 &
+          sleep 2
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+          echo "VK_DRIVER_FILES=/usr/share/vulkan/icd.d/lvp_icd.json" >> "$GITHUB_ENV"
+
+      # shared editor builds players from these
+      - name: Build sibling trees
+        if: matrix.siblings != ''
+        run: |
+          for preset in ${{ matrix.siblings }}; do
+            echo "==== $preset ===="
+            cmake --preset "$preset" -DSHALLTEAR_WARNINGS_AS_ERRORS=ON -DSHALLTEAR_BUILD_TESTS=OFF -DSHALLTEAR_BUILD_BENCHMARKS=OFF
+            cmake --build --preset "$preset"
+          done
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }} -DSHALLTEAR_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Keep NuGet packages
+        if: steps.nuget.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+
+      - name: Test
+        id: test
+        run: ctest --preset ${{ matrix.preset }} --timeout 600 --no-tests=error -E '^(${{ env.LINUX_GPU_ONLY }})$'
+
+      # skipped device tier/player builds should fail the lane
+      - name: Device and player tests ran
+        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
+        run: |
+          log="${{ matrix.tree }}/Testing/Temporary/LastTest.log"
+          [ -f "$log" ] || { echo "no $log"; exit 1; }
+          pattern='^(no (Vulkan )?(device|ICD)${{ matrix.sibling_skips }})'
+          skipped=$(grep -cE "$pattern" "$log" || true)
+          if [ "$skipped" -gt 0 ]; then
+            grep -E "$pattern" "$log" | head -n 20
+            echo "$skipped test(s) skipped for want of a device or sibling tree"
+            exit 1
+          fi
+
+      - name: Keep the test log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}-tests
+          path: ${{ matrix.tree }}/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+      - name: Disk space
+        if: always()
+        run: df -h / "$GITHUB_WORKSPACE"
+
+  headers:
+    # isolated header compiles?
+    name: shared-debug-nopch
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      # cached by pin content
+      - name: Restore downloads
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/prebuilt-archives
+          key: prebuilt-windows-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
+
+      - name: Fetch prebuilt binaries
+        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet --archives "$HOME/prebuilt-archives"
+
+      - name: Restore NuGet packages
+        uses: actions/cache/restore@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+
+      - name: Put the toolchain on PATH
+        shell: pwsh
+        run: |
+          echo "$(Resolve-Path External/Prebuilt/llvm-mingw/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/cmake/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/ninja)" >> $env:GITHUB_PATH
+
+      - name: Configure
+        run: cmake --preset debug -DSHALLTEAR_DISABLE_PCH=ON -DSHALLTEAR_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build --preset debug
+
+      - name: Header hygiene (isolated public headers)
+        run: cmake --build --preset debug --target ShalltearHeaderCheck ShalltearStrippedHeaderCheck
+
+  fresh-clone:
+    name: fresh clone (Build.bat)
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      SHALLTEAR_NO_PAUSE: 1
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build + test
+        shell: cmd
+        run: call Build.bat tests
