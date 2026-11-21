@@ -78,7 +78,7 @@ namespace {
 
 			static std::atomic<u64> counter{0};
 			u64 stamp = static_cast<u64>(std::chrono::steady_clock::now().time_since_epoch().count());
-			_root = std::filesystem::temp_directory_path() /
+			_root = std::filesystem::canonical(std::filesystem::temp_directory_path()) /
 					("shalltear_compile_" + std::to_string(stamp) + "_" + std::to_string(counter.fetch_add(1)));
 			std::filesystem::create_directories(_root);
 			FileSystem::Mount("project", Path(_root.generic_string()));
