@@ -15,8 +15,12 @@ namespace Shalltear.Generators;
 public sealed class FunctionGenerator : IIncrementalGenerator {
 	internal const string NATIVE_FUNCTION = "Shalltear.NativeFunctionAttribute";
 	internal const string EXPORT_TO_NATIVE = "Shalltear.ExportToNativeAttribute";
+	internal const string CALLABLE = "Shalltear.CallableAttribute";
 	const string ENGINE_OBJECT = "Shalltear.EngineObject";
 	const string INTEROP = "global::Shalltear.Interop.";
+
+	static readonly SymbolDisplayFormat _plain =
+		SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted);
 
 	static readonly SymbolDisplayFormat _qualified =
 		SymbolDisplayFormat.FullyQualifiedFormat.AddMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
@@ -51,6 +55,8 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 
 	sealed class Function : IEquatable<Function> {
 		public bool export;
+		public bool instanceMethod;
+		public string receiverType = "";
 		public string name = "";
 		public string method = "";
 		public string qualified = "";
@@ -65,7 +71,8 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 		public Location? location;
 
 		public bool Equals(Function? other) {
-			return other != null && export == other.export && name == other.name && method == other.method && qualified == other.qualified &&
+			return other != null && export == other.export && instanceMethod == other.instanceMethod && receiverType == other.receiverType &&
+				   name == other.name && method == other.method && qualified == other.qualified &&
 				   modifiers == other.modifiers && ns == other.ns && containers.SequenceEqual(other.containers) && Equals(result, other.result) &&
 				   parameters.SequenceEqual(other.parameters) && parameterNames.SequenceEqual(other.parameterNames) && problem == other.problem &&
 				   problemType == other.problemType;
@@ -82,12 +89,14 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 
 	public void Initialize(IncrementalGeneratorInitializationContext context) {
 		IncrementalValuesProvider<Function> natives = context.SyntaxProvider.ForAttributeWithMetadataName(
-			NATIVE_FUNCTION, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => Describe(found, false));
+			NATIVE_FUNCTION, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => Describe(found, false, false));
 		IncrementalValuesProvider<Function> exports = context.SyntaxProvider.ForAttributeWithMetadataName(
-			EXPORT_TO_NATIVE, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => Describe(found, true));
-		context.RegisterSourceOutput(natives.Collect().Combine(exports.Collect()), static (output, found) => {
+			EXPORT_TO_NATIVE, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => Describe(found, true, false));
+		IncrementalValuesProvider<Function> callables = context.SyntaxProvider.ForAttributeWithMetadataName(
+			CALLABLE, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => Describe(found, true, true));
+		context.RegisterSourceOutput(natives.Collect().Combine(exports.Collect()).Combine(callables.Collect()), static (output, found) => {
 			List<Function> valid = new();
-			foreach (Function function in found.Left.Concat(found.Right)) {
+			foreach (Function function in found.Left.Left.Concat(found.Left.Right).Concat(found.Right)) {
 				if (function.problem.Length == 0) {
 					valid.Add(function);
 				} else if (function.problemType.Length > 0) {
@@ -168,12 +177,17 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 		return null;
 	}
 
-	static Function Describe(GeneratorAttributeSyntaxContext found, bool export) {
+	static Function Describe(GeneratorAttributeSyntaxContext found, bool export, bool callable) {
 		IMethodSymbol method = (IMethodSymbol)found.TargetSymbol;
 		MethodDeclarationSyntax syntax = (MethodDeclarationSyntax)found.TargetNode;
+		string exportName = callable
+			? method.ContainingType.ToDisplayString(_plain) + "::" + method.Name
+			: (found.Attributes[0].ConstructorArguments.Length > 0 ? found.Attributes[0].ConstructorArguments[0].Value as string ?? "" : "");
 		Function function = new() {
 			export = export,
-			name = found.Attributes[0].ConstructorArguments.Length > 0 ? found.Attributes[0].ConstructorArguments[0].Value as string ?? "" : "",
+			instanceMethod = callable && !method.IsStatic,
+			receiverType = callable && !method.IsStatic ? method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) : "",
+			name = exportName,
 			method = method.Name,
 			qualified = method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + "." + method.Name,
 			location = syntax.Identifier.GetLocation(),
@@ -183,7 +197,16 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 			function.problem = "Give the attribute a name";
 			return function;
 		}
-		if (!method.IsStatic || method.IsGenericMethod || method.Parameters.Any(static parameter => parameter.RefKind != RefKind.None)) {
+		if (callable) {
+			if (method.IsGenericMethod || method.Parameters.Any(static parameter => parameter.RefKind != RefKind.None)) {
+				function.problem = "Use a non-generic method without ref/in/out parameters";
+				return function;
+			}
+			if (!method.IsStatic && !DerivesFrom(method.ContainingType, ENGINE_OBJECT)) {
+				function.problem = "Instance [Callable] methods must be declared on a Behavior or DataAsset";
+				return function;
+			}
+		} else if (!method.IsStatic || method.IsGenericMethod || method.Parameters.Any(static parameter => parameter.RefKind != RefKind.None)) {
 			function.problem = "Use a static method without type parameters or ref/in/out parameters";
 			return function;
 		}
@@ -244,7 +267,11 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 	}
 
 	static string Signature(Function function) {
-		return (function.result?.token ?? "void") + "(" + string.Join(",", function.parameters.Select(static parameter => parameter.token)) + ")";
+		IEnumerable<string> paramTokens = function.parameters.Select(static parameter => parameter.token);
+		if (function.instanceMethod) {
+			paramTokens = new[] { "object" }.Concat(paramTokens);
+		}
+		return (function.result?.token ?? "void") + "(" + string.Join(",", paramTokens) + ")";
 	}
 
 	static string Literal(string text) {
@@ -290,6 +317,10 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 	static void RenderExport(StringBuilder text, Function function) {
 		text.Append("\t\t\t").Append(INTEROP).Append("NativeFunctions.Export(").Append(Literal(function.name)).Append(", ").Append(Literal(Signature(function)));
 		text.Append(", static (ref ").Append(INTEROP).Append("NativeFrame frame) => {\n");
+		if (function.instanceMethod) {
+			text.Append("\t\t\t\t").Append(function.receiverType).Append("? self = frame.GetObject<").Append(function.receiverType).Append(">();\n");
+			text.Append("\t\t\t\tif (self == null) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n");
+		}
 		StringBuilder arguments = new();
 		for (int at = 0; at < function.parameters.Length; ++at) {
 			Slot parameter = function.parameters[at];
@@ -298,7 +329,7 @@ public sealed class FunctionGenerator : IIncrementalGenerator {
 			text.Append(parameter.token == "object" && !parameter.type.EndsWith("?", StringComparison.Ordinal) ? "!" : "").Append(";\n");
 			arguments.Append(at > 0 ? ", " : "").Append(local);
 		}
-		string call = function.qualified + "(" + arguments + ")";
+		string call = (function.instanceMethod ? "self." + function.method : function.qualified) + "(" + arguments + ")";
 		if (function.result == null) {
 			text.Append("\t\t\t\t").Append(call).Append(";\n");
 		} else {

@@ -12,6 +12,7 @@
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
 #include "Shalltear/Core/Module/ModuleEvents.h"
+#include "Shalltear/Core/Module/ModuleThunkRegistry.h"
 #include "Shalltear/Core/Module/TypeReplacement.h"
 #include "Shalltear/Core/Object.h"
 #include "Shalltear/Core/Profiler.h"
@@ -338,8 +339,11 @@ namespace Shalltear {
 			u32 typesSwept = TypeRegistry::UnregisterOwnedBy(entry.image);
 			size_t vtablesSwept = VariantDispatch::UnregisterAllOwnedBy(entry.image);
 			u32 nodesUnlinked = TypeRegistry::UnlinkPendingRegistrationsIn(entry.image);
+			ModuleThunkRegistry::UnregisterThunkTablesOwnedBy(entry.image);
+			ModuleThunkRegistry::UnlinkPendingThunkTablesIn(entry.image);
 
 			TypeRegistry::RegisterPendingTypes();
+			ModuleThunkRegistry::RegisterPendingThunkTables();
 
 			SLT_LOG_INFO("Module", "unloaded '{}': {} type(s), {} vtable(s), {} registrar node(s), {} core extension(s) swept",
 						 entry.name, typesSwept, vtablesSwept, nodesUnlinked, extensionsSwept);
@@ -433,7 +437,10 @@ namespace Shalltear {
 			TypeRegistry::UnregisterOwnedBy(image);
 			VariantDispatch::UnregisterAllOwnedBy(image);
 			TypeRegistry::UnlinkPendingRegistrationsIn(image);
+			ModuleThunkRegistry::UnregisterThunkTablesOwnedBy(image);
+			ModuleThunkRegistry::UnlinkPendingThunkTablesIn(image);
 			TypeRegistry::RegisterPendingTypes();
+			ModuleThunkRegistry::RegisterPendingThunkTables();
 			FreeModuleImage(image);
 			DeleteCacheCopy(owned);
 			return {};
@@ -573,7 +580,10 @@ namespace Shalltear {
 					TypeRegistry::UnregisterOwnedBy(newImage);
 					VariantDispatch::UnregisterAllOwnedBy(newImage);
 					TypeRegistry::UnlinkPendingRegistrationsIn(newImage);
+					ModuleThunkRegistry::UnregisterThunkTablesOwnedBy(newImage);
+					ModuleThunkRegistry::UnlinkPendingThunkTablesIn(newImage);
 					TypeRegistry::RegisterPendingTypes();
+					ModuleThunkRegistry::RegisterPendingThunkTables();
 					FreeModuleImage(newImage);
 					newImage = nullptr;
 				}

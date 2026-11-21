@@ -197,6 +197,7 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillModuleAPIBindings(SltBindings& table);
 	void FillModuleEventsBindings(SltBindings& table);
 	void FillModuleSystemBindings(SltBindings& table);
+	void FillModuleThunksBindings(SltBindings& table);
 	void FillMonitorInfoBindings(SltBindings& table);
 	void FillNativeFieldsBindings(SltBindings& table);
 	void FillNativeWindowHandleBindings(SltBindings& table);
@@ -587,6 +588,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillModuleAPIBindings(table);
 		FillModuleEventsBindings(table);
 		FillModuleSystemBindings(table);
+		FillModuleThunksBindings(table);
 		FillMonitorInfoBindings(table);
 		FillNativeFieldsBindings(table);
 		FillNativeWindowHandleBindings(table);

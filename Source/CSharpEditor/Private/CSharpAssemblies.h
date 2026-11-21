@@ -43,6 +43,7 @@ namespace Shalltear::CSharpEditor {
 			Vector<str> defines{GetMemoryResource(MemTag::Editor)};
 			Vector<str> nestedFolders{GetMemoryResource(MemTag::Editor)};
 			bool editorOnly = false;
+			bool allowUnsafe = false;
 		};
 
 		struct Problem {

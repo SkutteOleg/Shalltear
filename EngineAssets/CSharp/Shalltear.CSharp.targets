@@ -114,4 +114,18 @@
 			<LinkerArg Include="/Brepro" />
 		</ItemGroup>
 	</Target>
+
+	<PropertyGroup>
+		<ShalltearRefactorPath Condition="'$(ShalltearRefactorPath)' == ''">$(ShalltearManagedDir)Refactor/Shalltear.Refactor.dll</ShalltearRefactorPath>
+	</PropertyGroup>
+
+	<Target Name="ShalltearEmitCppViews" AfterTargets="CoreCompile"
+			Condition="'$(ShalltearPlayerBuild)' != 'true' and '$(ShalltearEmitCppViews)' != 'false' and Exists('$(MSBuildProjectDirectory)/CMakeLists.txt') and Exists('$(ShalltearRefactorPath)') and '$(AssemblyName)' != '' and !$(AssemblyName.EndsWith('.Native'))">
+		<PropertyGroup>
+			<_ShalltearDotNetHost Condition="'$(DOTNET_HOST_PATH)' != ''">$(DOTNET_HOST_PATH)</_ShalltearDotNetHost>
+			<_ShalltearDotNetHost Condition="'$(_ShalltearDotNetHost)' == ''">dotnet</_ShalltearDotNetHost>
+		</PropertyGroup>
+		<Exec Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRefactorPath)&quot; --emit-views --project-root &quot;$(MSBuildProjectDirectory)&quot; --out-dir &quot;$(MSBuildProjectDirectory)/Library/CSharp/Generated/Views&quot; --runtime-dir &quot;$(ShalltearManagedDir)&quot;"
+			  StandardOutputImportance="low" />
+	</Target>
 </Project>

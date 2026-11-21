@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>$(ShalltearTargetFramework)</TargetFramework>
+		<RuntimeFrameworkVersion>$(ShalltearRuntimeVersion)</RuntimeFrameworkVersion>
+		<RollForward>Disable</RollForward>
+		<UseAppHost>false</UseAppHost>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<OutDir>$(ShalltearManagedOutput)HeaderBinder/</OutDir>
+	</PropertyGroup>
+</Project>

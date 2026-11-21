@@ -1,0 +1,44 @@
+{
+	"area": "ModuleThunks",
+	"include": "ModuleThunkBindings.h",
+	"class": "Shalltear.Interop.ModuleThunkBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "GetTable",
+			"cpp": "::Shalltear::CSharpImpl::ModuleThunkBindings::GetTable(moduleName)",
+			"returns": "u64",
+			"params": [{ "name": "moduleName", "type": "string" }],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "GetTable", "kind": "method" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "::Shalltear::CSharpImpl::ModuleThunkBindings::GetCount(moduleName)",
+			"returns": "u32",
+			"params": [{ "name": "moduleName", "type": "string" }],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "GetCount", "kind": "method" }
+		},
+		{
+			"id": "GetEpoch",
+			"cpp": "::Shalltear::CSharpImpl::ModuleThunkBindings::GetEpoch()",
+			"returns": "u64",
+			"params": [],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "GetEpoch", "kind": "method" }
+		},
+		{
+			"id": "GetEpochAddress",
+			"cpp": "::Shalltear::CSharpImpl::ModuleThunkBindings::GetEpochAddress()",
+			"returns": "u64",
+			"params": [],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "GetEpochAddress", "kind": "method" }
+		}
+	]
+}

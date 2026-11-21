@@ -11,7 +11,7 @@
 		<RootNamespace>{{ASSEMBLY_NAME}}</RootNamespace>
 		<OutputPath>$(ShalltearBuildRoot)bin/</OutputPath>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-		<DefineConstants>$(DefineConstants){{DEFINES}}</DefineConstants>
+		<DefineConstants>$(DefineConstants){{DEFINES}}</DefineConstants>{{ASSEMBLY_UNSAFE_PROPERTY}}
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="{{SOURCE_FOLDER}}/**/*.cs"{{COMPILE_EXCLUDE}} />

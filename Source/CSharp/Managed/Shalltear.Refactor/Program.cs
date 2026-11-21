@@ -15,7 +15,9 @@ internal static class Program {
 		SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted);
 
 	public static int Main(string[] args) {
+		bool emitViews = false;
 		string? projectRoot = null;
+		string? outDir = null;
 		string? targetFile = null;
 		string? oldName = null;
 		string? newName = null;
@@ -25,8 +27,14 @@ internal static class Program {
 			string arg = args[i];
 			string? Next() => i + 1 < args.Length ? args[++i] : null;
 			switch (arg) {
+			case "--emit-views":
+				emitViews = true;
+				break;
 			case "--project-root":
 				projectRoot = Next();
+				break;
+			case "--out-dir":
+				outDir = Next();
 				break;
 			case "--file":
 				targetFile = Next();
@@ -41,6 +49,14 @@ internal static class Program {
 				runtimeDir = Next();
 				break;
 			}
+		}
+
+		if (emitViews) {
+			if (string.IsNullOrWhiteSpace(projectRoot) || string.IsNullOrWhiteSpace(outDir)) {
+				Console.Error.WriteLine("usage: Shalltear.Refactor --emit-views --project-root <dir> --out-dir <dir> [--runtime-dir <dir>]");
+				return 2;
+			}
+			return CppViewEmitter.Run(projectRoot, outDir, runtimeDir);
 		}
 
 		if (string.IsNullOrWhiteSpace(targetFile) || string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) {
@@ -172,7 +188,7 @@ internal static class Program {
 		return files;
 	}
 
-	static List<MetadataReference> CollectReferences(string? runtimeDir) {
+	internal static List<MetadataReference> CollectReferences(string? runtimeDir) {
 		List<MetadataReference> refs = new();
 		HashSet<string> seen = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
 		void AddFile(string path) {

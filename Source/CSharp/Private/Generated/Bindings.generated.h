@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xd79c47e0448418f1ull
-#define SLT_BINDINGS_INPUT_DIGEST 0x5830265d3d94d839ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xaddc8ae2ee9b62cbull
+#define SLT_BINDINGS_INPUT_DIGEST 0x6aeb6fc82e4012edull
 
 typedef struct SltString SltString;
 
@@ -1293,6 +1293,10 @@ typedef struct SltBindings {
 	int32_t (*moduleSystemGetNativeHandle)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*moduleSystemGetExecutableImage)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*moduleSystemFindSymbol)(const uint64_t* arguments, uint64_t* results);
+	uint64_t (*moduleThunksGetTable)(SltString moduleName);
+	uint32_t (*moduleThunksGetCount)(SltString moduleName);
+	uint64_t (*moduleThunksGetEpoch)(void);
+	uint64_t (*moduleThunksGetEpochAddress)(void);
 	int32_t (*monitorInfoGetId)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*monitorInfoSetId)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*monitorInfoGetName)(const uint64_t* arguments, uint64_t* results);

@@ -25,3 +25,7 @@ public sealed class ExportToNativeAttribute : Attribute {
 		Name = name;
 	}
 }
+
+/// <summary>Exposes a C# method for C++20 view headers and ScriptFunctions calls.</summary>
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public sealed class CallableAttribute : Attribute {}

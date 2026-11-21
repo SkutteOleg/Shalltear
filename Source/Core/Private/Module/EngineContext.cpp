@@ -33,6 +33,7 @@ namespace Shalltear {
 		CaptureSettingsEngineState(table);
 		CaptureFrameStagesEngineState(table);
 		CaptureFramePassesEngineState(table);
+		CaptureModuleThunkRegistryEngineState(table);
 		table.slotCount = ENGINE_STATE_SLOT_COUNT;
 
 		out.version = SLT_ENGINE_CONTEXT_VERSION;
@@ -82,6 +83,7 @@ namespace Shalltear {
 		BindSettingsEngineState(*table);
 		BindFrameStagesEngineState(*table);
 		BindFramePassesEngineState(*table);
+		BindModuleThunkRegistryEngineState(*table);
 		return true;
 	}
 

@@ -115,7 +115,7 @@ function(_shalltear_add_player_resources TARGET_NAME ICON_FILE)
 endfunction()
 
 function(_shalltear_add_player_impl MODULE_NAME)
-	cmake_parse_arguments(SLT_PLAYER "EDITOR" "OUTPUT_DIRECTORY" "SOURCES" ${ARGN})
+	cmake_parse_arguments(SLT_PLAYER "EDITOR" "OUTPUT_DIRECTORY" "SOURCES;BIND_HEADERS;BIND_NAMESPACES" ${ARGN})
 
 	shalltear_enforce_toolchain(${MODULE_NAME})
 	shalltear_enforce_engine_identity(${MODULE_NAME})
@@ -127,7 +127,9 @@ function(_shalltear_add_player_impl MODULE_NAME)
 			"and a dev checkout produces one with `python Scripts/build_sdk.py`.")
 	endif()
 
-	add_library(${MODULE_NAME} STATIC ${SLT_PLAYER_SOURCES})
+	_shalltear_prepare_module_sources(${MODULE_NAME} playerModuleSources "${SLT_PLAYER_BIND_HEADERS}" ${SLT_PLAYER_SOURCES})
+
+	add_library(${MODULE_NAME} STATIC ${playerModuleSources})
 	target_link_libraries(${MODULE_NAME} PRIVATE Shalltear::Core)
 	set_target_properties(${MODULE_NAME} PROPERTIES
 		CXX_STANDARD 20
@@ -176,6 +178,13 @@ function(_shalltear_add_player_impl MODULE_NAME)
 		_shalltear_refuse_unlisted_packages(${MODULE_NAME} "${playerPackageTargets}" DISABLED)
 	endif()
 	_shalltear_write_package_umbrellas(${MODULE_NAME} "${playerPackageTargets}")
+
+	if(SHALLTEAR_PROJECT_ROOT)
+		set(playerProjectRoot "${SHALLTEAR_PROJECT_ROOT}")
+	else()
+		set(playerProjectRoot "${CMAKE_CURRENT_SOURCE_DIR}")
+	endif()
+	_shalltear_attach_header_bindings(${MODULE_NAME} "${playerProjectRoot}" "${SLT_PLAYER_BIND_HEADERS}" "${SLT_PLAYER_BIND_NAMESPACES}")
 
 	add_executable(${playerTarget} ${playerEntrySources} "${playerPackageSource}")
 	if(WIN32)

@@ -3,6 +3,7 @@
 #include "Shalltear/Core/BuildIdentity.generated.h"
 #include "Shalltear/Core/Export.h"
 #include "Shalltear/Core/Module/EngineContext.h"
+#include "Shalltear/Core/Module/ModuleThunkRegistry.h"
 #include "Shalltear/Core/Platform.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
 #include "Shalltear/Core/Types.h"
@@ -61,6 +62,7 @@ namespace Shalltear {
 			},                                                                        \
 			+[]() {                                                                   \
 				::Shalltear::TypeRegistry::RegisterPendingTypes();                    \
+				::Shalltear::ModuleThunkRegistry::RegisterPendingThunkTables();       \
 			},                                                                        \
 			ShutdownFn};                                                              \
 		return &api;                                                                  \

@@ -289,6 +289,7 @@ internal static unsafe class Bridge {
 		ScriptTypes.ForgetListeners();
 		ObjectCache.Clear();
 		NativeObject.Forget();
+		ModuleThunks.Reset();
 		_attached = false;
 	}
 }

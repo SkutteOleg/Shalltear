@@ -154,6 +154,7 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 			tokens.push_back({"ASSEMBLY_NAME", definition.name});
 			tokens.push_back({"SOURCE_FOLDER", EscapeItem(definition.folder)});
 			tokens.push_back({"DEFINES", defines});
+			tokens.push_back({"ASSEMBLY_UNSAFE_PROPERTY", definition.allowUnsafe ? "\n\t\t<AllowUnsafeBlocks>true</AllowUnsafeBlocks>" : ""});
 			tokens.push_back({"COMPILE_EXCLUDE", Excluding(definition.nestedFolders)});
 			tokens.push_back({"PROJECT_REFERENCES", references});
 		}

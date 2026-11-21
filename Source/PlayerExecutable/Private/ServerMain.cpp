@@ -9,6 +9,7 @@
 #include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Module/ModuleThunkRegistry.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
 #include "Shalltear/Core/Scene/Scene.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
@@ -57,6 +58,7 @@ namespace Shalltear {
 		Settings::Initialize(paths);
 
 		SceneSystem::Initialize();
+		ModuleThunkRegistry::RegisterPendingThunkTables();
 		InitializeLinkedPackages();
 		RegisterGameCoreExtensions();
 

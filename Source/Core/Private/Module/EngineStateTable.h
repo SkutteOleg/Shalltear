@@ -29,9 +29,10 @@ namespace Shalltear::ModuleInternal {
 		void* settings;
 		void* frameStages;
 		void* framePasses;
+		void* moduleThunkRegistry;
 	};
 
-	inline constexpr u32 ENGINE_STATE_SLOT_COUNT = 22;
+	inline constexpr u32 ENGINE_STATE_SLOT_COUNT = 23;
 
 	void CaptureMemoryEngineState(EngineStateTable& table);
 	void BindMemoryEngineState(const EngineStateTable& table);
@@ -77,5 +78,7 @@ namespace Shalltear::ModuleInternal {
 	void BindFrameStagesEngineState(const EngineStateTable& table);
 	void CaptureFramePassesEngineState(EngineStateTable& table);
 	void BindFramePassesEngineState(const EngineStateTable& table);
+	void CaptureModuleThunkRegistryEngineState(EngineStateTable& table);
+	void BindModuleThunkRegistryEngineState(const EngineStateTable& table);
 
 } // namespace Shalltear::ModuleInternal

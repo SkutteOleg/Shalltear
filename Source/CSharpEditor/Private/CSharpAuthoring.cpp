@@ -48,6 +48,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		bool _startedServers = false;
 		std::optional<FileWatcher> _assetsWatcher;
 		i64 _propsTime = 0;
+		i64 _userBindingsTime = 0;
 		u64 _lastPollTicks = 0;
 		u32 _describedRequests = 0;
 		u32 _handledRequests = 0;
@@ -86,6 +87,10 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			return ReadWriteTime(fs::path(_options.projectPath) / "CSharp.props");
 		}
 
+		i64 ReadUserBindingsTime() {
+			return ReadWriteTime(fs::path(_options.projectPath) / CSharpAssemblies::NativeFolder / "UserBindings.g.cs");
+		}
+
 		str DescribeFile(const fs::path& file) {
 			std::error_code ec;
 			const std::uintmax_t size = fs::file_size(file, ec);
@@ -102,6 +107,14 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 				const str extension = StringUtil::ToLower(it->path().extension().generic_string());
 				if (it->is_regular_file(entry) && (extension == ".cs" || extension == CSharpAssemblies::Extension)) {
 					rows.push_back(std::format("{} {}", it->path().lexically_relative(root).generic_string(), DescribeFile(it->path())));
+				}
+			}
+			const fs::path nativeDir = root / CSharpAssemblies::NativeFolder;
+			for (const char* generated : {"NativeTypes.g.cs", "UserBindings.g.cs"}) {
+				std::error_code entry;
+				const fs::path file = nativeDir / generated;
+				if (fs::is_regular_file(file, entry)) {
+					rows.push_back(std::format("{} {}", file.lexically_relative(root).generic_string(), DescribeFile(file)));
 				}
 			}
 			std::sort(rows.begin(), rows.end());
@@ -254,6 +267,11 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 				_propsTime = time;
 				NotifySourceChanged();
 			}
+			const i64 bindingsTime = ReadUserBindingsTime();
+			if (bindingsTime != _userBindingsTime) {
+				_userBindingsTime = bindingsTime;
+				NotifyDefinitionsChanged();
+			}
 		}
 
 		CompileStatus::SourceState ReadState(void*) {
@@ -292,6 +310,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		CompileStatus::RegisterSource({"C#", &ReadState, &CompileNow, &ReloadNow, &ReadHeading, nullptr}, owner);
 		CSharpReload::Begin(_compile.GetOutputAssembly());
 		_moduleBase = ScriptProjectOps::GetLoadedModuleBase();
+		_userBindingsTime = ReadUserBindingsTime();
 		_moduleListener = New<ModuleListener>(MemTag::Editor);
 		EditorEvents::ModuleReloadEnded.Subscribe(EventBus::GetGlobal(), Handle<ModuleListener>(_moduleListener), &ModuleListener::OnModuleReloadEnded);
 		ReadAssemblies(false);
@@ -309,7 +328,13 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		if (moduleBase != _moduleBase || _moduleReloaded) {
 			_moduleBase = moduleBase;
 			_moduleReloaded = false;
-			if (CSharpNativeTypes::Refresh(_options.projectPath)) {
+			bool changed = CSharpNativeTypes::Refresh(_options.projectPath);
+			const i64 bindingsTime = ReadUserBindingsTime();
+			if (bindingsTime != _userBindingsTime) {
+				_userBindingsTime = bindingsTime;
+				changed = true;
+			}
+			if (changed) {
 				NotifyDefinitionsChanged();
 			}
 		}
@@ -352,6 +377,7 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 				{"DOTNET_ROOT", _options.sdkRoot},
 				{"DOTNET_CLI_TELEMETRY_OPTOUT", "1"},
 				{"DOTNET_NOLOGO", "1"},
+				{"DOTNET_MULTILEVEL_LOOKUP", "0"},
 			};
 			StartDetachedProcess(QuoteCommandArgument(DotNetToolchain::GetMuxerPath(_options.sdkRoot)) + " build-server shutdown", _options.projectPath,
 								 variables);

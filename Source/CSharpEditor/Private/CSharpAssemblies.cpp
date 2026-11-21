@@ -183,11 +183,14 @@ namespace Shalltear::CSharpEditor::CSharpAssemblies {
 			kept.erase(ready);
 		}
 
-		std::error_code found;
-		if (fs::is_regular_file(root / NativeFolder / "NativeTypes.g.cs", found)) {
+		std::error_code foundNative;
+		std::error_code foundUser;
+		if (fs::is_regular_file(root / NativeFolder / "NativeTypes.g.cs", foundNative) ||
+			fs::is_regular_file(root / NativeFolder / "UserBindings.g.cs", foundUser)) {
 			Definition native;
 			native.name = NativeName(defaultAssembly);
 			native.folder = NativeFolder;
+			native.allowUnsafe = true;
 			for (Definition& definition : set.definitions) {
 				definition.references.push_back(native.name);
 			}

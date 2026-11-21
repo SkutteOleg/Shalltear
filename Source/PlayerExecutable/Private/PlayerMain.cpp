@@ -13,6 +13,7 @@
 #include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Module/ModuleThunkRegistry.h"
 #include "Shalltear/Core/Object.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
 #include "Shalltear/Core/Scene/Scene.h"
@@ -242,6 +243,7 @@ namespace Shalltear {
 		logConfig.createConsole = options.console;
 		LogManager::Initialize(logConfig);
 		TypeRegistry::InitializePrimitives();
+		ModuleThunkRegistry::RegisterPendingThunkTables();
 
 		str root = GetExecutableDirectory();
 		if (root.empty()) {

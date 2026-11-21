@@ -410,8 +410,15 @@ namespace Shalltear::ScriptProjectOps {
 			return false;
 		}
 		std::error_code ec;
-		return fs::exists(fs::path(Join(projectPath, "CMakeLists.txt")), ec) &&
-			   fs::is_directory(fs::path(GetSourceDirectory(projectPath)), ec);
+		const fs::path cmakeLists(Join(projectPath, "CMakeLists.txt"));
+		if (!fs::is_regular_file(cmakeLists, ec)) {
+			return false;
+		}
+		if (fs::is_directory(fs::path(GetSourceDirectory(projectPath)), ec)) {
+			return true;
+		}
+		const str text = FileSystem::ReadTextFile(Path(cmakeLists.generic_string()), MemTag::Editor);
+		return text.find("shalltear_add_module") != str::npos;
 	}
 
 	bool IsModuleBinaryOutOfDate(const str& projectPath, std::string_view configName, str* outReason) {

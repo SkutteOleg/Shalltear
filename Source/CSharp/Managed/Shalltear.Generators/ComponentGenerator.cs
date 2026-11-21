@@ -243,9 +243,12 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			FunctionGenerator.NATIVE_FUNCTION, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => true);
 		IncrementalValuesProvider<bool> exports = context.SyntaxProvider.ForAttributeWithMetadataName(
 			FunctionGenerator.EXPORT_TO_NATIVE, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => true);
+		IncrementalValuesProvider<bool> callables = context.SyntaxProvider.ForAttributeWithMetadataName(
+			FunctionGenerator.CALLABLE, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => true);
 		IncrementalValueProvider<bool> written =
 			context.CompilationProvider.Select(static (compilation, _) => compilation.Assembly.GetTypeByMetadataName("Shalltear.Generated.TypeTable") != null);
-		IncrementalValueProvider<bool> parts = natives.Collect().Combine(exports.Collect()).Combine(written).Select(static (pair, _) => !pair.Left.Left.IsEmpty || !pair.Left.Right.IsEmpty || pair.Right);
+		IncrementalValueProvider<bool> parts = natives.Collect().Combine(exports.Collect()).Combine(callables.Collect()).Combine(written)
+			.Select(static (pair, _) => !pair.Left.Left.Left.IsEmpty || !pair.Left.Left.Right.IsEmpty || !pair.Left.Right.IsEmpty || pair.Right);
 		IncrementalValuesProvider<string> loads = context.SyntaxProvider.ForAttributeWithMetadataName(
 			EDITOR_LOAD, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => EditorLoadName(found.TargetSymbol));
 		IncrementalValueProvider<string> loaded =
