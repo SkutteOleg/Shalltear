@@ -88,6 +88,9 @@ namespace {
 			PropertyDrawers::Initialize();
 			PanelManager::Initialize();
 			RegisterBuiltInPanels();
+			if (!RenderSystem::IsRenderingAvailable()) {
+				GTEST_SKIP() << "no Vulkan device available";
+			}
 
 			WindowDesc desc;
 			desc.title = "EditorIdleFrameCost";

@@ -11,6 +11,7 @@
 #include "Shalltear/Core/Graphics/MeshAsset.h"
 #include "Shalltear/Core/Graphics/MeshRenderer.h"
 #include "Shalltear/Core/Graphics/PrimitiveMesh.h"
+#include "Shalltear/Core/Graphics/RHIDevice.h"
 #include "Shalltear/Core/Graphics/ShaderAsset.h"
 #include "Shalltear/Core/Module.h"
 #include "Shalltear/Core/Reflection.h"
@@ -546,6 +547,13 @@ void PotionDrinker::OnEnable() {
 } // anonymous namespace
 
 TEST_F(PlayerBuildIntegrationTest, PipelineRunsStaticPlayer) {
+	RHI::DeviceDesc deviceDesc;
+	RHI::Device* device = RHI::Device::Create(deviceDesc);
+	if (!device) {
+		GTEST_SKIP() << "no Vulkan device that can present";
+	}
+	RHI::Device::Destroy(device);
+
 	Config projectFile;
 	projectFile.SetString("Project", "name", "PlayerProbe");
 	ASSERT_TRUE(projectFile.Save(Path(Root() + "/Project.ini")));

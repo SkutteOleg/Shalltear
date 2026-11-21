@@ -593,6 +593,9 @@ TEST_F(NodeShaderWindowFixture, DroppedPropertyInspectsNode) {
 }
 
 TEST_F(NodeShaderWindowFixture, NoGraphCompileRunsOnMainThread) {
+	if (!RenderSystem::IsRenderingAvailable()) {
+		GTEST_SKIP() << "no Vulkan device available";
+	}
 	if (!CompilerAvailable()) {
 		GTEST_SKIP() << "no compiler";
 	}
@@ -1229,6 +1232,12 @@ namespace {
 } // namespace
 
 TEST_F(NodeShaderWindowFixture, BigGraphPreviewsInOneProgram) {
+	if (!RenderSystem::IsRenderingAvailable()) {
+		GTEST_SKIP() << "no Vulkan device available";
+	}
+	if (!CompilerAvailable()) {
+		GTEST_SKIP() << "dxcompiler.dll unavailable";
+	}
 	const ScaleGraph scale = MakeScaleGraph();
 	const Guid graph = StageGraphText("Scale.slshader", scale.text);
 	ASSERT_TRUE(graph.IsValid());

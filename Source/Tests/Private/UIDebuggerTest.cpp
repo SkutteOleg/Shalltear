@@ -3603,6 +3603,9 @@ namespace {
 	}
 
 	TEST_F(UIDebuggerPanelFixture, AtlasButtonSwapsInspectorColumnAndBack) {
+		if (!RenderSystem::IsRenderingAvailable()) {
+			GTEST_SKIP() << "no Vulkan device available";
+		}
 		UI::Context& context = WindowContext();
 		UI::ElementHandle host = Host();
 		Handle<EditorPanel> panel = OpenDebugger(host);
