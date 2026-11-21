@@ -8,6 +8,7 @@
 #include "ManagedDataAsset.h"
 #include "InputMaps.h"
 #include "ManagedTypes.h"
+#include "NativeFieldBindings.h"
 #include "PackageBindings.h"
 #include "ScriptEvents.h"
 #include "ScriptProfile.h"
@@ -211,6 +212,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		ScriptEvents::Reset();
 		ScriptProfile::Reset();
 		FunctionBindings::Reset();
+		NativeFieldBindings::Reset();
 		_managed = {};
 		_attached = false;
 	}

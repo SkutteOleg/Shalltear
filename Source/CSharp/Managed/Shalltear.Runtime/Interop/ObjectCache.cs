@@ -23,6 +23,7 @@ internal static partial class ObjectCache {
 	static readonly Dictionary<ulong, EngineObject> _wrappers = new();
 	static readonly Dictionary<ulong, Func<ulong, EngineObject>> _factories = new();
 	static readonly List<ulong> _ids = new();
+	static readonly List<ulong> _userTypes = new();
 	static int _cursor;
 
 	internal static int Count => _ids.Count;
@@ -73,6 +74,30 @@ internal static partial class ObjectCache {
 		where T : EngineObject {
 		EngineTypeOf<T>.hash = Bridge.HashOf(engineType);
 		_factories[EngineTypeOf<T>.hash] = create;
+	}
+
+	internal static void WrapUser<T>(string engineType, Func<ulong, T> create)
+		where T : EngineObject {
+		Wrap(engineType, create);
+		_userTypes.Add(EngineTypeOf<T>.hash);
+	}
+
+	internal static void ForgetUser() {
+		if (_userTypes.Count == 0) {
+			return;
+		}
+		foreach (ulong type in _userTypes) {
+			_factories.Remove(type);
+		}
+		_userTypes.Clear();
+		for (int index = _ids.Count - 1; index >= 0; --index) {
+			if (_wrappers[_ids[index]] is NativeComponent) {
+				_wrappers.Remove(_ids[index]);
+				_ids[index] = _ids[_ids.Count - 1];
+				_ids.RemoveAt(_ids.Count - 1);
+			}
+		}
+		_cursor = 0;
 	}
 
 	internal static void Declare<T>(string engineType)

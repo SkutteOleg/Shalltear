@@ -16,6 +16,7 @@
 #include "Shalltear/Editor/BuildPipeline.h"
 #include "Shalltear/Editor/BuildProfile.h"
 #include "Shalltear/Editor/BuildTarget.h"
+#include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/EditorExtensions.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
@@ -27,6 +28,7 @@
 #include <format>
 #include <fstream>
 #include <memory>
+#include <thread>
 
 using namespace Shalltear;
 using namespace Shalltear::CSharpTests;
@@ -90,6 +92,78 @@ namespace {
 
 	constexpr const char* POINTER = "namespace Scripted;\n\npublic static class Pointer {\n\tpublic static unsafe int Read(int* at) {\n\t\treturn *at;\n\t}\n}\n";
 
+	constexpr const char* MIXED_MARKER = "SHALLTEAR_MIXED_PROBE";
+
+	constexpr const char* METER_HEADER = R"(#pragma once
+
+#include "Shalltear.h"
+
+class Meter : public Behavior {
+public:
+	SLT_REFLECT_COMPONENT(Meter, Behavior)
+	SLT_REFLECT_FIELD(reading)
+	SLT_REFLECT_FIELD(unit)
+	SLT_REFLECT_METHOD(Tick)
+	SLT_END_REFLECT()
+
+	void Tick();
+
+	f32 reading = 1.5f;
+	str unit = "bar";
+	i32 ticks = 0;
+protected:
+	void OnUpdate() override;
+private:
+	i32 _frames = 0;
+};
+)";
+
+	constexpr const char* METER_SOURCE = R"(#include "Meter.h"
+
+SLT_REGISTER_TYPE(Meter)
+
+f32 MeterScale(f32 value, i32 factor) {
+	return value * static_cast<f32>(factor);
+}
+SLT_SCRIPT_EXPORT(MeterScale)
+
+void Meter::Tick() {
+	++ticks;
+}
+
+void Meter::OnUpdate() {
+	if (++_frames == 2) {
+		ScriptFunction<i32(i32)> twice = ScriptFunctions::Find<i32(i32)>("Mixed.Twice");
+		SLT_LOG_INFO("PlayerProbe", "SHALLTEAR_MIXED_PROBE native reading={} unit={} ticks={} twice={}", reading, unit, ticks, twice.IsBound() ? twice(21) : -1);
+	}
+}
+)";
+
+	constexpr const char* READER = R"(using System.Globalization;
+using Shalltear;
+
+namespace Mixed;
+
+public sealed partial class Reader : Behavior {
+	[NativeFunction("MeterScale")]
+	private static partial float Scale(float value, int factor);
+
+	[ExportToNative("Mixed.Twice")]
+	internal static int Twice(int value) {
+		return value * 2;
+	}
+
+	protected override void OnEnable() {
+		Meter meter = Owner.GetComponent<Meter>()!;
+		meter.Reading += 1f;
+		meter.Unit = "psi";
+		meter.Tick();
+		Log.Info("PlayerProbe", "SHALLTEAR_MIXED_PROBE managed reading=" + meter.Reading.ToString(CultureInfo.InvariantCulture) + " scaled=" +
+									Scale(2f, 3).ToString(CultureInfo.InvariantCulture));
+	}
+}
+)";
+
 	str Hex(std::string_view name) {
 		return std::format("{:016x}", StringHash(name).GetValue());
 	}
@@ -115,6 +189,15 @@ namespace {
 						   "\t\"objects\": [\n{},\n{}\n\t]\n}}\n",
 						   BuildInfo::GetEngineHash(), SceneObjectRow(1, "Camera", camera),
 						   SceneObjectRow(3, "Guide", talker + ", " + body + ", " + bumper + ", " + shape));
+	}
+
+	str MixedSceneText() {
+		const str camera = std::format("{{\"id\": 2, \"type\": \"{}\", \"fields\": {{\"_type\": \"Camera\", \"_enabledSelf\": true}}}}", Hex("Camera"));
+		const str meter = std::format("{{\"id\": 4, \"type\": \"{}\", \"fields\": {{\"_type\": \"Meter\", \"_enabledSelf\": true}}}}", Hex("Meter"));
+		const str reader = std::format("{{\"id\": 5, \"type\": \"{}\", \"fields\": {{\"_type\": \"Mixed.Reader\", \"_enabledSelf\": true}}}}", Hex("Mixed.Reader"));
+		return std::format("{{\n\t\"_type\": \"Scene\",\n\t\"formatVersion\": 1,\n\t\"engineHash\": \"{:016x}\",\n\t\"name\": \"Main\",\n\t\"nextLocalId\": 6,\n"
+						   "\t\"objects\": [\n{},\n{}\n\t]\n}}\n",
+						   BuildInfo::GetEngineHash(), SceneObjectRow(1, "Camera", camera), SceneObjectRow(3, "Rig", meter + ", " + reader));
 	}
 
 	str ReadBytes(const fs::path& file) {
@@ -342,6 +425,117 @@ namespace {
 
 		static fs::path Library(const char* profile) {
 			return Staging(profile) / LIBRARY;
+		}
+	};
+
+	Suite* _mixed = nullptr;
+
+	class CSharpMixedPlayerTest : public ::testing::Test {
+	protected:
+		static void SetUpTestSuite() {
+			_mixed = new Suite();
+			Suite& suite = *_mixed;
+			if (!TestPlatform::BuildsCSharpPlayers()) {
+				suite.skip = "C# players build for Windows only";
+				return;
+			}
+			suite.config = str(ScriptProjectOps::GetActiveConfigName());
+			const str staticTree = FindStaticSibling(suite.config);
+			if (staticTree.empty()) {
+				suite.skip = "no sibling static " + suite.config + " tree with the C# package";
+				return;
+			}
+			suite.editor = Path(ScriptProjectOps::GetEditorExecutablePath()).GetDirectory() + "/Shalltear" SLT_TEST_EXE_SUFFIX;
+			std::error_code ec;
+			if (!fs::is_regular_file(fs::path(suite.editor), ec)) {
+				suite.skip = "no editor exe (" + suite.editor + ")";
+				return;
+			}
+
+			suite.root = fs::temp_directory_path() / ("slt_cs_mixed_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+			suite.project = suite.root / "Mixed Game";
+			fs::create_directories(suite.project / "Assets" / "Scripts");
+			fs::create_directories(suite.project / "Assets" / "Scenes");
+			suite.userData = std::make_unique<ScopedUserDataDirectory>(suite.root / "UserData");
+			fs::create_directories(suite.root / "UserData" / "Shalltear");
+			std::ofstream(suite.root / "UserData" / "Shalltear" / "UserSettings.ini", std::ios::binary) << "[Editor/Build]\nstaticSDKRoot = " << staticTree << "\n";
+
+			Config projectFile;
+			projectFile.SetString("Project", "name", "MixedGame");
+			ASSERT_TRUE(projectFile.Save(Path(suite.project.generic_string() + "/Project.ini")));
+			Config settings;
+			settings.SetString("Packages", "enabled", "dev.shalltear.csharp");
+			ASSERT_TRUE(settings.Save(Path(suite.project.generic_string() + "/ProjectSettings.ini")));
+			ScriptProjectOps::ScaffoldOptions scaffold;
+			scaffold.moduleName = "MixedGame";
+			scaffold.sdkRoot = ScriptProjectOps::GetSDKRoot();
+			scaffold.editorExecutable = suite.editor;
+			scaffold.includeStarterComponent = false;
+			ScriptProjectOps::ScaffoldResult scaffolded;
+			FileSystem::Mount("engine", Path(DeviceLossTest::RepoDir("EngineAssets").generic_string()));
+			const bool written = ScriptProjectOps::ScaffoldScriptProject(suite.project.generic_string(), scaffold, scaffolded);
+			FileSystem::Unmount("engine");
+			ASSERT_TRUE(written);
+			std::ofstream(suite.project / "Source" / "Meter.h", std::ios::binary) << METER_HEADER;
+			std::ofstream(suite.project / "Source" / "Meter.cpp", std::ios::binary) << METER_SOURCE;
+			{
+				CompileService service;
+				service.RefreshToolchain();
+				CompileRequest request;
+				request.projectPath = suite.project.generic_string();
+				ASSERT_TRUE(service.RequestCompile(request));
+				const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(300);
+				while (service.IsBusy() && std::chrono::steady_clock::now() < deadline) {
+					service.PumpMainThread();
+					std::this_thread::sleep_for(std::chrono::milliseconds(20));
+				}
+				service.PumpMainThread();
+				str diagnostics;
+				for (const CompilerDiagnostic& diagnostic : service.GetDiagnostics()) {
+					diagnostics += diagnostic.raw + "\n";
+				}
+				ASSERT_EQ(service.GetState(), CompileState::Succeeded) << diagnostics;
+			}
+			std::ofstream(suite.project / "Assets" / "Scripts" / "Reader.cs", std::ios::binary) << READER;
+			std::ofstream(suite.project / "Assets" / "Scenes" / "Main.scene", std::ios::binary) << MixedSceneText();
+			BuildProfile profile;
+			profile.name = "Windows";
+			profile.target = "Windows";
+			profile.SetList("scenes", Vector<str>{"Assets/Scenes/Main.scene"});
+			profile.SetString("configuration", suite.config);
+			ASSERT_TRUE(BuildProfileOps::SaveProfile(BuildProfileOps::GetProfilePath(suite.project.generic_string(), "Windows"), profile));
+
+			FileSystem::Mount("project", Path(suite.project.generic_string()));
+			AssetDatabase::Initialize();
+			AssetDatabase::ScanProjectDirectory();
+			const bool indexed = AssetDatabase::LookupGuid(Path("project://Assets/Scenes/Main.scene")).IsValid();
+			AssetDatabase::Terminate();
+			FileSystem::Unmount("project");
+			ASSERT_TRUE(indexed);
+
+			suite.buildLog = TestPlatform::RunCommand("\"" + suite.editor + "\" --project \"" + suite.project.generic_string() + "\" --build Windows", suite.buildExit);
+			if (suite.buildExit == 0) {
+				const fs::path player = suite.project / "Builds" / "Windows" / ("MixedGame" SLT_TEST_PLAYER_SUFFIX);
+				suite.playerLog = TestPlatform::RunCommand("\"" + player.generic_string() + "\" --frames 8", suite.playerExit);
+			}
+		}
+
+		static void TearDownTestSuite() {
+			if (_mixed) {
+				_mixed->userData.reset();
+				std::error_code ec;
+				fs::remove_all(_mixed->root, ec);
+				delete _mixed;
+				_mixed = nullptr;
+			}
+		}
+
+		void SetUp() override {
+			ASSERT_NE(_mixed, nullptr);
+			if (!_mixed->skip.empty()) {
+				GTEST_SKIP() << _mixed->skip;
+			}
+			ASSERT_EQ(_mixed->buildExit, 0) << _mixed->buildLog;
 		}
 	};
 
@@ -623,6 +817,16 @@ TEST_F(CSharpPlayerBuildTest, PlayerOnlyErrorFailsBuildWithLine) {
 	EXPECT_NE(log.find("C# script compile failed (1 error(s) in log above)"), str::npos) << log;
 	EXPECT_NE(log.find("the 'csharp-compile' step failed"), str::npos) << log;
 	EXPECT_EQ(log.find("C# scripts don't compile"), str::npos) << log;
+}
+
+TEST_F(CSharpMixedPlayerTest, PlayerRunsBothLanguages) {
+	ASSERT_EQ(_mixed->playerExit, 0) << _mixed->playerLog;
+	EXPECT_NE(_mixed->playerLog.find(str(MIXED_MARKER) + " managed reading=2.5 scaled=6"), str::npos) << _mixed->playerLog;
+	EXPECT_NE(_mixed->playerLog.find(str(MIXED_MARKER) + " native reading=2.5 unit=psi ticks=1 twice=42"), str::npos) << _mixed->playerLog;
+	EXPECT_EQ(_mixed->playerLog.find("[ERROR]"), str::npos) << _mixed->playerLog;
+	EXPECT_EQ(_mixed->buildLog.find("compile FAILED"), str::npos) << _mixed->buildLog;
+	const str wrappers = ReadBytes(_mixed->project / "Library" / "CSharp" / "Generated" / "Native" / "NativeTypes.g.cs");
+	EXPECT_NE(wrappers.find("public sealed class Meter : global::Shalltear.Interop.NativeComponent"), str::npos) << wrappers;
 }
 
 TEST_F(CSharpBuildStepsTest, StepsJoinAtLoadLeaveWithExtensions) {

@@ -1,5 +1,6 @@
 #include "CSharpAuthoring.h"
 
+#include "CSharpNativeTypes.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpReload.h"
 #include "CSharpSettings.h"
@@ -9,7 +10,11 @@
 
 #include "Shalltear/Core/BuildInfo.h"
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Event.h"
 #include "Shalltear/Core/Log.h"
+#include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Object.h"
+#include "Shalltear/Core/Reflection/TypeRegistry.h"
 #include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/StringUtil.h"
 #include "Shalltear/Core/Time.h"
@@ -17,6 +22,8 @@
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/EditorConsole.h"
+#include "Shalltear/Editor/EditorEvents.h"
+#include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -51,6 +58,16 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		bool _pendingCompile = false;
 		bool _definitionsChanged = false;
 		u64 _lastChangeTicks = 0;
+		const void* _moduleBase = nullptr;
+		bool _moduleReloaded = false;
+		bool _heldForModule = false;
+
+		class ModuleListener : public Object {
+		public:
+			void OnModuleReloadEnded(const EditorModuleReloadEndedEvent& event) { _moduleReloaded = _moduleReloaded || !TypeRegistry::IsOwnerToken(event.moduleBase); }
+		};
+		ModuleListener* _moduleListener = nullptr;
+
 		str _buildFile;
 		std::vector<str> _assemblyProjects;
 		std::vector<str> _assemblyNames;
@@ -274,6 +291,9 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		}
 		CompileStatus::RegisterSource({"C#", &ReadState, &CompileNow, &ReloadNow, &ReadHeading, nullptr}, owner);
 		CSharpReload::Begin(_compile.GetOutputAssembly());
+		_moduleBase = ScriptProjectOps::GetLoadedModuleBase();
+		_moduleListener = New<ModuleListener>(MemTag::Editor);
+		EditorEvents::ModuleReloadEnded.Subscribe(EventBus::GetGlobal(), Handle<ModuleListener>(_moduleListener), &ModuleListener::OnModuleReloadEnded);
 		ReadAssemblies(false);
 		if (_options.openBuild) {
 			OpenBuild();
@@ -285,12 +305,20 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 			return;
 		}
 		PollUserProps();
+		const void* moduleBase = ScriptProjectOps::GetLoadedModuleBase();
+		if (moduleBase != _moduleBase || _moduleReloaded) {
+			_moduleBase = moduleBase;
+			_moduleReloaded = false;
+			if (CSharpNativeTypes::Refresh(_options.projectPath)) {
+				NotifyDefinitionsChanged();
+			}
+		}
 		bool compileNow = false;
 		{
 			std::lock_guard lock(_pendingMutex);
 			compileNow = _pendingCompile && SecondsSince(_lastChangeTicks) >= _options.debounceSeconds && CSharpSettings::GetUser().autoCompile;
 		}
-		if (compileNow) {
+		if (compileNow || _heldForModule) {
 			RequestCompile();
 		}
 		_compile.Pump();
@@ -304,6 +332,14 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 
 	void Shutdown() {
 		_assetsWatcher.reset();
+		if (_moduleListener) {
+			EventBus::GetGlobal().UnsubscribeAll(_moduleListener->GetInstanceId());
+			Delete(_moduleListener);
+			_moduleListener = nullptr;
+		}
+		_moduleBase = nullptr;
+		_moduleReloaded = false;
+		_heldForModule = false;
 		_compile.Cancel();
 		ReleaseReports();
 		CSharpReload::Shutdown();
@@ -347,11 +383,15 @@ namespace Shalltear::CSharpEditor::CSharpAuthoring {
 		if (!_active) {
 			return;
 		}
-		bool definitionsChanged = false;
+		_heldForModule = ScriptProjectOps::GetModuleStatus(_options.projectPath) == ScriptProjectOps::ModuleStatus::Compiling;
+		if (_heldForModule) {
+			return;
+		}
+		bool definitionsChanged = CSharpNativeTypes::Refresh(_options.projectPath);
 		{
 			std::lock_guard lock(_pendingMutex);
 			_pendingCompile = false;
-			definitionsChanged = _definitionsChanged;
+			definitionsChanged = definitionsChanged || _definitionsChanged;
 			_definitionsChanged = false;
 		}
 		if (definitionsChanged && !_compile.IsBusy()) {

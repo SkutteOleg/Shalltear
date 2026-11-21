@@ -796,6 +796,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append("namespace Shalltear.Generated;\n\n");
 		text.Append(target.player ? "public " : "").Append("static partial class TypeTable {\n");
 		text.Append("\tstatic bool _registered;\n");
+		text.Append("\n\tstatic partial void RegisterNativeTypes();\n");
 		text.Append("\n\tstatic partial void RegisterFunctions();\n");
 		StringBuilder calls = new();
 		for (int index = 0; index < enums.Count; ++index) {
@@ -878,6 +879,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append(target.player ? "\tpublic" : "\tinternal").Append(" static void Register() {\n");
 		text.Append("\t\tif (_registered || !").Append(TYPES).Append(".IsAttached) {\n\t\t\treturn;\n\t\t}\n");
 		text.Append("\t\t_registered = true;\n");
+		text.Append("\t\tRegisterNativeTypes();\n");
 		foreach (string bindings in target.packages.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
 			text.Append("\t\tglobal::").Append(bindings).Append(".Attach();\n");
 		}

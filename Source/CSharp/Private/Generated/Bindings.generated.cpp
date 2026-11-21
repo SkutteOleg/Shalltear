@@ -78,6 +78,7 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillMaterialBindings(SltBindings& table);
 	void FillMeshBindings(SltBindings& table);
 	void FillMeshRendererBindings(SltBindings& table);
+	void FillNativeFieldsBindings(SltBindings& table);
 	void FillObjectBindings(SltBindings& table);
 	void FillProbeBindings(SltBindings& table);
 	void FillSceneBindings(SltBindings& table);
@@ -109,6 +110,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillMaterialBindings(table);
 		FillMeshBindings(table);
 		FillMeshRendererBindings(table);
+		FillNativeFieldsBindings(table);
 		FillObjectBindings(table);
 		FillProbeBindings(table);
 		FillSceneBindings(table);

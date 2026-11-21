@@ -3,6 +3,7 @@
 #include "CSharpAuthoring.h"
 #include "CSharpCompile.h"
 #include "CSharpDiagnostics.h"
+#include "CSharpNativeTypes.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpReload.h"
 #include "CSharpScriptAsset.h"
@@ -53,6 +54,9 @@ namespace Shalltear::CSharpEditor {
 		void (*notifySourceChanged)();
 		void (*notifyDefinitionsChanged)();
 		CSharpAssemblies::Set (*scanAssemblies)(const str& projectPath, std::string_view defaultAssembly);
+		str (*renderNativeTypes)(std::span<const TypeInfo* const> types);
+		bool (*writeNativeTypes)(const str& projectPath, std::span<const TypeInfo* const> types);
+		void (*collectNativeTypes)(const void* moduleBase, Vector<const TypeInfo*>& out);
 		bool (*isHoldingReports)();
 		void (*beginReload)(const str& assembly);
 		void (*shutdownReload)();

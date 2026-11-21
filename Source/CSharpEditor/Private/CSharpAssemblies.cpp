@@ -76,6 +76,11 @@ namespace Shalltear::CSharpEditor::CSharpAssemblies {
 			return folder.size() > parent.size() && folder.starts_with(parent) && folder[parent.size()] == '/';
 		}
 
+		str NativeName(std::string_view defaultAssembly) {
+			const size_t dot = defaultAssembly.rfind('.');
+			return str(defaultAssembly.substr(0, dot)) + str(NativeSuffix);
+		}
+
 		bool Check(const Definition& definition, const Vector<Definition>& read, std::string_view defaultAssembly, Set& set) {
 			const auto refuse = [&](str message) {
 				set.problems.push_back({definition.file, std::move(message)});
@@ -84,7 +89,8 @@ namespace Shalltear::CSharpEditor::CSharpAssemblies {
 			if (!IsAssemblyName(definition.name)) {
 				return refuse(std::format("has assembly name '{}' (ignored). Use letters, digits, _ and .", definition.name));
 			}
-			if (definition.name == defaultAssembly || definition.name == PlayerShell || definition.name.starts_with(EnginePrefix)) {
+			if (definition.name == defaultAssembly || definition.name == NativeName(defaultAssembly) || definition.name == PlayerShell ||
+				definition.name.starts_with(EnginePrefix)) {
 				return refuse(std::format("has assembly name '{}' (taken by engine). Rename it", definition.name));
 			}
 			for (const Definition& other : read) {
@@ -175,6 +181,17 @@ namespace Shalltear::CSharpEditor::CSharpAssemblies {
 			}
 			set.definitions.push_back(*ready);
 			kept.erase(ready);
+		}
+
+		std::error_code found;
+		if (fs::is_regular_file(root / NativeFolder / "NativeTypes.g.cs", found)) {
+			Definition native;
+			native.name = NativeName(defaultAssembly);
+			native.folder = NativeFolder;
+			for (Definition& definition : set.definitions) {
+				definition.references.push_back(native.name);
+			}
+			set.definitions.insert(set.definitions.begin(), std::move(native));
 		}
 
 		for (Definition& definition : set.definitions) {

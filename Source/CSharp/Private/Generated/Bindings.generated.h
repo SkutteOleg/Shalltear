@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xc8bd87f7e916e7bdull
-#define SLT_BINDINGS_INPUT_DIGEST 0x6122ec704f99b191ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xd41209861acd0655ull
+#define SLT_BINDINGS_INPUT_DIGEST 0xe60cce072e62ba90ull
 
 typedef struct SltString SltString;
 
@@ -200,6 +200,11 @@ typedef struct SltBindings {
 	int32_t (*meshRendererSetReceiveShadows)(uint64_t self, uint8_t receiveShadows);
 	int32_t (*meshRendererGetRenderingLayerMask)(uint64_t self, uint32_t* outResult);
 	int32_t (*meshRendererSetRenderingLayerMask)(uint64_t self, uint32_t renderingLayerMask);
+	int32_t (*nativeFieldsRead)(uint64_t target, uint64_t type, uint64_t field, int32_t kind, uint64_t* slots, int32_t slotsCount);
+	int32_t (*nativeFieldsWrite)(uint64_t target, uint64_t type, uint64_t field, int32_t kind, const uint64_t* slots, int32_t slotsCount);
+	int32_t (*nativeFieldsReadText)(uint64_t target, uint64_t type, uint64_t field, SltString* outResult);
+	int32_t (*nativeFieldsWriteText)(uint64_t target, uint64_t type, uint64_t field, SltString value);
+	int32_t (*nativeFieldsInvoke)(uint64_t target, uint64_t type, uint64_t method);
 	uint8_t (*objectIsAlive)(uint64_t id);
 	uint64_t (*objectGetTypeHash)(uint64_t id);
 	uint64_t (*objectGetParentTypeHash)(uint64_t typeHash);

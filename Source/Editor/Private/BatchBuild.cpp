@@ -29,6 +29,8 @@ namespace Shalltear {
 
 		namespace fs = std::filesystem;
 
+		ModuleHandle _gameModule;
+
 		// must match EntryPoint's probe
 		bool MountEngineAssets() {
 			std::error_code ec;
@@ -87,11 +89,16 @@ namespace Shalltear {
 				return false;
 			}
 
+			_gameModule = module;
 			SLT_LOG_INFO("Build", "loaded this project's C++ from '{}'", modulePath);
 			return true;
 		}
 
 	} // anonymous namespace
+
+	const void* GetBatchModuleBase() {
+		return ModuleSystem::IsLoaded(_gameModule) ? ModuleSystem::GetNativeHandle(_gameModule) : nullptr;
+	}
 
 	BatchBuildOptions ParseBatchBuildOptions(int argc, char* argv[]) {
 		BatchBuildOptions options;

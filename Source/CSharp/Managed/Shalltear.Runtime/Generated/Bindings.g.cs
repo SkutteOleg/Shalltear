@@ -158,6 +158,11 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, byte, int> meshRendererSetReceiveShadows;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, uint*, int> meshRendererGetRenderingLayerMask;
 	public delegate* unmanaged<ulong, uint, int> meshRendererSetRenderingLayerMask;
+	public delegate* unmanaged<ulong, ulong, ulong, int, ulong*, int, int> nativeFieldsRead;
+	public delegate* unmanaged<ulong, ulong, ulong, int, ulong*, int, int> nativeFieldsWrite;
+	public delegate* unmanaged<ulong, ulong, ulong, SltString*, int> nativeFieldsReadText;
+	public delegate* unmanaged<ulong, ulong, ulong, SltString, int> nativeFieldsWriteText;
+	public delegate* unmanaged<ulong, ulong, ulong, int> nativeFieldsInvoke;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte> objectIsAlive;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong> objectGetTypeHash;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong> objectGetParentTypeHash;
@@ -383,7 +388,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xc8bd87f7e916e7bd;
+	internal const ulong LAYOUT_HASH = 0xd41209861acd0655;
 
 	internal static SltBindings table;
 

@@ -1,0 +1,68 @@
+{
+	"area": "NativeFields",
+	"include": "NativeFieldBindings.h",
+	"class": "Shalltear.Interop.NativeFieldBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "Read",
+			"cpp": "::Shalltear::CSharpImpl::NativeFieldBindings::Read(*target, type, field, kind, slots)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "Component" },
+				{ "name": "type", "type": "u64" },
+				{ "name": "field", "type": "u64" },
+				{ "name": "kind", "type": "i32" },
+				{ "name": "slots", "type": "span<u64>", "out": true }
+			],
+			"csharp": { "member": "Read", "kind": "method" }
+		},
+		{
+			"id": "Write",
+			"cpp": "::Shalltear::CSharpImpl::NativeFieldBindings::Write(*target, type, field, kind, slots)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "Component" },
+				{ "name": "type", "type": "u64" },
+				{ "name": "field", "type": "u64" },
+				{ "name": "kind", "type": "i32" },
+				{ "name": "slots", "type": "span<u64>" }
+			],
+			"csharp": { "member": "Write", "kind": "method" }
+		},
+		{
+			"id": "ReadText",
+			"cpp": "::Shalltear::CSharpImpl::NativeFieldBindings::ReadText(*target, type, field)",
+			"returns": "string",
+			"params": [
+				{ "name": "target", "type": "Component" },
+				{ "name": "type", "type": "u64" },
+				{ "name": "field", "type": "u64" }
+			],
+			"csharp": { "member": "ReadText", "kind": "method" }
+		},
+		{
+			"id": "WriteText",
+			"cpp": "::Shalltear::CSharpImpl::NativeFieldBindings::WriteText(*target, type, field, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "Component" },
+				{ "name": "type", "type": "u64" },
+				{ "name": "field", "type": "u64" },
+				{ "name": "value", "type": "string" }
+			],
+			"csharp": { "member": "WriteText", "kind": "method" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "::Shalltear::CSharpImpl::NativeFieldBindings::Invoke(*target, type, method)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "Component" },
+				{ "name": "type", "type": "u64" },
+				{ "name": "method", "type": "u64" }
+			],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		}
+	]
+}

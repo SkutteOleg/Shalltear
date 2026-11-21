@@ -31,6 +31,9 @@ namespace Shalltear::CSharpEditor {
 
 		inline constexpr std::string_view Extension = ".slassembly";
 
+		inline constexpr std::string_view NativeFolder = "Library/CSharp/Generated/Native";
+		inline constexpr std::string_view NativeSuffix = ".Native";
+
 		struct Definition {
 			str name;
 			str file;

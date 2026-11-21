@@ -121,7 +121,9 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 			str references;
 			str projects;
 			for (const CSharpAssemblies::Definition& definition : options.assemblies.definitions) {
-				folders.push_back(definition.folder);
+				if (!definition.file.empty()) {
+					folders.push_back(definition.folder);
+				}
 				projects += "\t<Project Path=\"" + GetAssemblyProjectFile(definition.name) + "\" />\n";
 				if (!definition.editorOnly) {
 					references += ReferenceTo(definition, true);

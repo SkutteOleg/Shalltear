@@ -18,4 +18,6 @@ namespace Shalltear {
 
 	int RunBatchBuild(const BatchBuildOptions& options);
 
+	const void* GetBatchModuleBase();
+
 } // namespace Shalltear

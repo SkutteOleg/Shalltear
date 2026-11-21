@@ -3,6 +3,7 @@
 #include "Shalltear/Editor/CompileService.h"
 #include "Shalltear/Editor/CppToolchain.h"
 
+#include "BatchBuild.h"
 #include "GameModuleHost.h"
 
 #include "Shalltear/Core/BuildInfo.h"
@@ -508,6 +509,11 @@ namespace Shalltear::ScriptProjectOps {
 			return ModuleStatus::LoadFailed;
 		}
 		return ModuleStatus::Loaded;
+	}
+
+	const void* GetLoadedModuleBase() {
+		const GameModuleHost* host = GameModuleHost::GetActive();
+		return host && host->IsModuleLoaded() ? host->GetModuleBase() : GetBatchModuleBase();
 	}
 
 	ModuleStatus GetModuleStatus(const str& projectPath) {

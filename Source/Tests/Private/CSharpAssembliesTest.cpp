@@ -4,10 +4,12 @@
 
 #include "CSharpPackageFixtures.h"
 #include "CSharpRuntimeFixture.h"
+#include "CSharpScenarioUtil.h"
 #include "EditorTestHooks.h"
 #include "TestPlatform.h"
 
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 
@@ -26,6 +28,67 @@ using namespace Shalltear;
 using namespace Shalltear::CSharpEditor;
 using namespace Shalltear::CSharpTests;
 
+namespace NativeTypesFixture {
+
+	enum class Gear : u8 {
+		Low = 1,
+		High = 2,
+	};
+
+} // namespace NativeTypesFixture
+
+SLT_REFLECT_ENUM(::NativeTypesFixture::Gear)
+SLT_ENUM_VALUE(Low)
+SLT_ENUM_VALUE(High)
+SLT_END_ENUM()
+
+class NativeProbeGauge final : public Component {
+public:
+	SLT_REFLECT_COMPONENT(NativeProbeGauge, Component)
+	SLT_REFLECT_FIELD(level)
+	SLT_END_REFLECT()
+
+	i32 level = 0;
+};
+
+class NativeProbeEngine final : public Component {
+public:
+	SLT_REFLECT_COMPONENT(NativeProbeEngine, Component)
+	SLT_REFLECT_FIELD(power)
+	SLT_REFLECT_FIELD(_cylinders)
+	SLT_REFLECT_FIELD(label)
+	SLT_REFLECT_FIELD(running)
+	SLT_REFLECT_FIELD(mount)
+	SLT_REFLECT_FIELD(paint)
+	SLT_REFLECT_FIELD(gear)
+	SLT_REFLECT_FIELD(anchor)
+	SLT_REFLECT_FIELD(dial)
+	SLT_REFLECT_FIELD(serial, SLT_READONLY)
+	SLT_REFLECT_ARRAY(ratios)
+	SLT_REFLECT_METHOD(Rev)
+	SLT_REFLECT_METHOD(RevBy)
+	SLT_END_REFLECT()
+
+	void Rev() { ++revs; }
+	void RevBy(i32 count) { revs += count; }
+
+	f32 power = 1.5f;
+	i32 _cylinders = 4;
+	str label = "v8";
+	bool running = false;
+	Vec3 mount{1.0f, 2.0f, 3.0f};
+	Color paint{0.25f, 0.5f, 0.75f, 1.0f};
+	NativeTypesFixture::Gear gear = NativeTypesFixture::Gear::Low;
+	Handle<SceneObject> anchor;
+	Handle<NativeProbeGauge> dial;
+	i32 serial = 40;
+	Vector<f32> ratios;
+	i32 revs = 0;
+};
+
+SLT_REGISTER_TYPE(NativeProbeGauge)
+SLT_REGISTER_TYPE(NativeProbeEngine)
+
 namespace {
 
 	namespace fs = std::filesystem;
@@ -41,6 +104,19 @@ namespace {
 	constexpr const char* BONUS = "using Shalltear;\n\nnamespace Game.Extra;\n\npublic sealed class Bonus : Behavior {}\n";
 	constexpr const char* GREETS = "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Greets : Behavior {\n\tprotected override void OnEnable() {\n"
 								   "\t\tLog.Info(\"Greets\", Fixture.Greeter.Hello.To(\"editor\"));\n\t}\n}\n";
+
+	constexpr const char* DRIVER =
+		"using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Driver : Behavior {\n\tpublic NativeProbeEngine? engine;\n"
+		"\tpublic NativeProbeGauge? gauge;\n\n\tprotected override void OnEnable() {\n"
+		"\t\tNativeProbeEngine found = Owner.GetComponent<NativeProbeEngine>()!;\n\t\tfound.Power *= 2f;\n\t\tfound.Cylinders += 2;\n"
+		"\t\tfound.Label += \"!\";\n\t\tfound.Running = !found.Running;\n\t\tfound.Mount += new Vec3(1f, 0f, 0f);\n"
+		"\t\tfound.Paint = new Color(found.Paint.g, found.Paint.r, 0f, 1f);\n"
+		"\t\tfound.Gear = found.Gear == Gear.Low ? Gear.High : Gear.Low;\n\t\tfound.Anchor = Owner;\n"
+		"\t\tfound.Rev();\n\t\tengine = found;\n\t\tgauge = Owner.GetComponent<NativeProbeGauge>()!;\n\t\tfound.Dial = gauge;\n"
+		"\t\tgauge.Level = found.Serial + (found.Dial == gauge ? 1 : 0) + (found.Anchor == Owner ? 1 : 0);\n\t}\n}\n";
+	constexpr const char* HALVES = "using Shalltear;\n\nnamespace Game.Calls;\n\npublic static class Halves {\n\t[ExportToNative(\"Game.Calls.Half\")]\n"
+								   "\tinternal static int Half(int value) {\n\t\treturn value / 2;\n\t}\n}\n";
+	constexpr const char* IDLE = "using Shalltear;\n\nnamespace Space_Game;\n\npublic sealed class Idle : Behavior {}\n";
 
 	char _assembliesOwner = 0;
 
@@ -346,6 +422,154 @@ TEST_F(CSharpAssembliesTest, PackageReferenceRestoresAndLoads) {
 	EXPECT_EQ(_log.Delivered().Count("hello editor from a package"), 1u) << Said();
 	SceneSystem::UnloadScene(world);
 	SceneSystem::EndFrame();
+
+	_editor->shutdownAuthoring();
+	_hooks->detach();
+	SceneSystem::Terminate();
+}
+
+TEST_F(CSharpAssembliesTest, WrappersRenderComponentMembers) {
+	const TypeInfo* types[] = {NativeProbeEngine::GetReflectType(), NativeProbeGauge::GetReflectType()};
+	const str text = _editor->renderNativeTypes(types);
+	const auto power = std::format("0x{:016x}UL", StringHash("power").GetValue());
+	const auto serial = std::format("0x{:016x}UL", StringHash("serial").GetValue());
+	for (const str& expected : {
+			 str("public enum Gear : int {\n\t\tLow = 1,\n\t\tHigh = 2,\n\t}"),
+			 str("[global::Shalltear.Interop.EngineType(\"NativeProbeEngine\")]\n\tpublic sealed class NativeProbeEngine : global::Shalltear.Interop.NativeComponent {"),
+			 std::format("const ulong TYPE = 0x{:016x}UL;", StringHash("NativeProbeEngine").GetValue()),
+			 std::format("public float Power {{\n\t\t\tget => GetSingle(TYPE, {});\n\t\t\tset => Set(TYPE, {}, value);\n\t\t}}", power, power),
+			 str("public int Cylinders {"),
+			 str("public string Label {"),
+			 str("public bool Running {"),
+			 str("public global::Shalltear.Vec3 Mount {"),
+			 str("public global::Shalltear.Color Paint {"),
+			 str("public global::Gear Gear {"),
+			 str("public global::Shalltear.SceneObject? Anchor {"),
+			 str("public global::NativeProbeGauge? Dial {"),
+			 std::format("public int Serial {{\n\t\t\tget => (int)GetInteger(TYPE, {}, {});\n\t\t}}", serial, static_cast<i32>(SLT_KIND_I32)),
+			 str("public void Rev() {"),
+			 str("public int Level {"),
+			 str("static partial void RegisterNativeTypes() {\n\t\t\tglobal::NativeProbeEngine.RegisterWrapper();\n\t\t\tglobal::NativeProbeGauge.RegisterWrapper();\n"),
+		 }) {
+		EXPECT_NE(text.find(expected), str::npos) << expected << "\n"
+												  << text;
+	}
+	for (const char* absent : {"Ratios", "RevBy", "Revs"}) {
+		EXPECT_EQ(text.find(absent), str::npos) << absent;
+	}
+	EXPECT_TRUE(_editor->renderNativeTypes({}).empty());
+
+	const str project = _project.generic_string();
+	EXPECT_TRUE(_editor->writeNativeTypes(project, types));
+	EXPECT_FALSE(_editor->writeNativeTypes(project, types));
+	Put("Assets/Core/Core.slassembly", "{\"assemblyName\": \"Game.Core\"}");
+	Put("Assets/Taken/Taken.slassembly", "{\"assemblyName\": \"Space_Game.Native\"}");
+	CSharpProjectFiles::Options options = MakeOptions();
+	ASSERT_EQ(options.assemblies.definitions.size(), 2u);
+	EXPECT_EQ(options.assemblies.definitions[0].name, "Space_Game.Native");
+	EXPECT_EQ(options.assemblies.definitions[1].references, (Vector<str>{"Space_Game.Native"}));
+	EXPECT_TRUE(HasProblem(options.assemblies, "Assets/Taken/Taken.slassembly", "(taken by engine). Rename it"));
+	CSharpProjectFiles::Result written;
+	ASSERT_TRUE(_editor->writeProjectFiles(options, written));
+	const str native = Read("Space_Game.Native.Scripts.csproj");
+	EXPECT_NE(native.find("<Compile Include=\"Library/CSharp/Generated/Native/**/*.cs\" />"), str::npos) << native;
+	EXPECT_NE(Read("Game.Core.Scripts.csproj").find("<ProjectReference Include=\"Space_Game.Native.Scripts.csproj\" Private=\"false\" />"), str::npos);
+	const str main = Read("Space_Game.Scripts.csproj");
+	EXPECT_NE(main.find("<ProjectReference Include=\"Space_Game.Native.Scripts.csproj\" Private=\"false\" />"), str::npos) << main;
+	EXPECT_NE(main.find("<Compile Include=\"Assets/**/*.cs\" Exclude=\"Assets/Core/**/*.cs\" />"), str::npos) << main;
+
+	EXPECT_TRUE(_editor->writeNativeTypes(project, {}));
+	EXPECT_FALSE(fs::exists(_project / "Library" / "CSharp" / "Generated" / "Native" / "NativeTypes.g.cs"));
+	options = MakeOptions();
+	ASSERT_EQ(options.assemblies.definitions.size(), 1u);
+	EXPECT_TRUE(options.assemblies.definitions[0].references.empty());
+	ASSERT_TRUE(_editor->writeProjectFiles(options, written));
+	EXPECT_FALSE(fs::exists(_project / "Space_Game.Native.Scripts.csproj"));
+}
+
+TEST_F(CSharpAssembliesTest, WrappersReachProjectComponents) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	Put("CMakeLists.txt", "");
+	fs::create_directories(_project / "Source");
+	const str project = _project.generic_string();
+	const TypeInfo* types[] = {NativeProbeEngine::GetReflectType(), NativeProbeGauge::GetReflectType()};
+	ASSERT_TRUE(_editor->writeNativeTypes(project, types));
+	Put("Assets/Driver.cs", DRIVER);
+	Put("Assets/Calls/Calls.slassembly", "{\"assemblyName\": \"Game.Calls\"}");
+	Put("Assets/Calls/Halves.cs", HALVES);
+	if (!Prepare()) {
+		SceneSystem::Terminate();
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	_editor->notifySourceChanged();
+	ASSERT_TRUE(CompileAgain()) << Said();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded) << Said();
+	EXPECT_TRUE(fs::is_regular_file(Output("Space_Game.Native")));
+	const TypeInfo* driverType = TypeRegistry::FindType(StringHash("Space_Game.Driver"));
+	ASSERT_NE(driverType, nullptr) << Said();
+	EXPECT_EQ(ScriptFunctions::Find<i32(i32)>("Game.Calls.Half")(42), 21) << Said();
+	{
+		CSharpScenarios::World world;
+		Handle<SceneObject> car = SceneSystem::CreateObject("Car", world.scene);
+		Handle<NativeProbeEngine> engine = car->AddComponent<NativeProbeEngine>();
+		Handle<NativeProbeGauge> gauge = car->AddComponent<NativeProbeGauge>();
+		Handle<Component> driver = car->AddComponent(driverType);
+		ASSERT_TRUE(engine.IsValid() && gauge.IsValid() && driver.IsValid());
+		EXPECT_FLOAT_EQ(engine->power, 3.0f) << Said();
+		EXPECT_EQ(engine->_cylinders, 6);
+		EXPECT_EQ(engine->label, "v8!");
+		EXPECT_TRUE(engine->running);
+		EXPECT_EQ(engine->mount, Vec3(2.0f, 2.0f, 3.0f));
+		EXPECT_EQ(engine->paint, Color(0.5f, 0.25f, 0.0f, 1.0f));
+		EXPECT_EQ(engine->gear, NativeTypesFixture::Gear::High);
+		EXPECT_EQ(engine->anchor, car);
+		EXPECT_EQ(engine->dial, gauge);
+		EXPECT_EQ(engine->revs, 1);
+		EXPECT_EQ(gauge->level, 42);
+		EXPECT_EQ(CSharpScenarios::Read<Handle<NativeProbeEngine>>(driver, "engine"), engine);
+		EXPECT_EQ(CSharpScenarios::Read<Handle<NativeProbeGauge>>(driver, "gauge"), gauge);
+		const FieldInfo* slot = FindField(driverType, StringHash("engine"));
+		ASSERT_NE(slot, nullptr);
+		EXPECT_EQ(TypeRegistry::FindType(HandlePointeeName(*slot->fieldType)), NativeProbeEngine::GetReflectType());
+	}
+
+	str stale = _editor->renderNativeTypes(types);
+	const str power = std::format("0x{:016x}UL", StringHash("power").GetValue());
+	for (size_t at = stale.find(power); at != str::npos; at = stale.find(power, at)) {
+		stale.replace(at, power.size(), "0x0000000000000001UL");
+	}
+	Put("Library/CSharp/Generated/Native/NativeTypes.g.cs", stale);
+	_editor->notifySourceChanged();
+	ASSERT_TRUE(CompileAgain()) << Said();
+	ASSERT_EQ(_editor->getReloadCount(), 2u) << Said();
+	{
+		CSharpScenarios::World world;
+		Handle<SceneObject> car = SceneSystem::CreateObject("Car", world.scene);
+		Handle<NativeProbeEngine> engine = car->AddComponent<NativeProbeEngine>();
+		car->AddComponent<NativeProbeGauge>();
+		car->AddComponent(TypeRegistry::FindType(StringHash("Space_Game.Driver")));
+		ASSERT_TRUE(engine.IsValid());
+		EXPECT_FLOAT_EQ(engine->power, 1.5f);
+		EXPECT_EQ(engine->_cylinders, 4);
+		EXPECT_NE(Said().find("C++ field is gone. Compile the C# scripts again"), str::npos) << Said();
+	}
+
+	str renamed = _editor->renderNativeTypes(types);
+	const size_t level = renamed.find("public int Level {");
+	ASSERT_NE(level, str::npos);
+	renamed.replace(level, 18, "public int Depth {");
+	Put("Library/CSharp/Generated/Native/NativeTypes.g.cs", renamed);
+	_editor->notifySourceChanged();
+	EXPECT_FALSE(CompileAgain());
+	EXPECT_NE(Said().find("'NativeProbeGauge' does not contain a definition for 'Level'"), str::npos) << Said();
+
+	ASSERT_TRUE(_editor->writeNativeTypes(project, {}));
+	Put("Assets/Driver.cs", IDLE);
+	_editor->notifyDefinitionsChanged();
+	ASSERT_TRUE(CompileAgain()) << Said();
+	EXPECT_FALSE(fs::exists(_project / "Space_Game.Native.Scripts.csproj"));
+	EXPECT_NE(TypeRegistry::FindType(StringHash("Space_Game.Idle")), nullptr) << Said();
 
 	_editor->shutdownAuthoring();
 	_hooks->detach();

@@ -297,6 +297,9 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				if (CSharpReload::IsPlaying()) {
 					return EndLoad(state, BuildStepStatus::Succeeded);
 				}
+				if (ScriptProjectOps::GetModuleStatus(context.projectRoot) == ScriptProjectOps::ModuleStatus::Compiling) {
+					return BuildStepStatus::Running;
+				}
 				if (!CSharpAuthoring::GetCompile().IsBusy()) {
 					CSharpAuthoring::RequestCompile();
 				}

@@ -212,9 +212,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 				slot->info.alignment = alignof(u64);
 				slot->info.flags = TypeFlagPrimitive | TypeFlagHandle | TypeFlagTriviallyCopyable;
 				slot->registered = TypeRegistry::RegisterOwned(&slot->info, &_TOKEN) != nullptr;
-				if (slot->registered) {
-					VariantDispatch::Register(slot->info.name, &HandleVTable);
-				}
+				VariantDispatch::Register(slot->info.name, &HandleVTable);
 			}
 			return &slot->info;
 		}

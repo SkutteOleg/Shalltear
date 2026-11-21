@@ -29,6 +29,8 @@ namespace Shalltear::ScriptProjectOps {
 
 	SHALLTEAR_EDITOR_API bool HasScriptProject(const str& projectPath);
 
+	SHALLTEAR_EDITOR_API const void* GetLoadedModuleBase();
+
 	SHALLTEAR_EDITOR_API bool IsModuleBinaryOutOfDate(const str& projectPath, std::string_view configName,
 													  str* outReason = nullptr);
 
