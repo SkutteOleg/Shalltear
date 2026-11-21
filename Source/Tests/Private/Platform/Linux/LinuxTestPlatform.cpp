@@ -1001,6 +1001,11 @@ namespace TestPlatform {
 			   (header.e_type == ET_DYN || header.e_type == ET_EXEC);
 	}
 
+	bool ReadsTextAsUTF8(const str&, str& outWhy) {
+		outWhy.clear();
+		return true;
+	}
+
 	str FindForeignDependency(const str& playerFile) {
 		std::ifstream stream(playerFile, std::ios::binary);
 		const std::vector<char> bytes{std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};

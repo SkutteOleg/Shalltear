@@ -76,6 +76,7 @@ namespace TestPlatform {
 	u32 CountProcessThreads();
 
 	bool IsArtifactKind(const str& file, bool windowed, str& outWhy);
+	bool ReadsTextAsUTF8(const str& file, str& outWhy);
 	str FindForeignDependency(const str& playerFile);
 
 	struct ProcessResult {

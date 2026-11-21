@@ -512,6 +512,22 @@ namespace TestPlatform {
 		return subsystem == (windowed ? PESubsystem::GUI : PESubsystem::CONSOLE);
 	}
 
+	bool ReadsTextAsUTF8(const str& file, str& outWhy) {
+		HMODULE module = ::LoadLibraryExW(StringUtil::UTF8ToWide(file).c_str(), nullptr,
+										  LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+		if (!module) {
+			outWhy = "couldn't open " + file;
+			return false;
+		}
+		HRSRC found = ::FindResourceW(module, MAKEINTRESOURCEW(1), reinterpret_cast<LPCWSTR>(RT_MANIFEST));
+		HGLOBAL loaded = found ? ::LoadResource(module, found) : nullptr;
+		const char* bytes = loaded ? static_cast<const char*>(::LockResource(loaded)) : nullptr;
+		const str manifest = bytes ? str(bytes, ::SizeofResource(module, found)) : str();
+		::FreeLibrary(module);
+		outWhy = manifest.empty() ? "no manifest in " + file : manifest;
+		return manifest.find(">UTF-8</activeCodePage>") != str::npos;
+	}
+
 	str FindForeignDependency(const str&) {
 		return {};
 	}

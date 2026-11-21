@@ -1,5 +1,16 @@
 if(WIN32)
 	set(SHALLTEAR_PLATFORM_FAMILIES Windows)
+	if(NOT CMAKE_RC_COMPILER OR NOT EXISTS "${CMAKE_RC_COMPILER}")
+		get_filename_component(SHALLTEAR_TOOLCHAIN_BIN "${CMAKE_CXX_COMPILER}" DIRECTORY)
+		find_program(SHALLTEAR_RC_COMPILER
+			NAMES x86_64-w64-mingw32-windres llvm-windres windres
+			HINTS "${SHALLTEAR_TOOLCHAIN_BIN}"
+			NO_DEFAULT_PATH)
+		if(SHALLTEAR_RC_COMPILER)
+			set(CMAKE_RC_COMPILER "${SHALLTEAR_RC_COMPILER}" CACHE FILEPATH "" FORCE)
+		endif()
+	endif()
+	enable_language(RC)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(SHALLTEAR_PLATFORM_FAMILIES Posix Linux)
 else()
@@ -19,4 +30,10 @@ function(shalltear_select_platform_sources LIST_VAR)
 		endif()
 	endforeach()
 	set(${LIST_VAR} "${kept}" PARENT_SCOPE)
+endfunction()
+
+function(shalltear_add_executable_manifest TARGET_NAME)
+	if(WIN32)
+		target_sources(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ShalltearExecutable.rc")
+	endif()
 endfunction()

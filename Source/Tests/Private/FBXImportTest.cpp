@@ -252,7 +252,7 @@ TEST(FBXCorpusTest, CorpusParsesOrFailsWithReason) {
 	EXPECT_LE(refusedForBadFile, 9u) << badSummary;
 	EXPECT_LE(refusedAsEmpty, 2u) << refusedAsEmpty;
 	EXPECT_LE(refused, 11u) << refused << " refused of " << (parsed + refused);
-	EXPECT_LE(unnameable, 1u) << unnameable;
+	EXPECT_EQ(unnameable, 0u);
 }
 
 TEST(FBXUnitTest, CentimetreAndMetreMatch) {

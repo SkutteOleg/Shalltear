@@ -24,6 +24,7 @@ if(NOT TARGET CSharp)
 endif()
 
 add_executable(ShalltearTests ${TEST_SOURCES})
+shalltear_add_executable_manifest(ShalltearTests)
 
 target_link_libraries(ShalltearTests
     PRIVATE

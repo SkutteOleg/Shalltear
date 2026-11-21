@@ -1,3 +1,4 @@
+#include "ScopedSettingsStore.h"
 #include "TestPlatform.h"
 
 #include "Shalltear/Core/FileSystem.h"
@@ -7,10 +8,31 @@
 #include <chrono>
 #include <atomic>
 #include <cstring>
+#include <iterator>
 #include <span>
 #include <vector>
 
 using namespace Shalltear;
+
+namespace {
+
+	str GenericUTF8(const std::filesystem::path& path) {
+		const std::u8string text = path.generic_u8string();
+		return str(reinterpret_cast<const char*>(text.data()), text.size());
+	}
+
+	std::filesystem::path FreshTempFolder(const char* prefix) {
+		static std::atomic<u64> counter{0};
+		const u64 stamp = static_cast<u64>(std::chrono::steady_clock::now().time_since_epoch().count());
+		return std::filesystem::temp_directory_path() /
+			   (str(prefix) + std::to_string(stamp) + "_" + std::to_string(counter.fetch_add(1)));
+	}
+
+	std::ptrdiff_t CountEntries(const std::filesystem::path& folder) {
+		return std::distance(std::filesystem::directory_iterator(folder), std::filesystem::directory_iterator());
+	}
+
+} // anonymous namespace
 
 TEST(FileSystem, PathNormalization) {
 	Path p1("C:\\foo\\bar");
@@ -154,6 +176,46 @@ TEST(FileSystem, UserDataDirectoryIsWritable) {
 	ASSERT_FALSE(home.ToString().empty());
 	EXPECT_TRUE(FileSystem::IsDirectory(home));
 	EXPECT_EQ(home.ToString().find('\\'), str::npos);
+}
+
+TEST(FileSystem, NamesOutsideAsciiRoundTrip) {
+	const std::filesystem::path root = FreshTempFolder("shalltear_names_");
+	const std::filesystem::path folder = root / u8"é Олег 太郎";
+	const str folderText = GenericUTF8(folder);
+	const Path note(folderText + "/note.txt");
+
+	ASSERT_TRUE(FileSystem::CreateDirectory(Path(folderText)));
+	ASSERT_TRUE(FileSystem::WriteTextFile(note, "text"));
+	EXPECT_TRUE(FileSystem::IsDirectory(Path(folderText)));
+	EXPECT_TRUE(FileSystem::Exists(note));
+	EXPECT_EQ(FileSystem::ReadTextFile(note), "text");
+	EXPECT_EQ(FileSystem::GetFileSize(note), 4u);
+
+	EXPECT_TRUE(std::filesystem::exists(folder / u8"note.txt"));
+	EXPECT_EQ(CountEntries(root), 1);
+	EXPECT_EQ(std::filesystem::path(folderText), folder);
+	EXPECT_EQ(folder.generic_string(), folderText);
+
+	std::error_code ec;
+	std::filesystem::remove_all(root, ec);
+}
+
+TEST(FileSystem, UserDataOutsideAsciiReceivesFiles) {
+	const std::filesystem::path root = FreshTempFolder("shalltear_user_data_");
+	const std::filesystem::path appData = root / u8"appdata é Олег 太郎";
+	{
+		ScopedUserDataDirectory scope(appData);
+		const Path userData = FileSystem::GetUserDataDirectory();
+		EXPECT_EQ(userData.ToString(), GenericUTF8(appData));
+		ASSERT_TRUE(FileSystem::CreateDirectory(userData / "Shalltear"));
+		EXPECT_TRUE(FileSystem::WriteTextFile(userData / "Shalltear" / "UserSettings.ini", "[Game]\nvolume = 1\n"));
+	}
+
+	EXPECT_TRUE(std::filesystem::exists(appData / u8"Shalltear" / u8"UserSettings.ini"));
+	EXPECT_EQ(CountEntries(root), 1);
+
+	std::error_code ec;
+	std::filesystem::remove_all(root, ec);
 }
 
 TEST(FileSystem, ReadWriteBinaryFile) {

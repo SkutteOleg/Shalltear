@@ -839,6 +839,7 @@ TEST_F(PlayerBuildIntegrationTest, PipelineRunsStaticPlayer) {
 
 	str artifactKind;
 	EXPECT_TRUE(TestPlatform::IsArtifactKind(playerExe.generic_string(), true, artifactKind)) << artifactKind;
+	EXPECT_TRUE(TestPlatform::ReadsTextAsUTF8(playerExe.generic_string(), artifactKind)) << artifactKind;
 	EXPECT_EQ(TestPlatform::FindForeignDependency(playerExe.generic_string()), "");
 
 	int exitCode = 0;
@@ -1058,6 +1059,7 @@ TEST_F(PlayerBuildIntegrationTest, PipelineRunsStaticPlayer) {
 	EXPECT_NE(serverExe.filename(), playerExe.filename());
 
 	EXPECT_TRUE(TestPlatform::IsArtifactKind(serverExe.generic_string(), false, artifactKind)) << artifactKind;
+	EXPECT_TRUE(TestPlatform::ReadsTextAsUTF8(serverExe.generic_string(), artifactKind)) << artifactKind;
 	EXPECT_EQ(TestPlatform::FindForeignDependency(serverExe.generic_string()), "");
 
 	str serverLog = RunCommand("\"" + serverExe.generic_string() + "\" --frames 4", exitCode);
@@ -1894,4 +1896,34 @@ TEST_F(PlayerBuildIntegrationTest, BuiltGameShowsIcon) {
 	i32 gameExitCode = 1;
 	ASSERT_TRUE(TestPlatform::WaitForExit(game.process, 60000, gameExitCode));
 	EXPECT_EQ(gameExitCode, 0);
+}
+
+TEST_F(PlayerBuildIntegrationTest, ProjectOutsideAsciiBuildsAndRuns) {
+	const std::filesystem::path project = _root / u8"Projét Олег 太郎";
+	std::filesystem::create_directories(project / "Assets");
+	{
+		Config projectFile;
+		projectFile.SetString("Project", "name", "NamesProbe");
+		ASSERT_TRUE(projectFile.Save(Path(project.generic_string() + "/Project.ini")));
+	}
+	BuildProfile profile;
+	profile.name = "Plain";
+	profile.target = SLT_TEST_HOST_TARGET;
+	profile.SetList("scenes", Vector<str>{});
+	profile.SetString("configuration", _config);
+	ASSERT_TRUE(BuildProfileOps::SaveProfile(BuildProfileOps::GetProfilePath(project.generic_string(), "Plain"), profile));
+
+	const ScopedUserDataDirectory userData(_root / u8"appdata é Олег 太郎");
+	int exitCode = 0;
+	const str buildLog = RunCommand("\"" + EditorExecutable() + "\" --project \"" + project.generic_string() + "\" --build Plain",
+									exitCode);
+	ASSERT_EQ(exitCode, 0) << buildLog;
+	const std::filesystem::path playerExe = project / "Builds" / "Plain" / "NamesProbe" SLT_TEST_PLAYER_SUFFIX;
+	ASSERT_TRUE(std::filesystem::exists(playerExe)) << buildLog;
+
+	const str run = RunCommand("\"" + playerExe.generic_string() +
+								   "\" --frames 4 --screen-fullscreen 0 --screen-width 160 --screen-height 120",
+							   exitCode);
+	EXPECT_EQ(exitCode, 0) << run;
+	EXPECT_NE(run.find("NamesProbe"), str::npos) << run;
 }

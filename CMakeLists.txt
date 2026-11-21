@@ -401,6 +401,7 @@ install(EXPORT ShalltearTargets
 install(FILES
     ${CMAKE_SOURCE_DIR}/CMake/ShalltearModule.cmake
     ${CMAKE_SOURCE_DIR}/CMake/ShalltearPlayer.cmake
+    ${CMAKE_SOURCE_DIR}/CMake/ShalltearExecutable.manifest
     ${CMAKE_SOURCE_DIR}/CMake/ShalltearToolchainGuard.cmake
     ${CMAKE_SOURCE_DIR}/CMake/BuildStamp.h.in
     DESTINATION ${SHALLTEAR_INSTALL_CMAKE}
@@ -489,6 +490,7 @@ export(EXPORT ShalltearTargets
 )
 configure_file(${CMAKE_SOURCE_DIR}/CMake/ShalltearModule.cmake ${CMAKE_BINARY_DIR}/ShalltearModule.cmake COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/CMake/ShalltearPlayer.cmake ${CMAKE_BINARY_DIR}/ShalltearPlayer.cmake COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/CMake/ShalltearExecutable.manifest ${CMAKE_BINARY_DIR}/ShalltearExecutable.manifest COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/CMake/ShalltearToolchainGuard.cmake ${CMAKE_BINARY_DIR}/ShalltearToolchainGuard.cmake COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/CMake/BuildStamp.h.in ${CMAKE_BINARY_DIR}/BuildStamp.h.in COPYONLY)
 file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/ShalltearPackages.cmake CONTENT "${SHALLTEAR_PACKAGES_CONTENT}")

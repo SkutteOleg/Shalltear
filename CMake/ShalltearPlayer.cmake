@@ -87,23 +87,31 @@ ${anchorCalls}	}
 	set(${OUT_LINK_TARGETS} "${linkTargets}" PARENT_SCOPE)
 endfunction()
 
-function(_shalltear_add_player_icon TARGET_NAME ICON_FILE)
+function(_shalltear_add_player_resources TARGET_NAME ICON_FILE)
 	get_filename_component(toolchainBin "${CMAKE_CXX_COMPILER}" DIRECTORY)
 	find_program(windres NAMES x86_64-w64-mingw32-windres llvm-windres windres
 		HINTS "${toolchainBin}" NO_DEFAULT_PATH NO_CACHE)
 	if(NOT windres)
-		message(FATAL_ERROR "Shalltear: '${TARGET_NAME}' has an icon + no windres was found beside ${CMAKE_CXX_COMPILER}.")
+		message(FATAL_ERROR "Shalltear: '${TARGET_NAME}' needs a manifest + no windres was found in ${toolchainBin}.")
 	endif()
 
-	set(iconDir "${CMAKE_CURRENT_BINARY_DIR}/ShalltearGenerated/Icon")
-	configure_file("${ICON_FILE}" "${iconDir}/Icon.ico" COPYONLY)
-	file(GENERATE OUTPUT "${iconDir}/Icon.rc" CONTENT "1 ICON \"Icon.ico\"\n")
-	add_custom_command(OUTPUT "${iconDir}/Icon.res.o"
-		COMMAND "${windres}" --output-format=coff --input=Icon.rc --output=Icon.res.o
-		WORKING_DIRECTORY "${iconDir}"
-		DEPENDS "${iconDir}/Icon.rc" "${iconDir}/Icon.ico"
+	set(resourceDir "${CMAKE_CURRENT_BINARY_DIR}/ShalltearGenerated/Resources")
+	configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ShalltearExecutable.manifest"
+		"${resourceDir}/ShalltearExecutable.manifest" COPYONLY)
+	set(script "1 24 \"ShalltearExecutable.manifest\"\n")
+	set(inputs "${resourceDir}/ShalltearExecutable.manifest")
+	if(ICON_FILE)
+		configure_file("${ICON_FILE}" "${resourceDir}/Icon.ico" COPYONLY)
+		string(APPEND script "1 ICON \"Icon.ico\"\n")
+		list(APPEND inputs "${resourceDir}/Icon.ico")
+	endif()
+	file(GENERATE OUTPUT "${resourceDir}/Player.rc" CONTENT "${script}")
+	add_custom_command(OUTPUT "${resourceDir}/Player.res.o"
+		COMMAND "${windres}" --output-format=coff --input=Player.rc --output=Player.res.o
+		WORKING_DIRECTORY "${resourceDir}"
+		DEPENDS "${resourceDir}/Player.rc" ${inputs}
 		VERBATIM)
-	target_sources(${TARGET_NAME} PRIVATE "${iconDir}/Icon.res.o")
+	target_sources(${TARGET_NAME} PRIVATE "${resourceDir}/Player.res.o")
 endfunction()
 
 function(_shalltear_add_player_impl MODULE_NAME)
@@ -170,8 +178,8 @@ function(_shalltear_add_player_impl MODULE_NAME)
 	_shalltear_write_package_umbrellas(${MODULE_NAME} "${playerPackageTargets}")
 
 	add_executable(${playerTarget} ${playerEntrySources} "${playerPackageSource}")
-	if(WIN32 AND SHALLTEAR_PLAYER_ICON)
-		_shalltear_add_player_icon(${playerTarget} "${SHALLTEAR_PLAYER_ICON}")
+	if(WIN32)
+		_shalltear_add_player_resources(${playerTarget} "${SHALLTEAR_PLAYER_ICON}")
 	endif()
 
 	_shalltear_write_build_stamp(${MODULE_NAME} TRUE ${playerTarget})
