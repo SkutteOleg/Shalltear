@@ -44,7 +44,17 @@
 	],
 	"natives": [
 		{ "name": "ProbeCounter", "cpp": "::Shalltear::CSharpImpl::SlotProbe::Counter" },
-		{ "name": "ProbeRecipe", "cpp": "::Shalltear::CSharpImpl::SlotProbe::Recipe", "owned": true, "create": true }
+		{ "name": "ProbeRecipe", "cpp": "::Shalltear::CSharpImpl::SlotProbe::Recipe", "owned": true, "create": true },
+		{ "name": "ProbeKitchen", "cpp": "::Shalltear::CSharpImpl::SlotProbe::Kitchen", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "PROBE_LIMIT", "cpp": "::Shalltear::CSharpImpl::SlotProbe::PROBE_LIMIT", "type": "i32", "value": 42 },
+		{ "name": "PROBE_MASK", "cpp": "::Shalltear::CSharpImpl::SlotProbe::PROBE_MASK", "type": "u64", "value": 18446744073709551615 },
+		{ "name": "PROBE_FLOOR", "cpp": "::Shalltear::CSharpImpl::SlotProbe::PROBE_FLOOR", "type": "i64", "value": -9223372036854775808 },
+		{ "name": "PROBE_SCALE", "cpp": "::Shalltear::CSharpImpl::SlotProbe::PROBE_SCALE", "type": "f32", "value": "0x1.99999a0000000p-4" },
+		{ "name": "PROBE_RATIO", "cpp": "::Shalltear::CSharpImpl::SlotProbe::PROBE_RATIO", "type": "f64", "value": "0x1.5555555555555p-2" },
+		{ "name": "PROBE_ON", "cpp": "::Shalltear::CSharpImpl::SlotProbe::PROBE_ON", "type": "bool", "value": true },
+		{ "name": "ProbeName", "cpp": "::Shalltear::CSharpImpl::SlotProbe::ProbeName", "type": "string", "value": "probe" }
 	],
 	"functions": [
 		{
@@ -325,6 +335,116 @@
 			"returns": "i32",
 			"params": [],
 			"csharp": { "member": "CountLiveRecipes", "kind": "method" }
+		},
+		{
+			"id": "Primes",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Primes(count, outPrimes)",
+			"returns": "void",
+			"params": [
+				{ "name": "count", "type": "i32" },
+				{ "name": "outPrimes", "type": "list<i32>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::i32>" }
+			],
+			"csharp": { "member": "Primes", "kind": "method" }
+		},
+		{
+			"id": "Menu",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Menu(count, outRecipes, outNames)",
+			"returns": "bool",
+			"params": [
+				{ "name": "count", "type": "i32" },
+				{ "name": "outRecipes", "type": "list<ProbeRecipe>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>" },
+				{ "name": "outNames", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "Menu", "kind": "method" }
+		},
+		{
+			"id": "Recipes",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Recipes(count)",
+			"returns": "list<ProbeRecipe>",
+			"params": [{ "name": "count", "type": "i32" }],
+			"csharp": { "member": "Recipes", "kind": "method" },
+			"owns": true
+		},
+		{
+			"id": "CountSteps",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::CountSteps(Slots::Copies<::Shalltear::Vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>>(recipes))",
+			"returns": "i32",
+			"params": [{ "name": "recipes", "type": "list<ProbeRecipe>" }],
+			"csharp": { "member": "CountSteps", "kind": "method" }
+		},
+		{
+			"id": "Stock",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Stock(*kitchen, count)",
+			"returns": "void",
+			"params": [
+				{ "name": "kitchen", "type": "ProbeKitchen" },
+				{ "name": "count", "type": "i32" }
+			],
+			"csharp": { "member": "Stock", "kind": "method" }
+		},
+		{
+			"id": "Apply",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Apply(value, step)",
+			"returns": "i32",
+			"params": [
+				{ "name": "value", "type": "i32" },
+				{ "name": "step", "type": "fn<i32;i32>", "optional": true, "cpp": "std::function<::Shalltear::i32(::Shalltear::i32)>" }
+			],
+			"csharp": { "member": "Apply", "kind": "method" }
+		},
+		{
+			"id": "Label",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Label(make)",
+			"returns": "string",
+			"params": [
+				{ "name": "make", "type": "fn<string;string;f32>", "optional": true, "cpp": "std::function<::Shalltear::str(std::string_view, ::Shalltear::f32)>" }
+			],
+			"csharp": { "member": "Label", "kind": "method" }
+		},
+		{
+			"id": "Visit",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Visit(*root, visitor)",
+			"returns": "i32",
+			"params": [
+				{ "name": "root", "type": "SceneObject" },
+				{
+					"name": "visitor",
+					"type": "fn<bool;SceneObject;ProbeShape;ProbeTone>",
+					"cpp": "std::function<bool(::Shalltear::SceneObject*, const ::Shalltear::CSharpImpl::SlotProbe::Shape&, ::Shalltear::CSharpImpl::SlotProbe::Tone)>"
+				}
+			],
+			"csharp": { "member": "Visit", "kind": "method" }
+		},
+		{
+			"id": "KeepAction",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::KeepAction(action)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "action",
+					"type": "fn<void;ProbeRecipe;Vec3>",
+					"optional": true,
+					"cpp": "std::function<void(const ::Shalltear::CSharpImpl::SlotProbe::Recipe&, ::Shalltear::Vec3)>"
+				}
+			],
+			"csharp": { "member": "KeepAction", "kind": "method" }
+		},
+		{
+			"id": "RunKept",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::RunKept(*recipe, at)",
+			"returns": "bool",
+			"params": [
+				{ "name": "recipe", "type": "ProbeRecipe" },
+				{ "name": "at", "type": "Vec3" }
+			],
+			"csharp": { "member": "RunKept", "kind": "method" }
+		},
+		{
+			"id": "DropKept",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::DropKept()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DropKept", "kind": "method" }
 		}
 	]
 }

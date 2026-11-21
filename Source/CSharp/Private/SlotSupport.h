@@ -3,13 +3,17 @@
 #include "BindingSupport.h"
 
 #include "Shalltear/Core/Containers.h"
+#include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Module/ScriptFunctions.h"
 
+#include <concepts>
 #include <cstring>
+#include <functional>
 #include <iterator>
 #include <span>
 #include <string_view>
+#include <type_traits>
 
 namespace Shalltear::ScriptFunctionDetail {
 
@@ -25,7 +29,7 @@ namespace Shalltear::ScriptFunctionDetail {
 
 namespace Shalltear::CSharpImpl::Slots {
 
-	// valid until this thread's next KeepBytes
+	// valid until 8 more KeepBytes calls on this thread
 	SHALLTEAR_CSHARP_API void* KeepBytes(size_t size);
 
 	// valid until 16 more KeepText calls on this thread
@@ -68,6 +72,10 @@ namespace Shalltear::CSharpImpl::Slots {
 	inline void Text(u64* slots, const char* text) {
 		Text(slots, KeepText(text ? std::string_view(text) : std::string_view()));
 	}
+	template <std::same_as<Path> T>
+	void Text(u64* slots, const T& path) {
+		Text(slots, KeepText(path.ToString()));
+	}
 
 	template <typename T>
 	T Struct(u64 slot) {
@@ -95,6 +103,10 @@ namespace Shalltear::CSharpImpl::Slots {
 	u64 Box(const T& value) {
 		return static_cast<u64>(reinterpret_cast<uintptr_t>(New<T>(MemTag::Scripting, value)));
 	}
+	template <typename T>
+	u64 Box(T&& value) {
+		return static_cast<u64>(reinterpret_cast<uintptr_t>(New<T>(MemTag::Scripting, std::move(value))));
+	}
 
 	template <typename T, typename Range>
 	void KeepList(u64* slots, const Range& range) {
@@ -112,6 +124,9 @@ namespace Shalltear::CSharpImpl::Slots {
 
 	inline u64 IdOfItem(const Object* object) noexcept {
 		return object ? object->GetInstanceId() : 0;
+	}
+	inline u64 IdOfItem(const Object& object) noexcept {
+		return object.GetInstanceId();
 	}
 	template <typename T>
 	u64 IdOfItem(const Handle<T>& handle) noexcept {
@@ -137,6 +152,18 @@ namespace Shalltear::CSharpImpl::Slots {
 		size_t at = 0;
 		for (const auto& item : range) {
 			kept[at++] = Pointer(item);
+		}
+		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(kept));
+		slots[1] = count;
+	}
+
+	template <typename T, typename Range>
+	void KeepBoxes(u64* slots, const Range& range) {
+		const size_t count = static_cast<size_t>(std::distance(std::begin(range), std::end(range)));
+		u64* kept = static_cast<u64*>(KeepBytes(count * sizeof(u64)));
+		size_t at = 0;
+		for (const auto& item : range) {
+			kept[at++] = Box<T>(static_cast<const T&>(item));
 		}
 		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(kept));
 		slots[1] = count;
@@ -193,6 +220,50 @@ namespace Shalltear::CSharpImpl::Slots {
 		Vector<T> out{GetMemoryResource(MemTag::Scripting)};
 		for (const auto& item : range) {
 			out.emplace_back(item);
+		}
+		return out;
+	}
+
+	struct CallbackHold {
+		explicit CallbackHold(u64 id)
+			: id(id) {}
+		SHALLTEAR_CSHARP_API ~CallbackHold();
+		CallbackHold(const CallbackHold&) = delete;
+		CallbackHold& operator=(const CallbackHold&) = delete;
+
+		u64 id;
+	};
+
+	inline SharedPtr<CallbackHold> HoldCallback(u64 id) {
+		return id != 0 ? MakeShared<CallbackHold>(id) : SharedPtr<CallbackHold>();
+	}
+
+	SHALLTEAR_CSHARP_API int32_t InvokeCallback(const CallbackHold& hold, const u64* arguments, u64* results);
+
+	template <typename F>
+	struct CallbackResult;
+	template <typename R, typename... Args>
+	struct CallbackResult<std::function<R(Args...)>> {
+		using Type = R;
+	};
+	template <typename F>
+	using ResultOf = typename CallbackResult<std::remove_cvref_t<F>>::Type;
+
+	template <typename T, size_t Count>
+	void Assign(T (&array)[Count], std::span<const T> items) {
+		for (size_t index = 0; index < Count && index < items.size(); ++index) {
+			array[index] = items[index];
+		}
+	}
+
+	template <typename Container, typename T>
+	Container Copies(std::span<T* const> items) {
+		Container out;
+		out.reserve(items.size());
+		for (const T* item : items) {
+			if (item) {
+				out.push_back(*item);
+			}
 		}
 		return out;
 	}

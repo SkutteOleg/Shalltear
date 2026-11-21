@@ -13,6 +13,7 @@ namespace Shalltear::CSharpImpl::SlotProbe {
 
 		i32 _liveRecipes = 0;
 		Counter _counters[3];
+		std::function<void(const Recipe&, Vec3)> _keptAction;
 
 	} // anonymous namespace
 
@@ -255,6 +256,86 @@ namespace Shalltear::CSharpImpl::SlotProbe {
 
 	i32 CountLiveRecipes() {
 		return _liveRecipes;
+	}
+
+	void Primes(i32 count, Vector<i32>& outPrimes) {
+		outPrimes.clear();
+		for (i32 candidate = 2; static_cast<i32>(outPrimes.size()) < count; ++candidate) {
+			bool prime = true;
+			for (const i32 known : outPrimes) {
+				prime = prime && candidate % known != 0;
+			}
+			if (prime) {
+				outPrimes.push_back(candidate);
+			}
+		}
+	}
+
+	bool Menu(i32 count, Vector<Recipe>& outRecipes, Vector<str>& outNames) {
+		for (i32 index = 0; index < count; ++index) {
+			outRecipes.push_back(MakeRecipe(std::format("dish {}", index), index + 1));
+			outNames.push_back(outRecipes.back().name);
+		}
+		return count > 0;
+	}
+
+	Vector<Recipe> Recipes(i32 count) {
+		Vector<Recipe> recipes;
+		for (i32 index = 0; index < count; ++index) {
+			recipes.push_back(MakeRecipe(std::format("recipe {}", index), index));
+		}
+		return recipes;
+	}
+
+	i32 CountSteps(const Vector<Recipe>& recipes) {
+		i32 steps = 0;
+		for (const Recipe& recipe : recipes) {
+			steps += static_cast<i32>(recipe.steps.size());
+		}
+		return steps;
+	}
+
+	void Stock(Kitchen& kitchen, i32 count) {
+		kitchen.main.name = "main";
+		kitchen.shelf = Recipes(count);
+	}
+
+	i32 Apply(i32 value, const std::function<i32(i32)>& step) {
+		return step ? step(step(value)) : -1;
+	}
+
+	str Label(const std::function<str(std::string_view, f32)>& make) {
+		return make ? make("label", 1.5f) + "|" + make("", -2.0f) : "none";
+	}
+
+	i32 Visit(SceneObject& root, const std::function<bool(SceneObject*, const Shape&, Tone)>& visitor) {
+		i32 visited = 0;
+		for (u32 index = 0; index < root.GetChildCount(); ++index) {
+			Shape shape;
+			shape.count = visited;
+			shape.width = 0.5f * static_cast<f32>(visited);
+			++visited;
+			if (!visitor(root.GetChild(index).Get(), shape, visited % 2 == 0 ? Tone::High : Tone::Low)) {
+				break;
+			}
+		}
+		return visited;
+	}
+
+	void KeepAction(std::function<void(const Recipe&, Vec3)> action) {
+		_keptAction = std::move(action);
+	}
+
+	bool RunKept(const Recipe& recipe, const Vec3& at) {
+		if (!_keptAction) {
+			return false;
+		}
+		_keptAction(recipe, at);
+		return true;
+	}
+
+	void DropKept() {
+		_keptAction = nullptr;
 	}
 
 } // namespace Shalltear::CSharpImpl::SlotProbe

@@ -8,6 +8,7 @@
 #include "Shalltear/Core/Scene/SceneObject.h"
 #include "Shalltear/Core/Types.h"
 
+#include <functional>
 #include <span>
 #include <string_view>
 
@@ -88,5 +89,31 @@ namespace Shalltear::CSharpImpl::SlotProbe {
 	Recipe MakeRecipe(std::string_view name, i32 steps);
 	str DescribeRecipe(const Recipe& recipe);
 	i32 CountLiveRecipes();
+
+	inline constexpr i32 PROBE_LIMIT = 42;
+	inline constexpr u64 PROBE_MASK = 0xFFFFFFFFFFFFFFFFull;
+	inline constexpr i64 PROBE_FLOOR = -9223372036854775807ll - 1;
+	inline constexpr f32 PROBE_SCALE = 0.1f;
+	inline constexpr f64 PROBE_RATIO = 1.0 / 3.0;
+	inline constexpr bool PROBE_ON = true;
+	inline constexpr std::string_view ProbeName = "probe";
+
+	struct Kitchen {
+		Recipe main;
+		Vector<Recipe> shelf;
+	};
+
+	void Primes(i32 count, Vector<i32>& outPrimes);
+	bool Menu(i32 count, Vector<Recipe>& outRecipes, Vector<str>& outNames);
+	Vector<Recipe> Recipes(i32 count);
+	i32 CountSteps(const Vector<Recipe>& recipes);
+	void Stock(Kitchen& kitchen, i32 count);
+
+	i32 Apply(i32 value, const std::function<i32(i32)>& step);
+	str Label(const std::function<str(std::string_view, f32)>& make);
+	i32 Visit(SceneObject& root, const std::function<bool(SceneObject*, const Shape&, Tone)>& visitor);
+	void KeepAction(std::function<void(const Recipe&, Vec3)> action);
+	bool RunKept(const Recipe& recipe, const Vec3& at);
+	void DropKept();
 
 } // namespace Shalltear::CSharpImpl::SlotProbe

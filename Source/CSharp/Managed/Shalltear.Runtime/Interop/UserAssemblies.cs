@@ -146,6 +146,7 @@ internal static unsafe class UserAssemblies {
 		ScriptEvents.Clear();
 		FrameAwaits.Forget();
 		NativeFunctions.Forget();
+		SlotCallbacks.Forget();
 		ObjectCache.ForgetUser();
 		UnloadHooks.Run();
 		if (context == null) {

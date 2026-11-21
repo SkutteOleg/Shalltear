@@ -100,7 +100,7 @@ internal static unsafe class SlotValues {
 		return made;
 	}
 
-	internal static T[] Natives<T>(ulong* slots, Func<nint, bool, T> make)
+	internal static T[] Natives<T>(ulong* slots, Func<nint, bool, T> make, bool owned, object? owner)
 		where T : NativeObject {
 		int count = (int)slots[1];
 		if (count == 0) {
@@ -109,7 +109,8 @@ internal static unsafe class SlotValues {
 		ulong* pointers = (ulong*)(nint)slots[0];
 		T[] made = new T[count];
 		for (int index = 0; index < count; ++index) {
-			made[index] = make((nint)pointers[index], false);
+			made[index] = make((nint)pointers[index], owned);
+			made[index]._owner = owner;
 		}
 		return made;
 	}

@@ -34,9 +34,9 @@ namespace Shalltear::CSharpConformance {
 	}
 
 #ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
-	inline constexpr int32_t PASS_SET_SIZE = 115;
+	inline constexpr int32_t PASS_SET_SIZE = 119;
 #else
-	inline constexpr int32_t PASS_SET_SIZE = 128;
+	inline constexpr int32_t PASS_SET_SIZE = 132;
 #endif
 
 	inline bool IsInPassSet(std::string_view caseName) {

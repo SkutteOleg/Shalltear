@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xa7b31774265f7533ull
-#define SLT_BINDINGS_INPUT_DIGEST 0xf41127716eca4eebull
+#define SLT_BRIDGE_LAYOUT_HASH 0xb08b81c74bd88e71ull
+#define SLT_BINDINGS_INPUT_DIGEST 0xe3edcb92f7018a08ull
 
 typedef struct SltString SltString;
 
@@ -373,10 +373,25 @@ typedef struct SltBindings {
 	int32_t (*slotProbeMakeRecipe)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeDescribeRecipe)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeCountLiveRecipes)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbePrimes)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeMenu)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipes)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCountSteps)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeStock)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeApply)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeLabel)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeVisit)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeKeepAction)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRunKept)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeDropKept)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeProbeRecipeDelete)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeProbeRecipeNew)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeProbeKitchenDelete)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeProbeKitchenNew)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeCounterAdd)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeCounterGetTotal)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeKitchenGetMain)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeKitchenGetShelf)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeRecipeGetName)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeRecipeSetName)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*slotProbeRecipeGetHeat)(const uint64_t* arguments, uint64_t* results);

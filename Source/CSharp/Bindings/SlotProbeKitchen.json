@@ -1,0 +1,25 @@
+{
+	"area": "SlotProbeKitchen",
+	"include": "SlotProbe.h",
+	"class": "Shalltear.Interop.ProbeKitchen",
+	"test": true,
+	"slots": true,
+	"instance": "ProbeKitchen",
+	"functions": [
+		{
+			"id": "GetMain",
+			"cpp": "&self->main",
+			"returns": "ProbeRecipe",
+			"params": [],
+			"csharp": { "member": "Main", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetShelf",
+			"cpp": "self->shelf",
+			"returns": "list<ProbeRecipe>",
+			"params": [],
+			"csharp": { "member": "Shelf", "kind": "getter" }
+		}
+	]
+}

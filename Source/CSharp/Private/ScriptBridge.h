@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 16
+#define SLT_BRIDGE_ABI_VERSION 17
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -191,6 +191,8 @@ typedef struct SltManagedAPI {
 	int32_t (*readProfile)(SltProfileRow* rows, int32_t capacity, SltProfileFrame* outFrame);
 	void (*callExport)(uint64_t id, const uint64_t* arguments, uint64_t* result);
 	void (*functionsChanged)(void);
+	int32_t (*invokeCallback)(uint64_t id, const uint64_t* arguments, uint64_t* results);
+	void (*releaseCallback)(uint64_t id);
 } SltManagedAPI;
 
 typedef int32_t (*SltInitializeFn)(const SltEngineAPI* engine, SltManagedAPI* outManaged);

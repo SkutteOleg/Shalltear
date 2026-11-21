@@ -56,7 +56,30 @@ internal sealed unsafe partial class ProbeRecipe : NativeObject {
 	}
 }
 
+internal sealed unsafe partial class ProbeKitchen : NativeObject {
+	internal ProbeKitchen(nint pointer, bool owned) : base(pointer, owned ? Bindings.table.slotProbeProbeKitchenDelete : null) {}
+
+	public ProbeKitchen() : this(Create(), true) {}
+
+	static nint Create() {
+		ulong* slots = stackalloc ulong[1];
+		int status = Bindings.table.slotProbeProbeKitchenNew(slots, slots);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "ProbeKitchen");
+		}
+		return (nint)slots[0];
+	}
+}
+
 internal static unsafe partial class SlotProbe {
+	internal const int PROBE_LIMIT = 42;
+	internal const ulong PROBE_MASK = 18446744073709551615;
+	internal const long PROBE_FLOOR = long.MinValue;
+	internal const float PROBE_SCALE = 0.1f;
+	internal const double PROBE_RATIO = 0.3333333333333333;
+	internal const bool PROBE_ON = true;
+	internal const string ProbeName = "probe";
+
 	internal static sbyte EchoI8(sbyte value) {
 		if (Bridge.OffMainThread) {
 			Bridge.ThrowOffMainThread("SlotProbe.EchoI8");
@@ -482,7 +505,7 @@ internal static unsafe partial class SlotProbe {
 			if (status != Bridge.OK) {
 				throw Bridge.Failure(status, "SlotProbe.Counter");
 			}
-			return NativeObject.Wrap(slots[0], false, static (pointer, owned) => new ProbeCounter(pointer, owned))!;
+			return NativeObject.Wrap(slots[0], false, static (pointer, owned) => new ProbeCounter(pointer, owned), null)!;
 		}
 	}
 
@@ -495,7 +518,7 @@ internal static unsafe partial class SlotProbe {
 		if (status != Bridge.OK) {
 			throw Bridge.Failure(status, "SlotProbe.Counters");
 		}
-		return SlotValues.Natives(slots, static (pointer, owned) => new ProbeCounter(pointer, owned));
+		return SlotValues.Natives(slots, static (pointer, owned) => new ProbeCounter(pointer, owned), false, null);
 	}
 
 	internal static int TotalOf(ReadOnlySpan<ProbeCounter> counters) {
@@ -527,7 +550,7 @@ internal static unsafe partial class SlotProbe {
 		if (status != Bridge.OK) {
 			throw Bridge.Failure(status, "SlotProbe.MakeRecipe");
 		}
-		return NativeObject.Wrap(slots[3], true, static (pointer, owned) => new ProbeRecipe(pointer, owned))!;
+		return NativeObject.Wrap(slots[3], true, static (pointer, owned) => new ProbeRecipe(pointer, owned), null)!;
 	}
 
 	internal static string DescribeRecipe(ProbeRecipe recipe) {
@@ -554,5 +577,184 @@ internal static unsafe partial class SlotProbe {
 			throw Bridge.Failure(status, "SlotProbe.CountLiveRecipes");
 		}
 		return (int)slots[0];
+	}
+
+	internal static void Primes(int count, out int[] outPrimes) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Primes");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = (ulong)(long)count;
+		int status = Bindings.table.slotProbePrimes(slots, slots + 1);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.Primes");
+		}
+		outPrimes = SlotValues.Array<int>(slots + 1);
+	}
+
+	internal static bool Menu(int count, out ProbeRecipe[] outRecipes, out string[] outNames) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Menu");
+		}
+		ulong* slots = stackalloc ulong[6];
+		slots[0] = (ulong)(long)count;
+		int status = Bindings.table.slotProbeMenu(slots, slots + 1);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.Menu");
+		}
+		outRecipes = SlotValues.Natives(slots + 2, static (pointer, owned) => new ProbeRecipe(pointer, owned), true, null);
+		outNames = SlotValues.Texts(slots + 4);
+		return slots[1] != 0;
+	}
+
+	internal static ProbeRecipe[] Recipes(int count) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Recipes");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = (ulong)(long)count;
+		int status = Bindings.table.slotProbeRecipes(slots, slots + 1);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.Recipes");
+		}
+		return SlotValues.Natives(slots + 1, static (pointer, owned) => new ProbeRecipe(pointer, owned), true, null);
+	}
+
+	internal static int CountSteps(ReadOnlySpan<ProbeRecipe> recipes) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.CountSteps");
+		}
+		using SlotList recipesList = SlotList.OfNatives(recipes);
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = (ulong)recipesList.Data;
+		slots[1] = (ulong)recipes.Length;
+		int status = Bindings.table.slotProbeCountSteps(slots, slots + 2);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.CountSteps");
+		}
+		return (int)slots[2];
+	}
+
+	internal static void Stock(ProbeKitchen kitchen, int count) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Stock");
+		}
+		ArgumentNullException.ThrowIfNull(kitchen);
+		ulong* slots = stackalloc ulong[2];
+		slots[0] = kitchen.Pointer;
+		slots[1] = (ulong)(long)count;
+		int status = Bindings.table.slotProbeStock(slots, slots + 2);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.Stock");
+		}
+	}
+
+	internal static int Apply(int value, Func<int, int>? step) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Apply");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = (ulong)(long)value;
+		slots[1] = SlotCallbacks.Keep(step is null ? null : ApplyStepCallback(step));
+		int status = Bindings.table.slotProbeApply(slots, slots + 2);
+		if (status != Bridge.OK) {
+			SlotCallbacks.Drop(slots[1]);
+			throw Bridge.Failure(status, "SlotProbe.Apply");
+		}
+		return (int)slots[2];
+	}
+
+	static SlotCallback ApplyStepCallback(Func<int, int> handler) {
+		return (slots, results) => {
+			results[0] = (ulong)(long)handler((int)slots[0]);
+		};
+	}
+
+	internal static string Label(Func<string, float, string>? make) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Label");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = SlotCallbacks.Keep(make is null ? null : LabelMakeCallback(make));
+		int status = Bindings.table.slotProbeLabel(slots, slots + 1);
+		if (status != Bridge.OK) {
+			SlotCallbacks.Drop(slots[0]);
+			throw Bridge.Failure(status, "SlotProbe.Label");
+		}
+		return SlotValues.Text(slots + 1);
+	}
+
+	static SlotCallback LabelMakeCallback(Func<string, float, string> handler) {
+		return (slots, results) => {
+			SlotCallbacks.KeepText(results, handler(SlotValues.Text(slots), BitConverter.UInt32BitsToSingle((uint)slots[2])));
+		};
+	}
+
+	internal static int Visit(SceneObject root, Func<SceneObject, ProbeShape, ProbeTone, bool> visitor) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.Visit");
+		}
+		ArgumentNullException.ThrowIfNull(root);
+		ArgumentNullException.ThrowIfNull(visitor);
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = root._id;
+		slots[1] = SlotCallbacks.Keep(VisitVisitorCallback(visitor));
+		int status = Bindings.table.slotProbeVisit(slots, slots + 2);
+		if (status != Bridge.OK) {
+			SlotCallbacks.Drop(slots[1]);
+			throw Bridge.Failure(status, "SlotProbe.Visit");
+		}
+		return (int)slots[2];
+	}
+
+	static SlotCallback VisitVisitorCallback(Func<SceneObject, ProbeShape, ProbeTone, bool> handler) {
+		return (slots, results) => {
+			results[0] = handler(ObjectCache.SceneObject(slots[0])!, *(ProbeShape*)slots[1], (ProbeTone)(sbyte)slots[2]) ? 1UL : 0UL;
+		};
+	}
+
+	internal static void KeepAction(Action<ProbeRecipe, Vec3>? action) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.KeepAction");
+		}
+		ulong* slots = stackalloc ulong[1];
+		slots[0] = SlotCallbacks.Keep(action is null ? null : KeepActionActionCallback(action));
+		int status = Bindings.table.slotProbeKeepAction(slots, slots + 1);
+		if (status != Bridge.OK) {
+			SlotCallbacks.Drop(slots[0]);
+			throw Bridge.Failure(status, "SlotProbe.KeepAction");
+		}
+	}
+
+	static SlotCallback KeepActionActionCallback(Action<ProbeRecipe, Vec3> handler) {
+		return (slots, results) => {
+			handler(NativeObject.Wrap(slots[0], false, static (pointer, owned) => new ProbeRecipe(pointer, owned), null)!, SlotValues.Vec3(slots + 1));
+		};
+	}
+
+	internal static bool RunKept(ProbeRecipe recipe, Vec3 at) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.RunKept");
+		}
+		ArgumentNullException.ThrowIfNull(recipe);
+		ulong* slots = stackalloc ulong[4];
+		slots[0] = recipe.Pointer;
+		SlotValues.Put(slots + 1, at);
+		int status = Bindings.table.slotProbeRunKept(slots, slots + 3);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.RunKept");
+		}
+		return slots[3] != 0;
+	}
+
+	internal static void DropKept() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("SlotProbe.DropKept");
+		}
+		ulong* slots = stackalloc ulong[1];
+		int status = Bindings.table.slotProbeDropKept(slots, slots);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "SlotProbe.DropKept");
+		}
 	}
 }

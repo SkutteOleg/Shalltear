@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 
 using Shalltear.Interop;
 
@@ -160,6 +162,115 @@ static class SlotTests {
 		Check.True(!blank.IsAlive, "disposed");
 		made.Dispose();
 		Check.Equal(live, SlotProbe.CountLiveRecipes());
+	}
+
+	[ConformanceTest]
+	internal static void ConstantsMatchTheEngine() {
+		Check.Equal(42, SlotProbe.PROBE_LIMIT);
+		Check.Equal(ulong.MaxValue, SlotProbe.PROBE_MASK);
+		Check.Equal(long.MinValue, SlotProbe.PROBE_FLOOR);
+		Check.Equal(0.1f, SlotProbe.PROBE_SCALE);
+		Check.Equal(1.0 / 3.0, SlotProbe.PROBE_RATIO);
+		Check.True(SlotProbe.PROBE_ON, "on");
+		Check.Equal("probe", SlotProbe.ProbeName);
+	}
+
+	[ConformanceTest]
+	internal static void OutListsAndOwnedListsCross() {
+		SlotProbe.Primes(6, out int[] primes);
+		Check.Equal(6, primes.Length);
+		Check.Equal(13, primes[5]);
+		SlotProbe.Primes(0, out primes);
+		Check.Equal(0, primes.Length);
+
+		int live = SlotProbe.CountLiveRecipes();
+		Check.True(SlotProbe.Menu(3, out ProbeRecipe[] dishes, out string[] names), "menu");
+		Check.Equal(3, dishes.Length);
+		Check.Equal("dish 2", names[2]);
+		Check.Equal("dish 1", dishes[1].Name);
+		Check.Equal(live + 3, SlotProbe.CountLiveRecipes());
+		ProbeRecipe[] recipes = SlotProbe.Recipes(4);
+		Check.Equal(live + 7, SlotProbe.CountLiveRecipes());
+		Check.Equal(6, SlotProbe.CountSteps(recipes));
+		Check.Equal(live + 7, SlotProbe.CountLiveRecipes());
+		foreach (ProbeRecipe recipe in recipes) {
+			recipe.Dispose();
+		}
+		foreach (ProbeRecipe dish in dishes) {
+			dish.Dispose();
+		}
+		Check.Equal(live, SlotProbe.CountLiveRecipes());
+	}
+
+	[ConformanceTest]
+	internal static void InnerNativesKeepTheirOwner() {
+		ProbeRecipe main = StockKitchen(out ProbeRecipe[] shelf, out int live);
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		GC.Collect();
+		NativeObject.Drain();
+		Check.Equal(live + 4, SlotProbe.CountLiveRecipes());
+		Check.Equal("main", main.Name);
+		Check.Equal(3, shelf.Length);
+		Check.Equal("recipe 2", shelf[2].Name);
+		GC.KeepAlive(main);
+		GC.KeepAlive(shelf);
+	}
+
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	static ProbeRecipe StockKitchen(out ProbeRecipe[] shelf, out int live) {
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		NativeObject.Drain();
+		live = SlotProbe.CountLiveRecipes();
+		ProbeKitchen kitchen = new();
+		SlotProbe.Stock(kitchen, 3);
+		shelf = kitchen.Shelf;
+		return kitchen.Main;
+	}
+
+	[ConformanceTest]
+	internal static void DelegatesCrossAsCallbacks() {
+		int kept = SlotCallbacks.Count;
+		Check.Equal(-1, SlotProbe.Apply(5, null));
+		Check.Equal(20, SlotProbe.Apply(5, static value => value * 2));
+		int calls = 0;
+		Check.Equal(7, SlotProbe.Apply(5, value => {
+			++calls;
+			return value + 1;
+		}));
+		Check.Equal(2, calls);
+		Check.Equal("none", SlotProbe.Label(null));
+		Check.Equal("label 1.5|пусто -2", SlotProbe.Label(static (text, scale) => (text.Length == 0 ? "пусто" : text) + " " + scale.ToString(CultureInfo.InvariantCulture)));
+		Check.Equal(kept, SlotCallbacks.Count);
+
+		SceneObject root = BindingProbe.CreateObject("CallbackRoot");
+		for (int index = 0; index < 4; ++index) {
+			BindingProbe.CreateObject(index == 2 ? "CallbackStop" : "CallbackChild").SetParent(root);
+		}
+		float widths = 0f;
+		ProbeTone last = ProbeTone.Mid;
+		Check.Equal(3, SlotProbe.Visit(root, (child, shape, tone) => {
+			widths += shape.width + shape.count;
+			last = tone;
+			return child.Name != "CallbackStop";
+		}));
+		Check.Equal(4.5f, widths);
+		Check.Equal(ProbeTone.Low, last);
+		root.Destroy();
+		BindingProbe.EndFrame();
+
+		ProbeRecipe recipe = SlotProbe.MakeRecipe("kept", 1);
+		Check.True(!SlotProbe.RunKept(recipe, default), "nothing kept");
+		string heard = "";
+		SlotProbe.KeepAction((given, at) => heard = given.Name + " " + at.x.ToString(CultureInfo.InvariantCulture));
+		Check.Equal(kept + 1, SlotCallbacks.Count);
+		Check.True(SlotProbe.RunKept(recipe, new Vec3(2f, 0f, 0f)), "kept");
+		Check.Equal("kept 2", heard);
+		SlotProbe.DropKept();
+		Check.Equal(kept, SlotCallbacks.Count);
+		Check.True(!SlotProbe.RunKept(recipe, default), "dropped");
+		recipe.Dispose();
 	}
 
 	[ConformanceTest]

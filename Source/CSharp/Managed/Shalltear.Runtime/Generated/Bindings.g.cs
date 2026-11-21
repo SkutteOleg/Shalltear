@@ -331,10 +331,25 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeMakeRecipe;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeDescribeRecipe;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCountLiveRecipes;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbePrimes;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeMenu;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipes;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCountSteps;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeStock;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeApply;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeLabel;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeVisit;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeKeepAction;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRunKept;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeDropKept;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeProbeRecipeDelete;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeProbeRecipeNew;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeProbeKitchenDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeProbeKitchenNew;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCounterAdd;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCounterGetTotal;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeKitchenGetMain;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeKitchenGetShelf;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeGetName;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeSetName;
 	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeGetHeat;
@@ -431,7 +446,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xa7b31774265f7533;
+	internal const ulong LAYOUT_HASH = 0xb08b81c74bd88e71;
 
 	internal static SltBindings table;
 

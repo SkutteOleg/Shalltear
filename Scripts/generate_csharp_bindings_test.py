@@ -538,7 +538,7 @@ class BindingsTest(unittest.TestCase):
 						 self.refusal([fill], structs=[dict(hit, fields=[{"name": "ownerId", "type": "u64", "access": "public"}])]))
 		self.assertEqual("Game.json: Hit: 'doc' is missing", self.refusal([fill], structs=[dict(hit, fields=[{"name": "ownerId", "type": "u64"}])]))
 		self.assertEqual("Game.json: Hit: field 'first' can't be Point. Use a scalar, a value type, an enum or a struct",
-						 self.refusal([fill], structs=[hit, point]))
+						 self.refusal([fill], structs=[hit]))
 
 	def test_handle_crosses_as_one_integer(self):
 		voice = {"name": "Voice", "cpp": "::Game::Voice", "doc": "1 voice."}
@@ -628,7 +628,7 @@ class BindingsTest(unittest.TestCase):
 		self.assertIn("\t\tfixed (double* partsData = parts) {\n", managed)
 		self.assertIn("\t\t\treturn SlotValues.Array<Shape>(slots + 5);\n", managed)
 		self.assertIn("\tpublic static Recipe Make() {\n", managed)
-		self.assertIn("\t\treturn NativeObject.Wrap(slots[0], true, static (pointer, owned) => new Recipe(pointer, owned))!;\n", managed)
+		self.assertIn("\t\treturn NativeObject.Wrap(slots[0], true, static (pointer, owned) => new Recipe(pointer, owned), null)!;\n", managed)
 		self.assertNotIn("RecipeDelete(", managed)
 
 		self.assertIn("\tint32_t (*gameGrow)(const uint64_t* arguments, uint64_t* results);\n", bindings.render_native_header([area], 0))
@@ -636,6 +636,109 @@ class BindingsTest(unittest.TestCase):
 		moved = dict(shape, size=20, fields=[shape["fields"][0], dict(shape["fields"][1], offset=8)])
 		other = bindings.parse_area(self.write([grow, mix, make], slots=True, structs=[moved], enums=[tone], natives=[recipe]))
 		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([other]))
+
+	def test_slots_area_takes_callbacks_constants_and_out_lists(self):
+		recipe = {"name": "Recipe", "cpp": "::Game::Recipe", "owned": True}
+		tone = {"name": "Tone", "cpp": "::Game::Tone", "underlying": "i8", "values": [{"name": "Low", "value": -2}]}
+		shape = {"name": "Shape", "cpp": "::Game::Shape", "size": 8, "align": 4,
+				 "fields": [{"name": "width", "type": "f32", "offset": 0}, {"name": "tone", "type": "Tone", "offset": 4}]}
+		constants = [{"name": "LIMIT", "cpp": "::Game::LIMIT", "type": "i32", "value": 42},
+					 {"name": "MASK", "cpp": "::Game::MASK", "type": "u64", "value": 0xFFFFFFFFFFFFFFFF},
+					 {"name": "FLOOR", "cpp": "::Game::FLOOR", "type": "i64", "value": -0x8000000000000000},
+					 {"name": "SCALE", "cpp": "::Game::SCALE", "type": "f32", "value": "0x1.99999a0000000p-4"},
+					 {"name": "FAR", "cpp": "::Game::FAR", "type": "f64", "value": "inf"},
+					 {"name": "ON", "cpp": "::Game::ON", "type": "bool", "value": True},
+					 {"name": "Title", "cpp": "::Game::Title", "type": "string", "value": "a \"game\""}]
+		primes = {"id": "Primes", "cpp": "::Game::Primes(count, outPrimes, outRecipes)", "returns": "void",
+				  "params": [{"name": "count", "type": "i32"}, {"name": "outPrimes", "type": "list<i32>", "out": True, "cpp": "::Game::Vector<int>"},
+							 {"name": "outRecipes", "type": "list<Recipe>", "out": True, "cpp": "::Game::Vector<::Game::Recipe>"}],
+				  "csharp": {"member": "Primes", "kind": "method"}}
+		recipes = {"id": "Recipes", "cpp": "::Game::Recipes()", "returns": "list<Recipe>", "params": [], "owns": True, "csharp": {"member": "Recipes", "kind": "method"}}
+		visitor = "std::function<bool(::Shalltear::SceneObject*, const ::Game::Shape&, ::Game::Tone, std::string_view)>"
+		visit = {"id": "Visit", "cpp": "::Game::Visit(*root, visitor, done)", "returns": "i32",
+				 "params": [{"name": "root", "type": "SceneObject"}, {"name": "visitor", "type": "fn<bool;SceneObject;Shape;Tone;string>", "cpp": visitor},
+							{"name": "done", "type": "fn<void>", "optional": True, "cpp": "std::function<void()>"}],
+				 "csharp": {"member": "Visit", "kind": "method"}}
+		name = {"id": "Name", "cpp": "::Game::Name(make)", "returns": "void",
+				"params": [{"name": "make", "type": "fn<string;Recipe;Vec3>", "cpp": "std::function<::Shalltear::str(const ::Game::Recipe&, ::Shalltear::Vec3)>"}],
+				"csharp": {"member": "Name", "kind": "method"}}
+		area = bindings.parse_area(self.write([primes, recipes, visit, name], slots=True, structs=[shape], enums=[tone], natives=[recipe], constants=constants))
+
+		native = bindings.render_native_area(area)
+		self.assertIn("\tstatic_assert(static_cast<int64_t>(::Game::LIMIT) == 42ll);\n\tstatic_assert(static_cast<uint64_t>(::Game::MASK) == 18446744073709551615ull);\n"
+					  "\tstatic_assert(static_cast<int64_t>(::Game::FLOOR) == (-9223372036854775807ll - 1));\n"
+					  "\tstatic_assert(static_cast<float>(::Game::SCALE) == 0x1.99999a0000000p-4f);\n"
+					  "\tstatic_assert((::Game::FAR) == std::numeric_limits<double>::infinity());\n\tstatic_assert((::Game::ON) == true);\n"
+					  "\tstatic_assert(std::string_view(::Game::Title) == std::string_view(\"a \\\"game\\\"\"));\n", native)
+		self.assertIn("\t\t\t\t::Game::Vector<int> outPrimes{};\n\t\t\t\t::Game::Vector<::Game::Recipe> outRecipes{};\n\t\t\t\t::Game::Primes(count, outPrimes, outRecipes);\n"
+					  "\t\t\t\tSlots::KeepList<int32_t>(results, outPrimes);\n\t\t\t\tSlots::KeepBoxes<::Game::Recipe>(results + 2, outRecipes);\n", native)
+		self.assertIn("\t\t\t\tSlots::KeepBoxes<::Game::Recipe>(results, ::Game::Recipes());\n", native)
+		self.assertIn(f"\t\t\t\t{visitor} visitor;\n\t\t\t\tif (const auto visitorHold = Slots::HoldCallback(arguments[1])) {{\n"
+					  f"\t\t\t\t\tvisitor = [visitorHold](const auto& a0, const auto& a1, const auto& a2, const auto& a3) -> Slots::ResultOf<{visitor}> {{\n"
+					  "\t\t\t\t\t\tuint64_t callArguments[5]{};\n\t\t\t\t\t\tuint64_t callResults[1]{};\n\t\t\t\t\t\tcallArguments[0] = Slots::IdOfItem(a0);\n"
+					  "\t\t\t\t\t\tcallArguments[1] = Slots::Pointer<::Game::Shape>(a1);\n"
+					  "\t\t\t\t\t\tcallArguments[2] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int8_t>(a2)));\n"
+					  "\t\t\t\t\t\tSlots::Text(callArguments + 3, a3);\n"
+					  "\t\t\t\t\t\tif (Slots::InvokeCallback(*visitorHold, callArguments, callResults) != SLT_OK) {\n"
+					  f"\t\t\t\t\t\t\treturn Slots::ResultOf<{visitor}>();\n\t\t\t\t\t\t}}\n"
+					  f"\t\t\t\t\t\treturn static_cast<Slots::ResultOf<{visitor}>>(callResults[0] != 0);\n\t\t\t\t\t}};\n\t\t\t\t}}\n", native)
+		self.assertIn("\t\t\t\t\tdone = [doneHold]() -> Slots::ResultOf<std::function<void()>> {\n", native)
+		self.assertIn("\t\t\t\t\t\t\treturn;\n", native)
+		self.assertIn("\t\t\t\t\t\tcallArguments[0] = Slots::Pointer<::Game::Recipe>(a0);\n\t\t\t\t\t\tSlots::Write(callArguments + 1, ::Shalltear::Vec3(a1));\n", native)
+		self.assertIn("(Slots::View(callResults));\n", native)
+
+		managed = bindings.render_managed_area(area)
+		self.assertIn("\tpublic const int LIMIT = 42;\n\tpublic const ulong MASK = 18446744073709551615;\n\tpublic const long FLOOR = long.MinValue;\n"
+					  "\tpublic const float SCALE = 0.1f;\n\tpublic const double FAR = double.PositiveInfinity;\n\tpublic const bool ON = true;\n"
+					  "\tpublic const string Title = \"a \\\"game\\\"\";\n", managed)
+		self.assertIn("\tpublic static void Primes(int count, out int[] outPrimes, out Recipe[] outRecipes) {\n", managed)
+		self.assertIn("\t\toutPrimes = SlotValues.Array<int>(slots + 1);\n"
+					  "\t\toutRecipes = SlotValues.Natives(slots + 3, static (pointer, owned) => new Recipe(pointer, owned), true, null);\n", managed)
+		self.assertIn("\t\treturn SlotValues.Natives(slots, static (pointer, owned) => new Recipe(pointer, owned), true, null);\n", managed)
+		self.assertIn("\tpublic static int Visit(SceneObject root, Func<SceneObject, Shape, Tone, string, bool> visitor, Action? done) {\n", managed)
+		self.assertIn("\t\tslots[1] = SlotCallbacks.Keep(VisitVisitorCallback(visitor));\n\t\tslots[2] = SlotCallbacks.Keep(done is null ? null : VisitDoneCallback(done));\n",
+					  managed)
+		self.assertIn("\t\tif (status != Bridge.OK) {\n\t\t\tSlotCallbacks.Drop(slots[1]);\n\t\t\tSlotCallbacks.Drop(slots[2]);\n", managed)
+		self.assertIn("\tstatic SlotCallback VisitVisitorCallback(Func<SceneObject, Shape, Tone, string, bool> handler) {\n\t\treturn (slots, results) => {\n"
+					  "\t\t\tresults[0] = handler(ObjectCache.SceneObject(slots[0])!, *(Shape*)slots[1], (Tone)(sbyte)slots[2], SlotValues.Text(slots + 3)) ? 1UL : 0UL;\n",
+					  managed)
+		self.assertIn("\tstatic SlotCallback VisitDoneCallback(Action handler) {\n\t\treturn (slots, results) => {\n\t\t\thandler();\n", managed)
+		self.assertIn("\t\t\tSlotCallbacks.KeepText(results, handler(NativeObject.Wrap(slots[0], false, static (pointer, owned) => new Recipe(pointer, owned), null)!, "
+					  "SlotValues.Vec3(slots + 1)));\n", managed)
+
+	def test_callback_constant_and_out_list_rules(self):
+		recipe = {"name": "Recipe", "cpp": "::Game::Recipe"}
+		walk = {"id": "Walk", "cpp": "::Game::Walk(step)", "returns": "void", "params": [{"name": "step", "type": "fn<void;i32>", "cpp": "std::function<void(int)>"}],
+				"csharp": {"member": "Walk", "kind": "method"}}
+		self.assertEqual("Game.json: Walk: callback 'step' needs 'cpp' (std::function type) + no 'out'",
+						 self.refusal([dict(walk, params=[{"name": "step", "type": "fn<void;i32>"}])], slots=True))
+		self.assertEqual("Game.json: Walk: a callback needs a method", self.refusal([dict(walk, csharp={"member": "Walk", "kind": "setter"})], slots=True))
+		self.assertIn("Game.json: Walk: unknown type 'fn<void;i32>'.", self.refusal([dict(walk, doc="Walks.")]))
+		self.assertIn("Game.json: Walk: unknown type 'fn<list<i32>>'.", self.refusal([dict(walk, params=[{"name": "step", "type": "fn<list<i32>>", "cpp": "x"}])], slots=True))
+		count = {"id": "Count", "cpp": "::Game::Count(value)", "returns": "void", "params": [{"name": "value", "type": "i32", "cpp": "int"}],
+				 "csharp": {"member": "Count", "kind": "method"}}
+		self.assertEqual("Game.json: Count: 'cpp' is the container of an out list or the type of a callback, 'value' is i32", self.refusal([count], slots=True))
+		fill = {"id": "Fill", "cpp": "::Game::Fill(items)", "returns": "void", "params": [{"name": "items", "type": "list<i32>", "out": True}],
+				"csharp": {"member": "Fill", "kind": "method"}}
+		self.assertEqual("Game.json: Fill: 'out' is for a span, 'items' is list<i32>", self.refusal([fill], slots=True))
+		made = {"id": "Made", "cpp": "::Game::Made()", "returns": "list<Recipe>", "params": [], "owns": True, "csharp": {"member": "Made", "kind": "method"}}
+		self.assertEqual("Game.json: Made: Recipe is copied for the script. Mark the native 'owned'", self.refusal([made], slots=True, natives=[recipe]))
+		many = {"id": "Many", "cpp": "::Game::Many()", "returns": "void",
+				"params": [{"name": f"list{index}", "type": "list<i32>", "out": True, "cpp": "::Game::Vector<int>"} for index in range(9)],
+				"csharp": {"member": "Many", "kind": "method"}}
+		self.assertEqual("Game.json: Many: returns more than 8 lists or 16 strings", self.refusal([many], slots=True))
+		limit = {"name": "LIMIT", "cpp": "::Game::LIMIT", "type": "u8", "value": 256}
+		self.assertEqual("Game.json: LIMIT: 'value' 256 isn't a u8. Use bool/an integer type/f32/f64 (hex text, inf, -inf, nan)/string",
+						 self.refusal([], slots=True, constants=[limit]))
+		self.assertEqual("Game.json: LIMIT: 'constants' needs objects in a slots area", self.refusal([], constants=[dict(limit, value=1)]))
+		self.assertEqual("Game.json: Walk: member 'Walk' is declared twice", self.refusal([walk], slots=True, constants=[dict(limit, name="Walk", value=1)]))
+
+	def test_struct_may_name_a_struct_declared_later(self):
+		point = {"name": "Point", "cpp": "::Game::Point", "size": 8, "align": 4, "fields": [{"name": "x", "type": "f32", "offset": 0}, {"name": "y", "type": "f32", "offset": 4}]}
+		line = {"name": "Line", "cpp": "::Game::Line", "size": 16, "align": 4, "fields": [{"name": "start", "type": "Point", "offset": 0}, {"name": "end", "type": "Point", "offset": 8}]}
+		area = bindings.parse_area(self.write([], slots=True, structs=[line, point]))
+		self.assertEqual(["Point", "Line"], [declared.name for declared in area.structs])
+		self.assertEqual("Game.json: Line: field 'start' can't be Point. Use a scalar, a value type, an enum or a struct", self.refusal([], slots=True, structs=[line]))
 
 	def test_slot_kinds_are_refused_outside_a_slots_area(self):
 		shape = {"name": "Shape", "doc": "Size.", "fields": [{"name": "width", "type": "f32", "doc": "Width."}]}

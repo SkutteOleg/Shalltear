@@ -11,6 +11,7 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 	readonly int _createdEpoch = _epoch;
 	nint _pointer;
 	delegate* unmanaged<ulong*, ulong*, int> _release;
+	internal object? _owner;
 
 	private protected NativeObject(nint pointer, delegate* unmanaged<ulong*, ulong*, int> release) {
 		_pointer = pointer;
@@ -36,9 +37,14 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 	/// <summary>False once disposed.</summary>
 	public bool IsAlive => _pointer != 0 && _createdEpoch == _epoch;
 
-	internal static T? Wrap<T>(ulong pointer, bool owned, Func<nint, bool, T> make)
+	internal static T? Wrap<T>(ulong pointer, bool owned, Func<nint, bool, T> make, object? owner)
 		where T : NativeObject {
-		return pointer == 0 ? null : make((nint)pointer, owned);
+		if (pointer == 0) {
+			return null;
+		}
+		T made = make((nint)pointer, owned);
+		made._owner = owner;
+		return made;
 	}
 
 	/// <summary>Frees an owned C++ value now (else freed by the collector).</summary>
