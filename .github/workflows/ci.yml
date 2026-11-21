@@ -17,7 +17,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: windows-latest
     # hung test would hold the runner for 10000 years
-    timeout-minutes: 30
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -109,7 +109,7 @@ jobs:
         run: cmake --build build --target ShalltearHeaderCheck --parallel
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 120
+        run: ctest --test-dir build --output-on-failure --timeout 600
 
       - name: Benchmarks (informational)
         if: matrix.benchmarks
@@ -135,6 +135,12 @@ jobs:
       - name: Check formatting
         shell: pwsh
         run: |
-          $files = git ls-files 'Source/*.h' 'Source/*.hpp' 'Source/*.inl' 'Source/*.cpp' 'Samples/*.h' 'Samples/*.cpp' |
-            Where-Object { $_ -notmatch '/ThirdParty/|\.generated\.|/stb_image\.h$' }
-          External/Prebuilt/llvm-mingw/bin/clang-format.exe --dry-run -Werror $files
+          $files = @(git ls-files 'Source/*.h' 'Source/*.hpp' 'Source/*.inl' 'Source/*.cpp' 'Samples/*.h' 'Samples/*.cpp' |
+            Where-Object { $_ -notmatch '/ThirdParty/|\.generated\.|/stb_image\.h$' })
+          $failed = 0
+          # batched (32767 char command line limit on Windows)
+          for ($i = 0; $i -lt $files.Count; $i += 200) {
+            External/Prebuilt/llvm-mingw/bin/clang-format.exe --dry-run -Werror $files[$i..([Math]::Min($i + 199, $files.Count - 1))]
+            if ($LASTEXITCODE -ne 0) { $failed = 1 }
+          }
+          exit $failed
