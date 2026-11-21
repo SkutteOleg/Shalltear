@@ -589,6 +589,9 @@ namespace Shalltear::AssetBrowserOps {
 			return Guid{};
 		}
 
+		if (ResolvePhysical(virtualDir).ToString().empty()) {
+			return Guid{};
+		}
 		str virtualPath = JoinVirtual(virtualDir, MakeUniqueName(virtualDir, baseName));
 
 		Guid guid = AssetDatabase::CreateAsset(Path(virtualPath), assetTypeId, templateIndex);
