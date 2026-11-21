@@ -193,6 +193,8 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 	std::optional<CSharpConformance::UIRig> ui(std::in_place);
 	std::printf("UI ready=%d\n", ui->IsReady());
 	SceneSystem::CreateScene("World");
+	char token = 0;
+	SLT_CALL_LINKED_PACKAGE(CSharp, &token);
 	const SltManagedAPI& managed = CSharpImpl::ScriptRuntime::GetManaged();
 	std::printf("ENTRIES load=%d unload=%d\n", managed.loadUserAssemblies != nullptr, managed.unloadUserAssemblies != nullptr);
 	const int32_t count = managed.getConformanceTestCount();
@@ -211,8 +213,6 @@ int Shalltear::TestHelpers::RunCSharpAOTHost(const char* library) {
 		std::fflush(stdout);
 	}
 
-	char token = 0;
-	SLT_CALL_LINKED_PACKAGE(CSharp, &token);
 	const auto cached = [&] {
 		SltString message{};
 		managed.runConformanceTest(reportsCache, &message);

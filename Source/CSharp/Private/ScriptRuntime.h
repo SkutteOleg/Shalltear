@@ -35,6 +35,8 @@ namespace Shalltear::CSharpImpl {
 
 		void Tick();
 
+		void Pump(i32 phase);
+
 		// no C++ exception may unwind into managed frames
 		template <typename Body>
 		int32_t Guard(Body&& body) noexcept {

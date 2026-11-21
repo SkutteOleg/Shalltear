@@ -53,6 +53,10 @@ public readonly struct ScriptEnumConstant {
 	}
 }
 
+internal static class HookState {
+	internal static nint _owner;
+}
+
 internal sealed class ScriptType {
 	internal Func<EngineObject>? _factory;
 	internal ScriptFieldSync[] _push = [];
@@ -265,11 +269,15 @@ public static unsafe class ScriptTypes {
 
 	[UnmanagedCallersOnly]
 	internal static void InvokeHook(nint instance, int hook) {
+		nint outer = HookState._owner;
+		HookState._owner = instance;
 		try {
-			Unsafe.As<Behavior>(GCHandle.FromIntPtr(instance).Target!).RunHook(hook);
+			Behavior script = Unsafe.As<Behavior>(GCHandle.FromIntPtr(instance).Target!);
+			script.RunHook(hook);
 		} catch (Exception exception) {
 			Bridge.Report(exception);
 		}
+		HookState._owner = outer;
 	}
 
 	[UnmanagedCallersOnly]

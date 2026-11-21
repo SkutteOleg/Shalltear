@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 13;
+	internal const uint ABI_VERSION = 14;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -64,6 +64,9 @@ internal static unsafe class Bridge {
 		managed->tick = &Tick;
 		managed->shutdown = &Shutdown;
 		managed->dispatchEvent = &ScriptEvents.Dispatch;
+		managed->pump = &Pump;
+		HookState._owner = 0;
+		FrameAwaits.Install();
 
 		if (!_handlerInstalled) {
 			_handlerInstalled = true;
@@ -146,6 +149,11 @@ internal static unsafe class Bridge {
 			}
 		}
 		return hash;
+	}
+
+	internal static bool IsMainThread {
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		get => Environment.CurrentManagedThreadId == _mainThreadId;
 	}
 
 	internal static bool OffMainThread {
@@ -253,7 +261,17 @@ internal static unsafe class Bridge {
 	}
 
 	[UnmanagedCallersOnly]
+	static void Pump(int phase) {
+		try {
+			FrameAwaits.Pump(phase);
+		} catch (Exception exception) {
+			Report(exception);
+		}
+	}
+
+	[UnmanagedCallersOnly]
 	static void Shutdown() {
+		FrameAwaits.Uninstall();
 		UnloadHooks.Run();
 		ScriptEvents.Forget();
 		InputActionMap.Forget();

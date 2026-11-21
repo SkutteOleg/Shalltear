@@ -283,6 +283,25 @@ TEST_F(CSharpRuntimeFixture, ThrowingSceneHandlerIsReported) {
 	SceneSystem::Terminate();
 }
 
+TEST_F(CSharpRuntimeFixture, ThrowingContinuationsAreReported) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+
+	{
+		const Time::FrameScope frame(CSharpConformance::MakeFrame());
+		str message;
+		EXPECT_EQ(Run("AwaitProbe.ThrowsInContinuations", message), SLT_OK) << message;
+	}
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown after an await"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a routine"), 1u);
+	EXPECT_EQ(_log.Delivered().Count("Coroutine yielded Int32. Yield null, a Coroutines wait or an IEnumerator"), 1u);
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"resumed after the throw"}));
+	SceneSystem::Terminate();
+}
+
 TEST_F(CSharpRuntimeFixture, ThrowingPhysicsListenerIsReported) {
 #ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
 	GTEST_SKIP();

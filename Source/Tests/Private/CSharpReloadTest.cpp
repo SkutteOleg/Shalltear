@@ -930,6 +930,26 @@ TEST_F(CSharpReloadTest, SceneHandlersDropAtUnload) {
 	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
 }
 
+TEST_F(CSharpReloadTest, PendingAwaitsDropAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	str message;
+	ASSERT_EQ(Run("AwaitProbe.LeavesPendingWork", message), SLT_OK) << message;
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	ASSERT_EQ(_editor->getReloadCount(), 2u);
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+	_hooks->takeRecords();
+	ASSERT_EQ(Run("AwaitProbe.StepsFrames", message), SLT_OK) << message;
+	EXPECT_TRUE(_hooks->takeRecords().empty());
+}
+
 TEST_F(CSharpReloadTest, AnimationHandlersDropAtUnload) {
 	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
 	ASSERT_TRUE(fs::is_regular_file(conformance));

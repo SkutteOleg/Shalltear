@@ -405,4 +405,14 @@ internal static unsafe partial class BindingProbe {
 			throw Bridge.LastError();
 		}
 	}
+
+	internal static void StepFrames(int count, float unscaledDelta, int fixedSteps) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.StepFrames");
+		}
+		int status = Bindings.table.probeStepFrames(count, unscaledDelta, fixedSteps);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
 }

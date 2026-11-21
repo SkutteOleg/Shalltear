@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 13
+#define SLT_BRIDGE_ABI_VERSION 14
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -25,6 +25,10 @@ extern "C" {
 #define SLT_HOOK_UPDATE 5
 #define SLT_HOOK_FIXED_UPDATE 6
 #define SLT_HOOK_LATE_UPDATE 7
+
+// must match FrameAwaits.cs
+#define SLT_PUMP_UPDATE 0
+#define SLT_PUMP_FIXED_UPDATE 1
 
 #define SLT_TYPE_ABSTRACT 1u
 #define SLT_TYPE_NORMALIZE 2u
@@ -167,6 +171,7 @@ typedef struct SltManagedAPI {
 	void (*tick)(void);
 	void (*shutdown)(void);
 	void (*dispatchEvent)(int32_t event, uint64_t subject);
+	void (*pump)(int32_t phase);
 } SltManagedAPI;
 
 typedef int32_t (*SltInitializeFn)(const SltEngineAPI* engine, SltManagedAPI* outManaged);

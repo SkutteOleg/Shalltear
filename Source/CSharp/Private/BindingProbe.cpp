@@ -8,12 +8,14 @@
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/Asset/TextAsset.h"
+#include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Graphics/MeshAsset.h"
 #include "Shalltear/Core/Graphics/PrimitiveMesh.h"
 #include "Shalltear/Core/Graphics/SkeletonAsset.h"
 #include "Shalltear/Core/Math/MathUtil.h"
 #include "Shalltear/Core/Input/InputEvent.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
+#include "Shalltear/Core/Time.h"
 #include "Shalltear/Core/UI/Context.h"
 
 #include <algorithm>
@@ -450,6 +452,19 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 			SceneSystem::UpdateAll();
 			SceneSystem::LateUpdateAll();
 			SceneSystem::EndFrame();
+		}
+	}
+
+	void StepFrames(i32 count, f32 unscaledDelta, i32 fixedSteps) {
+		FrameTime stepped = Time::GetFrame();
+		stepped.maximumDeltaTime = 1000.0f;
+		const Time::FrameScope clock{stepped};
+		for (i32 frame = 0; frame < count; ++frame) {
+			Time::BeginFrame(unscaledDelta);
+			for (i32 step = 0; step < fixedSteps; ++step) {
+				FrameStages::Run(FrameStage::FixedUpdate, FrameStageArgs{});
+			}
+			FrameStages::Run(FrameStage::Update, FrameStageArgs{});
 		}
 	}
 

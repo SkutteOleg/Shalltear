@@ -137,6 +137,12 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		}
 	}
 
+	void Pump(i32 phase) {
+		if (_attached) {
+			_managed.pump(phase);
+		}
+	}
+
 	SltEngineAPI MakeEngineAPI() {
 		SltEngineAPI engine{};
 		engine.abiVersion = SLT_BRIDGE_ABI_VERSION;

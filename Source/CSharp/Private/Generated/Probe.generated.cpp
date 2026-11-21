@@ -318,6 +318,14 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeStepFrames(int32_t count, float unscaledDelta, int32_t fixedSteps) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::StepFrames(count, unscaledDelta, fixedSteps);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 	} // anonymous namespace
 
 	void FillProbeBindings(SltBindings& table) {
@@ -360,6 +368,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeImporterFileName = &ProbeImporterFileName;
 		table.probeFreeAsset = &ProbeFreeAsset;
 		table.probeRunFrames = &ProbeRunFrames;
+		table.probeStepFrames = &ProbeStepFrames;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated

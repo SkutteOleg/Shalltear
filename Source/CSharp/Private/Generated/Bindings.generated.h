@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xc2eadc48c9cf622full
-#define SLT_BINDINGS_INPUT_DIGEST 0xd8ad4d6caf1b9bf1ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xd9298ef203b98777ull
+#define SLT_BINDINGS_INPUT_DIGEST 0xe83e2cf236932ec7ull
 
 typedef struct SltString SltString;
 
@@ -249,6 +249,7 @@ typedef struct SltBindings {
 	int32_t (*probeImporterFileName)(SltString extension, SltString* outResult);
 	int32_t (*probeFreeAsset)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
+	int32_t (*probeStepFrames)(int32_t count, float unscaledDelta, int32_t fixedSteps);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
 	int32_t (*sceneSetName)(uint64_t self, SltString name);
 	int32_t (*sceneGetState)(uint64_t self, uint8_t* outResult);

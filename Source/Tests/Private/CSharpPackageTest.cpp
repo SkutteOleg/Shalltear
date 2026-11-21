@@ -118,7 +118,7 @@ TEST(CSharpPackageTest, LoadsAndUnloads) {
 #else
 	char token = 0;
 	SLT_CALL_LINKED_PACKAGE(CSharp, &token);
-	EXPECT_EQ(FrameStages::UnregisterOwnedBy(&token), 1u);
+	EXPECT_EQ(FrameStages::UnregisterOwnedBy(&token), 3u);
 #endif
 	ModuleSystem::Terminate();
 }

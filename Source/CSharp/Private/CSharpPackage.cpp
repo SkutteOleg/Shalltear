@@ -36,6 +36,14 @@ namespace Shalltear::CSharpImpl {
 		}
 #endif
 
+		void UpdateStage(const FrameStageArgs&, void*) {
+			ScriptRuntime::Pump(SLT_PUMP_UPDATE);
+		}
+
+		void FixedUpdateStage(const FrameStageArgs&, void*) {
+			ScriptRuntime::Pump(SLT_PUMP_FIXED_UPDATE);
+		}
+
 		void TickStage(const FrameStageArgs&, void*) {
 #ifndef SLT_WITH_EDITOR
 			ReleasePlayerStart();
@@ -48,6 +56,8 @@ namespace Shalltear::CSharpImpl {
 	} // anonymous namespace
 
 	void RegisterPackage(const void* owner) {
+		FrameStages::Register(FrameStage::FixedUpdate, FrameStagePosition::Early, &FixedUpdateStage, nullptr, owner);
+		FrameStages::Register(FrameStage::Update, FrameStagePosition::Early, &UpdateStage, nullptr, owner);
 		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Late, &TickStage, nullptr, owner);
 #ifdef SLT_WITH_EDITOR
 		CSharpEditor::CSharpScripts::RegisterImporter(owner);

@@ -207,6 +207,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<SltString, SltString*, int> probeImporterFileName;
 	public delegate* unmanaged<ulong, int> probeFreeAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
+	public delegate* unmanaged<int, float, int, int> probeStepFrames;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
 	public delegate* unmanaged<ulong, SltString, int> sceneSetName;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> sceneGetState;
@@ -376,7 +377,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xc2eadc48c9cf622f;
+	internal const ulong LAYOUT_HASH = 0xd9298ef203b98777;
 
 	internal static SltBindings table;
 

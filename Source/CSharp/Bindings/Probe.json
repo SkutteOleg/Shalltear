@@ -312,6 +312,17 @@
 			"returns": "void",
 			"params": [{ "name": "count", "type": "i32" }],
 			"csharp": { "member": "RunFrames", "kind": "method" }
+		},
+		{
+			"id": "StepFrames",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::StepFrames(count, unscaledDelta, fixedSteps)",
+			"returns": "void",
+			"params": [
+				{ "name": "count", "type": "i32" },
+				{ "name": "unscaledDelta", "type": "f32" },
+				{ "name": "fixedSteps", "type": "i32" }
+			],
+			"csharp": { "member": "StepFrames", "kind": "method" }
 		}
 	]
 }
