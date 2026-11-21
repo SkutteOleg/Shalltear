@@ -2,6 +2,7 @@
 
 #include "Shalltear/Core/Containers.h"
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/StringHash.h"
 #include "Shalltear/Core/Types.h"
 
 #include "Asset/PakReader.h"

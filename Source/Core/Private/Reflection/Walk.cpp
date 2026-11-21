@@ -1,6 +1,7 @@
 #include "Shalltear/Core/Reflection/Walk.h"
 
 #include "Shalltear/Core/Assert.h"
+#include "Shalltear/Core/Reflection/Primitives.h"
 #include "Shalltear/Core/Reflection/VariantDispatch.h"
 
 #include <cstring>
