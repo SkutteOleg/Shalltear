@@ -11,6 +11,7 @@
 #include "Shalltear/Core/Handle.h"
 #include "Shalltear/Core/Math.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene/Behavior.h"
 #include "Shalltear/Core/Scene/SceneObject.h"
@@ -37,6 +38,15 @@ namespace HotReloadModuleImpl {
 	using namespace Shalltear;
 
 #ifndef SLT_HOTRELOAD_GONE
+
+	i32 HrBuildNumber() {
+#ifdef SLT_HOTRELOAD_V2
+		return 2;
+#else
+		return 1;
+#endif
+	}
+	SLT_SCRIPT_EXPORT(HrBuildNumber)
 
 	class HotReloadBehavior : public Behavior {
 	public:

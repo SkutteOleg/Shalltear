@@ -48,6 +48,7 @@
 #include "Shalltear/Core/UI/VectorAsset.h"
 #include "Shalltear/Core/UI/WidgetRegistry.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 
 #include <cmath>
 #include <format>

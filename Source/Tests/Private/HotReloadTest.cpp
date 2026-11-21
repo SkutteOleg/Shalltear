@@ -6,6 +6,7 @@
 #include "Shalltear/Core/Math.h"
 #include "Shalltear/Core/Module.h"
 #include "Shalltear/Core/Module/ModuleEvents.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 #include "Shalltear/Core/Scene.h"
 
 #include <algorithm>
@@ -380,6 +381,20 @@ TEST_F(HotReloadFixture, ModuleEpochSeparatesTypeFromReplacement) {
 	EXPECT_EQ(mover.GetInstanceId(), instanceBefore);
 
 	EXPECT_GT(after->moduleEpoch, epochBefore);
+}
+
+TEST_F(HotReloadFixture, ExportedFunctionRebindsAcrossReload) {
+	ScriptFunction<i32()> build = ScriptFunctions::Find<i32()>("HrBuildNumber");
+	ASSERT_TRUE(build.IsBound());
+	EXPECT_EQ(build(), 1);
+
+	Path v2{V2_DLL};
+	ASSERT_TRUE(ModuleSystem::Reload(_module, &v2));
+	EXPECT_EQ(build(), 2);
+
+	ASSERT_TRUE(ModuleSystem::Unload(_module));
+	EXPECT_FALSE(build.IsBound());
+	EXPECT_EQ(build(), 0);
 }
 
 TEST_F(HotReloadFixture, FieldRefResolvesAcrossReload) {

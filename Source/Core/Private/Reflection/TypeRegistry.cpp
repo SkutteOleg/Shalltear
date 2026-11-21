@@ -4,6 +4,7 @@
 #include "Shalltear/Core/Containers.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 #include "Shalltear/Core/Object.h"
 #include "Shalltear/Core/Reflection/Walk.h"
 
@@ -106,8 +107,18 @@ namespace Shalltear {
 			}
 		};
 
+		struct ScriptFunctionEntry {
+			str name;
+			str signature;
+			ScriptFunctions::Thunk thunk = nullptr;
+			u64 context = 0;
+			const void* owner = nullptr;
+		};
+
 		struct RegistryData {
 			HashMap<StringHash, TypeInfo*> byName{GetMemoryResource(MemTag::Core)};
+
+			HashMap<StringHash, ScriptFunctionEntry> functions{GetMemoryResource(MemTag::Core)};
 
 			Vector<TypeInfo*> byClassId{GetMemoryResource(MemTag::Core)};
 
@@ -120,6 +131,8 @@ namespace Shalltear {
 			u16 nextClassId = 0;
 
 			std::atomic<u32> epoch{0};
+
+			std::atomic<u32> functionEpoch{0};
 
 			mutable std::shared_mutex mutex;
 
@@ -287,6 +300,9 @@ namespace Shalltear {
 			std::unique_lock lock(data.mutex);
 
 			data.epoch.fetch_add(1, std::memory_order_relaxed);
+			if (std::erase_if(data.functions, [imageBase](const auto& entry) { return entry.second.owner == imageBase; }) > 0) {
+				data.functionEpoch.fetch_add(1, std::memory_order_relaxed);
+			}
 			for (auto it = data.byName.begin(); it != data.byName.end();) {
 				TypeInfo* info = it->second;
 				if (info->ownerModule == imageBase) {
@@ -314,6 +330,64 @@ namespace Shalltear {
 
 		auto it = data.byName.find(name);
 		return (it != data.byName.end()) ? it->second : nullptr;
+	}
+
+	bool ScriptFunctions::Register(std::string_view name, std::string_view signature, Thunk thunk, u64 context, const void* ownerToken) {
+		if (name.empty() || !thunk) {
+			return false;
+		}
+		auto& data = GetData();
+		const void* owner = ownerToken ? ownerToken : Platform::ImageBaseOf(reinterpret_cast<const void*>(thunk));
+		std::unique_lock lock(data.mutex);
+		const auto found = data.functions.find(StringHash(name));
+		if (found != data.functions.end()) {
+			const ScriptFunctionEntry& held = found->second;
+			return held.thunk == thunk && held.context == context && held.name == name && held.signature == signature;
+		}
+		data.functions.emplace(StringHash(name), ScriptFunctionEntry{str(name), str(signature), thunk, context, owner});
+		data.functionEpoch.fetch_add(1, std::memory_order_relaxed);
+		return true;
+	}
+
+	ScriptFunctions::Found ScriptFunctions::FindRaw(std::string_view name, str* outSignature) {
+		auto& data = GetData();
+		std::shared_lock lock(data.mutex);
+		const auto found = data.functions.find(StringHash(name));
+		if (found == data.functions.end() || found->second.name != name) {
+			if (outSignature) {
+				outSignature->clear();
+			}
+			return {};
+		}
+		if (outSignature) {
+			*outSignature = found->second.signature;
+		}
+		return {found->second.thunk, found->second.context};
+	}
+
+	u32 ScriptFunctions::GetEpoch() noexcept {
+		return GetData().functionEpoch.load(std::memory_order_relaxed);
+	}
+
+	void ScriptFunctionDetail::ReportThrow(const char* what) noexcept {
+		try {
+			SLT_LOG_ERROR("Script", "exported function threw: {}", what ? what : "");
+		} catch (...) {
+		}
+	}
+
+	void ScriptFunctionDetail::ReportTaken(std::string_view name) noexcept {
+		try {
+			SLT_LOG_WARN("Script", "SLT_SCRIPT_EXPORT: '{}' is exported twice (2nd ignored). Rename one", name);
+		} catch (...) {
+		}
+	}
+
+	std::string_view ScriptFunctionDetail::KeepText(str&& text) {
+		// glibc won't unmap a lib with live thread_local destructors
+		[[clang::no_destroy]] thread_local str kept;
+		kept = std::move(text);
+		return kept;
 	}
 
 	const FieldInfo* FieldRef::Resolve() {
