@@ -1,0 +1,52 @@
+{
+	"area": "SlotProbeRecipe",
+	"include": "SlotProbe.h",
+	"class": "Shalltear.Interop.ProbeRecipe",
+	"test": true,
+	"slots": true,
+	"instance": "ProbeRecipe",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetHeat",
+			"cpp": "self->heat",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Heat", "kind": "getter" }
+		},
+		{
+			"id": "SetHeat",
+			"cpp": "self->heat = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Heat", "kind": "setter" }
+		},
+		{
+			"id": "GetSteps",
+			"cpp": "self->steps",
+			"returns": "list<i32>",
+			"params": [],
+			"csharp": { "member": "Steps", "kind": "getter" }
+		},
+		{
+			"id": "SetSteps",
+			"cpp": "self->steps.assign(value.begin(), value.end())",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i32>" }],
+			"csharp": { "member": "Steps", "kind": "setter" }
+		}
+	]
+}

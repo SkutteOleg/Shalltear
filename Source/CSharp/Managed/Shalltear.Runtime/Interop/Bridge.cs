@@ -259,6 +259,7 @@ internal static unsafe class Bridge {
 	static void Tick() {
 		try {
 			ObjectCache.Sweep();
+			NativeObject.Drain();
 			InputActionMap.FreeRetired();
 		} catch (Exception exception) {
 			Report(exception);
@@ -284,6 +285,7 @@ internal static unsafe class Bridge {
 		ScriptTypes.Clear();
 		ScriptTypes.ForgetListeners();
 		ObjectCache.Clear();
+		NativeObject.Forget();
 		_attached = false;
 	}
 }

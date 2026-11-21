@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xd41209861acd0655ull
-#define SLT_BINDINGS_INPUT_DIGEST 0xe60cce072e62ba90ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xa7b31774265f7533ull
+#define SLT_BINDINGS_INPUT_DIGEST 0xf41127716eca4eebull
 
 typedef struct SltString SltString;
 
@@ -340,6 +340,49 @@ typedef struct SltBindings {
 	int32_t (*skinnedMeshRendererSetBlendShapeWeight)(uint64_t self, int32_t index, float weight);
 	int32_t (*skinnedMeshRendererSetBlendShapeWeightCount)(uint64_t self, int32_t count);
 	int32_t (*skinnedMeshRendererGetBlendShapeWeights)(uint64_t self, float* weights, int32_t weightsCount, int32_t* outResult);
+	int32_t (*slotProbeEchoI8)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeEchoI16)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeEchoU8)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeEchoU16)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeEchoI64)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeBlend)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeSwap)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeFlip)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeNextTone)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeGreet)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeThrow)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeGrow)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeHalve)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeDescribe)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeSplit)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeFindParent)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeSum)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeFill)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCount)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeShapes)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeWidths)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeJoin)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeWords)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeChildren)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCountNamed)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeTones)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeHalves)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeGetCounter)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCounters)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeTotalOf)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeMakeRecipe)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeDescribeRecipe)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCountLiveRecipes)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeProbeRecipeDelete)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeProbeRecipeNew)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCounterAdd)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeCounterGetTotal)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipeGetName)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipeSetName)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipeGetHeat)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipeSetHeat)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipeGetSteps)(const uint64_t* arguments, uint64_t* results);
+	int32_t (*slotProbeRecipeSetSteps)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*textAssetGetText)(uint64_t self, SltString* outResult);
 	float (*timeGetDeltaTime)(void);
 	float (*timeGetUnscaledDeltaTime)(void);

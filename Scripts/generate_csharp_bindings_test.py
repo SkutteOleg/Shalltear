@@ -86,7 +86,7 @@ class BindingsTest(unittest.TestCase):
 		self.assertTrue(message.endswith(", SceneObject, Component, Material, Mesh, Texture, Sprite, string, span<T>"), message)
 
 	def test_unknown_return_is_refused(self):
-		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, Vec2, Vec3, Vec4, Quat, Color, Vec2I, SceneObject, Material, Mesh, Texture, Sprite, string"
+		expected = "Use void, bool, i32, u32, i64, u64, f32, f64, u8, u16, i8, i16, Vec2, Vec3, Vec4, Quat, Color, Vec2I, SceneObject, Material, Mesh, Texture, Sprite, string"
 		self.assertEqual("Game.json: GetSpeed: can't return 'span<f32>'. " + expected, self.refusal([dict(GETTER, returns="span<f32>")]))
 		self.assertEqual("Game.json: GetSpeed: can't return 'Component'. " + expected, self.refusal([dict(GETTER, returns="Component", leaf=False)]))
 
@@ -323,7 +323,7 @@ class BindingsTest(unittest.TestCase):
 		moved = copy.deepcopy(mode)
 		moved["values"][1]["value"] = 201
 		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([bindings.parse_area(self.write([turn, peek], enums=[moved]))]))
-		self.assertEqual("Game.json: Mode: 'underlying' is 'i64'. Use u8, u16, i32, u32", self.refusal([turn], enums=[dict(mode, underlying="i64")]))
+		self.assertEqual("Game.json: Mode: 'underlying' is 'f32'. Use u8, u16, i32, u32, i8, i16, i64, u64", self.refusal([turn], enums=[dict(mode, underlying="f32")]))
 		self.assertEqual("Game.json: Mode: 'values' is empty", self.refusal([turn], enums=[dict(mode, values=[])]))
 
 	def test_struct_fills_a_span(self):
@@ -577,6 +577,92 @@ class BindingsTest(unittest.TestCase):
 		self.assertIn("\tpublic static Mesh? Skin {\n", managed)
 		self.assertIn("\t\t\treturn ObjectCache.Find<Mesh>(result);\n", managed)
 		self.assertIn("can't return 'Component'", self.refusal([dict(skin, returns="Component")]))
+
+
+	def test_slots_area_takes_structs_lists_natives_and_outs(self):
+		shape = {"name": "Shape", "cpp": "::Game::Shape", "size": 16, "align": 4,
+				 "fields": [{"name": "width", "type": "f32", "offset": 0}, {"name": "at", "type": "Vec3", "offset": 4, "cpp": "position"}]}
+		tone = {"name": "Tone", "cpp": "::Game::Tone", "underlying": "i8", "values": [{"name": "Low", "value": -2}]}
+		recipe = {"name": "Recipe", "cpp": "::Game::Recipe", "owned": True, "create": True}
+		grow = {"id": "Grow", "cpp": "::Game::Grow(shape, tone, count, label)", "returns": "Shape",
+				"params": [{"name": "shape", "type": "Shape"}, {"name": "tone", "type": "Tone"}, {"name": "count", "type": "i16", "out": True},
+						   {"name": "label", "type": "string", "out": True}],
+				"csharp": {"member": "Grow", "kind": "method"}}
+		mix = {"id": "Mix", "cpp": "::Game::Mix(*recipe, parts, names)", "returns": "list<Shape>",
+			   "params": [{"name": "recipe", "type": "Recipe"}, {"name": "parts", "type": "list<f64>"}, {"name": "names", "type": "list<string>"}],
+			   "csharp": {"member": "Mix", "kind": "method"}}
+		make = {"id": "Make", "cpp": "::Game::Make()", "returns": "Recipe", "params": [], "owns": True, "nullable": False,
+				"csharp": {"member": "Make", "kind": "method"}}
+		area = bindings.parse_area(self.write([grow, mix, make], slots=True, structs=[shape], enums=[tone], natives=[recipe], include=["Game.h", "Recipe.h"]))
+		self.assertEqual(["Grow", "Mix", "Make", "RecipeDelete", "RecipeNew"], [function.id for function in area.functions])
+
+		native = bindings.render_native_area(area)
+		self.assertIn('#include "SlotSupport.h"\n\n#include "Game.h"\n#include "Recipe.h"\n', native)
+		self.assertIn("\tstatic_assert(sizeof(::Game::Shape) == 16 && std::is_trivially_copyable_v<::Game::Shape>);\n", native)
+		self.assertIn("\tstatic_assert(offsetof(::Game::Shape, position) == 4);\n", native)
+		self.assertIn("\t\tint32_t GameGrow(const uint64_t* arguments, uint64_t* results) noexcept {\n", native)
+		self.assertIn("\t\t\t\tconst ::Game::Shape shape = Slots::Struct<::Game::Shape>(arguments[0]);\n", native)
+		self.assertIn("\t\t\t\tconst ::Game::Tone tone = static_cast<::Game::Tone>(static_cast<int8_t>(arguments[1]));\n", native)
+		self.assertIn("\t\t\t\tint16_t count{};\n\t\t\t\tstr label{};\n", native)
+		self.assertIn("\t\t\t\tSlots::StructOut<::Game::Shape>(results[0], ::Game::Grow(shape, tone, count, label));\n", native)
+		self.assertIn("\t\t\t\tresults[1] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int16_t>(count)));\n\t\t\t\tSlots::Text(results + 2, label);\n", native)
+		self.assertIn("\t\t\t\tconst auto names = Slots::Views(arguments + 3);\n", native)
+		self.assertIn("\t\t\t\tSlots::KeepList<::Game::Shape>(results, ::Game::Mix(*recipe, parts, names));\n", native)
+		self.assertIn("\t\t\t\tresults[0] = Slots::Box<::Game::Recipe>(::Game::Make());\n", native)
+		self.assertIn("\t\tint32_t GameRecipeNew([[maybe_unused]] const uint64_t* arguments, uint64_t* results) noexcept {\n", native)
+		self.assertIn("\t\t\t\tDelete(target);\n", native)
+
+		managed = bindings.render_managed_area(area)
+		self.assertIn("#pragma warning disable CS1591\n", managed)
+		self.assertIn("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit, Size = 16)]\npublic partial struct Shape {\n", managed)
+		self.assertIn("\t[System.Runtime.InteropServices.FieldOffset(4)]\n\tpublic Vec3 at;\n", managed)
+		self.assertIn("public sealed unsafe partial class Recipe : NativeObject {\n\tinternal Recipe(nint pointer, bool owned) : base(pointer, owned ? Bindings.table.gameRecipeDelete : null) {}\n\n"
+					  "\tpublic Recipe() : this(Create(), true) {}\n", managed)
+		self.assertIn("\tpublic static Shape Grow(in Shape shape, Tone tone, out short count, out string label) {\n", managed)
+		self.assertIn("\t\tShape shapeCopy = shape;\n\t\tulong* slots = stackalloc ulong[6];\n", managed)
+		self.assertIn("\t\tslots[1] = (ulong)(long)(sbyte)tone;\n", managed)
+		self.assertIn("\t\tint status = Bindings.table.gameGrow(slots, slots + 2);\n", managed)
+		self.assertIn("\t\tcount = (short)slots[3];\n\t\tlabel = SlotValues.Text(slots + 4);\n\t\treturn result;\n", managed)
+		self.assertIn("\tpublic static Shape[] Mix(Recipe recipe, ReadOnlySpan<double> parts, ReadOnlySpan<string> names) {\n", managed)
+		self.assertIn("\t\tusing SlotList namesList = SlotList.OfTexts(names);\n", managed)
+		self.assertIn("\t\tfixed (double* partsData = parts) {\n", managed)
+		self.assertIn("\t\t\treturn SlotValues.Array<Shape>(slots + 5);\n", managed)
+		self.assertIn("\tpublic static Recipe Make() {\n", managed)
+		self.assertIn("\t\treturn NativeObject.Wrap(slots[0], true, static (pointer, owned) => new Recipe(pointer, owned))!;\n", managed)
+		self.assertNotIn("RecipeDelete(", managed)
+
+		self.assertIn("\tint32_t (*gameGrow)(const uint64_t* arguments, uint64_t* results);\n", bindings.render_native_header([area], 0))
+		self.assertIn("\tpublic delegate* unmanaged<ulong*, ulong*, int> gameRecipeNew;\n", bindings.render_managed_table([area]))
+		moved = dict(shape, size=20, fields=[shape["fields"][0], dict(shape["fields"][1], offset=8)])
+		other = bindings.parse_area(self.write([grow, mix, make], slots=True, structs=[moved], enums=[tone], natives=[recipe]))
+		self.assertNotEqual(bindings.layout_hash([area]), bindings.layout_hash([other]))
+
+	def test_slot_kinds_are_refused_outside_a_slots_area(self):
+		shape = {"name": "Shape", "doc": "Size.", "fields": [{"name": "width", "type": "f32", "doc": "Width."}]}
+		grow = {"id": "Grow", "cpp": "::Game::Grow(shape)", "returns": "f32", "params": [{"name": "shape", "type": "Shape"}],
+				"csharp": {"member": "Grow", "kind": "method"}, "doc": "Grown."}
+		self.assertTrue(self.refusal([grow], structs=[shape]).startswith("Game.json: Grow: unknown type 'Shape'. Use bool,"))
+		listed = dict(grow, params=[{"name": "values", "type": "list<f32>"}])
+		self.assertTrue(self.refusal([listed]).startswith("Game.json: Grow: unknown type 'list<f32>'. Use bool,"))
+		counted = dict(grow, params=[{"name": "count", "type": "i32", "out": True}])
+		self.assertEqual("Game.json: Grow: 'out' is for a span, 'count' is i32", self.refusal([counted]))
+		self.assertEqual("Game.json: Shape: 'cpp' is for a struct of a slots area",
+						 self.refusal([GETTER], structs=[dict(shape, cpp="::Game::Shape", size=4, align=4)]))
+		self.assertEqual("Game.json: Recipe: 'natives' needs objects in a slots area", self.refusal([GETTER], natives=[{"name": "Recipe", "cpp": "::Game::Recipe"}]))
+		self.assertEqual("Game.json: 'include' is a list. Use 1 header (or a slots area)", self.refusal([GETTER], include=["Game.h"]))
+
+	def test_slots_area_rules(self):
+		plain = {key: value for key, value in GETTER.items() if key not in ("leaf", "doc")}
+		bindings.parse_area(self.write([plain], slots=True))
+		self.assertEqual("Game.json: GetSpeed: 'leaf' isn't for a slots area", self.refusal([dict(plain, leaf=True)], slots=True))
+		self.assertEqual("Game.json: Recipe: 'create' needs 'owned'",
+						 self.refusal([plain], slots=True, natives=[{"name": "Recipe", "cpp": "::Game::Recipe", "create": True}]))
+		self.assertEqual("Game.json: Shape: 'size', 'align' and each 'offset' must be numbers inside the struct",
+						 self.refusal([plain], slots=True, structs=[{"name": "Shape", "cpp": "::Game::Shape", "size": 4, "align": 4,
+																	 "fields": [{"name": "at", "type": "Vec3", "offset": 0}]}]))
+		self.assertEqual("Game.json: GetSpeed: 'owns' is for a returned native object, this returns f32", self.refusal([dict(plain, owns=True)], slots=True))
+		outward = dict(plain, params=[{"name": "count", "type": "i32", "out": True}])
+		self.assertEqual("Game.json: GetSpeed: an 'out' parameter needs a method", self.refusal([outward], slots=True))
 
 
 if __name__ == "__main__":

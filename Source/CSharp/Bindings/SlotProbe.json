@@ -1,0 +1,330 @@
+{
+	"area": "SlotProbe",
+	"include": "SlotProbe.h",
+	"class": "Shalltear.Interop.SlotProbe",
+	"test": true,
+	"slots": true,
+	"enums": [
+		{
+			"name": "ProbeTone",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Tone",
+			"underlying": "i8",
+			"values": [
+				{ "name": "Low", "value": -2 },
+				{ "name": "Mid", "value": 0 },
+				{ "name": "High", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "ProbeShape",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Shape",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "width", "type": "f32", "offset": 0 },
+				{ "name": "count", "type": "i32", "offset": 4 },
+				{ "name": "at", "type": "Vec3", "offset": 8 },
+				{ "name": "flags", "type": "u8", "offset": 20 },
+				{ "name": "tone", "type": "ProbeTone", "offset": 21 }
+			]
+		},
+		{
+			"name": "ProbeWide",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Wide",
+			"size": 32,
+			"align": 16,
+			"fields": [
+				{ "name": "corner", "type": "Vec4", "offset": 0 },
+				{ "name": "weight", "type": "f64", "offset": 16 },
+				{ "name": "on", "type": "bool", "offset": 24 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ProbeCounter", "cpp": "::Shalltear::CSharpImpl::SlotProbe::Counter" },
+		{ "name": "ProbeRecipe", "cpp": "::Shalltear::CSharpImpl::SlotProbe::Recipe", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "EchoI8",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::EchoI8(value)",
+			"returns": "i8",
+			"params": [{ "name": "value", "type": "i8" }],
+			"csharp": { "member": "EchoI8", "kind": "method" }
+		},
+		{
+			"id": "EchoI16",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::EchoI16(value)",
+			"returns": "i16",
+			"params": [{ "name": "value", "type": "i16" }],
+			"csharp": { "member": "EchoI16", "kind": "method" }
+		},
+		{
+			"id": "EchoU8",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::EchoU8(value)",
+			"returns": "u8",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "EchoU8", "kind": "method" }
+		},
+		{
+			"id": "EchoU16",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::EchoU16(value)",
+			"returns": "u16",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "EchoU16", "kind": "method" }
+		},
+		{
+			"id": "EchoI64",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::EchoI64(value)",
+			"returns": "i64",
+			"params": [{ "name": "value", "type": "i64" }],
+			"csharp": { "member": "EchoI64", "kind": "method" }
+		},
+		{
+			"id": "Blend",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Blend(flag, count, scale, weight, offset, position, plane, turn, tint, cell)",
+			"returns": "f64",
+			"params": [
+				{ "name": "flag", "type": "bool" },
+				{ "name": "count", "type": "i32" },
+				{ "name": "scale", "type": "f32" },
+				{ "name": "weight", "type": "f64" },
+				{ "name": "offset", "type": "Vec2" },
+				{ "name": "position", "type": "Vec3" },
+				{ "name": "plane", "type": "Vec4" },
+				{ "name": "turn", "type": "Quat" },
+				{ "name": "tint", "type": "Color" },
+				{ "name": "cell", "type": "Vec2I" }
+			],
+			"csharp": { "member": "Blend", "kind": "method" }
+		},
+		{
+			"id": "Swap",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Swap(cell)",
+			"returns": "Vec2I",
+			"params": [{ "name": "cell", "type": "Vec2I" }],
+			"csharp": { "member": "Swap", "kind": "method" }
+		},
+		{
+			"id": "Flip",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Flip(turn)",
+			"returns": "Quat",
+			"params": [{ "name": "turn", "type": "Quat" }],
+			"csharp": { "member": "Flip", "kind": "method" }
+		},
+		{
+			"id": "NextTone",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::NextTone(tone)",
+			"returns": "ProbeTone",
+			"params": [{ "name": "tone", "type": "ProbeTone" }],
+			"csharp": { "member": "NextTone", "kind": "method" }
+		},
+		{
+			"id": "Greet",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Greet(name, ending)",
+			"returns": "string",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "ending", "type": "string" }
+			],
+			"csharp": { "member": "Greet", "kind": "method" }
+		},
+		{
+			"id": "Throw",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Throw()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Throw", "kind": "method" }
+		},
+		{
+			"id": "Grow",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Grow(shape, by)",
+			"returns": "ProbeShape",
+			"params": [
+				{ "name": "shape", "type": "ProbeShape" },
+				{ "name": "by", "type": "f32" }
+			],
+			"csharp": { "member": "Grow", "kind": "method" }
+		},
+		{
+			"id": "Halve",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Halve(wide)",
+			"returns": "ProbeWide",
+			"params": [{ "name": "wide", "type": "ProbeWide" }],
+			"csharp": { "member": "Halve", "kind": "method" }
+		},
+		{
+			"id": "Describe",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Describe(shape, count, at, text, tone, wide, area)",
+			"returns": "void",
+			"params": [
+				{ "name": "shape", "type": "ProbeShape" },
+				{ "name": "count", "type": "i32", "out": true },
+				{ "name": "at", "type": "Vec3", "out": true },
+				{ "name": "text", "type": "string", "out": true },
+				{ "name": "tone", "type": "ProbeTone", "out": true },
+				{ "name": "wide", "type": "bool", "out": true },
+				{ "name": "area", "type": "f64", "out": true }
+			],
+			"csharp": { "member": "Describe", "kind": "method" }
+		},
+		{
+			"id": "Split",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Split(wide, half, first, second)",
+			"returns": "bool",
+			"params": [
+				{ "name": "wide", "type": "ProbeWide" },
+				{ "name": "half", "type": "ProbeWide", "out": true },
+				{ "name": "first", "type": "string", "out": true },
+				{ "name": "second", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Split", "kind": "method" }
+		},
+		{
+			"id": "FindParent",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::FindParent(*child, root)",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "child", "type": "SceneObject" },
+				{ "name": "root", "type": "SceneObject", "out": true }
+			],
+			"csharp": { "member": "FindParent", "kind": "method" }
+		},
+		{
+			"id": "Sum",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Sum(values)",
+			"returns": "i32",
+			"params": [{ "name": "values", "type": "list<i32>" }],
+			"csharp": { "member": "Sum", "kind": "method" }
+		},
+		{
+			"id": "Fill",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Fill(values, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "values", "type": "span<f32>", "out": true },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "Fill", "kind": "method" }
+		},
+		{
+			"id": "Count",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Count(count)",
+			"returns": "list<i32>",
+			"params": [{ "name": "count", "type": "i32" }],
+			"csharp": { "member": "Count", "kind": "method" }
+		},
+		{
+			"id": "Shapes",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Shapes(count)",
+			"returns": "list<ProbeShape>",
+			"params": [{ "name": "count", "type": "i32" }],
+			"csharp": { "member": "Shapes", "kind": "method" }
+		},
+		{
+			"id": "Widths",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Widths(shapes)",
+			"returns": "f32",
+			"params": [{ "name": "shapes", "type": "list<ProbeShape>" }],
+			"csharp": { "member": "Widths", "kind": "method" }
+		},
+		{
+			"id": "Join",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Join(parts, separator)",
+			"returns": "string",
+			"params": [
+				{ "name": "parts", "type": "list<string>" },
+				{ "name": "separator", "type": "string" }
+			],
+			"csharp": { "member": "Join", "kind": "method" }
+		},
+		{
+			"id": "Words",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Words(text)",
+			"returns": "list<string>",
+			"params": [{ "name": "text", "type": "string" }],
+			"csharp": { "member": "Words", "kind": "method" }
+		},
+		{
+			"id": "Children",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Children(*parent)",
+			"returns": "list<SceneObject>",
+			"params": [{ "name": "parent", "type": "SceneObject" }],
+			"csharp": { "member": "Children", "kind": "method" }
+		},
+		{
+			"id": "CountNamed",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::CountNamed(objects, name)",
+			"returns": "i32",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "CountNamed", "kind": "method" }
+		},
+		{
+			"id": "Tones",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Tones()",
+			"returns": "list<ProbeTone>",
+			"params": [],
+			"csharp": { "member": "Tones", "kind": "method" }
+		},
+		{
+			"id": "Halves",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Halves(values)",
+			"returns": "list<f64>",
+			"params": [{ "name": "values", "type": "list<f64>" }],
+			"csharp": { "member": "Halves", "kind": "method" }
+		},
+		{
+			"id": "GetCounter",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::GetCounter()",
+			"returns": "ProbeCounter",
+			"params": [],
+			"csharp": { "member": "Counter", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "Counters",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Counters()",
+			"returns": "list<ProbeCounter>",
+			"params": [],
+			"csharp": { "member": "Counters", "kind": "method" }
+		},
+		{
+			"id": "TotalOf",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::TotalOf(counters)",
+			"returns": "i32",
+			"params": [{ "name": "counters", "type": "list<ProbeCounter>" }],
+			"csharp": { "member": "TotalOf", "kind": "method" }
+		},
+		{
+			"id": "MakeRecipe",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::MakeRecipe(name, steps)",
+			"returns": "ProbeRecipe",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "steps", "type": "i32" }
+			],
+			"csharp": { "member": "MakeRecipe", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "DescribeRecipe",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::DescribeRecipe(*recipe)",
+			"returns": "string",
+			"params": [{ "name": "recipe", "type": "ProbeRecipe" }],
+			"csharp": { "member": "DescribeRecipe", "kind": "method" }
+		},
+		{
+			"id": "CountLiveRecipes",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::CountLiveRecipes()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "CountLiveRecipes", "kind": "method" }
+		}
+	]
+}

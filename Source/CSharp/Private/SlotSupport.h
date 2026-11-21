@@ -1,0 +1,200 @@
+#pragma once
+
+#include "BindingSupport.h"
+
+#include "Shalltear/Core/Containers.h"
+#include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
+
+#include <cstring>
+#include <iterator>
+#include <span>
+#include <string_view>
+
+namespace Shalltear::ScriptFunctionDetail {
+
+	template <>
+	struct Slot<Vec2I> {
+		static constexpr std::string_view TypeName = "Vec2I";
+		static constexpr size_t SLOT_COUNT = 1;
+		static Vec2I Read(const u64* slots) { return Vec2I(static_cast<i32>(static_cast<u32>(slots[0])), static_cast<i32>(static_cast<u32>(slots[0] >> 32))); }
+		static void Write(u64* slots, const Vec2I& value) { slots[0] = static_cast<u64>(static_cast<u32>(value.x)) | (static_cast<u64>(static_cast<u32>(value.y)) << 32); }
+	};
+
+} // namespace Shalltear::ScriptFunctionDetail
+
+namespace Shalltear::CSharpImpl::Slots {
+
+	// valid until this thread's next KeepBytes
+	SHALLTEAR_CSHARP_API void* KeepBytes(size_t size);
+
+	// valid until 16 more KeepText calls on this thread
+	SHALLTEAR_CSHARP_API SltString KeepText(std::string_view text);
+
+	inline f32 ToF32(u64 slot) noexcept {
+		return std::bit_cast<f32>(static_cast<u32>(slot));
+	}
+	inline f64 ToF64(u64 slot) noexcept {
+		return std::bit_cast<f64>(slot);
+	}
+	inline u64 OfF32(f32 value) noexcept {
+		return std::bit_cast<u32>(value);
+	}
+	inline u64 OfF64(f64 value) noexcept {
+		return std::bit_cast<u64>(value);
+	}
+
+	template <typename T>
+	T Read(const u64* slots) {
+		return ScriptFunctionDetail::Slot<T>::Read(slots);
+	}
+
+	template <typename T>
+	void Write(u64* slots, const T& value) {
+		ScriptFunctionDetail::Slot<T>::Write(slots, value);
+	}
+
+	inline std::string_view View(const u64* slots) {
+		return ScriptFunctionDetail::Slot<std::string_view>::Read(slots);
+	}
+
+	inline void Text(u64* slots, SltString text) {
+		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(text.ptr));
+		slots[1] = static_cast<u64>(text.length);
+	}
+	inline void Text(u64* slots, std::string_view text) {
+		Text(slots, KeepText(text));
+	}
+	inline void Text(u64* slots, const char* text) {
+		Text(slots, KeepText(text ? std::string_view(text) : std::string_view()));
+	}
+
+	template <typename T>
+	T Struct(u64 slot) {
+		T value;
+		std::memcpy(static_cast<void*>(&value), reinterpret_cast<const void*>(static_cast<uintptr_t>(slot)), sizeof(T));
+		return value;
+	}
+
+	template <typename T>
+	void StructOut(u64 slot, const T& value) {
+		std::memcpy(reinterpret_cast<void*>(static_cast<uintptr_t>(slot)), static_cast<const void*>(&value), sizeof(T));
+	}
+
+	template <typename T>
+	u64 Pointer(const T* value) {
+		return static_cast<u64>(reinterpret_cast<uintptr_t>(value));
+	}
+	template <typename T>
+		requires(!std::is_pointer_v<T>)
+	u64 Pointer(const T& value) {
+		return static_cast<u64>(reinterpret_cast<uintptr_t>(&value));
+	}
+
+	template <typename T>
+	u64 Box(const T& value) {
+		return static_cast<u64>(reinterpret_cast<uintptr_t>(New<T>(MemTag::Scripting, value)));
+	}
+
+	template <typename T, typename Range>
+	void KeepList(u64* slots, const Range& range) {
+		const size_t count = static_cast<size_t>(std::distance(std::begin(range), std::end(range)));
+		char* kept = static_cast<char*>(KeepBytes(count * sizeof(T)));
+		size_t at = 0;
+		for (const auto& item : range) {
+			const T copy = static_cast<T>(item);
+			std::memcpy(kept + at * sizeof(T), static_cast<const void*>(&copy), sizeof(T));
+			++at;
+		}
+		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(kept));
+		slots[1] = count;
+	}
+
+	inline u64 IdOfItem(const Object* object) noexcept {
+		return object ? object->GetInstanceId() : 0;
+	}
+	template <typename T>
+	u64 IdOfItem(const Handle<T>& handle) noexcept {
+		return handle.IsValid() ? handle.GetInstanceId() : 0;
+	}
+
+	template <typename Range>
+	void KeepObjects(u64* slots, const Range& range) {
+		const size_t count = static_cast<size_t>(std::distance(std::begin(range), std::end(range)));
+		u64* kept = static_cast<u64*>(KeepBytes(count * sizeof(u64)));
+		size_t at = 0;
+		for (const auto& item : range) {
+			kept[at++] = IdOfItem(item);
+		}
+		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(kept));
+		slots[1] = count;
+	}
+
+	template <typename Range>
+	void KeepPointers(u64* slots, const Range& range) {
+		const size_t count = static_cast<size_t>(std::distance(std::begin(range), std::end(range)));
+		u64* kept = static_cast<u64*>(KeepBytes(count * sizeof(u64)));
+		size_t at = 0;
+		for (const auto& item : range) {
+			kept[at++] = Pointer(item);
+		}
+		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(kept));
+		slots[1] = count;
+	}
+
+	template <typename Range>
+	void KeepTexts(u64* slots, const Range& range) {
+		size_t count = 0;
+		size_t bytes = 0;
+		for (const auto& item : range) {
+			bytes += std::string_view(item).size();
+			++count;
+		}
+		u64* kept = static_cast<u64*>(KeepBytes(count * 2 * sizeof(u64) + bytes));
+		char* text = reinterpret_cast<char*>(kept + count * 2);
+		size_t at = 0;
+		for (const auto& item : range) {
+			const std::string_view view(item);
+			if (!view.empty()) {
+				std::memcpy(text, view.data(), view.size());
+			}
+			kept[at * 2] = static_cast<u64>(reinterpret_cast<uintptr_t>(text));
+			kept[at * 2 + 1] = view.size();
+			text += view.size();
+			++at;
+		}
+		slots[0] = static_cast<u64>(reinterpret_cast<uintptr_t>(kept));
+		slots[1] = count;
+	}
+
+	template <typename T>
+	Vector<T*> Objects(const u64* slots) {
+		const u64* ids = reinterpret_cast<const u64*>(static_cast<uintptr_t>(slots[0]));
+		Vector<T*> out{GetMemoryResource(MemTag::Scripting)};
+		out.reserve(static_cast<size_t>(slots[1]));
+		for (u64 index = 0; index < slots[1]; ++index) {
+			out.push_back(ResolveObject<T>(ids[index]));
+		}
+		return out;
+	}
+
+	inline Vector<std::string_view> Views(const u64* slots) {
+		const u64* pairs = reinterpret_cast<const u64*>(static_cast<uintptr_t>(slots[0]));
+		Vector<std::string_view> out{GetMemoryResource(MemTag::Scripting)};
+		out.reserve(static_cast<size_t>(slots[1]));
+		for (u64 index = 0; index < slots[1]; ++index) {
+			out.push_back(View(pairs + index * 2));
+		}
+		return out;
+	}
+
+	template <typename T, typename Range>
+	Vector<T> ToVector(const Range& range) {
+		Vector<T> out{GetMemoryResource(MemTag::Scripting)};
+		for (const auto& item : range) {
+			out.emplace_back(item);
+		}
+		return out;
+	}
+
+} // namespace Shalltear::CSharpImpl::Slots

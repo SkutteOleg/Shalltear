@@ -298,6 +298,49 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, int, float, int> skinnedMeshRendererSetBlendShapeWeight;
 	public delegate* unmanaged<ulong, int, int> skinnedMeshRendererSetBlendShapeWeightCount;
 	public delegate* unmanaged<ulong, float*, int, int*, int> skinnedMeshRendererGetBlendShapeWeights;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeEchoI8;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeEchoI16;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeEchoU8;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeEchoU16;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeEchoI64;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeBlend;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeSwap;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeFlip;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeNextTone;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeGreet;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeThrow;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeGrow;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeHalve;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeDescribe;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeSplit;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeFindParent;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeSum;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeFill;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCount;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeShapes;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeWidths;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeJoin;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeWords;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeChildren;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCountNamed;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeTones;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeHalves;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeGetCounter;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCounters;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeTotalOf;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeMakeRecipe;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeDescribeRecipe;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCountLiveRecipes;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeProbeRecipeDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeProbeRecipeNew;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCounterAdd;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeCounterGetTotal;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeGetName;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeSetName;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeGetHeat;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeSetHeat;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeGetSteps;
+	public delegate* unmanaged<ulong*, ulong*, int> slotProbeRecipeSetSteps;
 	public delegate* unmanaged<ulong, SltString*, int> textAssetGetText;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetDeltaTime;
 	public delegate* unmanaged[SuppressGCTransition]<float> timeGetUnscaledDeltaTime;
@@ -388,7 +431,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xd41209861acd0655;
+	internal const ulong LAYOUT_HASH = 0xa7b31774265f7533;
 
 	internal static SltBindings table;
 
@@ -482,6 +525,12 @@ internal static unsafe class Bindings {
 		}
 		if (sizeof(BoneTransform) != 40) {
 			return "BoneTransform size " + sizeof(BoneTransform) + " (engine 40)";
+		}
+		if (sizeof(ProbeShape) != 24) {
+			return "ProbeShape size " + sizeof(ProbeShape) + " (engine 24)";
+		}
+		if (sizeof(ProbeWide) != 32) {
+			return "ProbeWide size " + sizeof(ProbeWide) + " (engine 32)";
 		}
 		return null;
 	}

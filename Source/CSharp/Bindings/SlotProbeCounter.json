@@ -1,0 +1,24 @@
+{
+	"area": "SlotProbeCounter",
+	"include": "SlotProbe.h",
+	"class": "Shalltear.Interop.ProbeCounter",
+	"test": true,
+	"slots": true,
+	"instance": "ProbeCounter",
+	"functions": [
+		{
+			"id": "Add",
+			"cpp": "self->Add(amount)",
+			"returns": "i32",
+			"params": [{ "name": "amount", "type": "i32" }],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "GetTotal",
+			"cpp": "self->GetTotal()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Total", "kind": "getter" }
+		}
+	]
+}
