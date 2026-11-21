@@ -202,7 +202,8 @@ namespace {
 			std::printf("    %-30s %12.1f %12.1f %10u %10llu %8llu\n", label,
 						Mean(updates, 0, updates.size()), Mean(paints, 0, paints.size()),
 						static_cast<u32>(list.quads.size()),
-						paintStats.elementsVisited / FRAMES, paintStats.scopesSorted / FRAMES);
+						static_cast<unsigned long long>(paintStats.elementsVisited / FRAMES),
+						static_cast<unsigned long long>(paintStats.scopesSorted / FRAMES));
 		}
 	}
 

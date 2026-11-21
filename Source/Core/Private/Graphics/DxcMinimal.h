@@ -27,27 +27,27 @@ namespace Shalltear::Dxc {
 	struct IDxcBlobWide;
 
 	struct IUnknown {
-		virtual HResult __stdcall QueryInterface(const Guid& riid, void** object) = 0;
-		virtual u32 __stdcall AddRef() = 0;
-		virtual u32 __stdcall Release() = 0;
+		virtual HResult QueryInterface(const Guid& riid, void** object) = 0;
+		virtual u32 AddRef() = 0;
+		virtual u32 Release() = 0;
 	};
 
 	struct IDxcBlob : IUnknown {
-		virtual void* __stdcall GetBufferPointer() = 0;
-		virtual size_t __stdcall GetBufferSize() = 0;
+		virtual void* GetBufferPointer() = 0;
+		virtual size_t GetBufferSize() = 0;
 	};
 
 	struct IDxcBlobEncoding : IDxcBlob {
-		virtual HResult __stdcall GetEncoding(i32* known, u32* codePage) = 0;
+		virtual HResult GetEncoding(i32* known, u32* codePage) = 0;
 	};
 
 	struct IDxcBlobUtf8 : IDxcBlobEncoding {
-		virtual const char* __stdcall GetStringPointer() = 0;
-		virtual size_t __stdcall GetStringLength() = 0;
+		virtual const char* GetStringPointer() = 0;
+		virtual size_t GetStringLength() = 0;
 	};
 
 	struct IDxcIncludeHandler : IUnknown {
-		virtual HResult __stdcall LoadSource(const wchar_t* filename, IDxcBlob** includeSource) = 0;
+		virtual HResult LoadSource(const wchar_t* filename, IDxcBlob** includeSource) = 0;
 	};
 
 	struct DxcBuffer {
@@ -62,38 +62,38 @@ namespace Shalltear::Dxc {
 	};
 
 	struct IDxcOperationResult : IUnknown {
-		virtual HResult __stdcall GetStatus(HResult* status) = 0;
-		virtual HResult __stdcall GetResult(IDxcBlob** result) = 0;
-		virtual HResult __stdcall GetErrorBuffer(IDxcBlobEncoding** errors) = 0;
+		virtual HResult GetStatus(HResult* status) = 0;
+		virtual HResult GetResult(IDxcBlob** result) = 0;
+		virtual HResult GetErrorBuffer(IDxcBlobEncoding** errors) = 0;
 	};
 
 	struct IDxcResult : IDxcOperationResult {
-		virtual i32 __stdcall HasOutput(DxcOutKind kind) = 0;
-		virtual HResult __stdcall GetOutput(DxcOutKind kind, const Guid& riid, void** object, IDxcBlobWide** outputName) = 0;
-		virtual u32 __stdcall GetNumOutputs() = 0;
-		virtual DxcOutKind __stdcall GetOutputByIndex(u32 index) = 0;
-		virtual DxcOutKind __stdcall PrimaryOutput() = 0;
+		virtual i32 HasOutput(DxcOutKind kind) = 0;
+		virtual HResult GetOutput(DxcOutKind kind, const Guid& riid, void** object, IDxcBlobWide** outputName) = 0;
+		virtual u32 GetNumOutputs() = 0;
+		virtual DxcOutKind GetOutputByIndex(u32 index) = 0;
+		virtual DxcOutKind PrimaryOutput() = 0;
 	};
 
 	struct IDxcCompiler3 : IUnknown {
-		virtual HResult __stdcall Compile(const DxcBuffer* source, const wchar_t** arguments, u32 argCount,
-										  IDxcIncludeHandler* includeHandler, const Guid& riid, void** result) = 0;
-		virtual HResult __stdcall Disassemble(const DxcBuffer* object, const Guid& riid, void** result) = 0;
+		virtual HResult Compile(const DxcBuffer* source, const wchar_t** arguments, u32 argCount,
+								IDxcIncludeHandler* includeHandler, const Guid& riid, void** result) = 0;
+		virtual HResult Disassemble(const DxcBuffer* object, const Guid& riid, void** result) = 0;
 	};
 
 	// only CreateBlobFromPinned is called, other slots are vtable padding
 	struct IDxcUtils : IUnknown {
-		virtual HResult __stdcall CreateBlobFromBlob(IDxcBlob* blob, u32 offset, u32 length, IDxcBlob** result) = 0;
-		virtual HResult __stdcall CreateBlobFromPinned(const void* data, u32 size, u32 codePage, IDxcBlobEncoding** result) = 0;
-		virtual HResult __stdcall MoveToBlob(const void* data, void* malloc, u32 size, u32 codePage, IDxcBlobEncoding** result) = 0;
-		virtual HResult __stdcall CreateBlob(const void* data, u32 size, u32 codePage, IDxcBlobEncoding** result) = 0;
-		virtual HResult __stdcall LoadFile(const wchar_t* fileName, u32* codePage, IDxcBlobEncoding** result) = 0;
-		virtual HResult __stdcall CreateReadOnlyStreamFromBlob(IDxcBlob* blob, void** stream) = 0;
-		virtual HResult __stdcall CreateDefaultIncludeHandler(IDxcIncludeHandler** result) = 0;
-		virtual HResult __stdcall GetBlobAsUtf8(IDxcBlob* blob, IDxcBlobUtf8** result) = 0;
-		virtual HResult __stdcall GetBlobAsWide(IDxcBlob* blob, IDxcBlobWide** result) = 0;
+		virtual HResult CreateBlobFromBlob(IDxcBlob* blob, u32 offset, u32 length, IDxcBlob** result) = 0;
+		virtual HResult CreateBlobFromPinned(const void* data, u32 size, u32 codePage, IDxcBlobEncoding** result) = 0;
+		virtual HResult MoveToBlob(const void* data, void* malloc, u32 size, u32 codePage, IDxcBlobEncoding** result) = 0;
+		virtual HResult CreateBlob(const void* data, u32 size, u32 codePage, IDxcBlobEncoding** result) = 0;
+		virtual HResult LoadFile(const wchar_t* fileName, u32* codePage, IDxcBlobEncoding** result) = 0;
+		virtual HResult CreateReadOnlyStreamFromBlob(IDxcBlob* blob, void** stream) = 0;
+		virtual HResult CreateDefaultIncludeHandler(IDxcIncludeHandler** result) = 0;
+		virtual HResult GetBlobAsUtf8(IDxcBlob* blob, IDxcBlobUtf8** result) = 0;
+		virtual HResult GetBlobAsWide(IDxcBlob* blob, IDxcBlobWide** result) = 0;
 	};
 
-	using DxcCreateInstanceProc = HResult(__stdcall*)(const Guid& clsid, const Guid& iid, void** instance);
+	using DxcCreateInstanceProc = HResult (*)(const Guid& clsid, const Guid& iid, void** instance);
 
 } // namespace Shalltear::Dxc

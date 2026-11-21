@@ -189,15 +189,15 @@ namespace Shalltear {
 			Vector<ShaderIncludeDependency>* dependencies = nullptr;
 			std::deque<str>* contentPool = nullptr;
 
-			Dxc::HResult __stdcall QueryInterface(const Dxc::Guid&, void** object) override {
+			Dxc::HResult QueryInterface(const Dxc::Guid&, void** object) override {
 				*object = this;
 				AddRef();
 				return Dxc::S_OK_;
 			}
-			u32 __stdcall AddRef() override { return ++_refs; }
-			u32 __stdcall Release() override { return --_refs; }
+			u32 AddRef() override { return ++_refs; }
+			u32 Release() override { return --_refs; }
 
-			Dxc::HResult __stdcall LoadSource(const wchar_t* filename, Dxc::IDxcBlob** includeSource) override {
+			Dxc::HResult LoadSource(const wchar_t* filename, Dxc::IDxcBlob** includeSource) override {
 				*includeSource = nullptr;
 				str requested = WideToUTF8(filename);
 
