@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xd9298ef203b98777ull
-#define SLT_BINDINGS_INPUT_DIGEST 0xe83e2cf236932ec7ull
+#define SLT_BRIDGE_LAYOUT_HASH 0xc8bd87f7e916e7bdull
+#define SLT_BINDINGS_INPUT_DIGEST 0x6122ec704f99b191ull
 
 typedef struct SltString SltString;
 
@@ -96,6 +96,8 @@ typedef struct SltBindings {
 	int32_t (*debugLinesDrawRay)(float originX, float originY, float originZ, float directionX, float directionY, float directionZ, float colorR, float colorG, float colorB, float colorA, float seconds, uint8_t depthTested);
 	int32_t (*debugLinesGetCount)(void);
 	int32_t (*eventsSetListening)(int32_t id, uint8_t listening);
+	int32_t (*functionsFind)(SltString name, SltString signature, int64_t* found, int32_t foundCount);
+	int32_t (*functionsExport)(SltString name, SltString signature, uint64_t id);
 	uint8_t (*inputIsKeyDown)(uint16_t key);
 	uint8_t (*inputWasKeyPressed)(uint16_t key);
 	uint8_t (*inputWasKeyReleased)(uint16_t key);
@@ -250,6 +252,10 @@ typedef struct SltBindings {
 	int32_t (*probeFreeAsset)(uint64_t id);
 	int32_t (*probeRunFrames)(int32_t count);
 	int32_t (*probeStepFrames)(int32_t count, float unscaledDelta, int32_t fixedSteps);
+	int32_t (*probeCallTriple)(int32_t value, int32_t* outResult);
+	int32_t (*probeCallJoin)(SltString left, float middleX, float middleY, float middleZ, uint64_t right, SltString* outResult);
+	int32_t (*probeCallThrow)(void);
+	int32_t (*probeIsExported)(SltString name, uint8_t* outResult);
 	int32_t (*sceneGetName)(uint64_t self, SltString* outResult);
 	int32_t (*sceneSetName)(uint64_t self, SltString name);
 	int32_t (*sceneGetState)(uint64_t self, uint8_t* outResult);

@@ -156,9 +156,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public string packages = "";
 		public bool player;
 		public bool hashedNames;
+		public bool hasParts;
 
 		public bool Equals(Target? other) =>
-			other != null && scriptRoot == other.scriptRoot && packages == other.packages && player == other.player && hashedNames == other.hashedNames;
+			other != null && scriptRoot == other.scriptRoot && packages == other.packages && player == other.player && hashedNames == other.hashedNames &&
+			hasParts == other.hasParts;
 
 		public override bool Equals(object? other) => Equals(other as Target);
 
@@ -212,12 +214,23 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			return target;
 		});
 		IncrementalValueProvider<string> packages = context.CompilationProvider.Select(static (compilation, _) => string.Join(";", PackageBindings(compilation)));
-		target = target.Combine(packages).Select(static (pair, _) => new Target {
-			scriptRoot = pair.Left.scriptRoot, packages = pair.Right, player = pair.Left.player, hashedNames = pair.Left.hashedNames
+		IncrementalValuesProvider<bool> natives = context.SyntaxProvider.ForAttributeWithMetadataName(
+			FunctionGenerator.NATIVE_FUNCTION, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => true);
+		IncrementalValuesProvider<bool> exports = context.SyntaxProvider.ForAttributeWithMetadataName(
+			FunctionGenerator.EXPORT_TO_NATIVE, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => true);
+		IncrementalValueProvider<bool> written =
+			context.CompilationProvider.Select(static (compilation, _) => compilation.Assembly.GetTypeByMetadataName("Shalltear.Generated.TypeTable") != null);
+		IncrementalValueProvider<bool> parts = natives.Collect().Combine(exports.Collect()).Combine(written).Select(static (pair, _) => !pair.Left.Left.IsEmpty || !pair.Left.Right.IsEmpty || pair.Right);
+		target = target.Combine(packages).Combine(parts).Select(static (pair, _) => new Target {
+			scriptRoot = pair.Left.Left.scriptRoot,
+			packages = pair.Left.Right,
+			player = pair.Left.Left.player,
+			hashedNames = pair.Left.Left.hashedNames,
+			hasParts = pair.Right,
 		});
 		context.RegisterSourceOutput(components.Collect().Combine(target), static (output, pair) => {
 			ImmutableArray<Component> found = pair.Left.IsDefault ? ImmutableArray<Component>.Empty : pair.Left;
-			if (found.IsEmpty && !pair.Right.player) {
+			if (found.IsEmpty && !pair.Right.player && !pair.Right.hasParts) {
 				return;
 			}
 			List<Component> ordered = new();
@@ -781,8 +794,9 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append("#nullable disable\n");
 		text.Append("#pragma warning disable CA2255\n");
 		text.Append("namespace Shalltear.Generated;\n\n");
-		text.Append(target.player ? "public " : "").Append("static class TypeTable {\n");
+		text.Append(target.player ? "public " : "").Append("static partial class TypeTable {\n");
 		text.Append("\tstatic bool _registered;\n");
+		text.Append("\n\tstatic partial void RegisterFunctions();\n");
 		StringBuilder calls = new();
 		for (int index = 0; index < enums.Count; ++index) {
 			RenderEnum(text, enums[index], index, target);
@@ -868,6 +882,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			text.Append("\t\tglobal::").Append(bindings).Append(".Attach();\n");
 		}
 		text.Append(calls);
+		text.Append("\t\tRegisterFunctions();\n");
 		text.Append("\t}\n}\n");
 		return text.ToString();
 	}

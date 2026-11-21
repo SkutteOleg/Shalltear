@@ -415,4 +415,54 @@ internal static unsafe partial class BindingProbe {
 			throw Bridge.LastError();
 		}
 	}
+
+	internal static int CallTriple(int value) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.CallTriple");
+		}
+		int result;
+		int status = Bindings.table.probeCallTriple(value, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result;
+	}
+
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static string CallJoin(string left, Vec3 middle, SceneObject? right = null) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.CallJoin");
+		}
+		using UTF8Scratch leftText = new(left, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		SltString result;
+		int status = Bindings.table.probeCallJoin(leftText.Text, middle.x, middle.y, middle.z, right is null ? 0UL : right._id, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "BindingProbe.CallJoin");
+		}
+		return Bridge.Text(result);
+	}
+
+	internal static void CallThrow() {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.CallThrow");
+		}
+		int status = Bindings.table.probeCallThrow();
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+	}
+
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static bool IsExported(string name) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("BindingProbe.IsExported");
+		}
+		using UTF8Scratch nameText = new(name, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		byte result;
+		int status = Bindings.table.probeIsExported(nameText.Text, &result);
+		if (status != Bridge.OK) {
+			throw Bridge.LastError();
+		}
+		return result != 0;
+	}
 }

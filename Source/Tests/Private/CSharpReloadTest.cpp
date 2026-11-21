@@ -12,6 +12,7 @@
 #include "Shalltear/Core/Event.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 #include "Shalltear/Core/Scene/UnresolvedComponent.h"
@@ -948,6 +949,29 @@ TEST_F(CSharpReloadTest, PendingAwaitsDropAtUnload) {
 	_hooks->takeRecords();
 	ASSERT_EQ(Run("AwaitProbe.StepsFrames", message), SLT_OK) << message;
 	EXPECT_TRUE(_hooks->takeRecords().empty());
+}
+
+TEST_F(CSharpReloadTest, ExportsRebindAcrossReload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	ScriptFunction<i32(i32)> triple("ConformanceTriple");
+	EXPECT_FALSE(triple.IsBound());
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	ASSERT_TRUE(triple.IsBound());
+	EXPECT_EQ(triple(5), 15);
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	ASSERT_EQ(_editor->getReloadCount(), 2u);
+	EXPECT_EQ(triple(6), 18);
+	EXPECT_EQ(_log.Delivered().Count("is already exported"), 0u) << _log.Delivered().Joined();
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+	_hooks->unloadUserAssemblies();
+	EXPECT_FALSE(triple.IsBound());
 }
 
 TEST_F(CSharpReloadTest, AnimationHandlersDropAtUnload) {

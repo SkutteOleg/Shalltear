@@ -125,4 +125,6 @@ internal unsafe struct SltManagedAPI {
 	public delegate* unmanaged<int, void> pump;
 	public delegate* unmanaged<int, void> setProfiling;
 	public delegate* unmanaged<SltProfileRow*, int, SltProfileFrame*, int> readProfile;
+	public delegate* unmanaged<ulong, ulong*, ulong*, void> callExport;
+	public delegate* unmanaged<void> functionsChanged;
 }

@@ -2,6 +2,8 @@
 
 #include "ScriptLog.h"
 
+#include "FunctionBindings.h"
+
 #include "ManagedBehavior.h"
 #include "ManagedDataAsset.h"
 #include "InputMaps.h"
@@ -134,12 +136,14 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 
 	void Tick() {
 		if (_attached) {
+			FunctionBindings::Poll();
 			_managed.tick();
 		}
 	}
 
 	void Pump(i32 phase) {
 		if (_attached) {
+			FunctionBindings::Poll();
 			_managed.pump(phase);
 		}
 	}
@@ -206,6 +210,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		_managed.shutdown();
 		ScriptEvents::Reset();
 		ScriptProfile::Reset();
+		FunctionBindings::Reset();
 		_managed = {};
 		_attached = false;
 	}

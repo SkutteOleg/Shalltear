@@ -145,6 +145,7 @@ internal static unsafe class UserAssemblies {
 		LogOrigins.Clear();
 		ScriptEvents.Clear();
 		FrameAwaits.Forget();
+		NativeFunctions.Forget();
 		UnloadHooks.Run();
 		if (context == null) {
 			return new WeakReference(null);

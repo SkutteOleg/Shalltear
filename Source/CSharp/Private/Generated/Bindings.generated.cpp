@@ -70,6 +70,7 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillComponentBindings(SltBindings& table);
 	void FillDebugLinesBindings(SltBindings& table);
 	void FillEventsBindings(SltBindings& table);
+	void FillFunctionsBindings(SltBindings& table);
 	void FillInputBindings(SltBindings& table);
 	void FillInputMapBindings(SltBindings& table);
 	void FillLightBindings(SltBindings& table);
@@ -100,6 +101,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillComponentBindings(table);
 		FillDebugLinesBindings(table);
 		FillEventsBindings(table);
+		FillFunctionsBindings(table);
 		FillInputBindings(table);
 		FillInputMapBindings(table);
 		FillLightBindings(table);

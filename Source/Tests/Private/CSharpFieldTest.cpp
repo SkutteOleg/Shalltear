@@ -171,8 +171,8 @@ TEST_F(CSharpGeneratorTest, ReleasePlayerTableHashedLoadsSceneText) {
 	}
 	EXPECT_NE(editor.find("how fast"), str::npos) << editor;
 	EXPECT_NE(editor.find("\"Driving\""), str::npos) << editor;
-	EXPECT_NE(editor.find("static class TypeTable"), str::npos);
-	EXPECT_EQ(editor.find("public static class TypeTable"), str::npos);
+	EXPECT_NE(editor.find("static partial class TypeTable"), str::npos);
+	EXPECT_EQ(editor.find("public static partial class TypeTable"), str::npos);
 	EXPECT_NE(editor.find("internal static void Register()"), str::npos);
 
 	std::error_code ec;
@@ -185,7 +185,7 @@ TEST_F(CSharpGeneratorTest, ReleasePlayerTableHashedLoadsSceneText) {
 	}
 	EXPECT_EQ(development.find("how fast"), str::npos) << development;
 	EXPECT_EQ(development.find("\"Driving\""), str::npos) << development;
-	EXPECT_NE(development.find("public static class TypeTable"), str::npos);
+	EXPECT_NE(development.find("public static partial class TypeTable"), str::npos);
 	EXPECT_NE(development.find("public static void Register()"), str::npos);
 
 	std::filesystem::remove_all(_root / "obj", ec);
@@ -268,7 +268,7 @@ TEST_F(CSharpGeneratorTest, PlayerTableExistsWithoutComponents) {
 	output = Build(source, exitCode, head + "\t\t<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>\n\t</PropertyGroup>\n");
 	ASSERT_EQ(exitCode, 0) << output;
 	const str player = table();
-	EXPECT_NE(player.find("public static class TypeTable"), str::npos) << player;
+	EXPECT_NE(player.find("public static partial class TypeTable"), str::npos) << player;
 	EXPECT_NE(player.find("public static void Register()"), str::npos) << player;
 	EXPECT_EQ(player.find("Register<"), str::npos) << player;
 }

@@ -13,6 +13,7 @@
 #include "Shalltear/Core/Graphics/PrimitiveMesh.h"
 #include "Shalltear/Core/Graphics/SkeletonAsset.h"
 #include "Shalltear/Core/Math/MathUtil.h"
+#include "Shalltear/Core/Module/ScriptFunctions.h"
 #include "Shalltear/Core/Input/InputEvent.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
 #include "Shalltear/Core/Time.h"
@@ -466,6 +467,95 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 			}
 			FrameStages::Run(FrameStage::Update, FrameStageArgs{});
 		}
+	}
+
+	namespace {
+
+		f32 ProbeScale(f32 value, i32 factor) {
+			return value * static_cast<f32>(factor);
+		}
+		SLT_SCRIPT_EXPORT(ProbeScale)
+
+		str ProbeGreet(std::string_view name, std::string_view ending) {
+			return "hello " + str(name) + str(ending);
+		}
+		SLT_SCRIPT_EXPORT(ProbeGreet)
+
+		f64 ProbeMix(Vec2 two, Vec3 three, Vec4 four, Quat turn, Color tint, bool flag, u8 small, i16 negative, i64 big, f64 wide) {
+			return static_cast<f64>(two.x + two.y + three.x + three.y + three.z + four.x + four.y + four.z + four.w + turn.x + turn.y + turn.z + turn.w +
+									tint.r + tint.g + tint.b + tint.a) +
+				   (flag ? 1000.0 : 0.0) + static_cast<f64>(small) + static_cast<f64>(negative) + static_cast<f64>(big) + wide;
+		}
+		SLT_SCRIPT_EXPORT(ProbeMix)
+
+		Vec3 ProbeSwap(Vec3 value) {
+			return Vec3(value.z, value.y, value.x);
+		}
+		SLT_SCRIPT_EXPORT(ProbeSwap)
+
+		Quat ProbeTurn(Quat value) {
+			return Quat(value.w, value.z, value.y, value.x);
+		}
+		SLT_SCRIPT_EXPORT(ProbeTurn)
+
+		Color ProbeTint(Vec4 value) {
+			return Color(value.x, value.y, value.z, value.w);
+		}
+		SLT_SCRIPT_EXPORT(ProbeTint)
+
+		Vec4 ProbeWide(Color value) {
+			return Vec4(value.a, value.b, value.g, value.r);
+		}
+		SLT_SCRIPT_EXPORT(ProbeWide)
+
+		Vec2 ProbeFlip(Vec2 value) {
+			return Vec2(value.y, value.x);
+		}
+		SLT_SCRIPT_EXPORT(ProbeFlip)
+
+		str ProbeNameOf(Handle<SceneObject> target) {
+			return target.IsValid() ? target->name : str("none");
+		}
+		SLT_SCRIPT_EXPORT(ProbeNameOf)
+
+		Handle<SceneObject> ProbeParentOf(Handle<SceneObject> child) {
+			return child.IsValid() ? child->GetParent() : Handle<SceneObject>();
+		}
+		SLT_SCRIPT_EXPORT(ProbeParentOf)
+
+		u8 ProbeNextGear(u8 gear) {
+			return static_cast<u8>(gear + 1);
+		}
+		SLT_SCRIPT_EXPORT(ProbeNextGear)
+
+		bool ProbeNot(bool value) {
+			return !value;
+		}
+		SLT_SCRIPT_EXPORT(ProbeNot)
+
+		u64 ProbeBig(u64 value) {
+			return ~value;
+		}
+		SLT_SCRIPT_EXPORT(ProbeBig)
+
+	} // anonymous namespace
+
+	i32 CallTriple(i32 value) {
+		static ScriptFunction<i32(i32)> triple("ConformanceTriple");
+		return triple(value);
+	}
+
+	str CallJoin(std::string_view left, const Vec3& middle, SceneObject* right) {
+		ScriptFunction<str(std::string_view, Vec3, Handle<SceneObject>)> join("ConformanceJoin");
+		return join(left, middle, Handle<SceneObject>(right));
+	}
+
+	void CallThrow() {
+		ScriptFunction<void()>("ConformanceThrow")();
+	}
+
+	bool IsExported(std::string_view name) {
+		return ScriptFunctions::FindRaw(name).thunk != nullptr;
 	}
 
 } // namespace Shalltear::CSharpImpl::BindingProbe

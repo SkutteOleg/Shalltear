@@ -54,6 +54,8 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<float, float, float, float, float, float, float, float, float, float, float, byte, int> debugLinesDrawRay;
 	public delegate* unmanaged[SuppressGCTransition]<int> debugLinesGetCount;
 	public delegate* unmanaged<int, byte, int> eventsSetListening;
+	public delegate* unmanaged<SltString, SltString, long*, int, int> functionsFind;
+	public delegate* unmanaged<SltString, SltString, ulong, int> functionsExport;
 	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputIsKeyDown;
 	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputWasKeyPressed;
 	public delegate* unmanaged[SuppressGCTransition]<ushort, byte> inputWasKeyReleased;
@@ -208,6 +210,10 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong, int> probeFreeAsset;
 	public delegate* unmanaged<int, int> probeRunFrames;
 	public delegate* unmanaged<int, float, int, int> probeStepFrames;
+	public delegate* unmanaged<int, int*, int> probeCallTriple;
+	public delegate* unmanaged<SltString, float, float, float, ulong, SltString*, int> probeCallJoin;
+	public delegate* unmanaged<int> probeCallThrow;
+	public delegate* unmanaged<SltString, byte*, int> probeIsExported;
 	public delegate* unmanaged<ulong, SltString*, int> sceneGetName;
 	public delegate* unmanaged<ulong, SltString, int> sceneSetName;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> sceneGetState;
@@ -377,7 +383,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xd9298ef203b98777;
+	internal const ulong LAYOUT_HASH = 0xc8bd87f7e916e7bd;
 
 	internal static SltBindings table;
 

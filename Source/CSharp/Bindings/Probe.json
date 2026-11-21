@@ -323,6 +323,38 @@
 				{ "name": "fixedSteps", "type": "i32" }
 			],
 			"csharp": { "member": "StepFrames", "kind": "method" }
+		},
+		{
+			"id": "CallTriple",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::CallTriple(value)",
+			"returns": "i32",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "CallTriple", "kind": "method" }
+		},
+		{
+			"id": "CallJoin",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::CallJoin(left, middle, right)",
+			"returns": "string",
+			"params": [
+				{ "name": "left", "type": "string" },
+				{ "name": "middle", "type": "Vec3" },
+				{ "name": "right", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "CallJoin", "kind": "method" }
+		},
+		{
+			"id": "CallThrow",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::CallThrow()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "CallThrow", "kind": "method" }
+		},
+		{
+			"id": "IsExported",
+			"cpp": "::Shalltear::CSharpImpl::BindingProbe::IsExported(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "IsExported", "kind": "method" }
 		}
 	]
 }

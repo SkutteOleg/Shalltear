@@ -407,6 +407,20 @@ TEST_F(CSharpRuntimeFixture, ProfilerModuleListsHookCosts) {
 	SceneSystem::Terminate();
 }
 
+TEST_F(CSharpRuntimeFixture, ThrowingExportIsReported) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
+	_hooks->takeRecords();
+
+	str message;
+	EXPECT_EQ(Run("FunctionProbe.CallsThrowingExport", message), SLT_OK) << message;
+	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by an export"), 1u) << _log.Delivered().Joined();
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"returned after the throw"}));
+	SceneSystem::Terminate();
+}
+
 TEST_F(CSharpRuntimeFixture, ThrowingPhysicsListenerIsReported) {
 #ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
 	GTEST_SKIP();

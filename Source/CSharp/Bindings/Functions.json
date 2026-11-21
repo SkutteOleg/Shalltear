@@ -1,0 +1,31 @@
+{
+	"area": "Functions",
+	"include": "FunctionBindings.h",
+	"class": "Shalltear.Interop.FunctionBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "Find",
+			"cpp": "::Shalltear::CSharpImpl::FunctionBindings::Find(name, signature, found)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "signature", "type": "string" },
+				{ "name": "found", "type": "span<i64>", "out": true }
+			],
+			"thread": "any",
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "Export",
+			"cpp": "::Shalltear::CSharpImpl::FunctionBindings::Export(name, signature, id)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "signature", "type": "string" },
+				{ "name": "id", "type": "u64" }
+			],
+			"csharp": { "member": "Export", "kind": "method" }
+		}
+	]
+}

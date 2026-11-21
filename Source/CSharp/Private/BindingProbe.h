@@ -46,6 +46,11 @@ namespace Shalltear::CSharpImpl::BindingProbe {
 	i32 GetAliveChecks();
 	void RunFrames(i32 count);
 	void StepFrames(i32 count, f32 unscaledDelta, i32 fixedSteps);
+
+	i32 CallTriple(i32 value);
+	str CallJoin(std::string_view left, const Vec3& middle, SceneObject* right);
+	void CallThrow();
+	bool IsExported(std::string_view name);
 	u64 FindAsset(std::string_view path);
 	u64 MakeDerivedText();
 	void FreeDerivedText(u64 id);

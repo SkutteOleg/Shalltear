@@ -326,6 +326,42 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t ProbeCallTriple(int32_t value, int32_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				*outResult = static_cast<int32_t>(::Shalltear::CSharpImpl::BindingProbe::CallTriple(value));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeCallJoin(SltString leftIn, float middleX, float middleY, float middleZ, uint64_t rightId, SltString* outResult) noexcept {
+			::Shalltear::SceneObject* const right = ResolveObject<::Shalltear::SceneObject>(rightId);
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view left = View(leftIn);
+				const ::Shalltear::Vec3 middle(middleX, middleY, middleZ);
+				*outResult = ScriptRuntime::KeepString(::Shalltear::CSharpImpl::BindingProbe::CallJoin(left, middle, right));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeCallThrow() noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				::Shalltear::CSharpImpl::BindingProbe::CallThrow();
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t ProbeIsExported(SltString nameIn, uint8_t* outResult) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view name = View(nameIn);
+				*outResult = static_cast<uint8_t>((::Shalltear::CSharpImpl::BindingProbe::IsExported(name)) ? 1 : 0);
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 	} // anonymous namespace
 
 	void FillProbeBindings(SltBindings& table) {
@@ -369,6 +405,10 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.probeFreeAsset = &ProbeFreeAsset;
 		table.probeRunFrames = &ProbeRunFrames;
 		table.probeStepFrames = &ProbeStepFrames;
+		table.probeCallTriple = &ProbeCallTriple;
+		table.probeCallJoin = &ProbeCallJoin;
+		table.probeCallThrow = &ProbeCallThrow;
+		table.probeIsExported = &ProbeIsExported;
 	}
 
 } // namespace Shalltear::CSharpImpl::Generated
