@@ -129,13 +129,27 @@ namespace Shalltear {
 	}
 
 	const FieldInfo* FindField(const TypeInfo* type, StringHash fieldName) {
-		while (type) {
-			for (u32 i = 0; i < type->fieldCount; ++i) {
-				if (type->fields[i].name == fieldName) {
-					return &type->fields[i];
+		for (const TypeInfo* cur = type; cur != nullptr; cur = cur->parent) {
+			for (u32 i = 0; i < cur->fieldCount; ++i) {
+				if (cur->fields[i].name == fieldName) {
+					return &cur->fields[i];
 				}
 			}
-			type = type->parent;
+		}
+		const StringHash formerAttrKey("FormerlySerializedAs");
+		for (const TypeInfo* cur = type; cur != nullptr; cur = cur->parent) {
+			for (u32 i = 0; i < cur->fieldCount; ++i) {
+				const FieldInfo& field = cur->fields[i];
+				if (!field.attributes || field.attrCount == 0) {
+					continue;
+				}
+				for (u8 attrIndex = 0; attrIndex < field.attrCount; ++attrIndex) {
+					const AttributeInfo& attr = field.attributes[attrIndex];
+					if (attr.key == formerAttrKey && attr.value.Is<str>() && StringHash(attr.value.As<str>()) == fieldName) {
+						return &field;
+					}
+				}
+			}
 		}
 		return nullptr;
 	}

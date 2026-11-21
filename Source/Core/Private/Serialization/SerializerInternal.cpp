@@ -345,11 +345,14 @@ namespace Shalltear {
 					return StringHash();
 				}
 				StringHash spelled(key);
-				if (TypeRegistry::FindType(spelled)) {
-					return spelled;
+				if (const TypeInfo* found = TypeRegistry::FindType(spelled)) {
+					return found->name;
 				}
 				StringHash hashed;
 				if (HexToHash(key, hashed)) {
+					if (const TypeInfo* found = TypeRegistry::FindType(hashed)) {
+						return found->name;
+					}
 					return hashed;
 				}
 				return spelled;

@@ -30,6 +30,9 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 	const uint FIELD_TRANSIENT = 4;
 	const uint FIELD_RANGED = 8;
 	const uint FIELD_LIST = 16;
+	const uint FIELD_SPACE = 32;
+	const uint FIELD_MULTILINE = 64;
+	const uint FIELD_TEXT_AREA = 128;
 	const int FIELD_SLOT_LIMIT = 960;
 
 	// must match SltFieldKind in ScriptBridge.h
@@ -62,6 +65,10 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		"SLT1004", "Too many serialized fields", "'{0}' has too many serialized fields ({1} of {2} slots). Remove some.", "Shalltear",
 		DiagnosticSeverity.Error, true);
 
+	static readonly DiagnosticDescriptor _invalidReflectProperty = new(
+		"SLT1007", "Property can't be serialized", "'{0}' has [Reflect] but is not a writable auto-property. Use an auto-property ({{ get; set; }}) or a field instead.",
+		"Shalltear", DiagnosticSeverity.Error, true);
+
 	enum Shape {
 		Single,
 		List,
@@ -93,6 +100,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 
 	sealed class Field {
 		public string name = "";
+		public string accessorName = "";
 		public string owner = "";
 		public string type = "";
 		public string typeParameters = "";
@@ -102,14 +110,20 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public uint flags;
 		public float rangeMin;
 		public float rangeMax;
+		public float spaceHeight;
+		public int multilineLines;
+		public int textAreaMinLines;
+		public int textAreaMaxLines;
 		public string? tooltip;
 		public string? header;
+		public string? formerNames;
 		public FieldType kind = new();
 
 		public string Key() {
-			return string.Join("|", name, owner, type, typeParameters, typeArguments, constraints, direct, flags,
-							   rangeMin.ToString("R", CultureInfo.InvariantCulture), rangeMax.ToString("R", CultureInfo.InvariantCulture), tooltip ?? "\0",
-							   header ?? "\0", kind.Key());
+			return string.Join("|", name, accessorName, owner, type, typeParameters, typeArguments, constraints, direct, flags,
+							   rangeMin.ToString("R", CultureInfo.InvariantCulture), rangeMax.ToString("R", CultureInfo.InvariantCulture),
+							   spaceHeight.ToString("R", CultureInfo.InvariantCulture), multilineLines, textAreaMinLines, textAreaMaxLines,
+							   tooltip ?? "\0", header ?? "\0", formerNames ?? "\0", kind.Key());
 		}
 	}
 
@@ -117,10 +131,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public string name = "";
 		public string qualified = "";
 		public int size;
+		public string? formerNames;
 		public ImmutableArray<KeyValuePair<string, long>> constants = ImmutableArray<KeyValuePair<string, long>>.Empty;
 
 		public string Key() {
-			return name + "|" + size + "|" + string.Join(",", constants.Select(static constant => constant.Key + "=" + constant.Value));
+			return name + "|" + size + "|" + (formerNames ?? "\0") + "|" + string.Join(",", constants.Select(static constant => constant.Key + "=" + constant.Value));
 		}
 	}
 
@@ -132,16 +147,18 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public bool normalizes;
 		public int depth;
 		public int slots;
+		public string? formerNames;
 		public ImmutableArray<Field> fields = ImmutableArray<Field>.Empty;
 
 		public string Key() {
-			return string.Join("|", name, isClass, wide, normalizes, depth, slots) + "{" + string.Join(";", fields.Select(static field => field.Key())) + "}";
+			return string.Join("|", name, isClass, wide, normalizes, depth, slots, formerNames ?? "\0") + "{" + string.Join(";", fields.Select(static field => field.Key())) + "}";
 		}
 	}
 
 	sealed class Problem {
 		public string field = "";
 		public string type = "";
+		public bool invalidProperty;
 		public Location? location;
 	}
 
@@ -175,8 +192,12 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public string parent = "";
 		public bool isAbstract;
 		public bool asset;
+		public bool disallowMultiple;
 		public string menu = "";
 		public string extension = "";
+		public string? formerNames;
+		public string? requiredComponents;
+		public string? componentMenu;
 		public uint hookMask;
 		public int depth;
 		public int slots;
@@ -189,9 +210,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		string? _key;
 
 		string Key() {
-			return _key ??= string.Join("|", name, qualified, parent, isAbstract, asset, menu, extension, hookMask, depth, slots, script) + "[" + string.Join(";", fields.Select(static field => field.Key())) +
+			return _key ??= string.Join("|", name, qualified, parent, isAbstract, asset, disallowMultiple, menu, extension,
+										formerNames ?? "\0", requiredComponents ?? "\0", componentMenu ?? "\0", hookMask, depth, slots, script) + "[" +
+							string.Join(";", fields.Select(static field => field.Key())) +
 							"][" + string.Join(";", enums.Select(static type => type.Key())) + "][" + string.Join(";", values.Select(static type => type.Key())) + "][" +
-							string.Join(";", problems.Select(static problem => problem.field + ">" + problem.type)) + "]";
+							string.Join(";", problems.Select(static problem => problem.field + ">" + problem.type + ">" + problem.invalidProperty)) + "]";
 		}
 
 		public bool Equals(Component? other) => other != null && Key() == other.Key();
@@ -253,7 +276,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				}
 				foreach (Problem problem in component.problems) {
 					if (reported.Add(problem.field)) {
-						output.ReportDiagnostic(Diagnostic.Create(_unsupportedField, problem.location, problem.field, problem.type));
+						if (problem.invalidProperty) {
+							output.ReportDiagnostic(Diagnostic.Create(_invalidReflectProperty, problem.location, problem.field));
+						} else {
+							output.ReportDiagnostic(Diagnostic.Create(_unsupportedField, problem.location, problem.field, problem.type));
+						}
 					}
 				}
 			}
@@ -342,7 +369,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			}
 			// parent's problems reported once, with parent
 			Collector levelCollector = own ? collector : new Collector();
-			List<Field> declared = level.GetMembers().OfType<IFieldSymbol>().Select(field => DescribeField(field, levelCollector)).Where(static field => field != null).ToList()!;
+			List<Field> declared = DescribeMembers(level, levelCollector);
 			component.slots += declared.Sum(static field => field.kind.slots);
 			if (own) {
 				fields.InsertRange(0, declared);
@@ -351,11 +378,21 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		if (!behavior) {
 			return null;
 		}
-		AttributeData? menu = type.GetAttributes().FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == ASSET_MENU);
+		ImmutableArray<AttributeData> typeAttrs = type.GetAttributes();
+		AttributeData? menu = typeAttrs.FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == ASSET_MENU);
 		if (component.asset && menu != null && menu.ConstructorArguments.Length == 2 && menu.ConstructorArguments[0].Value is string label &&
 			menu.ConstructorArguments[1].Value is string extension) {
 			component.menu = label;
 			component.extension = extension;
+		}
+		component.formerNames = JoinFormerNames(typeAttrs);
+		if (!component.asset) {
+			component.disallowMultiple = typeAttrs.Any(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == "Shalltear.DisallowMultipleComponentAttribute");
+			component.requiredComponents = JoinRequiredComponents(typeAttrs);
+			AttributeData? compMenu = typeAttrs.FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == "Shalltear.AddComponentMenuAttribute");
+			if (compMenu != null && compMenu.ConstructorArguments.Length >= 1 && compMenu.ConstructorArguments[0].Value is string compMenuPath && compMenuPath.Length > 0) {
+				component.componentMenu = compMenuPath;
+			}
 		}
 		component.fields = fields.ToImmutableArray();
 		component.enums = collector.enums.Values.OrderBy(static type => type.name, StringComparer.Ordinal).ToImmutableArray();
@@ -364,17 +401,162 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		return component;
 	}
 
+	static string? JoinFormerNames(ImmutableArray<AttributeData> attributes) {
+		List<string>? names = null;
+		foreach (AttributeData attribute in attributes) {
+			if (attribute.AttributeClass?.ToDisplayString(_plain) == "Shalltear.FormerlySerializedAsAttribute" &&
+				attribute.ConstructorArguments.Length == 1 &&
+				attribute.ConstructorArguments[0].Value is string oldName &&
+				oldName.Length > 0) {
+				names ??= new List<string>();
+				if (!names.Contains(oldName)) {
+					names.Add(oldName);
+				}
+			}
+		}
+		return names == null ? null : string.Join(";", names);
+	}
+
+	static string? JoinRequiredComponents(ImmutableArray<AttributeData> attributes) {
+		List<string>? names = null;
+		foreach (AttributeData attribute in attributes) {
+			if (attribute.AttributeClass?.ToDisplayString(_plain) != "Shalltear.RequireComponentAttribute" ||
+				attribute.ConstructorArguments.Length != 1 ||
+				attribute.ConstructorArguments[0].Value is not INamedTypeSymbol reqType) {
+				continue;
+			}
+			string? resolved = null;
+			AttributeData? engineAttr = reqType.GetAttributes().FirstOrDefault(static a => a.AttributeClass?.ToDisplayString(_plain) == ENGINE_TYPE);
+			if (engineAttr != null && engineAttr.ConstructorArguments.Length == 1 && engineAttr.ConstructorArguments[0].Value is string engineName && engineName.Length > 0) {
+				resolved = engineName;
+			} else {
+				resolved = reqType.ToDisplayString(_plain);
+			}
+			if (resolved.Length > 0) {
+				names ??= new List<string>();
+				if (!names.Contains(resolved)) {
+					names.Add(resolved);
+				}
+			}
+		}
+		return names == null ? null : string.Join(";", names);
+	}
+
+	static List<Field> DescribeMembers(INamedTypeSymbol level, Collector collector) {
+		List<Field> declared = new();
+		foreach (ISymbol member in level.GetMembers()) {
+			if (member is IFieldSymbol field) {
+				Field? described = DescribeField(field, collector);
+				if (described != null) {
+					declared.Add(described);
+				}
+			} else if (member is IPropertySymbol property) {
+				Field? described = DescribeProperty(property, level, collector);
+				if (described != null) {
+					declared.Add(described);
+				}
+			}
+		}
+		return declared;
+	}
+
+	static void ApplyFieldAttributes(Field described, ImmutableArray<AttributeData> attributes) {
+		ImmutableArray<TypedConstant> Find(string name) {
+			AttributeData? found = attributes.FirstOrDefault(attribute => attribute.AttributeClass?.ToDisplayString(_plain) == name);
+			return found == null ? default : found.ConstructorArguments;
+		}
+		described.flags |= Find("Shalltear.HiddenAttribute").IsDefault ? 0 : FIELD_HIDDEN;
+		described.flags |= Find("Shalltear.ReadOnlyAttribute").IsDefault ? 0 : FIELD_READ_ONLY;
+		described.flags |= Find("Shalltear.TransientAttribute").IsDefault ? 0 : FIELD_TRANSIENT;
+		ImmutableArray<TypedConstant> range = Find("Shalltear.RangeAttribute");
+		if (!range.IsDefault && range.Length == 2 && range[0].Value is float min && range[1].Value is float max) {
+			described.flags |= FIELD_RANGED;
+			described.rangeMin = min;
+			described.rangeMax = max;
+		}
+		ImmutableArray<TypedConstant> space = Find("Shalltear.SpaceAttribute");
+		if (!space.IsDefault) {
+			described.flags |= FIELD_SPACE;
+			described.spaceHeight = space.Length >= 1 && space[0].Value is float height ? height : 8f;
+		}
+		ImmutableArray<TypedConstant> multiline = Find("Shalltear.MultilineAttribute");
+		if (!multiline.IsDefault) {
+			described.flags |= FIELD_MULTILINE;
+			described.multilineLines = multiline.Length >= 1 && multiline[0].Value is int lines ? lines : 3;
+		}
+		ImmutableArray<TypedConstant> textArea = Find("Shalltear.TextAreaAttribute");
+		if (!textArea.IsDefault) {
+			described.flags |= FIELD_TEXT_AREA;
+			described.textAreaMinLines = textArea.Length >= 1 && textArea[0].Value is int minLines ? minLines : 3;
+			described.textAreaMaxLines = textArea.Length >= 2 && textArea[1].Value is int maxLines ? maxLines : 6;
+		}
+		ImmutableArray<TypedConstant> tooltip = Find("Shalltear.TooltipAttribute");
+		ImmutableArray<TypedConstant> header = Find("Shalltear.HeaderAttribute");
+		described.tooltip = !tooltip.IsDefault && tooltip.Length == 1 ? tooltip[0].Value as string : null;
+		described.header = !header.IsDefault && header.Length == 1 ? header[0].Value as string : null;
+		described.formerNames = JoinFormerNames(attributes);
+	}
+
+	static Field? DescribeProperty(IPropertySymbol property, INamedTypeSymbol level, Collector collector) {
+		if (property.IsStatic || property.IsIndexer || property.IsImplicitlyDeclared) {
+			return null;
+		}
+		ImmutableArray<AttributeData> attributes = property.GetAttributes();
+		bool marked = attributes.Any(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == "Shalltear.ReflectAttribute");
+		if (!marked || attributes.Any(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == "System.NonSerializedAttribute")) {
+			return null;
+		}
+		IFieldSymbol? backing = level.GetMembers().OfType<IFieldSymbol>().FirstOrDefault(
+			field => field.IsImplicitlyDeclared && SymbolEqualityComparer.Default.Equals(field.AssociatedSymbol, property));
+		if (backing == null || backing.IsReadOnly || property.SetMethod == null || property.GetMethod == null) {
+			collector.problems.Add(new Problem {
+				field = property.ContainingType.ToDisplayString(_plain) + "." + property.Name,
+				invalidProperty = true,
+				location = property.Locations.FirstOrDefault(),
+			});
+			return null;
+		}
+		FieldType? kind = Classify(property.Type, collector, false);
+		if (kind == null) {
+			collector.problems.Add(new Problem {
+				field = property.ContainingType.ToDisplayString(_plain) + "." + property.Name,
+				type = property.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
+				location = property.Locations.FirstOrDefault(),
+			});
+			return null;
+		}
+
+		List<ITypeParameterSymbol> parameters = new();
+		List<ITypeSymbol> arguments = new();
+		for (INamedTypeSymbol? cur = property.ContainingType; cur != null; cur = cur.ContainingType) {
+			parameters.InsertRange(0, cur.OriginalDefinition.TypeParameters);
+			arguments.InsertRange(0, cur.TypeArguments);
+		}
+		IFieldSymbol open = backing.OriginalDefinition;
+		Field described = new() {
+			name = property.Name,
+			accessorName = backing.Name,
+			owner = open.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			type = open.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+			typeParameters = string.Join(", ", parameters.Select(static parameter => parameter.Name)),
+			typeArguments = string.Join(", ", arguments.Select(static argument => argument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))),
+			constraints = string.Concat(parameters.Select(Constrain)),
+			direct = false,
+			kind = kind,
+		};
+		described.flags |= kind.shape == Shape.Single ? 0 : FIELD_LIST;
+		ApplyFieldAttributes(described, attributes);
+		return described;
+	}
+
 	static Field? DescribeField(IFieldSymbol field, Collector collector) {
 		if (field.IsStatic || field.IsConst || field.IsReadOnly || field.IsImplicitlyDeclared) {
 			return null;
 		}
 		ImmutableArray<AttributeData> attributes = field.GetAttributes();
-		ImmutableArray<TypedConstant> Find(string name) {
-			AttributeData? found = attributes.FirstOrDefault(attribute => attribute.AttributeClass?.ToDisplayString(_plain) == name);
-			return found == null ? default : found.ConstructorArguments;
-		}
-		bool marked = !Find("Shalltear.ReflectAttribute").IsDefault;
-		if ((field.DeclaredAccessibility != Accessibility.Public && !marked) || !Find("System.NonSerializedAttribute").IsDefault) {
+		bool marked = attributes.Any(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == "Shalltear.ReflectAttribute");
+		if ((field.DeclaredAccessibility != Accessibility.Public && !marked) ||
+			attributes.Any(static attribute => attribute.AttributeClass?.ToDisplayString(_plain) == "System.NonSerializedAttribute")) {
 			return null;
 		}
 		FieldType? kind = Classify(field.Type, collector, false);
@@ -399,6 +581,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		IFieldSymbol open = field.OriginalDefinition;
 		Field described = new() {
 			name = field.Name,
+			accessorName = field.Name,
 			owner = open.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 			type = open.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
 			typeParameters = string.Join(", ", parameters.Select(static parameter => parameter.Name)),
@@ -408,19 +591,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			kind = kind,
 		};
 		described.flags |= kind.shape == Shape.Single ? 0 : FIELD_LIST;
-		described.flags |= Find("Shalltear.HiddenAttribute").IsDefault ? 0 : FIELD_HIDDEN;
-		described.flags |= Find("Shalltear.ReadOnlyAttribute").IsDefault ? 0 : FIELD_READ_ONLY;
-		described.flags |= Find("Shalltear.TransientAttribute").IsDefault ? 0 : FIELD_TRANSIENT;
-		ImmutableArray<TypedConstant> range = Find("Shalltear.RangeAttribute");
-		if (!range.IsDefault && range.Length == 2 && range[0].Value is float min && range[1].Value is float max) {
-			described.flags |= FIELD_RANGED;
-			described.rangeMin = min;
-			described.rangeMax = max;
-		}
-		ImmutableArray<TypedConstant> tooltip = Find("Shalltear.TooltipAttribute");
-		ImmutableArray<TypedConstant> header = Find("Shalltear.HeaderAttribute");
-		described.tooltip = !tooltip.IsDefault && tooltip.Length == 1 ? tooltip[0].Value as string : null;
-		described.header = !header.IsDefault && header.Length == 1 ? header[0].Value as string : null;
+		ApplyFieldAttributes(described, attributes);
 		return described;
 	}
 
@@ -516,7 +687,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				constants.Add(new KeyValuePair<string, long>(constant.Name, value));
 			}
 		}
-		return new EnumType { name = name, qualified = qualified, size = size, constants = constants.ToImmutableArray() };
+		return new EnumType { name = name, qualified = qualified, size = size, formerNames = JoinFormerNames(type.GetAttributes()), constants = constants.ToImmutableArray() };
 	}
 
 	static ValueType? DescribeValue(INamedTypeSymbol type, string name, string qualified, Collector collector) {
@@ -530,7 +701,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		}
 		List<Field> fields = new();
 		for (INamedTypeSymbol? level = type; level != null && level.IsSerializable && level.SpecialType == SpecialType.None; level = isClass ? level.BaseType : null) {
-			fields.InsertRange(0, level.GetMembers().OfType<IFieldSymbol>().Select(field => DescribeField(field, collector)).Where(static field => field != null)!);
+			fields.InsertRange(0, DescribeMembers(level, collector));
 		}
 		collector.open.Remove(name);
 		if (fields.Count == 0) {
@@ -550,6 +721,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			normalizes = fields.Any(static field => field.kind.normalizes),
 			depth = depth,
 			slots = fields.Sum(static field => field.kind.slots),
+			formerNames = JoinFormerNames(type.GetAttributes()),
 			fields = fields.ToImmutableArray(),
 		};
 		collector.values.Add(name, value);
@@ -608,16 +780,22 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 	}
 
 	static string Spec(Field field, Target target) {
+		uint flags = target.player ? (field.flags & ~(FIELD_SPACE | FIELD_MULTILINE | FIELD_TEXT_AREA)) : field.flags;
 		string[] spec = {
 			Name(field.name, target),
 			Hex(Hash(field.name)),
 			field.kind.kind.ToString(CultureInfo.InvariantCulture),
-			field.flags.ToString(CultureInfo.InvariantCulture) + "u",
+			flags.ToString(CultureInfo.InvariantCulture) + "u",
 			Literal(field.rangeMin),
 			Literal(field.rangeMax),
 			target.player ? "null" : Literal(field.tooltip),
 			target.player ? "null" : Literal(field.header),
 			field.kind.typeName.Length == 0 ? "0UL" : Hex(Hash(field.kind.typeName)),
+			target.player ? "0f" : Literal(field.spaceHeight),
+			target.player ? "0" : field.multilineLines.ToString(CultureInfo.InvariantCulture),
+			target.player ? "0" : field.textAreaMinLines.ToString(CultureInfo.InvariantCulture),
+			target.player ? "0" : field.textAreaMaxLines.ToString(CultureInfo.InvariantCulture),
+			target.hashedNames ? "null" : Literal(field.formerNames),
 		};
 		return "new(" + string.Join(", ", spec) + ")";
 	}
@@ -737,7 +915,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			text.Append("\t\t\tnew(").Append(Name(constant.Key, target)).Append(", ").Append(Hex(Hash(constant.Key))).Append(", ");
 			text.Append(constant.Value.ToString(CultureInfo.InvariantCulture)).Append("L),\n");
 		}
-		text.Append("\t\t});\n\t}\n");
+		text.Append("\t\t}");
+		if (!target.hashedNames && type.formerNames != null) {
+			text.Append(", formerNames: ").Append(Literal(type.formerNames));
+		}
+		text.Append(");\n\t}\n");
 	}
 
 	static void RenderValue(StringBuilder text, Writer writer, ValueType type, int index, Target target) {
@@ -753,7 +935,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			text.Append("\tstatic int ").Append(offset).Append(";\n");
 			if (!field.direct) {
 				string accessor = "ValueField" + index + "_" + slot;
-				text.Append(Accessor(field.name));
+				text.Append(Accessor(field.accessorName));
 				text.Append("\tstatic extern ref ").Append(field.type).Append(' ').Append(accessor).Append('(').Append(type.isClass ? "" : "ref ").Append(field.owner).Append(" value);\n");
 				access = accessor + "(" + (type.isClass ? "" : "ref ") + "value)";
 			}
@@ -778,7 +960,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		text.Append("\n\tstatic void RegisterValue").Append(index).Append("() {\n");
 		text.Append("\t\tglobal::System.Span<int> offsets = stackalloc int[").Append(type.fields.Length).Append("];\n");
 		text.Append("\t\t_valueSize").Append(index).Append(" = ").Append(TYPES).Append(".RegisterValue(").Append(Name(type.name, target)).Append(", ").Append(Hex(Hash(type.name)));
-		text.Append(", new global::Shalltear.Interop.ScriptField[] {\n").Append(specs).Append("\t\t}, offsets);\n");
+		text.Append(", new global::Shalltear.Interop.ScriptField[] {\n").Append(specs).Append("\t\t}, offsets");
+		if (!target.hashedNames && type.formerNames != null) {
+			text.Append(", formerNames: ").Append(Literal(type.formerNames));
+		}
+		text.Append(");\n");
 		text.Append(offsets).Append("\t}\n");
 	}
 
@@ -837,7 +1023,23 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				ScriptOf(component, target.scriptRoot),
 			};
 			string register = "\t\t" + TYPES + ".Register<" + component.qualified + ">(" + string.Join(", ", head);
-			string assetArguments = component.asset ? ", assetMenu: " + Literal(component.menu) + ", assetExtension: " + Literal(component.extension) : "";
+			StringBuilder extraArguments = new();
+			if (component.asset) {
+				extraArguments.Append(", assetMenu: ").Append(Literal(component.menu)).Append(", assetExtension: ").Append(Literal(component.extension));
+			}
+			if (!target.hashedNames && component.formerNames != null) {
+				extraArguments.Append(", formerNames: ").Append(Literal(component.formerNames));
+			}
+			if (!component.asset && component.requiredComponents != null) {
+				extraArguments.Append(", requiredComponents: ").Append(Literal(component.requiredComponents));
+			}
+			if (!component.asset && !target.player && component.componentMenu != null) {
+				extraArguments.Append(", componentMenu: ").Append(Literal(component.componentMenu));
+			}
+			if (!component.asset && component.disallowMultiple) {
+				extraArguments.Append(", disallowMultiple: true");
+			}
+			string assetArguments = extraArguments.ToString();
 			if (component.fields.Length == 0) {
 				calls.Append(register).Append(", default, default, null, null, false, 0, out _").Append(assetArguments).Append(");\n");
 				continue;
@@ -857,12 +1059,12 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 				if (!field.direct) {
 					string accessor = "Field" + index + "_" + slot;
 					if (field.typeParameters.Length == 0) {
-						text.Append(Accessor(field.name));
+						text.Append(Accessor(field.accessorName));
 						text.Append("\tstatic extern ref ").Append(field.type).Append(' ').Append(accessor).Append('(').Append(field.owner).Append(" script);\n");
 						access = accessor + "(script)";
 					} else {
 						text.Append("\tstatic class ").Append(accessor).Append('<').Append(field.typeParameters).Append('>').Append(field.constraints).Append(" {\n");
-						text.Append('\t').Append(Accessor(field.name));
+						text.Append('\t').Append(Accessor(field.accessorName));
 						text.Append("\t\tinternal static extern ref ").Append(field.type).Append(" Get(").Append(field.owner).Append(" script);\n\t}\n");
 						access = accessor + "<" + field.typeArguments + ">.Get(script)";
 					}

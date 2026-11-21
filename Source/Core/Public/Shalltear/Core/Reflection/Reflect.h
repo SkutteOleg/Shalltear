@@ -9,6 +9,7 @@
 
 #include <initializer_list>
 #include <new>
+#include <span>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -42,6 +43,18 @@ namespace Shalltear {
 			u32 flags,
 			std::initializer_list<AttributeInfo> attributes);
 
+		void AddField(
+			StringHash name,
+			const char* displayName,
+			const TypeInfo* fieldType,
+			size_t size,
+			size_t alignment,
+			void (*getFn)(const void*, Variant*),
+			void (*setFn)(void*, const Variant*),
+			void* (*addrFn)(void*),
+			u32 flags,
+			std::span<const AttributeInfo> attributes);
+
 		// container must have static storage in the declaring image
 		void AddContainerField(
 			StringHash name,
@@ -52,6 +65,16 @@ namespace Shalltear {
 			u32 flags,
 			const ContainerInfo* container,
 			std::initializer_list<AttributeInfo> attributes);
+
+		void AddContainerField(
+			StringHash name,
+			const char* displayName,
+			size_t size,
+			size_t alignment,
+			void* (*addrFn)(void*),
+			u32 flags,
+			const ContainerInfo* container,
+			std::span<const AttributeInfo> attributes);
 
 		void AddMethod(
 			StringHash name,
@@ -464,3 +487,12 @@ public:
 
 #define SLT_SETTINGS_CATEGORY(PathLiteral) \
 	builder.AddAttribute(::Shalltear::StringHash("SettingsCategory"), ::Shalltear::Variant(::Shalltear::str(PathLiteral)));
+
+#define SLT_FORMERLY_SERIALIZED_AS(OldNameLiteral)                 \
+	::Shalltear::AttributeInfo {                                   \
+		::Shalltear::StringHash("FormerlySerializedAs"),           \
+			::Shalltear::Variant(::Shalltear::str(OldNameLiteral)) \
+	}
+
+#define SLT_REFLECT_FORMERLY_SERIALIZED_AS(OldNameLiteral) \
+	builder.AddAttribute(::Shalltear::StringHash("FormerlySerializedAs"), ::Shalltear::Variant(::Shalltear::str(OldNameLiteral)));

@@ -244,6 +244,58 @@ namespace Shalltear::AssetBrowserOps {
 		return true;
 	}
 
+	namespace {
+
+		struct RenameHookEntry {
+			str extension;
+			RenameHookFn hook;
+			const void* owner = nullptr;
+		};
+
+		std::vector<RenameHookEntry> _renameHooks;
+
+		void InvokeRenameHooks(const fs::path& source, const fs::path& target) {
+			const str extension = StringUtil::ToLower(target.extension().generic_string());
+			if (extension.empty()) {
+				return;
+			}
+			Vector<RenameHookFn> matched{GetMemoryResource(MemTag::Editor)};
+			for (const RenameHookEntry& entry : _renameHooks) {
+				if (entry.extension == extension) {
+					matched.push_back(entry.hook);
+				}
+			}
+			if (matched.empty()) {
+				return;
+			}
+			const Path oldPhysical(source.generic_string());
+			const Path newPhysical(target.generic_string());
+			for (const RenameHookFn& hook : matched) {
+				hook(oldPhysical, newPhysical);
+			}
+		}
+
+	} // anonymous namespace
+
+	bool RegisterRenameHook(std::string_view extension, RenameHookFn hook, const void* owner) {
+		if (extension.empty() || !hook) {
+			return false;
+		}
+		if (!owner) {
+			SLT_LOG_WARN("Editor", "ignoring rename hook '{}' with no owner to sweep it with", extension);
+			return false;
+		}
+		_renameHooks.push_back({StringUtil::ToLower(extension), std::move(hook), owner});
+		return true;
+	}
+
+	u32 UnregisterRenameHooksOwnedBy(const void* owner) {
+		if (!owner) {
+			return 0;
+		}
+		return static_cast<u32>(std::erase_if(_renameHooks, [owner](const RenameHookEntry& entry) { return entry.owner == owner; }));
+	}
+
 	bool RenameEntry(const Path& virtualPath, const str& newName) {
 		if (!IsValidEntryName(newName)) {
 			SLT_LOG_WARN("Editor", "RenameEntry: invalid name '{}'", newName);
@@ -287,6 +339,7 @@ namespace Shalltear::AssetBrowserOps {
 					SLT_LOG_WARN("Editor", "RenameEntry: sidecar move failed ({}). Guid will regenerate", metaEc.message());
 				}
 			}
+			InvokeRenameHooks(source, target);
 		}
 
 		AssetDatabase::RebuildDatabase();

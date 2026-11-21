@@ -70,6 +70,7 @@ namespace Shalltear::EditorExtensions {
 		removed += ProfilerModules::UnregisterOwnedBy(moduleBase);
 		removed += AssetOpeners::UnregisterOwnedBy(moduleBase);
 		removed += AssetBrowserOps::UnregisterCreateEntriesOwnedBy(moduleBase);
+		removed += AssetBrowserOps::UnregisterRenameHooksOwnedBy(moduleBase);
 		removed += MaterialInspectorOps::UnregisterShaderSourcesOwnedBy(moduleBase);
 		removed += EditorDocuments::UnregisterOwnedBy(moduleBase);
 		removed += ChildEnvironment::UnregisterOwnedBy(moduleBase);

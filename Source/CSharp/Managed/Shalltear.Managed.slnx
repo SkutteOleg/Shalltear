@@ -13,4 +13,5 @@
 	<Project Path="Shalltear.Conformance.Audio/Shalltear.Conformance.Audio.csproj" />
 	<Project Path="Shalltear.Conformance.Editor/Shalltear.Conformance.Editor.csproj" />
 	<Project Path="Shalltear.Renamer/Shalltear.Renamer.csproj" />
+	<Project Path="Shalltear.Refactor/Shalltear.Refactor.csproj" />
 </Solution>

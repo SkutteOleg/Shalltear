@@ -64,6 +64,7 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			str displayName;
 			std::deque<str> names;
 			std::vector<EnumConstantInfo> constants;
+			std::vector<AttributeInfo> attributes;
 		};
 
 		struct ManagedValue {
@@ -303,6 +304,36 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 			return true;
 		}
 
+		void AppendSplitAttributes(std::vector<AttributeInfo>& out, StringHash key, std::string_view delimited) {
+			size_t start = 0;
+			while (start < delimited.size()) {
+				size_t end = delimited.find(';', start);
+				if (end == std::string_view::npos) {
+					end = delimited.size();
+				}
+				const std::string_view token = delimited.substr(start, end - start);
+				if (!token.empty()) {
+					out.push_back({key, Variant(str(token))});
+				}
+				start = end + 1;
+			}
+		}
+
+		void AddSplitTypeAttributes(ReflectBuilder& builder, StringHash key, std::string_view delimited) {
+			size_t start = 0;
+			while (start < delimited.size()) {
+				size_t end = delimited.find(';', start);
+				if (end == std::string_view::npos) {
+					end = delimited.size();
+				}
+				const std::string_view token = delimited.substr(start, end - start);
+				if (!token.empty()) {
+					builder.AddAttribute(key, Variant(str(token)));
+				}
+				start = end + 1;
+			}
+		}
+
 		void AddField(ReflectBuilder& builder, const SltFieldDesc& field, const Laid& laid, const char* displayName) {
 			u32 flags = FieldFlagDefault;
 			if (field.flags & SLT_FIELD_HIDDEN) {
@@ -315,42 +346,38 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 				flags |= FieldFlagTransient;
 			}
 
-			AttributeInfo attributes[3];
-			u32 count = 0;
+			std::vector<AttributeInfo> attributes;
 			if (field.flags & SLT_FIELD_RANGED) {
-				attributes[count++] = {StringHash("Range"), Variant(AttrRangeData{field.rangeMin, field.rangeMax})};
+				attributes.push_back({StringHash("Range"), Variant(AttrRangeData{field.rangeMin, field.rangeMax})});
+			}
+			if (field.flags & SLT_FIELD_SPACE) {
+				attributes.push_back({StringHash("Space"), Variant(field.spaceHeight)});
+			}
+			if (field.flags & SLT_FIELD_MULTILINE) {
+				attributes.push_back({StringHash("Multiline"), Variant(static_cast<i32>(field.multilineLines))});
+			}
+			if (field.flags & SLT_FIELD_TEXT_AREA) {
+				attributes.push_back({StringHash("TextArea"), Variant(AttrRangeData{static_cast<f32>(field.textAreaMinLines),
+																					static_cast<f32>(field.textAreaMaxLines)})});
 			}
 			if (!View(field.tooltip).empty()) {
-				attributes[count++] = {StringHash("Tooltip"), Variant(str(View(field.tooltip)))};
+				attributes.push_back({StringHash("Tooltip"), Variant(str(View(field.tooltip)))});
 			}
 			if (!View(field.header).empty()) {
-				attributes[count++] = {StringHash("Header"), Variant(str(View(field.header)))};
+				attributes.push_back({StringHash("Header"), Variant(str(View(field.header)))});
+			}
+			if (!View(field.formerNames).empty()) {
+				AppendSplitAttributes(attributes, StringHash("FormerlySerializedAs"), View(field.formerNames));
 			}
 
 			const StringHash name(field.nameHash);
 			void* (*const address)(void*) = SlotThunks[static_cast<size_t>(field.offset) / SLOT_BYTES];
-			const auto add = [&](std::initializer_list<AttributeInfo> list) {
-				if (laid.container) {
-					builder.AddContainerField(name, displayName, sizeof(ShadowList), alignof(ShadowList), address, flags, laid.container, list);
-				} else {
-					builder.AddField(name, displayName, laid.element.type, laid.element.size, laid.element.alignment, nullptr, nullptr, address,
-									 flags | laid.element.flags, list);
-				}
-			};
-			// initializer_list can't be built from a runtime count
-			switch (count) {
-			case 0:
-				add({});
-				break;
-			case 1:
-				add({attributes[0]});
-				break;
-			case 2:
-				add({attributes[0], attributes[1]});
-				break;
-			default:
-				add({attributes[0], attributes[1], attributes[2]});
-				break;
+			const std::span<const AttributeInfo> attrSpan(attributes.data(), attributes.size());
+			if (laid.container) {
+				builder.AddContainerField(name, displayName, sizeof(ShadowList), alignof(ShadowList), address, flags, laid.container, attrSpan);
+			} else {
+				builder.AddField(name, displayName, laid.element.type, laid.element.size, laid.element.alignment, nullptr, nullptr, address,
+								 flags | laid.element.flags, attrSpan);
 			}
 		}
 
@@ -430,6 +457,18 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		builder.SetDisplayName(ShortName(type->name));
 		if (!asset) {
 			builder.AddAttribute(BehaviorTicksAttribute, Variant(static_cast<i64>(desc.tickMask)));
+			if (desc.flags & SLT_TYPE_DISALLOW_MULTIPLE) {
+				builder.AddAttribute(StringHash("DisallowMultipleComponent"), Variant(true));
+			}
+			if (!View(desc.requiredComponents).empty()) {
+				AddSplitTypeAttributes(builder, StringHash("RequireComponent"), View(desc.requiredComponents));
+			}
+			if (!View(desc.componentMenu).empty()) {
+				builder.AddAttribute(StringHash("AddComponentMenu"), Variant(str(View(desc.componentMenu))));
+			}
+		}
+		if (!View(desc.formerNames).empty()) {
+			AddSplitTypeAttributes(builder, StringHash("FormerlySerializedAs"), View(desc.formerNames));
 		}
 		for (i32 index = 0; index < desc.fieldCount; ++index) {
 			const SltFieldDesc& field = desc.fields[index];
@@ -488,6 +527,11 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 		made->info.displayName = ShortName(made->displayName);
 		made->info.enumConstants = made->constants.data();
 		made->info.enumConstantCount = static_cast<u32>(made->constants.size());
+		if (!View(desc.formerNames).empty()) {
+			AppendSplitAttributes(made->attributes, StringHash("FormerlySerializedAs"), View(desc.formerNames));
+			made->info.attributes = made->attributes.data();
+			made->info.attributeCount = static_cast<u32>(made->attributes.size());
+		}
 		if (!TypeRegistry::RegisterOwned(&made->info, &_TOKEN)) {
 			SLT_LOG_ERROR("C#", "C# enum '{}' has a name already used by engine. Rename the enum (or give it a namespace)", name);
 			Delete(made);
@@ -522,6 +566,9 @@ namespace Shalltear::CSharpImpl::ManagedTypes {
 
 		ReflectBuilder builder(StringHash(desc.nameHash), made->size, made->alignment);
 		builder.SetDisplayName(ShortName(made->name));
+		if (!View(desc.formerNames).empty()) {
+			AddSplitTypeAttributes(builder, StringHash("FormerlySerializedAs"), View(desc.formerNames));
+		}
 		for (i32 index = 0; index < desc.fieldCount; ++index) {
 			const SltFieldDesc& field = desc.fields[index];
 			const std::string_view fieldName = View(field.name);

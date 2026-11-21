@@ -116,6 +116,7 @@ namespace Shalltear::CSharpEditor {
 			"C# Script", "NewScript", [](const Path& folder, const str& name) { return CreateAndOpen(folder, name, CSharpScripts::Template::Component); }, owner);
 		AssetBrowserOps::RegisterCreateEntry(
 			"C# Class", "NewClass", [](const Path& folder, const str& name) { return CreateAndOpen(folder, name, CSharpScripts::Template::Class); }, owner);
+		AssetBrowserOps::RegisterRenameHook(".cs", &CSharpScripts::HandleRenamed, owner);
 
 		ComponentDrops::Register(assetType, [](const Guid& script) { return CSharpScripts::ResolveComponent(script); }, owner);
 		AssetOpeners::Register(".cs", [](const Guid& script) { CSharpScripts::Open(script); }, owner);

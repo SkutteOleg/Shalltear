@@ -21,6 +21,56 @@ namespace Shalltear {
 					   : nullptr;
 		}
 
+		constexpr u32 MAX_REQUIRE_DEPTH = 16;
+
+		struct ActiveRequireStack {
+			const TypeInfo* types[MAX_REQUIRE_DEPTH]{};
+			u32 count = 0;
+
+			bool Contains(const TypeInfo* type) const noexcept {
+				for (u32 i = 0; i < count; ++i) {
+					if (types[i] == type) {
+						return true;
+					}
+				}
+				return false;
+			}
+		};
+
+		thread_local ActiveRequireStack _requireStack;
+
+		struct RequireScopeGuard {
+			bool pushed = false;
+
+			explicit RequireScopeGuard(const TypeInfo* type) noexcept {
+				if (type && _requireStack.count < MAX_REQUIRE_DEPTH) {
+					_requireStack.types[_requireStack.count++] = type;
+					pushed = true;
+				}
+			}
+
+			~RequireScopeGuard() {
+				if (pushed && _requireStack.count > 0) {
+					--_requireStack.count;
+				}
+			}
+		};
+
+		const TypeInfo* FindDisallowMultipleOwner(const TypeInfo* type) {
+			const StringHash key("DisallowMultipleComponent");
+			for (const TypeInfo* cur = type; cur != nullptr; cur = cur->parent) {
+				if (!cur->attributes || cur->attributeCount == 0) {
+					continue;
+				}
+				for (u32 i = 0; i < cur->attributeCount; ++i) {
+					if (cur->attributes[i].key == key) {
+						return cur;
+					}
+				}
+			}
+			return nullptr;
+		}
+
 	} // anonymous namespace
 
 	SceneObject::SceneObject() = default;
@@ -309,6 +359,51 @@ namespace Shalltear {
 		SLT_CORE_ASSERT_MSG(!_pendingDestroy, "AddComponent on a doomed object");
 		if (!IsStructuralMutationLegal() || _pendingDestroy) {
 			return Handle<Component>();
+		}
+
+		if (type) {
+			if (const TypeInfo* disallowed = FindDisallowMultipleOwner(type)) {
+				for (const ComponentSlot& slot : _components) {
+					if (!slot.ptr->IsPendingDestroy() && TypeRegistry::IsDerivedFrom(slot.type, disallowed)) {
+						SLT_LOG_WARN("Scene", "AddComponent: '{}' disallows multiple instances on '{}'",
+									 type->displayName ? type->displayName : "component", name);
+						return Handle<Component>();
+					}
+				}
+			}
+
+			RequireScopeGuard requireGuard(type);
+			const StringHash requireKey("RequireComponent");
+			for (const TypeInfo* cur = type; cur != nullptr; cur = cur->parent) {
+				if (!cur->attributes || cur->attributeCount == 0) {
+					continue;
+				}
+				for (u32 i = 0; i < cur->attributeCount; ++i) {
+					const AttributeInfo& attr = cur->attributes[i];
+					if (attr.key != requireKey || !attr.value.Is<str>()) {
+						continue;
+					}
+					const str& reqName = attr.value.As<str>();
+					if (reqName.empty()) {
+						continue;
+					}
+					const TypeInfo* reqType = TypeRegistry::FindType(StringHash(reqName));
+					if (!reqType || !(reqType->flags & TypeFlagComponent) || (reqType->flags & TypeFlagAbstract) ||
+						!reqType->createFn || _requireStack.Contains(reqType)) {
+						continue;
+					}
+					bool alreadyPresent = false;
+					for (const ComponentSlot& slot : _components) {
+						if (!slot.ptr->IsPendingDestroy() && TypeRegistry::IsDerivedFrom(slot.type, reqType)) {
+							alreadyPresent = true;
+							break;
+						}
+					}
+					if (!alreadyPresent) {
+						AddComponent(reqType);
+					}
+				}
+			}
 		}
 
 		Component* component = CreateComponentInstance(type);

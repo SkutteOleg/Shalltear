@@ -228,6 +228,22 @@ namespace Shalltear {
 				desc.text = *static_cast<const str*>(address);
 				desc.font = font;
 				desc.fontSizePx = FieldFont();
+				f32 minHeightPx = 0.0f;
+				if (!access.element) {
+					if (const AttributeInfo* multiline = FindFieldAttribute(info, "Multiline"_hash);
+						multiline && multiline->value.Is<i32>()) {
+						desc.multiline = true;
+						const i32 lines = multiline->value.As<i32>() > 1 ? multiline->value.As<i32>() : 3;
+						minHeightPx = static_cast<f32>(lines) * FieldFont() * 1.4f + 8.0f;
+					} else if (const AttributeInfo* textArea = FindFieldAttribute(info, "TextArea"_hash);
+							   textArea && textArea->value.Is<AttrRangeData>()) {
+						desc.multiline = true;
+						const f32 lines = textArea->value.As<AttrRangeData>().min > 1.0f
+											  ? textArea->value.As<AttrRangeData>().min
+											  : 3.0f;
+						minHeightPx = lines * FieldFont() * 1.4f + 8.0f;
+					}
+				}
 				desc.onCommit = [held](std::string_view next) {
 					void* live = held->address ? held->address() : nullptr;
 					if (!live || *static_cast<const str*>(live) == next) {
@@ -241,6 +257,11 @@ namespace Shalltear {
 					}
 				};
 				built.element = UI::Widgets::TextField(context, row, desc);
+				if (minHeightPx > 0.0f) {
+					UI::Style style = context.GetStyle(built.element);
+					style.minHeight = UI::Length::Pixel(minHeightPx);
+					context.SetStyle(built.element, style);
+				}
 				built.kind = ScalarRow::Kind::TextField;
 				return built;
 			}

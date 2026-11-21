@@ -104,6 +104,20 @@ namespace Shalltear::ComponentMenu {
 		if (!componentType) {
 			return {};
 		}
+		if (componentType->attributes && componentType->attributeCount > 0) {
+			const StringHash menuKey("AddComponentMenu");
+			for (u32 i = 0; i < componentType->attributeCount; ++i) {
+				const AttributeInfo& attr = componentType->attributes[i];
+				if (attr.key == menuKey && attr.value.Is<str>()) {
+					const str& menuPath = attr.value.As<str>();
+					if (!menuPath.empty()) {
+						const size_t slash = menuPath.rfind('/');
+						return slash != str::npos ? std::string_view(menuPath).substr(0, slash)
+												  : std::string_view(menuPath);
+					}
+				}
+			}
+		}
 		SeedBuiltIns();
 		const auto& categories = Table().categories;
 		for (const TypeInfo* type = componentType; type != nullptr; type = type->parent) {

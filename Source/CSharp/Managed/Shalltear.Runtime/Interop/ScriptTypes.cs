@@ -20,20 +20,31 @@ public readonly struct ScriptField {
 	internal readonly uint _flags;
 	internal readonly float _rangeMin;
 	internal readonly float _rangeMax;
+	internal readonly float _spaceHeight;
+	internal readonly int _multilineLines;
+	internal readonly int _textAreaMinLines;
+	internal readonly int _textAreaMaxLines;
 	internal readonly string? _tooltip;
 	internal readonly string? _header;
+	internal readonly string? _formerNames;
 	internal readonly ulong _typeHash;
 
 	/// <summary>1 serialized field (typeHash = its enum, value or referenced type).</summary>
-	public ScriptField(string name, ulong nameHash, int kind, uint flags, float rangeMin, float rangeMax, string? tooltip, string? header, ulong typeHash) {
+	public ScriptField(string name, ulong nameHash, int kind, uint flags, float rangeMin, float rangeMax, string? tooltip, string? header, ulong typeHash,
+					   float spaceHeight = 0f, int multilineLines = 0, int textAreaMinLines = 0, int textAreaMaxLines = 0, string? formerNames = null) {
 		_name = name;
 		_nameHash = nameHash;
 		_kind = kind;
 		_flags = flags;
 		_rangeMin = rangeMin;
 		_rangeMax = rangeMax;
+		_spaceHeight = spaceHeight;
+		_multilineLines = multilineLines;
+		_textAreaMinLines = textAreaMinLines;
+		_textAreaMaxLines = textAreaMaxLines;
 		_tooltip = tooltip;
 		_header = header;
+		_formerNames = formerNames;
 		_typeHash = typeHash;
 	}
 }
@@ -72,6 +83,7 @@ public static unsafe class ScriptTypes {
 	const uint TYPE_ABSTRACT = 1;
 	const uint TYPE_NORMALIZE = 2;
 	const uint TYPE_DATA_ASSET = 4;
+	const uint TYPE_DISALLOW_MULTIPLE = 8;
 
 	static readonly List<ScriptType> _types = new();
 	static readonly Dictionary<ulong, ScriptType> _byHash = new();
@@ -83,11 +95,11 @@ public static unsafe class ScriptTypes {
 	public static bool IsAttached => Bridge.IsAttached;
 
 	/// <summary>Registers 1 serialized enum (before types using it).</summary>
-	public static void RegisterEnum(string name, ulong nameHash, int size, ReadOnlySpan<ScriptEnumConstant> constants) {
+	public static void RegisterEnum(string name, ulong nameHash, int size, ReadOnlySpan<ScriptEnumConstant> constants, string? formerNames = null) {
 		if (!Bridge.IsAttached) {
 			return;
 		}
-		int textBytes = Encoding.UTF8.GetByteCount(name);
+		int textBytes = Encoding.UTF8.GetByteCount(name) + Encoding.UTF8.GetByteCount(formerNames ?? "");
 		foreach (ScriptEnumConstant constant in constants) {
 			textBytes += Encoding.UTF8.GetByteCount(constant._name);
 		}
@@ -108,16 +120,17 @@ public static unsafe class ScriptTypes {
 			desc.size = size;
 			desc.constants = descStart;
 			desc.constantCount = constants.Length;
+			desc.formerNames = Put(formerNames, ref at, textEnd);
 			Bridge.RegisterManagedEnum(&desc);
 		}
 	}
 
 	/// <summary>Registers 1 serialized value type + writes field offsets. Returns its size.</summary>
-	public static int RegisterValue(string name, ulong nameHash, ReadOnlySpan<ScriptField> fields, Span<int> offsets) {
+	public static int RegisterValue(string name, ulong nameHash, ReadOnlySpan<ScriptField> fields, Span<int> offsets, string? formerNames = null) {
 		if (!Bridge.IsAttached) {
 			return 0;
 		}
-		byte[] text = new byte[TextBytes(name, fields)];
+		byte[] text = new byte[TextBytes(name, fields) + Encoding.UTF8.GetByteCount(formerNames ?? "")];
 		SltFieldDesc[] descs = new SltFieldDesc[Math.Max(fields.Length, 1)];
 		fixed (byte* textStart = text)
 		fixed (SltFieldDesc* descStart = descs) {
@@ -129,6 +142,7 @@ public static unsafe class ScriptTypes {
 			desc.nameHash = nameHash;
 			desc.fields = descStart;
 			desc.fieldCount = fields.Length;
+			desc.formerNames = Put(formerNames, ref at, textEnd);
 			desc.size = 0;
 			if (!Bridge.RegisterManagedValue(&desc)) {
 				return 0;
@@ -143,7 +157,8 @@ public static unsafe class ScriptTypes {
 	/// <summary>Registers 1 component class (parents before children) + writes field offsets.</summary>
 	public static void Register<T>(string name, ulong nameHash, ulong parentHash, bool isAbstract, uint hookMask, uint tickMask, Func<EngineObject>? factory,
 								   string? script, ReadOnlySpan<ScriptField> fields, Span<int> offsets, ScriptFieldSync? push, ScriptFieldSync? pull,
-								   bool normalizes, int texts, out int textBase, string? assetMenu = null, string? assetExtension = null)
+								   bool normalizes, int texts, out int textBase, string? assetMenu = null, string? assetExtension = null,
+								   string? formerNames = null, string? requiredComponents = null, string? componentMenu = null, bool disallowMultiple = false)
 		where T : EngineObject {
 		textBase = 0;
 		if (!Bridge.IsAttached) {
@@ -162,7 +177,8 @@ public static unsafe class ScriptTypes {
 		}
 
 		byte[] text = new byte[TextBytes(name, fields) + Encoding.UTF8.GetByteCount(script ?? "") + Encoding.UTF8.GetByteCount(assetMenu ?? "") +
-							   Encoding.UTF8.GetByteCount(assetExtension ?? "")];
+							   Encoding.UTF8.GetByteCount(assetExtension ?? "") + Encoding.UTF8.GetByteCount(formerNames ?? "") +
+							   Encoding.UTF8.GetByteCount(requiredComponents ?? "") + Encoding.UTF8.GetByteCount(componentMenu ?? "")];
 		SltFieldDesc[] descs = new SltFieldDesc[Math.Max(fields.Length, 1)];
 		bool registered;
 		fixed (byte* textStart = text)
@@ -175,7 +191,9 @@ public static unsafe class ScriptTypes {
 			desc.nameHash = nameHash;
 			desc.parentHash = parentHash;
 			desc.managedTypeId = _types.Count;
-			desc.flags = (isAbstract ? TYPE_ABSTRACT : 0) | (normalizes ? TYPE_NORMALIZE : 0) | (typeof(DataAsset).IsAssignableFrom(typeof(T)) ? TYPE_DATA_ASSET : 0);
+			desc.flags = (isAbstract ? TYPE_ABSTRACT : 0) | (normalizes ? TYPE_NORMALIZE : 0) |
+						 (typeof(DataAsset).IsAssignableFrom(typeof(T)) ? TYPE_DATA_ASSET : 0) |
+						 (disallowMultiple ? TYPE_DISALLOW_MULTIPLE : 0);
 			desc.hookMask = hookMask;
 			desc.tickMask = tickMask;
 			desc.listenerMask = 0;
@@ -187,6 +205,9 @@ public static unsafe class ScriptTypes {
 			desc.script = Put(script, ref at, textEnd);
 			desc.assetMenu = Put(assetMenu, ref at, textEnd);
 			desc.assetExtension = Put(assetExtension, ref at, textEnd);
+			desc.formerNames = Put(formerNames, ref at, textEnd);
+			desc.requiredComponents = Put(requiredComponents, ref at, textEnd);
+			desc.componentMenu = Put(componentMenu, ref at, textEnd);
 			registered = Bridge.RegisterManagedType(&desc);
 		}
 		_types.Add(type);
@@ -204,7 +225,8 @@ public static unsafe class ScriptTypes {
 	static int TextBytes(string name, ReadOnlySpan<ScriptField> fields) {
 		int bytes = Encoding.UTF8.GetByteCount(name);
 		foreach (ScriptField field in fields) {
-			bytes += Encoding.UTF8.GetByteCount(field._name) + Encoding.UTF8.GetByteCount(field._tooltip ?? "") + Encoding.UTF8.GetByteCount(field._header ?? "");
+			bytes += Encoding.UTF8.GetByteCount(field._name) + Encoding.UTF8.GetByteCount(field._tooltip ?? "") +
+					 Encoding.UTF8.GetByteCount(field._header ?? "") + Encoding.UTF8.GetByteCount(field._formerNames ?? "");
 		}
 		return Math.Max(bytes, 1);
 	}
@@ -218,8 +240,13 @@ public static unsafe class ScriptTypes {
 			descs[index].flags = field._flags;
 			descs[index].rangeMin = field._rangeMin;
 			descs[index].rangeMax = field._rangeMax;
+			descs[index].spaceHeight = field._spaceHeight;
+			descs[index].multilineLines = field._multilineLines;
+			descs[index].textAreaMinLines = field._textAreaMinLines;
+			descs[index].textAreaMaxLines = field._textAreaMaxLines;
 			descs[index].tooltip = Put(field._tooltip, ref at, end);
 			descs[index].header = Put(field._header, ref at, end);
+			descs[index].formerNames = Put(field._formerNames, ref at, end);
 			descs[index].typeHash = field._typeHash;
 		}
 	}

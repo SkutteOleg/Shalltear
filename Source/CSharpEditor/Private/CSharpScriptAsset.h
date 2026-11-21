@@ -39,6 +39,8 @@ namespace Shalltear::CSharpEditor {
 
 		bool Open(const Guid& script);
 
+		void HandleRenamed(const Path& oldPhysicalPath, const Path& newPhysicalPath);
+
 	} // namespace CSharpScripts
 
 } // namespace Shalltear::CSharpEditor

@@ -83,6 +83,12 @@ namespace Shalltear::AssetBrowserOps {
 
 	SHALLTEAR_EDITOR_API bool RenameEntry(const Path& virtualPath, const str& newName);
 
+	using RenameHookFn = std::function<void(const Path& oldPhysicalPath, const Path& newPhysicalPath)>;
+
+	SHALLTEAR_EDITOR_API bool RegisterRenameHook(std::string_view extension, RenameHookFn hook, const void* owner);
+
+	SHALLTEAR_EDITOR_API u32 UnregisterRenameHooksOwnedBy(const void* owner);
+
 	SHALLTEAR_EDITOR_API str RenameStem(std::string_view fileName);
 
 	SHALLTEAR_EDITOR_API str RenamedFileName(std::string_view fileName, std::string_view typed);

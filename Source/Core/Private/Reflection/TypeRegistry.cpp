@@ -118,6 +118,8 @@ namespace Shalltear {
 		struct RegistryData {
 			HashMap<StringHash, TypeInfo*> byName{GetMemoryResource(MemTag::Core)};
 
+			HashMap<StringHash, TypeInfo*> byFormerName{GetMemoryResource(MemTag::Core)};
+
 			HashMap<StringHash, ScriptFunctionEntry> functions{GetMemoryResource(MemTag::Core)};
 
 			Vector<TypeInfo*> byClassId{GetMemoryResource(MemTag::Core)};
@@ -216,6 +218,23 @@ namespace Shalltear {
 		typeInfo->classId = classId;
 		data.byClassId[classId] = typeInfo;
 		data.byName[typeInfo->name] = typeInfo;
+		data.byFormerName.erase(typeInfo->name);
+
+		if (typeInfo->attributes && typeInfo->attributeCount > 0) {
+			const StringHash formerAttrKey("FormerlySerializedAs");
+			for (u32 i = 0; i < typeInfo->attributeCount; ++i) {
+				const AttributeInfo& attr = typeInfo->attributes[i];
+				if (attr.key == formerAttrKey && attr.value.Is<str>()) {
+					const str& oldName = attr.value.As<str>();
+					if (!oldName.empty()) {
+						const StringHash formerHash(oldName);
+						if (formerHash != StringHash{} && formerHash != typeInfo->name && !data.byName.contains(formerHash)) {
+							data.byFormerName[formerHash] = typeInfo;
+						}
+					}
+				}
+			}
+		}
 
 		const TypeInfo* ancestor = typeInfo;
 		while (ancestor) {
@@ -238,6 +257,14 @@ namespace Shalltear {
 
 			if (classId < data.byClassId.size())
 				data.byClassId[classId] = nullptr;
+
+			for (auto formerIt = data.byFormerName.begin(); formerIt != data.byFormerName.end();) {
+				if (formerIt->second == info) {
+					formerIt = data.byFormerName.erase(formerIt);
+				} else {
+					++formerIt;
+				}
+			}
 
 			data.freeClassIds.push_back(classId);
 		}
@@ -329,7 +356,11 @@ namespace Shalltear {
 		std::shared_lock lock(data.mutex);
 
 		auto it = data.byName.find(name);
-		return (it != data.byName.end()) ? it->second : nullptr;
+		if (it != data.byName.end()) {
+			return it->second;
+		}
+		auto formerIt = data.byFormerName.find(name);
+		return (formerIt != data.byFormerName.end()) ? formerIt->second : nullptr;
 	}
 
 	bool ScriptFunctions::Register(std::string_view name, std::string_view signature, Thunk thunk, u64 context, const void* ownerToken) {

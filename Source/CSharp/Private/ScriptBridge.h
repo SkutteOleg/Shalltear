@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 17
+#define SLT_BRIDGE_ABI_VERSION 18
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -33,6 +33,7 @@ extern "C" {
 #define SLT_TYPE_ABSTRACT 1u
 #define SLT_TYPE_NORMALIZE 2u
 #define SLT_TYPE_DATA_ASSET 4u
+#define SLT_TYPE_DISALLOW_MULTIPLE 8u
 
 // must match ComponentGenerator.cs
 typedef enum SltFieldKind {
@@ -64,6 +65,9 @@ typedef enum SltFieldKind {
 #define SLT_FIELD_TRANSIENT 4u
 #define SLT_FIELD_RANGED 8u
 #define SLT_FIELD_LIST 16u
+#define SLT_FIELD_SPACE 32u
+#define SLT_FIELD_MULTILINE 64u
+#define SLT_FIELD_TEXT_AREA 128u
 
 // 8 byte slots per component type, must match ComponentGenerator.cs
 #define SLT_FIELD_SLOT_LIMIT 960
@@ -82,8 +86,13 @@ typedef struct SltFieldDesc {
 	uint32_t flags;
 	float rangeMin;
 	float rangeMax;
+	float spaceHeight;
+	int32_t multilineLines;
+	int32_t textAreaMinLines;
+	int32_t textAreaMaxLines;
 	SltString tooltip;
 	SltString header;
+	SltString formerNames;
 	uint64_t typeHash;
 	// written by engine, bytes from instance (or value) start
 	int32_t offset;
@@ -101,6 +110,7 @@ typedef struct SltEnumDesc {
 	int32_t size;
 	const SltEnumConstant* constants;
 	int32_t constantCount;
+	SltString formerNames;
 } SltEnumDesc;
 
 typedef struct SltValueDesc {
@@ -108,6 +118,7 @@ typedef struct SltValueDesc {
 	uint64_t nameHash;
 	SltFieldDesc* fields;
 	int32_t fieldCount;
+	SltString formerNames;
 	// written by engine
 	int32_t size;
 } SltValueDesc;
@@ -128,6 +139,9 @@ typedef struct SltTypeDesc {
 	SltString script;
 	SltString assetMenu;
 	SltString assetExtension;
+	SltString formerNames;
+	SltString requiredComponents;
+	SltString componentMenu;
 } SltTypeDesc;
 
 typedef struct SltProfileRow {

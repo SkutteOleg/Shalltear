@@ -14,7 +14,7 @@ namespace Shalltear {
 		const StringHash AttrReadonly = StringHash("ReadOnly");
 		const StringHash AttrTransient = StringHash("Transient");
 
-		u32 ProcessSpecialAttributes(u32 flags, std::initializer_list<AttributeInfo> attrs) {
+		u32 ProcessSpecialAttributes(u32 flags, std::span<const AttributeInfo> attrs) {
 			for (const AttributeInfo& a : attrs) {
 				if (a.key == AttrHidden) {
 					flags &= ~FieldFlagEditorVisible;
@@ -105,6 +105,21 @@ namespace Shalltear {
 		void* (*addrFn)(void*),
 		u32 flags,
 		std::initializer_list<AttributeInfo> attributes) {
+		AddField(name, displayName, fieldType, size, alignment, getFn, setFn, addrFn, flags,
+				 std::span<const AttributeInfo>(attributes.begin(), attributes.size()));
+	}
+
+	void ReflectBuilder::AddField(
+		StringHash name,
+		const char* displayName,
+		const TypeInfo* fieldType,
+		size_t size,
+		size_t alignment,
+		void (*getFn)(const void*, Variant*),
+		void (*setFn)(void*, const Variant*),
+		void* (*addrFn)(void*),
+		u32 flags,
+		std::span<const AttributeInfo> attributes) {
 
 		FieldInfo info{};
 		info.name = name;
@@ -153,6 +168,19 @@ namespace Shalltear {
 		u32 flags,
 		const ContainerInfo* container,
 		std::initializer_list<AttributeInfo> attributes) {
+		AddContainerField(name, displayName, size, alignment, addrFn, flags, container,
+						  std::span<const AttributeInfo>(attributes.begin(), attributes.size()));
+	}
+
+	void ReflectBuilder::AddContainerField(
+		StringHash name,
+		const char* displayName,
+		size_t size,
+		size_t alignment,
+		void* (*addrFn)(void*),
+		u32 flags,
+		const ContainerInfo* container,
+		std::span<const AttributeInfo> attributes) {
 
 		FieldInfo info{};
 		info.name = name;

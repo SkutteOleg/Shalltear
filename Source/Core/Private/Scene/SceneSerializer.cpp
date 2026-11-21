@@ -721,9 +721,11 @@ namespace Shalltear {
 					}
 					writer.WriteU32(static_cast<u32>(row.components.size()));
 					for (const SceneDocumentComponentRow& componentRow : row.components) {
+						const TypeInfo* resolvedCompType = TypeRegistry::FindType(componentRow.type);
+						const StringHash canonicalCompType = resolvedCompType ? resolvedCompType->name : componentRow.type;
 						writer.WriteU64(componentRow.id);
-						writer.WriteU64(componentRow.type.GetValue());
-						if (!writeFieldRecord(componentRow.fields, componentRow.type, BlobRow::Component)) {
+						writer.WriteU64(canonicalCompType.GetValue());
+						if (!writeFieldRecord(componentRow.fields, canonicalCompType, BlobRow::Component)) {
 							return Buffer();
 						}
 					}

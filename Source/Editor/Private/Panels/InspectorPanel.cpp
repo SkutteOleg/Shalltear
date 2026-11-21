@@ -768,6 +768,27 @@ namespace Shalltear {
 			return Handle<Component>(static_cast<Component*>(raw));
 		}
 
+		void AddInspectorSpace(UI::Context& context, UI::ElementHandle parent, f32 heightPx) {
+			if (heightPx <= 0.0f) {
+				return;
+			}
+			UI::ElementHandle spacer = context.CreateElement();
+			context.AppendChild(parent, spacer);
+			UI::Style style;
+			style.minHeight = UI::Length::Pixel(heightPx);
+			style.flexShrink = 0.0f;
+			context.SetStyle(spacer, style);
+			context.SetHoverable(spacer, false);
+		}
+
+		void ApplyFieldSpace(UI::Context& context, UI::ElementHandle parent, const FieldInfo& field) {
+			if (const AttributeInfo* space = FindFieldAttribute(&field, "Space"_hash)) {
+				if (space->value.Is<f32>()) {
+					AddInspectorSpace(context, parent, space->value.As<f32>());
+				}
+			}
+		}
+
 	} // anonymous namespace
 
 	UI::ElementHandle AddInspectorHeader(UI::Context& context, UI::ElementHandle parent, std::string_view text, Color color,
@@ -2137,6 +2158,7 @@ namespace Shalltear {
 		sub.steps.push_back(step);
 		const str label = FieldLabel(field);
 
+		ApplyFieldSpace(context, parent, field);
 		if (const AttributeInfo* header = FindFieldAttribute(&field, "Header"_hash); header && header->value.Is<str>()) {
 			AddInspectorHeader(context, parent, header->value.As<str>(), TextStrong());
 		}
@@ -2472,6 +2494,7 @@ namespace Shalltear {
 	void InspectorPanel::BuildFieldRow(UI::Context& context, UI::ElementHandle parent, const FieldInfo& field, EditTarget target) {
 		Handle<FontAsset> font = UISystem::GetDefaultFont();
 
+		ApplyFieldSpace(context, parent, field);
 		if (const AttributeInfo* header = FindFieldAttribute(&field, "Header"_hash)) {
 			if (header->value.Is<str>()) {
 				AddInspectorHeader(context, parent, header->value.As<str>(), TextStrong());

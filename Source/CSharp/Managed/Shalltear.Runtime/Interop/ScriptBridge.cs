@@ -19,8 +19,13 @@ internal unsafe struct SltFieldDesc {
 	public uint flags;
 	public float rangeMin;
 	public float rangeMax;
+	public float spaceHeight;
+	public int multilineLines;
+	public int textAreaMinLines;
+	public int textAreaMaxLines;
 	public SltString tooltip;
 	public SltString header;
+	public SltString formerNames;
 	public ulong typeHash;
 	public int offset;
 }
@@ -39,6 +44,7 @@ internal unsafe struct SltEnumDesc {
 	public int size;
 	public SltEnumConstant* constants;
 	public int constantCount;
+	public SltString formerNames;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -47,6 +53,7 @@ internal unsafe struct SltValueDesc {
 	public ulong nameHash;
 	public SltFieldDesc* fields;
 	public int fieldCount;
+	public SltString formerNames;
 	public int size;
 }
 
@@ -65,6 +72,9 @@ internal unsafe struct SltTypeDesc {
 	public SltString script;
 	public SltString assetMenu;
 	public SltString assetExtension;
+	public SltString formerNames;
+	public SltString requiredComponents;
+	public SltString componentMenu;
 }
 
 [StructLayout(LayoutKind.Sequential)]

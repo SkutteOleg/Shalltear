@@ -3,6 +3,7 @@
 #include "CSharpAuthoring.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpReload.h"
+#include "DotNetToolchain.h"
 #include "ManagedTypes.h"
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
@@ -12,11 +13,15 @@
 #include "Shalltear/Core/StringUtil.h"
 
 #include "Shalltear/Editor/AssetBrowserOps.h"
+#include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/ProjectOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
 #include <algorithm>
+#include <array>
+#include <chrono>
 #include <filesystem>
+#include <thread>
 
 namespace Shalltear::CSharpEditor {
 
@@ -236,6 +241,59 @@ namespace Shalltear::CSharpEditor {
 		bool Open(const Guid& script) {
 			const Path physical = FileSystem::Resolve(AssetDatabase::LookupPath(script));
 			return !physical.ToString().empty() && AssetBrowserOps::OpenInExternalEditor(physical);
+		}
+
+		void HandleRenamed(const Path& oldPhysicalPath, const Path& newPhysicalPath) {
+			const str oldStem = fs::path(oldPhysicalPath.ToString()).stem().generic_string();
+			const str newStem = fs::path(newPhysicalPath.ToString()).stem().generic_string();
+			if (oldStem != newStem && IsValidName(oldStem) && IsValidName(newStem)) {
+				const str sdkRoot = DotNetToolchain::FindSDKRoot();
+				const str runtimePath = DotNetToolchain::GetRuntimeAssemblyPath();
+				std::error_code ec;
+				const fs::path runtimeDir = fs::path(runtimePath).parent_path();
+				const fs::path refactorDll = runtimeDir / "Refactor" / "Shalltear.Refactor.dll";
+				if (!sdkRoot.empty() && !runtimePath.empty() && fs::is_regular_file(refactorDll, ec)) {
+					const str muxer = DotNetToolchain::GetMuxerPath(sdkRoot);
+					const str projectRoot = ProjectOps::GetMountedProjectPath();
+					str commandLine = QuoteCommandArgument(muxer) + " " + QuoteCommandArgument(refactorDll.generic_string()) +
+									  " --file " + QuoteCommandArgument(newPhysicalPath.ToString()) +
+									  " --old-name " + QuoteCommandArgument(oldStem) +
+									  " --new-name " + QuoteCommandArgument(newStem) +
+									  " --runtime-dir " + QuoteCommandArgument(runtimeDir.generic_string());
+					if (!projectRoot.empty()) {
+						commandLine += " --project-root " + QuoteCommandArgument(projectRoot);
+					}
+
+					const std::array<ChildVariable, 4> variables = {{
+						{"DOTNET_ROOT", sdkRoot},
+						{"DOTNET_CLI_TELEMETRY_OPTOUT", "1"},
+						{"DOTNET_NOLOGO", "1"},
+						{"DOTNET_MULTILEVEL_LOOKUP", "0"},
+					}};
+
+					ChildProcess child;
+					const str workDir = !projectRoot.empty() ? projectRoot : fs::path(newPhysicalPath.ToString()).parent_path().generic_string();
+					if (child.Start(commandLine, workDir, variables)) {
+						i32 exitCode = -1;
+						Vector<str> lines{GetMemoryResource(MemTag::Editor)};
+						const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(15);
+						while (!child.TryFinish(exitCode)) {
+							child.DrainLines(lines);
+							if (std::chrono::steady_clock::now() >= deadline) {
+								child.Kill();
+								SLT_LOG_WARN("C#", "script rename timed out for '{}' -> '{}'", oldStem, newStem);
+								break;
+							}
+							std::this_thread::sleep_for(std::chrono::milliseconds(5));
+						}
+						child.DrainLines(lines);
+						if (exitCode != 0) {
+							SLT_LOG_WARN("C#", "script rename '{}' -> '{}' exited with code {}", oldStem, newStem, exitCode);
+						}
+					}
+				}
+			}
+			CSharpAuthoring::NotifySourceChanged();
 		}
 
 	} // namespace CSharpScripts
