@@ -70,7 +70,7 @@ namespace {
 			const fs::path engineAssets = DeviceLossTest::RepoDir("EngineAssets");
 			ASSERT_FALSE(engineAssets.empty());
 			FileSystem::Mount("engine", Path(engineAssets.generic_string()));
-			_root = fs::temp_directory_path() / ("shalltear_csharp_errors_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+			_root = fs::canonical(fs::temp_directory_path()) / ("shalltear_csharp_errors_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
 			_project = _root / "Space Game";
 			fs::create_directories(_project / "Assets" / "Scripts");
 			FileSystem::Mount("project", Path(_project.generic_string()));

@@ -1216,7 +1216,7 @@ namespace {
 			SceneSystem::Initialize();
 			_hooks->installComponentMenu();
 			ASSERT_TRUE(Attach()) << _error;
-			_root = fs::temp_directory_path() / ("shalltear_csharp_session_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+			_root = fs::canonical(fs::temp_directory_path()) / ("shalltear_csharp_session_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
 			_project = _root / "Space Game";
 			fs::create_directories(_project / "Assets" / "Scripts");
 			_world = SceneSystem::CreateScene("World");
