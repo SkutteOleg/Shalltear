@@ -317,7 +317,7 @@ TEST_F(CSharpGeneratorTest, NullOperatorsOnEngineObjectsWarn) {
 					   "\tSceneObject? _target;\n\tobject? _plain;\n"
 					   "\tpublic string? A() => _target?.Name;\n"
 					   "\tpublic SceneObject B(SceneObject other) => _target ?? other;\n"
-					   "\tpublic void C(SceneObject other) { _target ??= other; }\n"
+					   "\tpublic void C(SceneObject other) { _target ?\?= other; }\n"
 					   "\tpublic bool D() => _target is null;\n"
 					   "\tpublic bool E() => _target is not null;\n"
 					   "\tpublic bool F(Seeker? other) => other?.D() ?? false;\n"
@@ -343,7 +343,7 @@ TEST_F(CSharpGeneratorTest, NullOperatorsOnEngineObjectsWarn) {
 	};
 	EXPECT_TRUE(warned(6, "?.", "SceneObject")) << output;
 	EXPECT_TRUE(warned(7, "??", "SceneObject")) << output;
-	EXPECT_TRUE(warned(8, "??=", "SceneObject")) << output;
+	EXPECT_TRUE(warned(8, "?\?=", "SceneObject")) << output;
 	EXPECT_TRUE(warned(9, "is null", "SceneObject")) << output;
 	EXPECT_TRUE(warned(10, "is not null", "SceneObject")) << output;
 	EXPECT_TRUE(warned(11, "?.", "Seeker")) << output;
