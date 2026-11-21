@@ -16,6 +16,12 @@ public abstract partial class Joint : Component {
 	private protected Joint() {}
 }
 
+internal sealed class OpaqueJoint : Joint {
+	internal OpaqueJoint(ulong id) {
+		_id = id;
+	}
+}
+
 /// <summary>Holds 2 bodies in their relative pose.</summary>
 [EngineType(ENGINE_TYPE)]
 public sealed partial class FixedJoint : Joint {

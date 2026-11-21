@@ -1,0 +1,62 @@
+{
+	"area": "ProfilerModule",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ProfilerModules.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.ProfilerModule",
+	"instance": "ProfilerModule",
+	"functions": [
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "SetBuild",
+			"cpp": "self->build = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetBuild", "kind": "method" }
+		},
+		{
+			"id": "SetRefresh",
+			"cpp": "self->refresh = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetRefresh", "kind": "method" }
+		},
+		{
+			"id": "SetSample",
+			"cpp": "self->sample = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetSample", "kind": "method" }
+		}
+	]
+}

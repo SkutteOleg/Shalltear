@@ -1,0 +1,67 @@
+{
+	"area": "Variant",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/Variant.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Variant",
+	"instance": "Variant",
+	"natives": [
+		{ "name": "Variant", "cpp": "::Shalltear::Variant", "owned": true, "create": true },
+		{ "name": "VariantVTable", "cpp": "::Shalltear::VariantVTable", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "BUFFER_SIZE", "cpp": "::Shalltear::Variant::BUFFER_SIZE", "type": "u64", "value": 32 },
+		{ "name": "BUFFER_ALIGN", "cpp": "::Shalltear::Variant::BUFFER_ALIGN", "type": "u64", "value": 16 }
+	],
+	"functions": [
+		{
+			"id": "IsEmpty",
+			"cpp": "self->IsEmpty()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsEmpty", "kind": "getter" }
+		},
+		{
+			"id": "GetTypeId",
+			"cpp": "self->GetTypeId()",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeId", "kind": "getter" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->GetData()))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" }
+		},
+		{
+			"id": "IsOnHeap",
+			"cpp": "self->IsOnHeap()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsOnHeap", "kind": "getter" }
+		},
+		{
+			"id": "CopyFromRaw",
+			"cpp": "::Shalltear::Variant::CopyFromRaw(*outValue, typeId, reinterpret_cast<const void*>(static_cast<uintptr_t>(source)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "outValue", "type": "Variant" },
+				{ "name": "typeId", "type": "StringHash" },
+				{ "name": "source", "type": "u64" }
+			],
+			"csharp": { "member": "CopyFromRaw", "kind": "method" },
+			"static": true
+		}
+	]
+}

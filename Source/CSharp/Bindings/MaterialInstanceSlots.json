@@ -1,0 +1,35 @@
+{
+	"area": "MaterialInstanceSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MaterialAsset.h"
+	],
+	"class": "Shalltear.MaterialInstanceSlots",
+	"instance": "MaterialInstanceSlots",
+	"functions": [
+		{
+			"id": "Acquire",
+			"cpp": "self->Acquire(slot, ::Shalltear::Handle<::Shalltear::MaterialAsset>(shared))",
+			"returns": "Material",
+			"params": [
+				{ "name": "slot", "type": "u32" },
+				{ "name": "shared", "type": "Material", "optional": true }
+			],
+			"csharp": { "member": "Acquire", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "self->Find(slot)",
+			"returns": "Material",
+			"params": [{ "name": "slot", "type": "u32" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "Release",
+			"cpp": "self->Release(slot)",
+			"returns": "void",
+			"params": [{ "name": "slot", "type": "u32" }],
+			"csharp": { "member": "Release", "kind": "method" }
+		}
+	]
+}

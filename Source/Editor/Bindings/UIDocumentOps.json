@@ -1,0 +1,324 @@
+{
+	"area": "UIDocumentOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDocumentOps.h",
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.Editor.UIDocumentOps",
+	"structs": [
+		{
+			"name": "UIDocumentOpsLocation",
+			"cpp": "::Shalltear::UIDocumentOps::Location",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "parent", "type": "u32", "offset": 0 },
+				{ "name": "childIndex", "type": "u32", "offset": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIDocumentOpsSnapshot", "cpp": "::Shalltear::UIDocumentOps::Snapshot", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Capture",
+			"cpp": "::Shalltear::UIDocumentOps::Capture(*document, *outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "outValue", "type": "UIDocumentOpsSnapshot" }
+			],
+			"csharp": { "member": "Capture", "kind": "method" }
+		},
+		{
+			"id": "Restore",
+			"cpp": "::Shalltear::UIDocumentOps::Restore(*document, *snapshot)",
+			"returns": "void",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "snapshot", "type": "UIDocumentOpsSnapshot" }
+			],
+			"csharp": { "member": "Restore", "kind": "method" }
+		},
+		{
+			"id": "CloneNode",
+			"cpp": "::Shalltear::UIDocumentOps::CloneNode(*node)",
+			"returns": "UIDocumentNode",
+			"params": [{ "name": "node", "type": "UIDocumentNode" }],
+			"csharp": { "member": "CloneNode", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Validate",
+			"cpp": "::Shalltear::UIDocumentOps::Validate(*document, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Validate", "kind": "method" }
+		},
+		{
+			"id": "LocationOf",
+			"cpp": "::Shalltear::UIDocumentOps::LocationOf(*document, node)",
+			"returns": "UIDocumentOpsLocation",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" }
+			],
+			"csharp": { "member": "LocationOf", "kind": "method" }
+		},
+		{
+			"id": "ChildAt",
+			"cpp": "::Shalltear::UIDocumentOps::ChildAt(*document, parent, childIndex)",
+			"returns": "u32",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "parent", "type": "u32" },
+				{ "name": "childIndex", "type": "u32" }
+			],
+			"csharp": { "member": "ChildAt", "kind": "method" }
+		},
+		{
+			"id": "GetChildCount",
+			"cpp": "::Shalltear::UIDocumentOps::GetChildCount(*document, node)",
+			"returns": "u32",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" }
+			],
+			"csharp": { "member": "GetChildCount", "kind": "method" }
+		},
+		{
+			"id": "IsInSubtree",
+			"cpp": "::Shalltear::UIDocumentOps::IsInSubtree(*document, ancestor, node)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "ancestor", "type": "u32" },
+				{ "name": "node", "type": "u32" }
+			],
+			"csharp": { "member": "IsInSubtree", "kind": "method" }
+		},
+		{
+			"id": "GetOutermost",
+			"cpp": "::Shalltear::UIDocumentOps::GetOutermost(*document, nodes, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "nodes", "type": "list<u32>" },
+				{ "name": "outValue", "type": "list<u32>", "out": true, "cpp": "::Shalltear::Vector<u32>" }
+			],
+			"csharp": { "member": "GetOutermost", "kind": "method" }
+		},
+		{
+			"id": "CanTakeChildren",
+			"cpp": "::Shalltear::UIDocumentOps::CanTakeChildren(*document, node)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" }
+			],
+			"csharp": { "member": "CanTakeChildren", "kind": "method" }
+		},
+		{
+			"id": "Insert",
+			"cpp": "::Shalltear::UIDocumentOps::Insert(*document, parent, childIndex, *node, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "parent", "type": "u32" },
+				{ "name": "childIndex", "type": "u32" },
+				{ "name": "node", "type": "UIDocumentNode" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Insert", "kind": "method" }
+		},
+		{
+			"id": "Remove",
+			"cpp": "::Shalltear::UIDocumentOps::Remove(*document, node, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Remove", "kind": "method" }
+		},
+		{
+			"id": "Duplicate",
+			"cpp": "::Shalltear::UIDocumentOps::Duplicate(*document, node, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Duplicate", "kind": "method" }
+		},
+		{
+			"id": "Move",
+			"cpp": "::Shalltear::UIDocumentOps::Move(*document, node, newParent, childIndex, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "newParent", "type": "u32" },
+				{ "name": "childIndex", "type": "u32" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Move", "kind": "method" }
+		},
+		{
+			"id": "MoveNodes",
+			"cpp": "::Shalltear::UIDocumentOps::MoveNodes(*document, nodes, newParent, childIndex, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "nodes", "type": "list<u32>" },
+				{ "name": "newParent", "type": "u32" },
+				{ "name": "childIndex", "type": "u32" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "MoveNodes", "kind": "method" }
+		},
+		{
+			"id": "MakeElement",
+			"cpp": "::Shalltear::UIDocumentOps::MakeElement(tag)",
+			"returns": "UIDocumentNode",
+			"params": [{ "name": "tag", "type": "string" }],
+			"csharp": { "member": "MakeElement", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "UniqueId",
+			"cpp": "::Shalltear::UIDocumentOps::UniqueId(*document, baseValue)",
+			"returns": "string",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "baseValue", "type": "string" }
+			],
+			"csharp": { "member": "UniqueId", "kind": "method" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "::Shalltear::UIDocumentOps::SetId(*document, node, id, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "id", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetId", "kind": "method" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "::Shalltear::UIDocumentOps::SetText(*document, node, text, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "text", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetText", "kind": "method" }
+		},
+		{
+			"id": "SetRichText",
+			"cpp": "::Shalltear::UIDocumentOps::SetRichText(*document, node, enabled, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "enabled", "type": "bool" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetRichText", "kind": "method" }
+		},
+		{
+			"id": "SetTextKey",
+			"cpp": "::Shalltear::UIDocumentOps::SetTextKey(*document, node, key, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "key", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetTextKey", "kind": "method" }
+		},
+		{
+			"id": "SetStyle",
+			"cpp": "::Shalltear::UIDocumentOps::SetStyle(*document, node, style, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "style", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetStyle", "kind": "method" }
+		},
+		{
+			"id": "SetClasses",
+			"cpp": "::Shalltear::UIDocumentOps::SetClasses(*document, node, std::span<const std::string_view>(classes), error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "classes", "type": "list<string>" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetClasses", "kind": "method" }
+		},
+		{
+			"id": "SetAttribute",
+			"cpp": "::Shalltear::UIDocumentOps::SetAttribute(*document, node, name, valueValue, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "name", "type": "string" },
+				{ "name": "valueValue", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "SetAttribute", "kind": "method" }
+		},
+		{
+			"id": "CreateTemplate",
+			"cpp": "::Shalltear::UIDocumentOps::CreateTemplate(*document, node, virtualPath, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "virtualPath", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CreateTemplate", "kind": "method" }
+		},
+		{
+			"id": "Unpack",
+			"cpp": "::Shalltear::UIDocumentOps::Unpack(*document, instance, completely, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "instance", "type": "u32" },
+				{ "name": "completely", "type": "bool" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Unpack", "kind": "method" }
+		},
+		{
+			"id": "Save",
+			"cpp": "::Shalltear::UIDocumentOps::Save(*document)",
+			"returns": "bool",
+			"params": [{ "name": "document", "type": "UIDocumentAsset" }],
+			"csharp": { "member": "Save", "kind": "method" }
+		}
+	]
+}

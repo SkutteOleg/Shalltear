@@ -1,0 +1,123 @@
+{
+	"area": "AudioInteractiveContainerTransition",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioContainer.h"
+	],
+	"class": "Shalltear.AudioInteractiveContainerTransition",
+	"instance": "AudioInteractiveContainerTransition",
+	"functions": [
+		{
+			"id": "GetFromClip",
+			"cpp": "self->fromClip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FromClip", "kind": "getter" }
+		},
+		{
+			"id": "SetFromClip",
+			"cpp": "self->fromClip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FromClip", "kind": "setter" }
+		},
+		{
+			"id": "GetToClip",
+			"cpp": "self->toClip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ToClip", "kind": "getter" }
+		},
+		{
+			"id": "SetToClip",
+			"cpp": "self->toClip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ToClip", "kind": "setter" }
+		},
+		{
+			"id": "GetFromTime",
+			"cpp": "self->fromTime",
+			"returns": "AudioInteractiveTransitionFromTime",
+			"params": [],
+			"csharp": { "member": "FromTime", "kind": "getter" }
+		},
+		{
+			"id": "SetFromTime",
+			"cpp": "self->fromTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioInteractiveTransitionFromTime" }],
+			"csharp": { "member": "FromTime", "kind": "setter" }
+		},
+		{
+			"id": "GetToTime",
+			"cpp": "self->toTime",
+			"returns": "AudioInteractiveTransitionToTime",
+			"params": [],
+			"csharp": { "member": "ToTime", "kind": "getter" }
+		},
+		{
+			"id": "SetToTime",
+			"cpp": "self->toTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioInteractiveTransitionToTime" }],
+			"csharp": { "member": "ToTime", "kind": "setter" }
+		},
+		{
+			"id": "GetFade",
+			"cpp": "self->fade",
+			"returns": "AudioInteractiveFadeMode",
+			"params": [],
+			"csharp": { "member": "Fade", "kind": "getter" }
+		},
+		{
+			"id": "SetFade",
+			"cpp": "self->fade = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioInteractiveFadeMode" }],
+			"csharp": { "member": "Fade", "kind": "setter" }
+		},
+		{
+			"id": "GetFadeBeats",
+			"cpp": "self->fadeBeats",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FadeBeats", "kind": "getter" }
+		},
+		{
+			"id": "SetFadeBeats",
+			"cpp": "self->fadeBeats = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FadeBeats", "kind": "setter" }
+		},
+		{
+			"id": "GetFillerClip",
+			"cpp": "self->fillerClip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FillerClip", "kind": "getter" }
+		},
+		{
+			"id": "SetFillerClip",
+			"cpp": "self->fillerClip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FillerClip", "kind": "setter" }
+		},
+		{
+			"id": "GetHoldPrevious",
+			"cpp": "self->holdPrevious",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HoldPrevious", "kind": "getter" }
+		},
+		{
+			"id": "SetHoldPrevious",
+			"cpp": "self->holdPrevious = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "HoldPrevious", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,77 @@
+{
+	"area": "FolderParent",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneAnnotations.h"
+	],
+	"class": "Shalltear.Editor.FolderParent",
+	"instance": "FolderParent",
+	"enums": [
+		{
+			"name": "FolderParentKind",
+			"cpp": "::Shalltear::FolderParentKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "SceneRoot", "value": 0 },
+				{ "name": "Object", "value": 1 },
+				{ "name": "Folder", "value": 2 }
+			]
+		},
+		{
+			"name": "LabelColor",
+			"cpp": "::Shalltear::LabelColor",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Red", "value": 1 },
+				{ "name": "Orange", "value": 2 },
+				{ "name": "Yellow", "value": 3 },
+				{ "name": "Green", "value": 4 },
+				{ "name": "Teal", "value": 5 },
+				{ "name": "Blue", "value": 6 },
+				{ "name": "Purple", "value": 7 },
+				{ "name": "Pink", "value": 8 },
+				{ "name": "Count", "value": 9 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "FolderParent",
+			"cpp": "::Shalltear::FolderParent",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "kind", "type": "FolderParentKind", "offset": 0 },
+				{ "name": "id", "type": "u64", "offset": 8 }
+			]
+		}
+	],
+	"natives": [{ "name": "FolderInfo", "cpp": "::Shalltear::FolderInfo", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Roots",
+			"cpp": "::Shalltear::FolderParent::Roots()",
+			"returns": "FolderParent",
+			"params": [],
+			"csharp": { "member": "Roots", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Under",
+			"cpp": "::Shalltear::FolderParent::Under(objectInstanceId)",
+			"returns": "FolderParent",
+			"params": [{ "name": "objectInstanceId", "type": "u64" }],
+			"csharp": { "member": "Under", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "In",
+			"cpp": "::Shalltear::FolderParent::In(folderId)",
+			"returns": "FolderParent",
+			"params": [{ "name": "folderId", "type": "u64" }],
+			"csharp": { "member": "In", "kind": "method" },
+			"static": true
+		}
+	]
+}

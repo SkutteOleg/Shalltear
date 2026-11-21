@@ -1,0 +1,69 @@
+{
+	"area": "ConsoleSummary",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorConsole.h"
+	],
+	"class": "Shalltear.Editor.ConsoleSummary",
+	"instance": "ConsoleSummary",
+	"functions": [
+		{
+			"id": "GetNewest",
+			"cpp": "&self->newest",
+			"returns": "ConsoleEntry",
+			"params": [],
+			"csharp": { "member": "Newest", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetNewest",
+			"cpp": "self->newest = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ConsoleEntry" }],
+			"csharp": { "member": "Newest", "kind": "setter" }
+		},
+		{
+			"id": "GetNewestUnseenError",
+			"cpp": "&self->newestUnseenError",
+			"returns": "ConsoleEntry",
+			"params": [],
+			"csharp": { "member": "NewestUnseenError", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetNewestUnseenError",
+			"cpp": "self->newestUnseenError = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ConsoleEntry" }],
+			"csharp": { "member": "NewestUnseenError", "kind": "setter" }
+		},
+		{
+			"id": "GetUnseenErrors",
+			"cpp": "self->unseenErrors",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnseenErrors", "kind": "getter" }
+		},
+		{
+			"id": "SetUnseenErrors",
+			"cpp": "self->unseenErrors = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "UnseenErrors", "kind": "setter" }
+		},
+		{
+			"id": "GetUnseenWarnings",
+			"cpp": "self->unseenWarnings",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnseenWarnings", "kind": "getter" }
+		},
+		{
+			"id": "SetUnseenWarnings",
+			"cpp": "self->unseenWarnings = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "UnseenWarnings", "kind": "setter" }
+		}
+	]
+}

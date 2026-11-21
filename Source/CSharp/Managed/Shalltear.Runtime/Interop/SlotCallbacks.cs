@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace Shalltear.Interop;
 
@@ -12,42 +13,34 @@ internal static unsafe class SlotCallbacks {
 	const int MISSING = 2;
 	const int THROWN = 1;
 	const int TEXT_BYTES = 256;
+	const int LIST_BYTES = 256;
 
-	static readonly object _gate = new();
-	static readonly Dictionary<ulong, SlotCallback> _kept = new();
+	static readonly ConcurrentDictionary<ulong, SlotCallback> _kept = new();
 	static ulong _last;
 
 	[ThreadStatic]
 	static byte[]? _text;
 
+	[ThreadStatic]
+	static byte[]? _list;
+
 	internal static ulong Keep(SlotCallback? callback) {
 		if (callback == null) {
 			return 0;
 		}
-		lock (_gate) {
-			_kept.Add(++_last, callback);
-			return _last;
-		}
+		ulong id = Interlocked.Increment(ref _last);
+		_kept[id] = callback;
+		return id;
 	}
 
-	internal static int Count {
-		get {
-			lock (_gate) {
-				return _kept.Count;
-			}
-		}
-	}
+	internal static int Count => _kept.Count;
 
 	internal static void Drop(ulong id) {
-		lock (_gate) {
-			_kept.Remove(id);
-		}
+		_kept.TryRemove(id, out _);
 	}
 
 	internal static void Forget() {
-		lock (_gate) {
-			_kept.Clear();
-		}
+		_kept.Clear();
 	}
 
 	internal static void KeepText(ulong* results, string? value) {
@@ -64,14 +57,40 @@ internal static unsafe class SlotCallbacks {
 		results[1] = (ulong)Encoding.UTF8.GetBytes(value, _text);
 	}
 
+	static byte* KeepBytes(int size) {
+		if (_list == null || _list.Length < size) {
+			_list = GC.AllocateUninitializedArray<byte>(size > LIST_BYTES ? size : LIST_BYTES, true);
+		}
+		return (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetArrayDataReference(_list));
+	}
+
+	internal static void KeepArray<T>(ulong* results, T[]? values)
+		where T : unmanaged {
+		int count = values?.Length ?? 0;
+		byte* kept = KeepBytes(count * sizeof(T));
+		if (count != 0) {
+			values.AsSpan().CopyTo(new Span<T>(kept, count));
+		}
+		results[0] = (ulong)kept;
+		results[1] = (ulong)count;
+	}
+
+	internal static void KeepNatives<T>(ulong* results, T?[]? values)
+		where T : NativeObject {
+		int count = values?.Length ?? 0;
+		ulong* kept = (ulong*)KeepBytes(count * sizeof(ulong));
+		for (int index = 0; index < count; ++index) {
+			T? item = values![index];
+			kept[index] = item is null ? 0UL : item.Pointer;
+		}
+		results[0] = (ulong)kept;
+		results[1] = (ulong)count;
+	}
+
 	[UnmanagedCallersOnly]
 	internal static int Invoke(ulong id, ulong* arguments, ulong* results) {
 		try {
-			SlotCallback? callback;
-			lock (_gate) {
-				_kept.TryGetValue(id, out callback);
-			}
-			if (callback == null) {
+			if (!_kept.TryGetValue(id, out SlotCallback? callback)) {
 				return MISSING;
 			}
 			callback(arguments, results);
@@ -84,8 +103,6 @@ internal static unsafe class SlotCallbacks {
 
 	[UnmanagedCallersOnly]
 	internal static void Release(ulong id) {
-		lock (_gate) {
-			_kept.Remove(id);
-		}
+		_kept.TryRemove(id, out _);
 	}
 }

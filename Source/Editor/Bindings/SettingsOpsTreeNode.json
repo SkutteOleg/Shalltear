@@ -1,0 +1,81 @@
+{
+	"area": "SettingsOpsTreeNode",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SettingsOps.h"
+	],
+	"class": "Shalltear.Editor.SettingsOpsTreeNode",
+	"instance": "SettingsOpsTreeNode",
+	"functions": [
+		{
+			"id": "GetPath",
+			"cpp": "self->path",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Path", "kind": "getter" }
+		},
+		{
+			"id": "SetPath",
+			"cpp": "self->path = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Path", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltip",
+			"cpp": "self->tooltip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tooltip", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "self->tooltip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tooltip", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetDeclared",
+			"cpp": "self->declared",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Declared", "kind": "getter" }
+		},
+		{
+			"id": "SetDeclared",
+			"cpp": "self->declared = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Declared", "kind": "setter" }
+		}
+	]
+}

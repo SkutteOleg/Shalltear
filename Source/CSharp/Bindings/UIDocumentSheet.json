@@ -1,0 +1,40 @@
+{
+	"area": "UIDocumentSheet",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h",
+		"Shalltear/Core/UI/StyleSheetAsset.h"
+	],
+	"class": "Shalltear.UIDocumentSheet",
+	"instance": "UIDocumentSheet",
+	"functions": [
+		{
+			"id": "GetSrc",
+			"cpp": "self->src",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Src", "kind": "getter" }
+		},
+		{
+			"id": "SetSrc",
+			"cpp": "self->src = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Src", "kind": "setter" }
+		},
+		{
+			"id": "GetSheet",
+			"cpp": "self->sheet",
+			"returns": "StyleSheetAsset",
+			"params": [],
+			"csharp": { "member": "Sheet", "kind": "getter" }
+		},
+		{
+			"id": "SetSheet",
+			"cpp": "self->sheet = ::Shalltear::Handle<::Shalltear::StyleSheetAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StyleSheetAsset", "optional": true }],
+			"csharp": { "member": "Sheet", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,119 @@
+{
+	"area": "AnimationCurveOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AnimationCurveOps.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.Editor.AnimationCurveOps",
+	"enums": [
+		{
+			"name": "AnimationCurveOpsKeySide",
+			"cpp": "::Shalltear::AnimationCurveOps::KeySide",
+			"underlying": "u8",
+			"values": [
+				{ "name": "In", "value": 0 },
+				{ "name": "Out", "value": 1 },
+				{ "name": "Both", "value": 2 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "AddKey",
+			"cpp": "::Shalltear::AnimationCurveOps::AddKey(*curve, time, valueValue)",
+			"returns": "i32",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "time", "type": "f32" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "AddKey", "kind": "method" }
+		},
+		{
+			"id": "MoveKey",
+			"cpp": "::Shalltear::AnimationCurveOps::MoveKey(*curve, index, time, valueValue)",
+			"returns": "i32",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "time", "type": "f32" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "MoveKey", "kind": "method" }
+		},
+		{
+			"id": "RemoveKey",
+			"cpp": "::Shalltear::AnimationCurveOps::RemoveKey(*curve, index)",
+			"returns": "bool",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" }
+			],
+			"csharp": { "member": "RemoveKey", "kind": "method" }
+		},
+		{
+			"id": "SetSmooth",
+			"cpp": "::Shalltear::AnimationCurveOps::SetSmooth(*curve, index, mode)",
+			"returns": "void",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "mode", "type": "KeyframeTangentMode" }
+			],
+			"csharp": { "member": "SetSmooth", "kind": "method" }
+		},
+		{
+			"id": "Flatten",
+			"cpp": "::Shalltear::AnimationCurveOps::Flatten(*curve, index)",
+			"returns": "void",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" }
+			],
+			"csharp": { "member": "Flatten", "kind": "method" }
+		},
+		{
+			"id": "SetBroken",
+			"cpp": "::Shalltear::AnimationCurveOps::SetBroken(*curve, index, broken)",
+			"returns": "void",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "broken", "type": "bool" }
+			],
+			"csharp": { "member": "SetBroken", "kind": "method" }
+		},
+		{
+			"id": "SetSideMode",
+			"cpp": "::Shalltear::AnimationCurveOps::SetSideMode(*curve, index, side, mode)",
+			"returns": "void",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "side", "type": "AnimationCurveOpsKeySide" },
+				{ "name": "mode", "type": "KeyframeTangentMode" }
+			],
+			"csharp": { "member": "SetSideMode", "kind": "method" }
+		},
+		{
+			"id": "SetTangent",
+			"cpp": "::Shalltear::AnimationCurveOps::SetTangent(*curve, index, side, slope)",
+			"returns": "void",
+			"params": [
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "side", "type": "AnimationCurveOpsKeySide" },
+				{ "name": "slope", "type": "f32" }
+			],
+			"csharp": { "member": "SetTangent", "kind": "method" }
+		},
+		{
+			"id": "UpdateTangents",
+			"cpp": "::Shalltear::AnimationCurveOps::UpdateTangents(*curve)",
+			"returns": "void",
+			"params": [{ "name": "curve", "type": "AnimationCurve" }],
+			"csharp": { "member": "UpdateTangents", "kind": "method" }
+		}
+	]
+}

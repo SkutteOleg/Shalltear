@@ -1,0 +1,32 @@
+{
+	"area": "TextSerializer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/TextSerializer.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.TextSerializer",
+	"functions": [
+		{
+			"id": "Serialize",
+			"cpp": "::Shalltear::TextSerializer::Serialize(reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), type)",
+			"returns": "string",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true }
+			],
+			"csharp": { "member": "Serialize", "kind": "method" }
+		},
+		{
+			"id": "Deserialize",
+			"cpp": "::Shalltear::TextSerializer::Deserialize(reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), type, text)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "Deserialize", "kind": "method" }
+		}
+	]
+}

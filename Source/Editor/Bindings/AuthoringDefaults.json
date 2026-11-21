@@ -1,0 +1,55 @@
+{
+	"area": "AuthoringDefaults",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AuthoringDefaults.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Editor.AuthoringDefaults",
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::AuthoringDefaults::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::AuthoringDefaults::Register(componentType, field, valueJSON, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "componentType", "type": "StringHash" },
+				{ "name": "field", "type": "StringHash" },
+				{ "name": "valueJSON", "type": "string" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::AuthoringDefaults::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "StateFor",
+			"cpp": "::Shalltear::AuthoringDefaults::StateFor(type)",
+			"returns": "string",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "StateFor", "kind": "method" }
+		},
+		{
+			"id": "Write",
+			"cpp": "::Shalltear::AuthoringDefaults::Write(*objectValue, state)",
+			"returns": "bool",
+			"params": [
+				{ "name": "objectValue", "type": "EngineObject" },
+				{ "name": "state", "type": "string" }
+			],
+			"csharp": { "member": "Write", "kind": "method" }
+		}
+	]
+}

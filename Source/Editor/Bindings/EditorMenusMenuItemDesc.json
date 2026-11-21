@@ -1,0 +1,70 @@
+{
+	"area": "EditorMenusMenuItemDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorMenus.h",
+		"Shalltear/Core/UI/Context.h"
+	],
+	"class": "Shalltear.Editor.EditorMenusMenuItemDesc",
+	"instance": "EditorMenusMenuItemDesc",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetShortcut",
+			"cpp": "self->shortcut",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Shortcut", "kind": "getter" }
+		},
+		{
+			"id": "SetShortcut",
+			"cpp": "self->shortcut = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Shortcut", "kind": "setter" }
+		},
+		{
+			"id": "GetSeparatorBefore",
+			"cpp": "self->separatorBefore",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SeparatorBefore", "kind": "getter" }
+		},
+		{
+			"id": "SetSeparatorBefore",
+			"cpp": "self->separatorBefore = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SeparatorBefore", "kind": "setter" }
+		},
+		{
+			"id": "SetIsEnabled",
+			"cpp": "self->isEnabled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool ()>" }],
+			"csharp": { "member": "SetIsEnabled", "kind": "method" }
+		},
+		{
+			"id": "SetOnSelect",
+			"cpp": "self->onSelect = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;UIContext>", "optional": true, "cpp": "std::function<void (Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "SetOnSelect", "kind": "method" }
+		}
+	]
+}

@@ -97,6 +97,29 @@ public sealed partial class SceneObject : EngineObject {
 		}
 	}
 
+	/// <summary>1st component of type T on this object or a descendant, parents first (null when none).</summary>
+	public T? GetComponentInChildren<T>(bool includeInactive = false)
+		where T : class {
+		if (!includeInactive && !IsActiveInHierarchy) {
+			return null;
+		}
+		T? found = GetComponent<T>();
+		for (int index = 0, count = found == null ? ChildCount : 0; index < count && found == null; ++index) {
+			found = GetChild(index)!.GetComponentInChildren<T>(includeInactive);
+		}
+		return found;
+	}
+
+	/// <summary>1st component of type T on this object or an ancestor (null when none).</summary>
+	public T? GetComponentInParent<T>()
+		where T : class {
+		T? found = GetComponent<T>();
+		for (SceneObject? node = Parent; found == null && node is not null; node = node.Parent) {
+			found = node.GetComponent<T>();
+		}
+		return found;
+	}
+
 	/// <summary>Add a component of type T.</summary>
 	public T AddComponent<T>()
 		where T : Component {

@@ -1,0 +1,49 @@
+{
+	"area": "CoreTypes",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ColorSpace.h",
+		"Shalltear/Core/Math/Quat.h",
+		"Shalltear/Core/Math/Vector.h"
+	],
+	"class": "Shalltear.CoreTypes",
+	"enums": [
+		{
+			"name": "ColorSpace",
+			"cpp": "::Shalltear::ColorSpace",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Linear", "value": 0 },
+				{ "name": "Gamma", "value": 1 }
+			]
+		},
+		{
+			"name": "EngineRotationOrder",
+			"cpp": "::Shalltear::RotationOrder",
+			"underlying": "u8",
+			"values": [
+				{ "name": "XYZ", "value": 0 },
+				{ "name": "XZY", "value": 1 },
+				{ "name": "YXZ", "value": 2 },
+				{ "name": "YZX", "value": 3 },
+				{ "name": "ZXY", "value": 4 },
+				{ "name": "ZYX", "value": 5 },
+				{ "name": "Default", "value": 4 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "Vec3I",
+			"cpp": "::Shalltear::Vec3I",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "x", "type": "i32", "offset": 0 },
+				{ "name": "y", "type": "i32", "offset": 4 },
+				{ "name": "z", "type": "i32", "offset": 8 }
+			]
+		}
+	],
+	"functions": []
+}

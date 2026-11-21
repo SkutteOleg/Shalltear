@@ -1,0 +1,81 @@
+{
+	"area": "AudioConcurrencySlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioConcurrency.h"
+	],
+	"class": "Shalltear.AudioConcurrency",
+	"instance": "AudioConcurrency",
+	"functions": [
+		{
+			"id": "GetMaxCountField",
+			"cpp": "self->maxCount",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "MaxCountField", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxCountField",
+			"cpp": "self->maxCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "MaxCountField", "kind": "setter" }
+		},
+		{
+			"id": "GetLimitToOwnerField",
+			"cpp": "self->limitToOwner",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "LimitToOwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetLimitToOwnerField",
+			"cpp": "self->limitToOwner = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "LimitToOwnerField", "kind": "setter" }
+		},
+		{
+			"id": "GetResolutionRuleField",
+			"cpp": "self->resolutionRule",
+			"returns": "AudioConcurrencyRule",
+			"params": [],
+			"csharp": { "member": "ResolutionRuleField", "kind": "getter" }
+		},
+		{
+			"id": "SetResolutionRuleField",
+			"cpp": "self->resolutionRule = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioConcurrencyRule" }],
+			"csharp": { "member": "ResolutionRuleField", "kind": "setter" }
+		},
+		{
+			"id": "GetRetriggerTimeField",
+			"cpp": "self->retriggerTime",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RetriggerTimeField", "kind": "getter" }
+		},
+		{
+			"id": "SetRetriggerTimeField",
+			"cpp": "self->retriggerTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RetriggerTimeField", "kind": "setter" }
+		},
+		{
+			"id": "GetVoiceStealReleaseTimeField",
+			"cpp": "self->voiceStealReleaseTime",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "VoiceStealReleaseTimeField", "kind": "getter" }
+		},
+		{
+			"id": "SetVoiceStealReleaseTimeField",
+			"cpp": "self->voiceStealReleaseTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "VoiceStealReleaseTimeField", "kind": "setter" }
+		}
+	]
+}

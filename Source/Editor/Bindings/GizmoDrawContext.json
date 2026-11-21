@@ -1,0 +1,139 @@
+{
+	"area": "GizmoDrawContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.Editor.GizmoDrawContext",
+	"instance": "GizmoDrawContext",
+	"functions": [
+		{
+			"id": "GetLines",
+			"cpp": "Slots::Deref(self->lines)",
+			"returns": "list<DebugLine>",
+			"params": [],
+			"csharp": { "member": "Lines", "kind": "getter" }
+		},
+		{
+			"id": "SetLines",
+			"cpp": "Slots::Deref(self->lines) = Slots::ToVector<::Shalltear::DebugLine>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<DebugLine>" }],
+			"csharp": { "member": "Lines", "kind": "setter" }
+		},
+		{
+			"id": "GetOverlayLines",
+			"cpp": "Slots::Deref(self->overlayLines)",
+			"returns": "list<DebugLine>",
+			"params": [],
+			"csharp": { "member": "OverlayLines", "kind": "getter" }
+		},
+		{
+			"id": "SetOverlayLines",
+			"cpp": "Slots::Deref(self->overlayLines) = Slots::ToVector<::Shalltear::DebugLine>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<DebugLine>" }],
+			"csharp": { "member": "OverlayLines", "kind": "setter" }
+		},
+		{
+			"id": "GetCameraPosition",
+			"cpp": "self->cameraPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "CameraPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetCameraPosition",
+			"cpp": "self->cameraPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "CameraPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetCameraRotation",
+			"cpp": "self->cameraRotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "CameraRotation", "kind": "getter" }
+		},
+		{
+			"id": "SetCameraRotation",
+			"cpp": "self->cameraRotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "CameraRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetViewAspect",
+			"cpp": "self->viewAspect",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ViewAspect", "kind": "getter" }
+		},
+		{
+			"id": "SetViewAspect",
+			"cpp": "self->viewAspect = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ViewAspect", "kind": "setter" }
+		},
+		{
+			"id": "GetSelected",
+			"cpp": "self->selected",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Selected", "kind": "getter" }
+		},
+		{
+			"id": "SetSelected",
+			"cpp": "self->selected = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Selected", "kind": "setter" }
+		},
+		{
+			"id": "GetCursorRay",
+			"cpp": "self->cursorRay",
+			"returns": "Ray",
+			"params": [],
+			"csharp": { "member": "CursorRay", "kind": "getter" }
+		},
+		{
+			"id": "SetCursorRay",
+			"cpp": "self->cursorRay = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Ray" }],
+			"csharp": { "member": "CursorRay", "kind": "setter" }
+		},
+		{
+			"id": "GetCursorInView",
+			"cpp": "self->cursorInView",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CursorInView", "kind": "getter" }
+		},
+		{
+			"id": "SetCursorInView",
+			"cpp": "self->cursorInView = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "CursorInView", "kind": "setter" }
+		},
+		{
+			"id": "GetIcons",
+			"cpp": "Slots::Deref(self->icons)",
+			"returns": "list<SceneIcon>",
+			"params": [],
+			"csharp": { "member": "Icons", "kind": "getter" }
+		},
+		{
+			"id": "SetIcons",
+			"cpp": "Slots::Deref(self->icons) = Slots::Copies<::Shalltear::Vector<::Shalltear::SceneIcon>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<SceneIcon>" }],
+			"csharp": { "member": "Icons", "kind": "setter" }
+		}
+	]
+}

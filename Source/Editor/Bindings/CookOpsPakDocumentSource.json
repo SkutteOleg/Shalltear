@@ -1,0 +1,40 @@
+{
+	"area": "CookOpsPakDocumentSource",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h",
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.Editor.CookOpsPakDocumentSource",
+	"instance": "CookOpsPakDocumentSource",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "PakDocumentKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PakDocumentKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		}
+	]
+}

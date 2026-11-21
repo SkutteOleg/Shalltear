@@ -1,0 +1,39 @@
+{
+	"area": "WindowIconImage",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowIconImage",
+	"instance": "WindowIconImage",
+	"functions": [
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetRGBA",
+			"cpp": "self->rgba",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "RGBA", "kind": "getter" }
+		},
+		{
+			"id": "SetRGBA",
+			"cpp": "self->rgba = Slots::KeepFieldSpan(self, 0x9375048c3484fcbbull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "RGBA", "kind": "setter" }
+		}
+	]
+}

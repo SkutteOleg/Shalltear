@@ -1,0 +1,34 @@
+{
+	"area": "SetEnabledCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Editor/UndoSystem.h"
+	],
+	"class": "Shalltear.Editor.SetEnabledCommand",
+	"instance": "SetEnabledCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::SetEnabledCommand(*component, enabled)",
+			"returns": "SetEnabledCommand",
+			"params": [
+				{ "name": "component", "type": "EditTarget" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

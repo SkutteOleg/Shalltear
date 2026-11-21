@@ -1,0 +1,30 @@
+{
+	"area": "Retarget",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/RetargetProfile.h",
+		"Shalltear/Animation/AnimationClip.h",
+		"Shalltear/Core/Graphics/SkeletonAsset.h"
+	],
+	"class": "Shalltear.Retarget",
+	"functions": [
+		{
+			"id": "AutoMapHumanoid",
+			"cpp": "::Shalltear::Retarget::AutoMapHumanoid(::Shalltear::Handle<::Shalltear::SkeletonAsset>(skeleton))",
+			"returns": "RetargetProfile",
+			"params": [{ "name": "skeleton", "type": "SkeletonAsset", "optional": true }],
+			"csharp": { "member": "AutoMapHumanoid", "kind": "method" }
+		},
+		{
+			"id": "Bake",
+			"cpp": "::Shalltear::Retarget::Bake(*clip, *source, *target)",
+			"returns": "AnimationClip",
+			"params": [
+				{ "name": "clip", "type": "AnimationClip" },
+				{ "name": "source", "type": "RetargetProfile" },
+				{ "name": "target", "type": "RetargetProfile" }
+			],
+			"csharp": { "member": "Bake", "kind": "method" }
+		}
+	]
+}

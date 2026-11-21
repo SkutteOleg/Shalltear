@@ -2,6 +2,8 @@
 
 #include "ScriptLog.h"
 
+#include "DerivedTypes.h"
+#include "EventBridge.h"
 #include "FunctionBindings.h"
 
 #include "ManagedBehavior.h"
@@ -13,12 +15,25 @@
 #include "ScriptEvents.h"
 #include "ScriptProfile.h"
 #include "ShadowStorage.h"
+#include "SlotSupport.h"
 
 #include "Shalltear/Core/Asset/Asset.h"
+#include "Shalltear/Core/Asset/AssetCues.h"
+#include "Shalltear/Core/Asset/AssetImporter.h"
+#include "Shalltear/Core/Frame/FrameStages.h"
+#include "Shalltear/Core/Graphics/FramePass.h"
+#include "Shalltear/Core/Graphics/TextureCodecs.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Module/TypeReplacement.h"
 #include "Shalltear/Core/Object.h"
 #include "Shalltear/Core/Reflection/TypeRegistry.h"
+#include "Shalltear/Core/Settings.h"
+#include "Shalltear/Core/UI/WidgetRegistry.h"
+
+#ifdef SLT_WITH_EDITOR
+#include "Shalltear/Editor/EditorExtensions.h"
+#include "Shalltear/Editor/PanelManager.h"
+#endif
 
 #include <algorithm>
 #include <format>
@@ -29,8 +44,12 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 
 	namespace {
 
+		constexpr u32 MAX_OWNER_SWEEPS = 16;
+
 		SltManagedAPI _managed{};
 		bool _attached = false;
+		ScriptRuntime::OwnerSweep _sweeps[MAX_OWNER_SWEEPS]{};
+		u32 _sweepCount = 0;
 		// glibc won't unmap a library holding live thread_local destructors
 		[[clang::no_destroy]] thread_local str _lastError;
 		[[clang::no_destroy]] thread_local str _keptString;
@@ -140,6 +159,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 			FunctionBindings::Poll();
 			_managed.tick();
 		}
+		EventBridge::Collect();
 	}
 
 	void Pump(i32 phase) {
@@ -233,12 +253,55 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		return _attached && _managed.loadKeptUserAssemblies ? _managed.loadKeptUserAssemblies() : SLT_ERR_REFUSED;
 	}
 
+	const void* GetScriptsOwner() {
+		static const char owner = 0;
+		return &owner;
+	}
+
+	bool AddOwnerSweep(OwnerSweep sweep) {
+		if (!sweep || std::find(_sweeps, _sweeps + _sweepCount, sweep) != _sweeps + _sweepCount) {
+			return false;
+		}
+		if (_sweepCount == MAX_OWNER_SWEEPS) {
+			SLT_LOG_ERROR("C#", "more than {} packages sweep script registrations. Raise MAX_OWNER_SWEEPS", MAX_OWNER_SWEEPS);
+			return false;
+		}
+		_sweeps[_sweepCount++] = sweep;
+		return true;
+	}
+
+	void RemoveOwnerSweep(OwnerSweep sweep) {
+		OwnerSweep* const end = std::remove(_sweeps, _sweeps + _sweepCount, sweep);
+		std::fill(end, _sweeps + _sweepCount, nullptr);
+		_sweepCount = static_cast<u32>(end - _sweeps);
+	}
+
 	i32 UnloadUserAssemblies() {
 		if (!_attached) {
 			return SLT_OK;
 		}
 		ManagedTypes::ReleaseAll();
 		InputMaps::DestroyAll();
+		EventBridge::UnsubscribeAll();
+		const void* owner = GetScriptsOwner();
+		UI::WidgetRegistry::UnregisterOwnedBy(owner);
+		Settings::UnregisterOwnedBy(owner);
+		FrameStages::UnregisterOwnedBy(owner);
+		AssetImporterRegistry::UnregisterOwnedBy(owner);
+		AssetCues::UnregisterOwnedBy(owner);
+		FramePasses::UnregisterOwnedBy(owner);
+		TextureCodecs::UnregisterOwnedBy(owner);
+		for (u32 index = 0; index < _sweepCount; ++index) {
+			_sweeps[index](owner);
+		}
+		Slots::ForgetAllFields();
+#ifdef SLT_WITH_EDITOR
+		if (DerivedTypes::HasLiveObjects()) {
+			PanelManager::CaptureModulePanels(DerivedTypes::GetOwnerToken());
+		}
+		EditorExtensions::Unload(owner);
+#endif
+		DerivedTypes::Unload();
 		return _managed.unloadUserAssemblies ? _managed.unloadUserAssemblies() : SLT_OK;
 	}
 

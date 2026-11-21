@@ -1,0 +1,95 @@
+{
+	"area": "ModelTrack",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelTrack",
+	"instance": "ModelTrack",
+	"functions": [
+		{
+			"id": "GetNode",
+			"cpp": "self->node",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Node", "kind": "getter" }
+		},
+		{
+			"id": "SetNode",
+			"cpp": "self->node = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Node", "kind": "setter" }
+		},
+		{
+			"id": "GetChannel",
+			"cpp": "self->channel",
+			"returns": "ModelChannel",
+			"params": [],
+			"csharp": { "member": "Channel", "kind": "getter" }
+		},
+		{
+			"id": "SetChannel",
+			"cpp": "self->channel = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ModelChannel" }],
+			"csharp": { "member": "Channel", "kind": "setter" }
+		},
+		{
+			"id": "GetInterp",
+			"cpp": "self->interp",
+			"returns": "ModelInterpolation",
+			"params": [],
+			"csharp": { "member": "Interp", "kind": "getter" }
+		},
+		{
+			"id": "SetInterp",
+			"cpp": "self->interp = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ModelInterpolation" }],
+			"csharp": { "member": "Interp", "kind": "setter" }
+		},
+		{
+			"id": "GetBlendChannel",
+			"cpp": "self->blendChannel",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "BlendChannel", "kind": "getter" }
+		},
+		{
+			"id": "SetBlendChannel",
+			"cpp": "self->blendChannel = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "BlendChannel", "kind": "setter" }
+		},
+		{
+			"id": "GetTimes",
+			"cpp": "self->times",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Times", "kind": "getter" }
+		},
+		{
+			"id": "SetTimes",
+			"cpp": "self->times = Slots::ToVector<f32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Times", "kind": "setter" }
+		},
+		{
+			"id": "GetValues",
+			"cpp": "self->values",
+			"returns": "list<Vec4>",
+			"params": [],
+			"csharp": { "member": "Values", "kind": "getter" }
+		},
+		{
+			"id": "SetValues",
+			"cpp": "self->values = Slots::ToVector<::Shalltear::Vec4>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec4>" }],
+			"csharp": { "member": "Values", "kind": "setter" }
+		}
+	]
+}

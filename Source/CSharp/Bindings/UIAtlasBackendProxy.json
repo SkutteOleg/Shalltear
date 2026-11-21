@@ -1,0 +1,65 @@
+{
+	"area": "UIAtlasBackendProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIAtlas.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.UIAtlasBackendProxy",
+	"instance": "UIAtlasBackendProxy",
+	"prelude": [
+		"class UIAtlasBackendProxy final : public ::Shalltear::UI::IAtlasBackend {",
+		"public:",
+		"\tstd::function<Shalltear::RHI::TextureHandle(Shalltear::Vec2Generic<int>, Shalltear::UI::AtlasFormat)> createAtlas;",
+		"\tShalltear::RHI::TextureHandle CreateAtlas(Shalltear::Vec2Generic<int> a0, Shalltear::UI::AtlasFormat a1) override {",
+		"\t\treturn createAtlas ? createAtlas(a0, a1) : Slots::ResultOf<decltype(createAtlas)>();",
+		"\t}",
+		"\tstd::function<void(Shalltear::RHI::TextureHandle, Shalltear::RectI, std::span<const unsigned char>)> updateAtlas;",
+		"\tvoid UpdateAtlas(Shalltear::RHI::TextureHandle a0, Shalltear::RectI a1, std::span<const unsigned char> a2) override {",
+		"\t\tif (updateAtlas) {",
+		"\t\t\tupdateAtlas(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "UIAtlasBackendProxy", "cpp": "UIAtlasBackendProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetCreateAtlas",
+			"cpp": "self->createAtlas = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<RHITextureHandle;Vec2I;UIAtlasFormat>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::RHI::TextureHandle(Shalltear::Vec2Generic<int>, Shalltear::UI::AtlasFormat)>"
+				}
+			],
+			"csharp": { "member": "SetCreateAtlas", "kind": "method" }
+		},
+		{
+			"id": "SetUpdateAtlas",
+			"cpp": "self->updateAtlas = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;RHITextureHandle;RectI;list<u8>>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::RHI::TextureHandle, Shalltear::RectI, std::span<const unsigned char>)>"
+				}
+			],
+			"csharp": { "member": "SetUpdateAtlas", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::UI::IAtlasBackend*>(self)",
+			"returns": "UIAtlasBackend",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

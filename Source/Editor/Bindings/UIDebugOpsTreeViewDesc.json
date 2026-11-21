@@ -1,0 +1,39 @@
+{
+	"area": "UIDebugOpsTreeViewDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsTreeViewDesc",
+	"instance": "UIDebugOpsTreeViewDesc",
+	"functions": [
+		{
+			"id": "GetQuery",
+			"cpp": "self->query",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Query", "kind": "getter" }
+		},
+		{
+			"id": "SetQuery",
+			"cpp": "self->query = Slots::KeepFieldText(self, 0x99494c29dce4d65aull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Query", "kind": "setter" }
+		},
+		{
+			"id": "GetCollapsed",
+			"cpp": "self->collapsed",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Collapsed", "kind": "getter" }
+		},
+		{
+			"id": "SetCollapsed",
+			"cpp": "self->collapsed = Slots::KeepFieldSpan(self, 0xafb14adfbfdb9527ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u64>" }],
+			"csharp": { "member": "Collapsed", "kind": "setter" }
+		}
+	]
+}

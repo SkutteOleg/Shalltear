@@ -1,0 +1,40 @@
+{
+	"area": "SetContainerElementCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.SetContainerElementCommand",
+	"instance": "SetContainerElementCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::SetContainerElementCommand(*target, field, index, beforeBits, afterBits, beforeCount, label)",
+			"returns": "SetContainerElementCommand",
+			"params": [
+				{ "name": "target", "type": "EditTarget" },
+				{ "name": "field", "type": "StringHash" },
+				{ "name": "index", "type": "u32" },
+				{ "name": "beforeBits", "type": "u64" },
+				{ "name": "afterBits", "type": "u64" },
+				{ "name": "beforeCount", "type": "u32" },
+				{ "name": "label", "type": "string" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

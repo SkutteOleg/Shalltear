@@ -1,0 +1,95 @@
+{
+	"area": "UIWidgetDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/WidgetRegistry.h"
+	],
+	"class": "Shalltear.UIWidgetDesc",
+	"instance": "UIWidgetDesc",
+	"functions": [
+		{
+			"id": "GetTag",
+			"cpp": "self->tag",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "SetTag",
+			"cpp": "self->tag = Slots::KeepFieldText(self, 0x4bea64e803e213ceull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tag", "kind": "setter" }
+		},
+		{
+			"id": "GetFactory",
+			"cpp": "Slots::Bits(self->factory)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Factory", "kind": "getter" }
+		},
+		{
+			"id": "SetFactory",
+			"cpp": "self->factory = Slots::FromBits<Shalltear::UI::WidgetResult (*)(Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::UI::WidgetArgs &)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Factory", "kind": "setter" }
+		},
+		{
+			"id": "GetAttributes",
+			"cpp": "self->attributes",
+			"returns": "list<UIWidgetAttribute>",
+			"params": [],
+			"csharp": { "member": "Attributes", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributes",
+			"cpp": "self->attributes = Slots::KeepFieldCopies(self, 0xbc751e826596550bull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIWidgetAttribute>" }],
+			"csharp": { "member": "Attributes", "kind": "setter" }
+		},
+		{
+			"id": "GetBuiltInClasses",
+			"cpp": "self->builtInClasses",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "BuiltInClasses", "kind": "getter" }
+		},
+		{
+			"id": "SetBuiltInClasses",
+			"cpp": "self->builtInClasses = Slots::KeepFieldTexts(self, 0x4865f26fb17d8543ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "BuiltInClasses", "kind": "setter" }
+		},
+		{
+			"id": "GetCategory",
+			"cpp": "self->category",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Category", "kind": "getter" }
+		},
+		{
+			"id": "SetCategory",
+			"cpp": "self->category = Slots::KeepFieldText(self, 0xcf265c547f6bf046ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Category", "kind": "setter" }
+		},
+		{
+			"id": "GetValidate",
+			"cpp": "Slots::Bits(self->validate)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Validate", "kind": "getter" }
+		},
+		{
+			"id": "SetValidate",
+			"cpp": "self->validate = Slots::FromBits<bool (*)(std::span<const Shalltear::UI::WidgetAttributeValue>, unsigned int, std::basic_string<char> &)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Validate", "kind": "setter" }
+		}
+	]
+}

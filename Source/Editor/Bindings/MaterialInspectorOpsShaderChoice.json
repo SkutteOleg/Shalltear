@@ -1,0 +1,68 @@
+{
+	"area": "MaterialInspectorOpsShaderChoice",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/MaterialInspectorOps.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.MaterialInspectorOpsShaderChoice",
+	"instance": "MaterialInspectorOpsShaderChoice",
+	"functions": [
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->displayName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->displayName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DisplayName", "kind": "setter" }
+		},
+		{
+			"id": "GetVirtualPath",
+			"cpp": "self->virtualPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "VirtualPath", "kind": "getter" }
+		},
+		{
+			"id": "SetVirtualPath",
+			"cpp": "self->virtualPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "VirtualPath", "kind": "setter" }
+		},
+		{
+			"id": "GetEngine",
+			"cpp": "self->engine",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Engine", "kind": "getter" }
+		},
+		{
+			"id": "SetEngine",
+			"cpp": "self->engine = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Engine", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,95 @@
+{
+	"area": "FolderInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneAnnotations.h"
+	],
+	"class": "Shalltear.Editor.FolderInfo",
+	"instance": "FolderInfo",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "FolderParent",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FolderParent" }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetSlot",
+			"cpp": "self->slot",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Slot", "kind": "getter" }
+		},
+		{
+			"id": "SetSlot",
+			"cpp": "self->slot = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Slot", "kind": "setter" }
+		},
+		{
+			"id": "GetOrder",
+			"cpp": "self->order",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Order", "kind": "getter" }
+		},
+		{
+			"id": "SetOrder",
+			"cpp": "self->order = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Order", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "LabelColor",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LabelColor" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,123 @@
+{
+	"area": "BuildSettingDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildSettingDesc",
+	"instance": "BuildSettingDesc",
+	"functions": [
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "BuildSettingType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildSettingType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetMerge",
+			"cpp": "self->merge",
+			"returns": "BuildMergePolicy",
+			"params": [],
+			"csharp": { "member": "Merge", "kind": "getter" }
+		},
+		{
+			"id": "SetMerge",
+			"cpp": "self->merge = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildMergePolicy" }],
+			"csharp": { "member": "Merge", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetHelp",
+			"cpp": "self->help",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Help", "kind": "getter" }
+		},
+		{
+			"id": "SetHelp",
+			"cpp": "self->help = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Help", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultValue",
+			"cpp": "self->defaultValue",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultValue", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultValue",
+			"cpp": "self->defaultValue = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DefaultValue", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultItems",
+			"cpp": "self->defaultItems",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "DefaultItems", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultItems",
+			"cpp": "self->defaultItems = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "DefaultItems", "kind": "setter" }
+		},
+		{
+			"id": "GetEnumValues",
+			"cpp": "self->enumValues",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "EnumValues", "kind": "getter" }
+		},
+		{
+			"id": "SetEnumValues",
+			"cpp": "self->enumValues = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "EnumValues", "kind": "setter" }
+		}
+	]
+}

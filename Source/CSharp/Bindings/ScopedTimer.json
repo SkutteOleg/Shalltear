@@ -1,0 +1,21 @@
+{
+	"area": "ScopedTimer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Time.h"
+	],
+	"class": "Shalltear.ScopedTimer",
+	"instance": "ScopedTimer",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::ScopedTimer(str(name).c_str())",
+			"returns": "ScopedTimer",
+			"params": [{ "name": "name", "type": "string" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

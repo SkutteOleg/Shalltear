@@ -1,0 +1,181 @@
+{
+	"area": "CookOpsPakAssetSource",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.Editor.CookOpsPakAssetSource",
+	"instance": "CookOpsPakAssetSource",
+	"functions": [
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeNameHash",
+			"cpp": "self->typeNameHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TypeNameHash", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeNameHash",
+			"cpp": "self->typeNameHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "TypeNameHash", "kind": "setter" }
+		},
+		{
+			"id": "GetRecordVersion",
+			"cpp": "self->recordVersion",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "RecordVersion", "kind": "getter" }
+		},
+		{
+			"id": "SetRecordVersion",
+			"cpp": "self->recordVersion = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "RecordVersion", "kind": "setter" }
+		},
+		{
+			"id": "GetLayoutHash",
+			"cpp": "self->layoutHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LayoutHash", "kind": "getter" }
+		},
+		{
+			"id": "SetLayoutHash",
+			"cpp": "self->layoutHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "LayoutHash", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeDescStride",
+			"cpp": "self->typeDescStride",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TypeDescStride", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeDescStride",
+			"cpp": "self->typeDescStride = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TypeDescStride", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetDescriptor",
+			"cpp": "self->descriptor",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Descriptor", "kind": "getter" }
+		},
+		{
+			"id": "SetDescriptor",
+			"cpp": "self->descriptor = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Descriptor", "kind": "setter" }
+		},
+		{
+			"id": "GetPayload",
+			"cpp": "self->payload",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Payload", "kind": "getter" }
+		},
+		{
+			"id": "SetPayload",
+			"cpp": "self->payload = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Payload", "kind": "setter" }
+		},
+		{
+			"id": "GetPayloadAlignment",
+			"cpp": "self->payloadAlignment",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PayloadAlignment", "kind": "getter" }
+		},
+		{
+			"id": "SetPayloadAlignment",
+			"cpp": "self->payloadAlignment = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PayloadAlignment", "kind": "setter" }
+		},
+		{
+			"id": "GetResidency",
+			"cpp": "self->residency",
+			"returns": "PakResidency",
+			"params": [],
+			"csharp": { "member": "Residency", "kind": "getter" }
+		},
+		{
+			"id": "SetResidency",
+			"cpp": "self->residency = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PakResidency" }],
+			"csharp": { "member": "Residency", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetDependencies",
+			"cpp": "self->dependencies",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Dependencies", "kind": "getter" }
+		},
+		{
+			"id": "SetDependencies",
+			"cpp": "self->dependencies = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Dependencies", "kind": "setter" }
+		}
+	]
+}

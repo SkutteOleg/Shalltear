@@ -1,0 +1,39 @@
+{
+	"area": "GraphFlow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphFlow",
+	"instance": "GraphFlow",
+	"functions": [
+		{
+			"id": "GetFrom",
+			"cpp": "self->from",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "From", "kind": "getter" }
+		},
+		{
+			"id": "SetFrom",
+			"cpp": "self->from = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "From", "kind": "setter" }
+		},
+		{
+			"id": "GetSlot",
+			"cpp": "self->slot",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Slot", "kind": "getter" }
+		},
+		{
+			"id": "SetSlot",
+			"cpp": "self->slot = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Slot", "kind": "setter" }
+		}
+	]
+}

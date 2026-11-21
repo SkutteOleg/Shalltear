@@ -1,0 +1,55 @@
+{
+	"area": "AssetCue",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetCues.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.AssetCue",
+	"instance": "AssetCue",
+	"functions": [
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "Asset",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = ::Shalltear::Handle<::Shalltear::Asset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Asset", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		},
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetVolume",
+			"cpp": "self->volume",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Volume", "kind": "getter" }
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "self->volume = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Volume", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,81 @@
+{
+	"area": "UIWidgetAttribute",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/WidgetRegistry.h"
+	],
+	"class": "Shalltear.UIWidgetAttribute",
+	"instance": "UIWidgetAttribute",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0x0fb1ee72b92e0756ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "UIWidgetAttributeType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetAttributeType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetChoices",
+			"cpp": "self->choices",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Choices", "kind": "getter" }
+		},
+		{
+			"id": "SetChoices",
+			"cpp": "self->choices = Slots::KeepFieldTexts(self, 0xf39a892275b0998full, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Choices", "kind": "setter" }
+		},
+		{
+			"id": "GetAssetTypes",
+			"cpp": "self->assetTypes",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "AssetTypes", "kind": "getter" }
+		},
+		{
+			"id": "SetAssetTypes",
+			"cpp": "self->assetTypes = Slots::KeepFieldTexts(self, 0x6d6e760995ea6da0ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "AssetTypes", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultValue",
+			"cpp": "self->defaultValue",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultValue", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultValue",
+			"cpp": "self->defaultValue = Slots::KeepFieldText(self, 0xe55ea614e8baf04full, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DefaultValue", "kind": "setter" }
+		}
+	]
+}

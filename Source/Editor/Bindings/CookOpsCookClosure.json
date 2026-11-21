@@ -1,0 +1,92 @@
+{
+	"area": "CookOpsCookClosure",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.CookOpsCookClosure",
+	"instance": "CookOpsCookClosure",
+	"functions": [
+		{
+			"id": "Of",
+			"cpp": "::Shalltear::CookOps::CookClosure::Of(Slots::ToVector<::Shalltear::Guid>(assets))",
+			"returns": "CookOpsCookClosure",
+			"params": [{ "name": "assets", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Of", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "GetAssets",
+			"cpp": "self->assets",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Assets", "kind": "getter" }
+		},
+		{
+			"id": "SetAssets",
+			"cpp": "self->assets = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Assets", "kind": "setter" }
+		},
+		{
+			"id": "GetDependenciesCount",
+			"cpp": "static_cast<int32_t>(self->dependencies.size())",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "DependenciesCount", "kind": "getter" }
+		},
+		{
+			"id": "GetDependencies",
+			"cpp": "Slots::At(self->dependencies, index)",
+			"returns": "list<EngineGuid>",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetDependencies", "kind": "method" }
+		},
+		{
+			"id": "AddDependencies",
+			"cpp": "self->dependencies.emplace_back(Slots::ToVector<::Shalltear::Guid>(items))",
+			"returns": "void",
+			"params": [{ "name": "items", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "AddDependencies", "kind": "method" }
+		},
+		{
+			"id": "ClearDependencies",
+			"cpp": "self->dependencies.clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearDependencies", "kind": "method" }
+		},
+		{
+			"id": "GetRoots",
+			"cpp": "self->roots",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Roots", "kind": "getter" }
+		},
+		{
+			"id": "SetRoots",
+			"cpp": "self->roots = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Roots", "kind": "setter" }
+		},
+		{
+			"id": "GetVariantRequests",
+			"cpp": "self->variantRequests",
+			"returns": "list<CookOpsCookClosureShaderVariantRequest>",
+			"params": [],
+			"csharp": { "member": "VariantRequests", "kind": "getter" }
+		},
+		{
+			"id": "SetVariantRequests",
+			"cpp": "self->variantRequests = Slots::Copies<::Shalltear::Vector<::Shalltear::CookOps::CookClosure::ShaderVariantRequest>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<CookOpsCookClosureShaderVariantRequest>" }],
+			"csharp": { "member": "VariantRequests", "kind": "setter" }
+		}
+	]
+}

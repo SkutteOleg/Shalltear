@@ -1,0 +1,46 @@
+{
+	"area": "TextList",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDialogs.h"
+	],
+	"class": "Shalltear.Editor.TextList",
+	"instance": "TextList",
+	"functions": [
+		{
+			"id": "GetCount",
+			"cpp": "static_cast<int32_t>(self->size())",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "Get",
+			"cpp": "Slots::At(*self, index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "Get", "kind": "method" }
+		},
+		{
+			"id": "Add",
+			"cpp": "self->push_back(str(item))",
+			"returns": "void",
+			"params": [{ "name": "item", "type": "string" }],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "ToArray",
+			"cpp": "*self",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "ToArray", "kind": "method" }
+		}
+	]
+}

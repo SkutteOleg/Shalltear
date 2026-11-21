@@ -1,0 +1,165 @@
+{
+	"area": "CookOpsCookReport",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h"
+	],
+	"class": "Shalltear.Editor.CookOpsCookReport",
+	"instance": "CookOpsCookReport",
+	"functions": [
+		{
+			"id": "GetAssets",
+			"cpp": "self->assets",
+			"returns": "list<CookOpsCookReportAsset>",
+			"params": [],
+			"csharp": { "member": "Assets", "kind": "getter" }
+		},
+		{
+			"id": "SetAssets",
+			"cpp": "self->assets = Slots::Copies<::Shalltear::Vector<::Shalltear::CookOps::CookReportAsset>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<CookOpsCookReportAsset>" }],
+			"csharp": { "member": "Assets", "kind": "setter" }
+		},
+		{
+			"id": "GetFileBytes",
+			"cpp": "self->fileBytes",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "FileBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetFileBytes",
+			"cpp": "self->fileBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "FileBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetTocBytes",
+			"cpp": "self->tocBytes",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TocBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetTocBytes",
+			"cpp": "self->tocBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "TocBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetPayloadBytes",
+			"cpp": "self->payloadBytes",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PayloadBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetPayloadBytes",
+			"cpp": "self->payloadBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PayloadBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetRegionCount",
+			"cpp": "self->regionCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RegionCount", "kind": "getter" }
+		},
+		{
+			"id": "SetRegionCount",
+			"cpp": "self->regionCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "RegionCount", "kind": "setter" }
+		},
+		{
+			"id": "GetPageCount",
+			"cpp": "self->pageCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PageCount", "kind": "getter" }
+		},
+		{
+			"id": "SetPageCount",
+			"cpp": "self->pageCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PageCount", "kind": "setter" }
+		},
+		{
+			"id": "GetCandidateCount",
+			"cpp": "self->candidateCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "CandidateCount", "kind": "getter" }
+		},
+		{
+			"id": "SetCandidateCount",
+			"cpp": "self->candidateCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "CandidateCount", "kind": "setter" }
+		},
+		{
+			"id": "GetCompression",
+			"cpp": "self->compression",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "Compression", "kind": "getter" }
+		},
+		{
+			"id": "SetCompression",
+			"cpp": "self->compression = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "Compression", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugNamesShipped",
+			"cpp": "self->debugNamesShipped",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "DebugNamesShipped", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugNamesShipped",
+			"cpp": "self->debugNamesShipped = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "DebugNamesShipped", "kind": "setter" }
+		},
+		{
+			"id": "GetProfileName",
+			"cpp": "self->profileName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProfileName", "kind": "getter" }
+		},
+		{
+			"id": "SetProfileName",
+			"cpp": "self->profileName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ProfileName", "kind": "setter" }
+		},
+		{
+			"id": "GetPackagePath",
+			"cpp": "self->packagePath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "PackagePath", "kind": "getter" }
+		},
+		{
+			"id": "SetPackagePath",
+			"cpp": "self->packagePath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "PackagePath", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,168 @@
+{
+	"area": "ListViewDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorListView.h",
+		"Shalltear/Editor/EditorListModel.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.ListViewDesc",
+	"instance": "ListViewDesc",
+	"functions": [
+		{
+			"id": "GetLayout",
+			"cpp": "self->layout",
+			"returns": "ListLayout",
+			"params": [],
+			"csharp": { "member": "Layout", "kind": "getter" }
+		},
+		{
+			"id": "SetLayout",
+			"cpp": "self->layout = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ListLayout" }],
+			"csharp": { "member": "Layout", "kind": "setter" }
+		},
+		{
+			"id": "GetMode",
+			"cpp": "self->mode",
+			"returns": "ListSelectionMode",
+			"params": [],
+			"csharp": { "member": "Mode", "kind": "getter" }
+		},
+		{
+			"id": "SetMode",
+			"cpp": "self->mode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ListSelectionMode" }],
+			"csharp": { "member": "Mode", "kind": "setter" }
+		},
+		{
+			"id": "GetCellWidthPx",
+			"cpp": "self->cellWidthPx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "CellWidthPx", "kind": "getter" }
+		},
+		{
+			"id": "SetCellWidthPx",
+			"cpp": "self->cellWidthPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "CellWidthPx", "kind": "setter" }
+		},
+		{
+			"id": "GetCellHeightPx",
+			"cpp": "self->cellHeightPx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "CellHeightPx", "kind": "getter" }
+		},
+		{
+			"id": "SetCellHeightPx",
+			"cpp": "self->cellHeightPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "CellHeightPx", "kind": "setter" }
+		},
+		{
+			"id": "GetCellPaddingPx",
+			"cpp": "self->cellPaddingPx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "CellPaddingPx", "kind": "getter" }
+		},
+		{
+			"id": "SetCellPaddingPx",
+			"cpp": "self->cellPaddingPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "CellPaddingPx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnSelectionChanged",
+			"cpp": "self->onSelectionChanged = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "SetOnDelete",
+			"cpp": "self->onDelete = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnDelete", "kind": "method" }
+		},
+		{
+			"id": "SetOnDuplicate",
+			"cpp": "self->onDuplicate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnDuplicate", "kind": "method" }
+		},
+		{
+			"id": "SetOnRename",
+			"cpp": "self->onRename = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<bool;u64>", "optional": true, "cpp": "std::function<bool (uint64_t)>" }],
+			"csharp": { "member": "SetOnRename", "kind": "method" }
+		},
+		{
+			"id": "SetOnBuildCell",
+			"cpp": "self->onBuildCell = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;u64;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, uint64_t, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnBuildCell", "kind": "method" }
+		},
+		{
+			"id": "SetOnDecorateCellLabel",
+			"cpp": "self->onDecorateCellLabel = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;u64;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, uint64_t, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnDecorateCellLabel", "kind": "method" }
+		},
+		{
+			"id": "SetOnEmptyRightClick",
+			"cpp": "self->onEmptyRightClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnEmptyRightClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnEmptyClick",
+			"cpp": "self->onEmptyClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnEmptyClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnBuildTrailing",
+			"cpp": "self->onBuildTrailing = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnBuildTrailing", "kind": "method" }
+		}
+	]
+}

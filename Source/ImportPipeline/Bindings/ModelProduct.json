@@ -1,0 +1,55 @@
+{
+	"area": "ModelProduct",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelContributors.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.ModelProduct",
+	"instance": "ModelProduct",
+	"functions": [
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		}
+	]
+}

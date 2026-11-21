@@ -1,0 +1,18 @@
+{
+	"area": "Reflect",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Reflect",
+	"functions": [
+		{
+			"id": "ContainerElementFlags",
+			"cpp": "::Shalltear::ContainerElementFlags(elementType)",
+			"returns": "u32",
+			"params": [{ "name": "elementType", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "ContainerElementFlags", "kind": "method" }
+		}
+	]
+}

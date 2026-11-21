@@ -1,0 +1,18 @@
+{
+	"area": "AudioTypes",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioTime.h"
+	],
+	"class": "Shalltear.AudioTypes",
+	"structs": [
+		{
+			"name": "EngineAudioTime",
+			"cpp": "::Shalltear::AudioTime",
+			"size": 8,
+			"align": 8,
+			"fields": [{ "name": "frames", "type": "u64", "offset": 0 }]
+		}
+	],
+	"functions": []
+}

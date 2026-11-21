@@ -1,0 +1,96 @@
+{
+	"area": "EditorChromeOpsConsoleNoticeState",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorChromeOps.h",
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.Editor.EditorChromeOpsConsoleNoticeState",
+	"instance": "EditorChromeOpsConsoleNoticeState",
+	"functions": [
+		{
+			"id": "GetHasEntry",
+			"cpp": "self->hasEntry",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasEntry", "kind": "getter" }
+		},
+		{
+			"id": "SetHasEntry",
+			"cpp": "self->hasEntry = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "HasEntry", "kind": "setter" }
+		},
+		{
+			"id": "GetMessage",
+			"cpp": "self->message",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Message", "kind": "getter" }
+		},
+		{
+			"id": "SetMessage",
+			"cpp": "self->message = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Message", "kind": "setter" }
+		},
+		{
+			"id": "GetLevel",
+			"cpp": "self->level",
+			"returns": "LogLevel",
+			"params": [],
+			"csharp": { "member": "Level", "kind": "getter" }
+		},
+		{
+			"id": "SetLevel",
+			"cpp": "self->level = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LogLevel" }],
+			"csharp": { "member": "Level", "kind": "setter" }
+		},
+		{
+			"id": "GetErrors",
+			"cpp": "self->errors",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Errors", "kind": "getter" }
+		},
+		{
+			"id": "SetErrors",
+			"cpp": "self->errors = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Errors", "kind": "setter" }
+		},
+		{
+			"id": "GetWarnings",
+			"cpp": "self->warnings",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Warnings", "kind": "getter" }
+		},
+		{
+			"id": "SetWarnings",
+			"cpp": "self->warnings = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Warnings", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltip",
+			"cpp": "self->tooltip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tooltip", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "self->tooltip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tooltip", "kind": "setter" }
+		}
+	]
+}

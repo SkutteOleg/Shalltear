@@ -1,0 +1,26 @@
+{
+	"area": "EditorTransformGestureEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorEvents.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.EditorTransformGestureEvent",
+	"instance": "EditorTransformGestureEvent",
+	"functions": [
+		{
+			"id": "GetObjects",
+			"cpp": "self->objects",
+			"returns": "list<SceneObject>",
+			"params": [],
+			"csharp": { "member": "Objects", "kind": "getter" }
+		},
+		{
+			"id": "SetObjects",
+			"cpp": "self->objects = Slots::KeepFieldHandles(self, 0x82a18dd6f4ff9027ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<SceneObject>" }],
+			"csharp": { "member": "Objects", "kind": "setter" }
+		}
+	]
+}

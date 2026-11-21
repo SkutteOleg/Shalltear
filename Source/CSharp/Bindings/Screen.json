@@ -1,0 +1,114 @@
+{
+	"area": "Screen",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Screen.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.Screen",
+	"enums": [
+		{
+			"name": "FullScreenMode",
+			"cpp": "::Shalltear::FullScreenMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "FullScreenWindow", "value": 0 },
+				{ "name": "MaximizedWindow", "value": 1 },
+				{ "name": "Windowed", "value": 2 },
+				{ "name": "ExclusiveFullScreen", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "ScreenResolution",
+			"cpp": "::Shalltear::ScreenResolution",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "width", "type": "i32", "offset": 0 },
+				{ "name": "height", "type": "i32", "offset": 4 },
+				{ "name": "refreshRate", "type": "f32", "offset": 8 }
+			]
+		}
+	],
+	"natives": [{ "name": "ScreenLaunch", "cpp": "::Shalltear::ScreenLaunch", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetWidth",
+			"cpp": "::Shalltear::Screen::GetWidth()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Width", "kind": "getter" }
+		},
+		{
+			"id": "GetHeight",
+			"cpp": "::Shalltear::Screen::GetHeight()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Height", "kind": "getter" }
+		},
+		{
+			"id": "GetFullScreenMode",
+			"cpp": "::Shalltear::Screen::GetFullScreenMode()",
+			"returns": "FullScreenMode",
+			"params": [],
+			"csharp": { "member": "FullScreenMode", "kind": "getter" }
+		},
+		{
+			"id": "SetFullScreenMode",
+			"cpp": "::Shalltear::Screen::SetFullScreenMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FullScreenMode" }],
+			"csharp": { "member": "FullScreenMode", "kind": "setter" }
+		},
+		{
+			"id": "IsFullScreen",
+			"cpp": "::Shalltear::Screen::IsFullScreen()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsFullScreen", "kind": "getter" }
+		},
+		{
+			"id": "SetFullScreen",
+			"cpp": "::Shalltear::Screen::SetFullScreen(fullScreen)",
+			"returns": "void",
+			"params": [{ "name": "fullScreen", "type": "bool" }],
+			"csharp": { "member": "SetFullScreen", "kind": "method" }
+		},
+		{
+			"id": "SetResolution",
+			"cpp": "::Shalltear::Screen::SetResolution(width, height, mode)",
+			"returns": "void",
+			"params": [
+				{ "name": "width", "type": "i32" },
+				{ "name": "height", "type": "i32" },
+				{ "name": "mode", "type": "FullScreenMode" }
+			],
+			"csharp": { "member": "SetResolution", "kind": "method" }
+		},
+		{
+			"id": "GetCurrentResolution",
+			"cpp": "::Shalltear::Screen::GetCurrentResolution()",
+			"returns": "ScreenResolution",
+			"params": [],
+			"csharp": { "member": "CurrentResolution", "kind": "getter" }
+		},
+		{
+			"id": "GetResolutions",
+			"cpp": "::Shalltear::Screen::GetResolutions(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<ScreenResolution>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::ScreenResolution>" }
+			],
+			"csharp": { "member": "GetResolutions", "kind": "method" }
+		},
+		{
+			"id": "CreateGameWindow",
+			"cpp": "(::Shalltear::Screen::CreateGameWindow(*launch)).Get()",
+			"returns": "Window",
+			"params": [{ "name": "launch", "type": "ScreenLaunch" }],
+			"csharp": { "member": "CreateGameWindow", "kind": "method" }
+		}
+	]
+}

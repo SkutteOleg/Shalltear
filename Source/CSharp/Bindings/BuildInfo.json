@@ -1,0 +1,66 @@
+{
+	"area": "BuildInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/BuildInfo.h"
+	],
+	"class": "Shalltear.BuildInfo",
+	"functions": [
+		{
+			"id": "GetVersionString",
+			"cpp": "::Shalltear::BuildInfo::GetVersionString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "VersionString", "kind": "getter" }
+		},
+		{
+			"id": "GetGitCommit",
+			"cpp": "::Shalltear::BuildInfo::GetGitCommit()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "GitCommit", "kind": "getter" }
+		},
+		{
+			"id": "GetBuildConfig",
+			"cpp": "::Shalltear::BuildInfo::GetBuildConfig()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "BuildConfig", "kind": "getter" }
+		},
+		{
+			"id": "GetBuildTimestamp",
+			"cpp": "::Shalltear::BuildInfo::GetBuildTimestamp()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "BuildTimestamp", "kind": "getter" }
+		},
+		{
+			"id": "GetEngineHash",
+			"cpp": "::Shalltear::BuildInfo::GetEngineHash()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "EngineHash", "kind": "getter" }
+		},
+		{
+			"id": "GetCompilerId",
+			"cpp": "::Shalltear::BuildInfo::GetCompilerId()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CompilerId", "kind": "getter" }
+		},
+		{
+			"id": "GetCompilerVersion",
+			"cpp": "::Shalltear::BuildInfo::GetCompilerVersion()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CompilerVersion", "kind": "getter" }
+		},
+		{
+			"id": "GetModuleAbiHash",
+			"cpp": "::Shalltear::BuildInfo::GetModuleAbiHash()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ModuleAbiHash", "kind": "getter" }
+		}
+	]
+}

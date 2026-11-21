@@ -12,50 +12,40 @@ namespace Shalltear::CSharpImpl::Generated {
 	namespace {
 
 		int32_t SlotProbeRecipeGetName(const uint64_t* arguments, uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Recipe* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(arguments[0]));
 				Slots::Text(results, self->name);
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 		int32_t SlotProbeRecipeSetName(const uint64_t* arguments, [[maybe_unused]] uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Recipe* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(arguments[0]));
 				const std::string_view value = Slots::View(arguments + 1);
 				self->name = value;
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 		int32_t SlotProbeRecipeGetHeat(const uint64_t* arguments, uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Recipe* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(arguments[0]));
 				results[0] = Slots::OfF32(self->heat);
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 		int32_t SlotProbeRecipeSetHeat(const uint64_t* arguments, [[maybe_unused]] uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Recipe* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(arguments[0]));
 				const float value = Slots::ToF32(arguments[1]);
 				self->heat = value;
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 		int32_t SlotProbeRecipeGetSteps(const uint64_t* arguments, uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Recipe* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(arguments[0]));
 				Slots::KeepList<int32_t>(results, self->steps);
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 		int32_t SlotProbeRecipeSetSteps(const uint64_t* arguments, [[maybe_unused]] uint64_t* results) noexcept {

@@ -1,0 +1,57 @@
+{
+	"area": "Frustum",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.Frustum",
+	"instance": "Frustum",
+	"functions": [
+		{
+			"id": "FromMatrix",
+			"cpp": "::Shalltear::Frustum::FromMatrix(*viewProjection)",
+			"returns": "Frustum",
+			"params": [{ "name": "viewProjection", "type": "Mat4" }],
+			"csharp": { "member": "FromMatrix", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Contains",
+			"cpp": "self->Contains(point)",
+			"returns": "bool",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "Contains", "kind": "method" }
+		},
+		{
+			"id": "Intersects",
+			"cpp": "self->Intersects(sphere)",
+			"returns": "bool",
+			"params": [{ "name": "sphere", "type": "Sphere" }],
+			"csharp": { "member": "Intersects", "kind": "method" }
+		},
+		{
+			"id": "Intersects2",
+			"cpp": "self->Intersects(box)",
+			"returns": "bool",
+			"params": [{ "name": "box", "type": "AABB" }],
+			"csharp": { "member": "Intersects", "kind": "method" }
+		},
+		{
+			"id": "GetPlanes",
+			"cpp": "self->planes",
+			"returns": "list<Plane>",
+			"params": [],
+			"csharp": { "member": "Planes", "kind": "getter" }
+		},
+		{
+			"id": "SetPlanes",
+			"cpp": "Slots::Assign(self->planes, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Plane>" }],
+			"csharp": { "member": "Planes", "kind": "setter" }
+		}
+	]
+}

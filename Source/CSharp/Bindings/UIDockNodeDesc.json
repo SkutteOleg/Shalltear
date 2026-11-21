@@ -1,0 +1,96 @@
+{
+	"area": "UIDockNodeDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Docking.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.UIDockNodeDesc",
+	"instance": "UIDockNodeDesc",
+	"functions": [
+		{
+			"id": "GetSplit",
+			"cpp": "self->split",
+			"returns": "UIDockSplit",
+			"params": [],
+			"csharp": { "member": "Split", "kind": "getter" }
+		},
+		{
+			"id": "SetSplit",
+			"cpp": "self->split = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDockSplit" }],
+			"csharp": { "member": "Split", "kind": "setter" }
+		},
+		{
+			"id": "GetRatio",
+			"cpp": "self->ratio",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Ratio", "kind": "getter" }
+		},
+		{
+			"id": "SetRatio",
+			"cpp": "self->ratio = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Ratio", "kind": "setter" }
+		},
+		{
+			"id": "GetTabs",
+			"cpp": "self->tabs",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "Tabs", "kind": "getter" }
+		},
+		{
+			"id": "SetTabs",
+			"cpp": "self->tabs = Slots::ToVector<::Shalltear::StringHash>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "Tabs", "kind": "setter" }
+		},
+		{
+			"id": "GetActiveTab",
+			"cpp": "self->activeTab",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ActiveTab", "kind": "getter" }
+		},
+		{
+			"id": "SetActiveTab",
+			"cpp": "self->activeTab = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ActiveTab", "kind": "setter" }
+		},
+		{
+			"id": "GetChildA",
+			"cpp": "self->childA",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ChildA", "kind": "getter" }
+		},
+		{
+			"id": "SetChildA",
+			"cpp": "self->childA = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ChildA", "kind": "setter" }
+		},
+		{
+			"id": "GetChildB",
+			"cpp": "self->childB",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ChildB", "kind": "getter" }
+		},
+		{
+			"id": "SetChildB",
+			"cpp": "self->childB = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ChildB", "kind": "setter" }
+		}
+	]
+}

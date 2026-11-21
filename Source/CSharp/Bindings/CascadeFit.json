@@ -1,0 +1,55 @@
+{
+	"area": "CascadeFit",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.CascadeFit",
+	"instance": "CascadeFit",
+	"functions": [
+		{
+			"id": "GetViewProjection",
+			"cpp": "&self->viewProjection",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "ViewProjection", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetViewProjection",
+			"cpp": "self->viewProjection = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "ViewProjection", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldTexelSize",
+			"cpp": "self->worldTexelSize",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "WorldTexelSize", "kind": "getter" }
+		},
+		{
+			"id": "SetWorldTexelSize",
+			"cpp": "self->worldTexelSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "WorldTexelSize", "kind": "setter" }
+		},
+		{
+			"id": "GetFarDepth",
+			"cpp": "self->farDepth",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FarDepth", "kind": "getter" }
+		},
+		{
+			"id": "SetFarDepth",
+			"cpp": "self->farDepth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FarDepth", "kind": "setter" }
+		}
+	]
+}

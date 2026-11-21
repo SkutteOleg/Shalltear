@@ -1,0 +1,28 @@
+{
+	"area": "EditorVariantCompiles",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorVariantCompiles.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.Editor.EditorVariantCompiles",
+	"functions": [
+		{
+			"id": "Request",
+			"cpp": "::Shalltear::EditorVariantCompiles::Request(*shader, std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(enabled)))",
+			"returns": "void",
+			"params": [
+				{ "name": "shader", "type": "ShaderAsset" },
+				{ "name": "enabled", "type": "list<string>" }
+			],
+			"csharp": { "member": "Request", "kind": "method" }
+		},
+		{
+			"id": "Drain",
+			"cpp": "::Shalltear::EditorVariantCompiles::Drain()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Drain", "kind": "method" }
+		}
+	]
+}

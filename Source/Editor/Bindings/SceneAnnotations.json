@@ -1,0 +1,209 @@
+{
+	"area": "SceneAnnotations",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneAnnotations.h",
+		"Shalltear/Editor/EditorEvents.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.SceneAnnotations",
+	"constants": [{ "name": "FOLDER_SLOT_END", "cpp": "::Shalltear::FOLDER_SLOT_END", "type": "u32", "value": 4294967295 }],
+	"functions": [
+		{
+			"id": "GetObjectLabel",
+			"cpp": "::Shalltear::SceneAnnotations::GetObjectLabel(::Shalltear::Handle<::Shalltear::SceneObject>(objectValue))",
+			"returns": "LabelColor",
+			"params": [{ "name": "objectValue", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "GetObjectLabel", "kind": "method" }
+		},
+		{
+			"id": "GetFolderLabel",
+			"cpp": "::Shalltear::SceneAnnotations::GetFolderLabel(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId)",
+			"returns": "LabelColor",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" }
+			],
+			"csharp": { "member": "GetFolderLabel", "kind": "method" }
+		},
+		{
+			"id": "SetObjectLabels",
+			"cpp": "::Shalltear::SceneAnnotations::SetObjectLabels(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), color)",
+			"returns": "void",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "color", "type": "LabelColor" }
+			],
+			"csharp": { "member": "SetObjectLabels", "kind": "method" }
+		},
+		{
+			"id": "SetFolderLabel",
+			"cpp": "::Shalltear::SceneAnnotations::SetFolderLabel(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" },
+				{ "name": "color", "type": "LabelColor" }
+			],
+			"csharp": { "member": "SetFolderLabel", "kind": "method" }
+		},
+		{
+			"id": "GetLabelName",
+			"cpp": "::Shalltear::SceneAnnotations::GetLabelName(color)",
+			"returns": "string",
+			"params": [{ "name": "color", "type": "LabelColor" }],
+			"csharp": { "member": "GetLabelName", "kind": "method" }
+		},
+		{
+			"id": "CreateFolder",
+			"cpp": "::Shalltear::SceneAnnotations::CreateFolder(::Shalltear::Handle<::Shalltear::Scene>(scene), name, parent, std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(members)), slot)",
+			"returns": "u64",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "name", "type": "string" },
+				{ "name": "parent", "type": "FolderParent" },
+				{ "name": "members", "type": "list<SceneObject>" },
+				{ "name": "slot", "type": "u32" }
+			],
+			"csharp": { "member": "CreateFolder", "kind": "method" }
+		},
+		{
+			"id": "RenameFolder",
+			"cpp": "::Shalltear::SceneAnnotations::RenameFolder(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId, name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "RenameFolder", "kind": "method" }
+		},
+		{
+			"id": "DeleteFolder",
+			"cpp": "::Shalltear::SceneAnnotations::DeleteFolder(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId)",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" }
+			],
+			"csharp": { "member": "DeleteFolder", "kind": "method" }
+		},
+		{
+			"id": "MoveFolder",
+			"cpp": "::Shalltear::SceneAnnotations::MoveFolder(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId, newParent, slot, newOrder)",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" },
+				{ "name": "newParent", "type": "FolderParent" },
+				{ "name": "slot", "type": "u32" },
+				{ "name": "newOrder", "type": "u32" }
+			],
+			"csharp": { "member": "MoveFolder", "kind": "method" }
+		},
+		{
+			"id": "GetFolder",
+			"cpp": "::Shalltear::SceneAnnotations::GetFolder(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" },
+				{ "name": "outValue", "type": "FolderInfo" }
+			],
+			"csharp": { "member": "GetFolder", "kind": "method" }
+		},
+		{
+			"id": "GetChildFolders",
+			"cpp": "::Shalltear::SceneAnnotations::GetChildFolders(::Shalltear::Handle<::Shalltear::Scene>(scene), parent, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "FolderParent" },
+				{ "name": "outValue", "type": "list<FolderInfo>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::FolderInfo>" }
+			],
+			"csharp": { "member": "GetChildFolders", "kind": "method" }
+		},
+		{
+			"id": "GetFolderAnchor",
+			"cpp": "::Shalltear::SceneAnnotations::GetFolderAnchor(::Shalltear::Handle<::Shalltear::Scene>(scene), folderId)",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "folderId", "type": "u64" }
+			],
+			"csharp": { "member": "GetFolderAnchor", "kind": "method" }
+		},
+		{
+			"id": "GetFolderOf",
+			"cpp": "::Shalltear::SceneAnnotations::GetFolderOf(::Shalltear::Handle<::Shalltear::SceneObject>(objectValue))",
+			"returns": "u64",
+			"params": [{ "name": "objectValue", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "GetFolderOf", "kind": "method" }
+		},
+		{
+			"id": "FileObjects",
+			"cpp": "::Shalltear::SceneAnnotations::FileObjects(::Shalltear::Handle<::Shalltear::Scene>(scene), std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), folderId)",
+			"returns": "void",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "folderId", "type": "u64" }
+			],
+			"csharp": { "member": "FileObjects", "kind": "method" }
+		},
+		{
+			"id": "CanCreateFolderFrom",
+			"cpp": "::Shalltear::SceneAnnotations::CanCreateFolderFrom(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), Slots::HandleOut<::Shalltear::Scene>(outScene), outParent)",
+			"returns": "bool",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "outScene", "type": "Scene", "out": true },
+				{ "name": "outParent", "type": "FolderParent", "out": true }
+			],
+			"csharp": { "member": "CanCreateFolderFrom", "kind": "method" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "::Shalltear::SceneAnnotations::GetVersion(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "u64",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "GetVersion", "kind": "method" }
+		},
+		{
+			"id": "GetSidecarPath",
+			"cpp": "(::Shalltear::SceneAnnotations::GetSidecarPath(::Shalltear::Handle<::Shalltear::Scene>(scene))).ToString()",
+			"returns": "string",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "GetSidecarPath", "kind": "method" }
+		},
+		{
+			"id": "SaveFor",
+			"cpp": "::Shalltear::SceneAnnotations::SaveFor(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "SaveFor", "kind": "method" }
+		},
+		{
+			"id": "LoadFor",
+			"cpp": "::Shalltear::SceneAnnotations::LoadFor(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "LoadFor", "kind": "method" }
+		},
+		{
+			"id": "FlushDirty",
+			"cpp": "::Shalltear::SceneAnnotations::FlushDirty()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "FlushDirty", "kind": "method" }
+		},
+		{
+			"id": "RemapIds",
+			"cpp": "::Shalltear::SceneAnnotations::RemapIds(remap)",
+			"returns": "void",
+			"params": [{ "name": "remap", "type": "list<EditorIdRemap>" }],
+			"csharp": { "member": "RemapIds", "kind": "method" }
+		}
+	]
+}

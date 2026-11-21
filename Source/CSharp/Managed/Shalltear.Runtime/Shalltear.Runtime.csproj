@@ -15,8 +15,14 @@
 		<InternalsVisibleTo Include="Shalltear.ConformanceAOT" />
 		<InternalsVisibleTo Include="Shalltear.Conformance.Audio" />
 		<InternalsVisibleTo Include="Shalltear.ConformanceAudioAOT" />
+		<InternalsVisibleTo Include="Shalltear.Conformance.Editor" />
 		<InternalsVisibleTo Include="GameScripts" />
 		<InternalsVisibleTo Include="Shalltear.Physics3D" />
+		<InternalsVisibleTo Include="Shalltear.Editor" />
+		<InternalsVisibleTo Include="Shalltear.ImportPipeline" />
+		<InternalsVisibleTo Include="Shalltear.VisualEffects" />
+		<InternalsVisibleTo Include="Shalltear.PostProcessing" />
+		<InternalsVisibleTo Include="Shalltear.Network" />
 		<InternalsVisibleTo Include="Shalltear.Audio" />
 		<InternalsVisibleTo Include="Shalltear.Animation" />
 	</ItemGroup>

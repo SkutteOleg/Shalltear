@@ -1,0 +1,110 @@
+{
+	"area": "TextureEncodeInput",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/TextureCodecs.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.TextureEncodeInput",
+	"instance": "TextureEncodeInput",
+	"functions": [
+		{
+			"id": "GetTexels",
+			"cpp": "self->texels",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Texels", "kind": "getter" }
+		},
+		{
+			"id": "SetTexels",
+			"cpp": "self->texels = Slots::KeepFieldSpan(self, 0xd9b50748e59e2e8full, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Texels", "kind": "setter" }
+		},
+		{
+			"id": "GetTexelFormat",
+			"cpp": "self->texelFormat",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "TexelFormat", "kind": "getter" }
+		},
+		{
+			"id": "SetTexelFormat",
+			"cpp": "self->texelFormat = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFormat" }],
+			"csharp": { "member": "TexelFormat", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetSlices",
+			"cpp": "self->slices",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Slices", "kind": "getter" }
+		},
+		{
+			"id": "SetSlices",
+			"cpp": "self->slices = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Slices", "kind": "setter" }
+		},
+		{
+			"id": "GetMipLevels",
+			"cpp": "self->mipLevels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MipLevels", "kind": "getter" }
+		},
+		{
+			"id": "SetMipLevels",
+			"cpp": "self->mipLevels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "MipLevels", "kind": "setter" }
+		},
+		{
+			"id": "GetSuppliedLevels",
+			"cpp": "self->suppliedLevels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SuppliedLevels", "kind": "getter" }
+		},
+		{
+			"id": "SetSuppliedLevels",
+			"cpp": "self->suppliedLevels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SuppliedLevels", "kind": "setter" }
+		},
+		{
+			"id": "GetMeaning",
+			"cpp": "self->meaning",
+			"returns": "TexelMeaning",
+			"params": [],
+			"csharp": { "member": "Meaning", "kind": "getter" }
+		},
+		{
+			"id": "SetMeaning",
+			"cpp": "self->meaning = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TexelMeaning" }],
+			"csharp": { "member": "Meaning", "kind": "setter" }
+		}
+	]
+}

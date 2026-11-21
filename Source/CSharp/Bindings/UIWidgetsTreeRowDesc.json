@@ -1,0 +1,202 @@
+{
+	"area": "UIWidgetsTreeRowDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/Input/InputCodes.h",
+		"Shalltear/Core/UI/DragDrop.h"
+	],
+	"class": "Shalltear.UIWidgetsTreeRowDesc",
+	"instance": "UIWidgetsTreeRowDesc",
+	"functions": [
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetGuideMask",
+			"cpp": "self->guideMask",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "GuideMask", "kind": "getter" }
+		},
+		{
+			"id": "SetGuideMask",
+			"cpp": "self->guideMask = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "GuideMask", "kind": "setter" }
+		},
+		{
+			"id": "GetHasChildren",
+			"cpp": "self->hasChildren",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasChildren", "kind": "getter" }
+		},
+		{
+			"id": "SetHasChildren",
+			"cpp": "self->hasChildren = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "HasChildren", "kind": "setter" }
+		},
+		{
+			"id": "GetExpanded",
+			"cpp": "self->expanded",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Expanded", "kind": "getter" }
+		},
+		{
+			"id": "SetExpanded",
+			"cpp": "self->expanded = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Expanded", "kind": "setter" }
+		},
+		{
+			"id": "GetSelected",
+			"cpp": "self->selected",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Selected", "kind": "getter" }
+		},
+		{
+			"id": "SetSelected",
+			"cpp": "self->selected = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Selected", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = Slots::KeepFieldText(self, 0x37287e0074272cd5ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetUserTag",
+			"cpp": "self->userTag",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "UserTag", "kind": "getter" }
+		},
+		{
+			"id": "SetUserTag",
+			"cpp": "self->userTag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "UserTag", "kind": "setter" }
+		},
+		{
+			"id": "SetOnSelect",
+			"cpp": "self->onSelect = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;KeyMod>", "optional": true, "cpp": "std::function<void (Shalltear::KeyMod)>" }
+			],
+			"csharp": { "member": "SetOnSelect", "kind": "method" }
+		},
+		{
+			"id": "SetOnToggleExpand",
+			"cpp": "self->onToggleExpand = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnToggleExpand", "kind": "method" }
+		},
+		{
+			"id": "SetOnDoubleClick",
+			"cpp": "self->onDoubleClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnDoubleClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnRightClick",
+			"cpp": "self->onRightClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnRightClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragRow",
+			"cpp": "self->onDragRow = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;Vec2>", "optional": true, "cpp": "std::function<void (Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetOnDragRow", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragOver",
+			"cpp": "self->onDragOver = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;UIDragPayload>", "optional": true, "cpp": "std::function<bool (const Shalltear::UI::DragPayload &)>" }
+			],
+			"csharp": { "member": "SetOnDragOver", "kind": "method" }
+		},
+		{
+			"id": "SetOnDrop",
+			"cpp": "self->onDrop = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIDragPayload;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnDrop", "kind": "method" }
+		}
+	]
+}

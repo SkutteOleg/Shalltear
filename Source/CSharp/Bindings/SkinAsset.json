@@ -1,0 +1,77 @@
+{
+	"area": "SkinAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/SkinAsset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Graphics/SkeletonAsset.h"
+	],
+	"class": "Shalltear.SkinAsset",
+	"instance": "SkinAsset",
+	"functions": [
+		{
+			"id": "GetJointCount",
+			"cpp": "self->GetJointCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "JointCount", "kind": "getter" }
+		},
+		{
+			"id": "GetSkeletonGuid",
+			"cpp": "self->skeletonGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "SkeletonGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetSkeletonGuid",
+			"cpp": "self->skeletonGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "SkeletonGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetSkeleton",
+			"cpp": "self->skeleton",
+			"returns": "SkeletonAsset",
+			"params": [],
+			"csharp": { "member": "Skeleton", "kind": "getter" }
+		},
+		{
+			"id": "SetSkeleton",
+			"cpp": "self->skeleton = ::Shalltear::Handle<::Shalltear::SkeletonAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SkeletonAsset", "optional": true }],
+			"csharp": { "member": "Skeleton", "kind": "setter" }
+		},
+		{
+			"id": "GetJointToBone",
+			"cpp": "self->jointToBone",
+			"returns": "list<i16>",
+			"params": [],
+			"csharp": { "member": "JointToBone", "kind": "getter" }
+		},
+		{
+			"id": "SetJointToBone",
+			"cpp": "self->jointToBone = Slots::ToVector<i16>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i16>" }],
+			"csharp": { "member": "JointToBone", "kind": "setter" }
+		},
+		{
+			"id": "GetInverseBind",
+			"cpp": "self->inverseBind",
+			"returns": "list<Mat4>",
+			"params": [],
+			"csharp": { "member": "InverseBind", "kind": "getter" }
+		},
+		{
+			"id": "SetInverseBind",
+			"cpp": "self->inverseBind = Slots::Copies<::Shalltear::Vector<::Shalltear::Mat4>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Mat4>" }],
+			"csharp": { "member": "InverseBind", "kind": "setter" }
+		}
+	]
+}

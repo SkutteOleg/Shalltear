@@ -1,0 +1,97 @@
+{
+	"area": "ProceduralContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ProceduralRenderer.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Graphics/MeshAsset.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.ProceduralContext",
+	"instance": "ProceduralContext",
+	"functions": [
+		{
+			"id": "GetItem",
+			"cpp": "self->GetItem()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Item", "kind": "getter" }
+		},
+		{
+			"id": "GetPass",
+			"cpp": "self->GetPass()",
+			"returns": "ProceduralPass",
+			"params": [],
+			"csharp": { "member": "Pass", "kind": "getter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->GetValue()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "Draw",
+			"cpp": "self->Draw(pushConstants, vertexCount, instanceCount)",
+			"returns": "bool",
+			"params": [
+				{ "name": "pushConstants", "type": "list<u8>" },
+				{ "name": "vertexCount", "type": "u32" },
+				{ "name": "instanceCount", "type": "u32" }
+			],
+			"csharp": { "member": "Draw", "kind": "method" }
+		},
+		{
+			"id": "DrawIndirect",
+			"cpp": "self->DrawIndirect(pushConstants, argumentsValue, offset)",
+			"returns": "bool",
+			"params": [
+				{ "name": "pushConstants", "type": "list<u8>" },
+				{ "name": "argumentsValue", "type": "RHIBufferHandle" },
+				{ "name": "offset", "type": "u64" }
+			],
+			"csharp": { "member": "DrawIndirect", "kind": "method" }
+		},
+		{
+			"id": "DrawTriangles",
+			"cpp": "self->DrawTriangles(vertices, receiveShadows)",
+			"returns": "bool",
+			"params": [
+				{ "name": "vertices", "type": "list<MeshVertex>" },
+				{ "name": "receiveShadows", "type": "bool" }
+			],
+			"csharp": { "member": "DrawTriangles", "kind": "method" }
+		},
+		{
+			"id": "GetView",
+			"cpp": "self->GetView()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "View", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetProjection",
+			"cpp": "self->GetProjection()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Projection", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetCameraPosition",
+			"cpp": "self->GetCameraPosition()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "CameraPosition", "kind": "getter" }
+		},
+		{
+			"id": "GetExtent",
+			"cpp": "self->GetExtent()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Extent", "kind": "getter" }
+		}
+	]
+}

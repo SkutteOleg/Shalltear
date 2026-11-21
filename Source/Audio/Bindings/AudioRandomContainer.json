@@ -1,0 +1,207 @@
+{
+	"area": "AudioRandomContainer",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioContainer.h"
+	],
+	"class": "Shalltear.AudioRandomContainer",
+	"instance": "AudioRandomContainer",
+	"functions": [
+		{
+			"id": "GetVolume",
+			"cpp": "self->volume",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Volume", "kind": "getter" }
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "self->volume = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Volume", "kind": "setter" }
+		},
+		{
+			"id": "GetVolumeRandomizationRange",
+			"cpp": "self->volumeRandomizationRange",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "VolumeRandomizationRange", "kind": "getter" }
+		},
+		{
+			"id": "SetVolumeRandomizationRange",
+			"cpp": "self->volumeRandomizationRange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "VolumeRandomizationRange", "kind": "setter" }
+		},
+		{
+			"id": "GetPitch",
+			"cpp": "self->pitch",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Pitch", "kind": "getter" }
+		},
+		{
+			"id": "SetPitch",
+			"cpp": "self->pitch = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Pitch", "kind": "setter" }
+		},
+		{
+			"id": "GetPitchRandomizationRange",
+			"cpp": "self->pitchRandomizationRange",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "PitchRandomizationRange", "kind": "getter" }
+		},
+		{
+			"id": "SetPitchRandomizationRange",
+			"cpp": "self->pitchRandomizationRange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "PitchRandomizationRange", "kind": "setter" }
+		},
+		{
+			"id": "GetElements",
+			"cpp": "self->elements",
+			"returns": "list<AudioRandomContainerElement>",
+			"params": [],
+			"csharp": { "member": "Elements", "kind": "getter" }
+		},
+		{
+			"id": "SetElements",
+			"cpp": "self->elements = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioRandomContainerElement>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioRandomContainerElement>" }],
+			"csharp": { "member": "Elements", "kind": "setter" }
+		},
+		{
+			"id": "GetTriggerMode",
+			"cpp": "self->triggerMode",
+			"returns": "AudioRandomContainerTriggerMode",
+			"params": [],
+			"csharp": { "member": "TriggerMode", "kind": "getter" }
+		},
+		{
+			"id": "SetTriggerMode",
+			"cpp": "self->triggerMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioRandomContainerTriggerMode" }],
+			"csharp": { "member": "TriggerMode", "kind": "setter" }
+		},
+		{
+			"id": "GetPlaybackMode",
+			"cpp": "self->playbackMode",
+			"returns": "AudioRandomContainerPlaybackMode",
+			"params": [],
+			"csharp": { "member": "PlaybackMode", "kind": "getter" }
+		},
+		{
+			"id": "SetPlaybackMode",
+			"cpp": "self->playbackMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioRandomContainerPlaybackMode" }],
+			"csharp": { "member": "PlaybackMode", "kind": "setter" }
+		},
+		{
+			"id": "GetAvoidRepeatingLast",
+			"cpp": "self->avoidRepeatingLast",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "AvoidRepeatingLast", "kind": "getter" }
+		},
+		{
+			"id": "SetAvoidRepeatingLast",
+			"cpp": "self->avoidRepeatingLast = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "AvoidRepeatingLast", "kind": "setter" }
+		},
+		{
+			"id": "GetAutomaticTriggerMode",
+			"cpp": "self->automaticTriggerMode",
+			"returns": "AudioRandomContainerAutomaticTriggerMode",
+			"params": [],
+			"csharp": { "member": "AutomaticTriggerMode", "kind": "getter" }
+		},
+		{
+			"id": "SetAutomaticTriggerMode",
+			"cpp": "self->automaticTriggerMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioRandomContainerAutomaticTriggerMode" }],
+			"csharp": { "member": "AutomaticTriggerMode", "kind": "setter" }
+		},
+		{
+			"id": "GetAutomaticTriggerTime",
+			"cpp": "self->automaticTriggerTime",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "AutomaticTriggerTime", "kind": "getter" }
+		},
+		{
+			"id": "SetAutomaticTriggerTime",
+			"cpp": "self->automaticTriggerTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "AutomaticTriggerTime", "kind": "setter" }
+		},
+		{
+			"id": "GetAutomaticTriggerTimeRandomizationRange",
+			"cpp": "self->automaticTriggerTimeRandomizationRange",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "AutomaticTriggerTimeRandomizationRange", "kind": "getter" }
+		},
+		{
+			"id": "SetAutomaticTriggerTimeRandomizationRange",
+			"cpp": "self->automaticTriggerTimeRandomizationRange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "AutomaticTriggerTimeRandomizationRange", "kind": "setter" }
+		},
+		{
+			"id": "GetLoopMode",
+			"cpp": "self->loopMode",
+			"returns": "AudioRandomContainerLoopMode",
+			"params": [],
+			"csharp": { "member": "LoopMode", "kind": "getter" }
+		},
+		{
+			"id": "SetLoopMode",
+			"cpp": "self->loopMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioRandomContainerLoopMode" }],
+			"csharp": { "member": "LoopMode", "kind": "setter" }
+		},
+		{
+			"id": "GetLoopCount",
+			"cpp": "self->loopCount",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "LoopCount", "kind": "getter" }
+		},
+		{
+			"id": "SetLoopCount",
+			"cpp": "self->loopCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "LoopCount", "kind": "setter" }
+		},
+		{
+			"id": "GetLoopCountRandomizationRange",
+			"cpp": "self->loopCountRandomizationRange",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "LoopCountRandomizationRange", "kind": "getter" }
+		},
+		{
+			"id": "SetLoopCountRandomizationRange",
+			"cpp": "self->loopCountRandomizationRange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "LoopCountRandomizationRange", "kind": "setter" }
+		}
+	]
+}

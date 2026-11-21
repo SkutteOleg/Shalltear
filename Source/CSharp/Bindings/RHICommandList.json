@@ -1,0 +1,233 @@
+{
+	"area": "RHICommandList",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHICommandList.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.RHICommandList",
+	"instance": "RHICommandList",
+	"natives": [{ "name": "RHICommandList", "cpp": "::Shalltear::RHI::CommandList" }],
+	"functions": [
+		{
+			"id": "TransitionTexture",
+			"cpp": "self->TransitionTexture(texture, newState)",
+			"returns": "void",
+			"params": [
+				{ "name": "texture", "type": "RHITextureHandle" },
+				{ "name": "newState", "type": "RHIResourceState" }
+			],
+			"csharp": { "member": "TransitionTexture", "kind": "method" }
+		},
+		{
+			"id": "TransitionBuffer",
+			"cpp": "self->TransitionBuffer(buffer, newState)",
+			"returns": "void",
+			"params": [
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "newState", "type": "RHIResourceState" }
+			],
+			"csharp": { "member": "TransitionBuffer", "kind": "method" }
+		},
+		{
+			"id": "UnorderedAccessBarrier",
+			"cpp": "self->UnorderedAccessBarrier(buffer)",
+			"returns": "void",
+			"params": [{ "name": "buffer", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "UnorderedAccessBarrier", "kind": "method" }
+		},
+		{
+			"id": "BeginRenderPass",
+			"cpp": "self->BeginRenderPass(*desc)",
+			"returns": "void",
+			"params": [{ "name": "desc", "type": "RHIRenderPassDesc" }],
+			"csharp": { "member": "BeginRenderPass", "kind": "method" }
+		},
+		{
+			"id": "EndRenderPass",
+			"cpp": "self->EndRenderPass()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "EndRenderPass", "kind": "method" }
+		},
+		{
+			"id": "SetPipeline",
+			"cpp": "self->SetPipeline(pipeline)",
+			"returns": "void",
+			"params": [{ "name": "pipeline", "type": "RHIPipelineHandle" }],
+			"csharp": { "member": "SetPipeline", "kind": "method" }
+		},
+		{
+			"id": "SetFrontFace",
+			"cpp": "self->SetFrontFace(face)",
+			"returns": "void",
+			"params": [{ "name": "face", "type": "RHIFrontFace" }],
+			"csharp": { "member": "SetFrontFace", "kind": "method" }
+		},
+		{
+			"id": "SetDepthBias",
+			"cpp": "self->SetDepthBias(constant, slope)",
+			"returns": "void",
+			"params": [
+				{ "name": "constant", "type": "f32" },
+				{ "name": "slope", "type": "f32" }
+			],
+			"csharp": { "member": "SetDepthBias", "kind": "method" }
+		},
+		{
+			"id": "SetViewportScissor",
+			"cpp": "self->SetViewportScissor(rect)",
+			"returns": "void",
+			"params": [{ "name": "rect", "type": "RectI" }],
+			"csharp": { "member": "SetViewportScissor", "kind": "method" }
+		},
+		{
+			"id": "SetScissor",
+			"cpp": "self->SetScissor(rect)",
+			"returns": "void",
+			"params": [{ "name": "rect", "type": "RectI" }],
+			"csharp": { "member": "SetScissor", "kind": "method" }
+		},
+		{
+			"id": "BindTransientSet",
+			"cpp": "self->BindTransientSet(setIndex, set)",
+			"returns": "void",
+			"params": [
+				{ "name": "setIndex", "type": "u32" },
+				{ "name": "set", "type": "RHITransientSet" }
+			],
+			"csharp": { "member": "BindTransientSet", "kind": "method" }
+		},
+		{
+			"id": "PushConstants",
+			"cpp": "self->PushConstants(data)",
+			"returns": "void",
+			"params": [{ "name": "data", "type": "list<u8>" }],
+			"csharp": { "member": "PushConstants", "kind": "method" }
+		},
+		{
+			"id": "BindIndexBuffer",
+			"cpp": "self->BindIndexBuffer(buffer, sixteenBit)",
+			"returns": "void",
+			"params": [
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "sixteenBit", "type": "bool" }
+			],
+			"csharp": { "member": "BindIndexBuffer", "kind": "method" }
+		},
+		{
+			"id": "Draw",
+			"cpp": "self->Draw(vertexCount, instanceCount)",
+			"returns": "void",
+			"params": [
+				{ "name": "vertexCount", "type": "u32" },
+				{ "name": "instanceCount", "type": "u32" }
+			],
+			"csharp": { "member": "Draw", "kind": "method" }
+		},
+		{
+			"id": "DrawIndexed",
+			"cpp": "self->DrawIndexed(indexCount, firstIndex, instanceCount)",
+			"returns": "void",
+			"params": [
+				{ "name": "indexCount", "type": "u32" },
+				{ "name": "firstIndex", "type": "u32" },
+				{ "name": "instanceCount", "type": "u32" }
+			],
+			"csharp": { "member": "DrawIndexed", "kind": "method" }
+		},
+		{
+			"id": "DrawIndirect",
+			"cpp": "self->DrawIndirect(argumentsValue, offset)",
+			"returns": "void",
+			"params": [
+				{ "name": "argumentsValue", "type": "RHIBufferHandle" },
+				{ "name": "offset", "type": "u64" }
+			],
+			"csharp": { "member": "DrawIndirect", "kind": "method" }
+		},
+		{
+			"id": "Dispatch",
+			"cpp": "self->Dispatch(groupsX, groupsY, groupsZ)",
+			"returns": "void",
+			"params": [
+				{ "name": "groupsX", "type": "u32" },
+				{ "name": "groupsY", "type": "u32" },
+				{ "name": "groupsZ", "type": "u32" }
+			],
+			"csharp": { "member": "Dispatch", "kind": "method" }
+		},
+		{
+			"id": "DispatchIndirect",
+			"cpp": "self->DispatchIndirect(argumentsValue, offset)",
+			"returns": "void",
+			"params": [
+				{ "name": "argumentsValue", "type": "RHIBufferHandle" },
+				{ "name": "offset", "type": "u64" }
+			],
+			"csharp": { "member": "DispatchIndirect", "kind": "method" }
+		},
+		{
+			"id": "CopyBufferRegion",
+			"cpp": "self->CopyBufferRegion(src, dst, srcOffset, dstOffset, size)",
+			"returns": "void",
+			"params": [
+				{ "name": "src", "type": "RHIBufferHandle" },
+				{ "name": "dst", "type": "RHIBufferHandle" },
+				{ "name": "srcOffset", "type": "u64" },
+				{ "name": "dstOffset", "type": "u64" },
+				{ "name": "size", "type": "u64" }
+			],
+			"csharp": { "member": "CopyBufferRegion", "kind": "method" }
+		},
+		{
+			"id": "CopyBufferToTexture",
+			"cpp": "self->CopyBufferToTexture(src, dst, mipLevel)",
+			"returns": "void",
+			"params": [
+				{ "name": "src", "type": "RHIBufferHandle" },
+				{ "name": "dst", "type": "RHITextureHandle" },
+				{ "name": "mipLevel", "type": "u32" }
+			],
+			"csharp": { "member": "CopyBufferToTexture", "kind": "method" }
+		},
+		{
+			"id": "CopyTextureToBuffer",
+			"cpp": "self->CopyTextureToBuffer(src, dst, dstOffset, mipLevel, layer)",
+			"returns": "void",
+			"params": [
+				{ "name": "src", "type": "RHITextureHandle" },
+				{ "name": "dst", "type": "RHIBufferHandle" },
+				{ "name": "dstOffset", "type": "u64" },
+				{ "name": "mipLevel", "type": "u32" },
+				{ "name": "layer", "type": "u32" }
+			],
+			"csharp": { "member": "CopyTextureToBuffer", "kind": "method" }
+		},
+		{
+			"id": "GenerateMips",
+			"cpp": "self->GenerateMips(target)",
+			"returns": "void",
+			"params": [{ "name": "target", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GenerateMips", "kind": "method" }
+		},
+		{
+			"id": "ResolveTexture",
+			"cpp": "self->ResolveTexture(src, dst)",
+			"returns": "void",
+			"params": [
+				{ "name": "src", "type": "RHITextureHandle" },
+				{ "name": "dst", "type": "RHITextureHandle" }
+			],
+			"csharp": { "member": "ResolveTexture", "kind": "method" }
+		},
+		{
+			"id": "Breadcrumb",
+			"cpp": "self->Breadcrumb(str(name).c_str())",
+			"returns": "void",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "Breadcrumb", "kind": "method" }
+		}
+	]
+}

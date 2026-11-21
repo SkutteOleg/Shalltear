@@ -1,0 +1,87 @@
+{
+	"area": "ObjectFieldDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ObjectField.h",
+		"Shalltear/Editor/EditorEvents.h",
+		"Shalltear/Core/UI/DragDrop.h"
+	],
+	"class": "Shalltear.Editor.ObjectFieldDesc",
+	"instance": "ObjectFieldDesc",
+	"functions": [
+		{
+			"id": "GetCaption",
+			"cpp": "self->caption",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Caption", "kind": "getter" }
+		},
+		{
+			"id": "SetCaption",
+			"cpp": "self->caption = Slots::KeepFieldText(self, 0x626c9d17ad4bbe07ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Caption", "kind": "setter" }
+		},
+		{
+			"id": "SetAccepts",
+			"cpp": "self->accepts = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;UIDragPayload>", "optional": true, "cpp": "std::function<bool (const Shalltear::UI::DragPayload &)>" }
+			],
+			"csharp": { "member": "SetAccepts", "kind": "method" }
+		},
+		{
+			"id": "SetOnDrop",
+			"cpp": "self->onDrop = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIDragPayload;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnDrop", "kind": "method" }
+		},
+		{
+			"id": "SetOnPick",
+			"cpp": "self->onPick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnPick", "kind": "method" }
+		},
+		{
+			"id": "GetPickTooltip",
+			"cpp": "self->pickTooltip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "PickTooltip", "kind": "getter" }
+		},
+		{
+			"id": "SetPickTooltip",
+			"cpp": "self->pickTooltip = Slots::KeepFieldText(self, 0xff35fdb6f61e1f51ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "PickTooltip", "kind": "setter" }
+		},
+		{
+			"id": "SetOnClear",
+			"cpp": "self->onClear = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnClear", "kind": "method" }
+		},
+		{
+			"id": "SetResolveTarget",
+			"cpp": "self->resolveTarget = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<EditorPingTarget>", "optional": true, "cpp": "std::function<Shalltear::EditorPingTarget ()>" }
+			],
+			"csharp": { "member": "SetResolveTarget", "kind": "method" }
+		}
+	]
+}

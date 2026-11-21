@@ -1,0 +1,68 @@
+{
+	"area": "AudioVoiceEffect",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/Audio.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.AudioVoiceEffect",
+	"instance": "AudioVoiceEffect",
+	"functions": [
+		{
+			"id": "GetEffect",
+			"cpp": "self->effect",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Effect", "kind": "getter" }
+		},
+		{
+			"id": "SetEffect",
+			"cpp": "self->effect = Slots::KeepFieldText(self, 0x64fd8bda4a87871dull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Effect", "kind": "setter" }
+		},
+		{
+			"id": "GetParameters",
+			"cpp": "self->parameters",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Parameters", "kind": "getter" }
+		},
+		{
+			"id": "SetParameters",
+			"cpp": "self->parameters = Slots::KeepFieldSpan(self, 0xe2db84092a2118d8ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Parameters", "kind": "setter" }
+		},
+		{
+			"id": "GetDistanceCurve",
+			"cpp": "self->distanceCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "DistanceCurve", "kind": "getter" }
+		},
+		{
+			"id": "SetDistanceCurve",
+			"cpp": "self->distanceCurve = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve", "optional": true }],
+			"csharp": { "member": "DistanceCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetDistanceParameter",
+			"cpp": "self->distanceParameter",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "DistanceParameter", "kind": "getter" }
+		},
+		{
+			"id": "SetDistanceParameter",
+			"cpp": "self->distanceParameter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "DistanceParameter", "kind": "setter" }
+		}
+	]
+}

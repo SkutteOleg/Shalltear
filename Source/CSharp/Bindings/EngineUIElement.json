@@ -1,0 +1,236 @@
+{
+	"area": "EngineUIElement",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Element.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.EngineUIElement",
+	"instance": "EngineUIElement",
+	"functions": [
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetFirstChild",
+			"cpp": "self->firstChild",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "FirstChild", "kind": "getter" }
+		},
+		{
+			"id": "SetFirstChild",
+			"cpp": "self->firstChild = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "FirstChild", "kind": "setter" }
+		},
+		{
+			"id": "GetLastChild",
+			"cpp": "self->lastChild",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LastChild", "kind": "getter" }
+		},
+		{
+			"id": "SetLastChild",
+			"cpp": "self->lastChild = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "LastChild", "kind": "setter" }
+		},
+		{
+			"id": "GetNextSibling",
+			"cpp": "self->nextSibling",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "NextSibling", "kind": "getter" }
+		},
+		{
+			"id": "SetNextSibling",
+			"cpp": "self->nextSibling = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "NextSibling", "kind": "setter" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeTag",
+			"cpp": "self->typeTag",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeTag", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeTag",
+			"cpp": "self->typeTag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeTag", "kind": "setter" }
+		},
+		{
+			"id": "GetClasses",
+			"cpp": "self->classes",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "Classes", "kind": "getter" }
+		},
+		{
+			"id": "SetClasses",
+			"cpp": "Slots::Assign(self->classes, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "Classes", "kind": "setter" }
+		},
+		{
+			"id": "GetClassCount",
+			"cpp": "self->classCount",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "ClassCount", "kind": "getter" }
+		},
+		{
+			"id": "SetClassCount",
+			"cpp": "self->classCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "ClassCount", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "UIElementFlags",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementFlags" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetScrollOffset",
+			"cpp": "self->scrollOffset",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "ScrollOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetScrollOffset",
+			"cpp": "self->scrollOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "ScrollOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxScroll",
+			"cpp": "self->maxScroll",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "MaxScroll", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxScroll",
+			"cpp": "self->maxScroll = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "MaxScroll", "kind": "setter" }
+		},
+		{
+			"id": "GetTint",
+			"cpp": "self->tint",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "Tint", "kind": "getter" }
+		},
+		{
+			"id": "SetTint",
+			"cpp": "self->tint = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "Tint", "kind": "setter" }
+		},
+		{
+			"id": "GetTextIndex",
+			"cpp": "self->textIndex",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TextIndex", "kind": "getter" }
+		},
+		{
+			"id": "SetTextIndex",
+			"cpp": "self->textIndex = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TextIndex", "kind": "setter" }
+		},
+		{
+			"id": "GetTextInputIndex",
+			"cpp": "self->textInputIndex",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TextInputIndex", "kind": "getter" }
+		},
+		{
+			"id": "SetTextInputIndex",
+			"cpp": "self->textInputIndex = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TextInputIndex", "kind": "setter" }
+		},
+		{
+			"id": "GetGeneration",
+			"cpp": "self->generation",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Generation", "kind": "getter" }
+		},
+		{
+			"id": "SetGeneration",
+			"cpp": "self->generation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Generation", "kind": "setter" }
+		},
+		{
+			"id": "GetUserTag",
+			"cpp": "self->userTag",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "UserTag", "kind": "getter" }
+		},
+		{
+			"id": "SetUserTag",
+			"cpp": "self->userTag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "UserTag", "kind": "setter" }
+		}
+	]
+}

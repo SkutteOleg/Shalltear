@@ -1,0 +1,92 @@
+{
+	"area": "Prefab",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Prefab",
+	"instance": "Prefab",
+	"enums": [
+		{
+			"name": "PrefabKind",
+			"cpp": "::Shalltear::PrefabKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Regular", "value": 0 },
+				{ "name": "Model", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "PrefabFileRef",
+			"cpp": "::Shalltear::PrefabFileRef",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "file", "type": "EngineGuid", "offset": 0 },
+				{ "name": "localId", "type": "u64", "offset": 16 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "OverrideLayer", "cpp": "::Shalltear::OverrideLayer", "owned": true, "create": true },
+		{ "name": "SceneDocument", "cpp": "::Shalltear::SceneDocument" },
+		{ "name": "PrefabInstanceDiff", "cpp": "::Shalltear::PrefabInstanceDiff", "owned": true, "create": true },
+		{ "name": "PrefabTargetPath", "cpp": "::Shalltear::PrefabTargetPath", "owned": true, "create": true },
+		{ "name": "OverrideValue", "cpp": "::Shalltear::OverrideValue", "owned": true, "create": true },
+		{ "name": "PropertyOverrideOp", "cpp": "::Shalltear::PropertyOverrideOp", "owned": true, "create": true },
+		{ "name": "AddedObjectOp", "cpp": "::Shalltear::AddedObjectOp", "owned": true, "create": true },
+		{ "name": "RemovedObjectOp", "cpp": "::Shalltear::RemovedObjectOp", "owned": true, "create": true },
+		{ "name": "AddedComponentOp", "cpp": "::Shalltear::AddedComponentOp", "owned": true, "create": true },
+		{ "name": "RemovedComponentOp", "cpp": "::Shalltear::RemovedComponentOp", "owned": true, "create": true },
+		{ "name": "PrefabInstanceRecord", "cpp": "::Shalltear::PrefabInstanceRecord", "owned": true, "create": true },
+		{ "name": "PrefabInstanceDiffProperty", "cpp": "::Shalltear::PrefabInstanceDiff::Property", "owned": true, "create": true },
+		{ "name": "PrefabInstanceDiffRemovedComponent", "cpp": "::Shalltear::PrefabInstanceDiff::RemovedComponent", "owned": true, "create": true },
+		{ "name": "PrefabInstanceDiffRemovedObject", "cpp": "::Shalltear::PrefabInstanceDiff::RemovedObject", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "FoldRef",
+			"cpp": "::Shalltear::FoldRef(seed, file, localId)",
+			"returns": "u64",
+			"params": [
+				{ "name": "seed", "type": "u64" },
+				{ "name": "file", "type": "EngineGuid" },
+				{ "name": "localId", "type": "u64" }
+			],
+			"csharp": { "member": "FoldRef", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetBasePrefab",
+			"cpp": "self->GetBasePrefab()",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "BasePrefab", "kind": "getter" }
+		},
+		{
+			"id": "GetOverrides",
+			"cpp": "self->GetOverrides()",
+			"returns": "OverrideLayer",
+			"params": [],
+			"csharp": { "member": "Overrides", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetFragment",
+			"cpp": "self->GetFragment()",
+			"returns": "SceneDocument",
+			"params": [],
+			"csharp": { "member": "Fragment", "kind": "getter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->GetKind()",
+			"returns": "PrefabKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		}
+	]
+}

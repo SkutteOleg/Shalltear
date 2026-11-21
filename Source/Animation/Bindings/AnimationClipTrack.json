@@ -1,0 +1,139 @@
+{
+	"area": "AnimationClipTrack",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimationClip.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.AnimationClipTrack",
+	"instance": "AnimationClipTrack",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "AnimationTrackKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationTrackKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetInterp",
+			"cpp": "self->interp",
+			"returns": "AnimationInterpolation",
+			"params": [],
+			"csharp": { "member": "Interp", "kind": "getter" }
+		},
+		{
+			"id": "SetInterp",
+			"cpp": "self->interp = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationInterpolation" }],
+			"csharp": { "member": "Interp", "kind": "setter" }
+		},
+		{
+			"id": "GetComponent",
+			"cpp": "self->component",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "Component", "kind": "getter" }
+		},
+		{
+			"id": "SetComponent",
+			"cpp": "self->component = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "Component", "kind": "setter" }
+		},
+		{
+			"id": "GetObjectPath",
+			"cpp": "self->objectPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ObjectPath", "kind": "getter" }
+		},
+		{
+			"id": "SetObjectPath",
+			"cpp": "self->objectPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ObjectPath", "kind": "setter" }
+		},
+		{
+			"id": "GetComponentType",
+			"cpp": "self->componentType",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ComponentType", "kind": "getter" }
+		},
+		{
+			"id": "SetComponentType",
+			"cpp": "self->componentType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "ComponentType", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetTimes",
+			"cpp": "self->times",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Times", "kind": "getter" }
+		},
+		{
+			"id": "SetTimes",
+			"cpp": "self->times = Slots::ToVector<f32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Times", "kind": "setter" }
+		},
+		{
+			"id": "GetValues",
+			"cpp": "self->values",
+			"returns": "list<Vec4>",
+			"params": [],
+			"csharp": { "member": "Values", "kind": "getter" }
+		},
+		{
+			"id": "SetValues",
+			"cpp": "self->values = Slots::ToVector<::Shalltear::Vec4>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec4>" }],
+			"csharp": { "member": "Values", "kind": "setter" }
+		},
+		{
+			"id": "GetAssets",
+			"cpp": "self->assets",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Assets", "kind": "getter" }
+		},
+		{
+			"id": "SetAssets",
+			"cpp": "self->assets = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Assets", "kind": "setter" }
+		}
+	]
+}

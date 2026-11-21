@@ -1,0 +1,48 @@
+{
+	"area": "Jobs",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Jobs/JobSystem.h"
+	],
+	"class": "Shalltear.JobSystem",
+	"functions": [
+		{
+			"id": "SubmitAlone",
+			"cpp": "::Shalltear::JobSystem::Submit([held = std::make_shared<std::function<void()>>(std::move(job))] { (*held)(); }, type)",
+			"returns": "JobHandle",
+			"thread": "any",
+			"params": [
+				{ "name": "job", "type": "fn<void>", "cpp": "std::function<void()>" },
+				{ "name": "type", "type": "JobType", "default": "Normal" }
+			],
+			"csharp": { "member": "Submit", "kind": "method" },
+			"doc": "Runs a delegate on a worker thread."
+		},
+		{
+			"id": "Submit",
+			"cpp": "::Shalltear::JobSystem::Submit([held = std::make_shared<std::function<void()>>(std::move(job))] { (*held)(); }, dependencies, type)",
+			"returns": "JobHandle",
+			"thread": "any",
+			"params": [
+				{ "name": "job", "type": "fn<void>", "cpp": "std::function<void()>" },
+				{ "name": "dependencies", "type": "list<JobHandle>" },
+				{ "name": "type", "type": "JobType", "default": "Normal" }
+			],
+			"csharp": { "member": "Submit", "kind": "method" },
+			"doc": "Runs a delegate on a worker thread after the dependencies are done."
+		},
+		{
+			"id": "ParallelFor",
+			"cpp": "::Shalltear::JobSystem::ParallelFor(lanes, count, body)",
+			"returns": "void",
+			"thread": "any",
+			"params": [
+				{ "name": "lanes", "type": "u32" },
+				{ "name": "count", "type": "u32" },
+				{ "name": "body", "type": "fn<void;u32;u32;u32>", "cpp": "std::function<void(::Shalltear::u32, ::Shalltear::u32, ::Shalltear::u32)>" }
+			],
+			"csharp": { "member": "ParallelFor", "kind": "method" },
+			"doc": "Splits count items over lanes + calls body(lane, first, end) on each (lane 0 on the calling thread)."
+		}
+	]
+}

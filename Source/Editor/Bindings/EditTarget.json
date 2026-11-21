@@ -1,0 +1,59 @@
+{
+	"area": "EditTarget",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Object.h"
+	],
+	"class": "Shalltear.Editor.EditTarget",
+	"instance": "EditTarget",
+	"natives": [
+		{ "name": "EditTarget", "cpp": "::Shalltear::EditTarget", "owned": true, "create": true },
+		{ "name": "EditTargetReadScope", "cpp": "::Shalltear::EditTarget::ReadScope", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "PrefabRow",
+			"cpp": "::Shalltear::EditTarget::PrefabRow(prefabId, rowKey)",
+			"returns": "EditTarget",
+			"params": [
+				{ "name": "prefabId", "type": "EngineGuid" },
+				{ "name": "rowKey", "type": "u64" }
+			],
+			"csharp": { "member": "PrefabRow", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Resolve",
+			"cpp": "self->Resolve()",
+			"returns": "EngineObject",
+			"params": [],
+			"csharp": { "member": "Resolve", "kind": "method" }
+		},
+		{
+			"id": "NotifyWritten",
+			"cpp": "self->NotifyWritten()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NotifyWritten", "kind": "method" }
+		},
+		{
+			"id": "SyncForRead",
+			"cpp": "::Shalltear::EditTarget::SyncForRead(*objectValue)",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "EngineObject" }],
+			"csharp": { "member": "SyncForRead", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "IsPrefabRow",
+			"cpp": "self->IsPrefabRow()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPrefabRow", "kind": "getter" }
+		}
+	]
+}

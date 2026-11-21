@@ -1,0 +1,109 @@
+{
+	"area": "AnimatorControllerState",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerState",
+	"instance": "AnimatorControllerState",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetMotion",
+			"cpp": "self->motion",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Motion", "kind": "getter" }
+		},
+		{
+			"id": "SetMotion",
+			"cpp": "self->motion = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Motion", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "self->speed",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Speed", "kind": "getter" }
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "self->speed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Speed", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeedParameter",
+			"cpp": "self->speedParameter",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SpeedParameter", "kind": "getter" }
+		},
+		{
+			"id": "SetSpeedParameter",
+			"cpp": "self->speedParameter = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SpeedParameter", "kind": "setter" }
+		},
+		{
+			"id": "GetMachine",
+			"cpp": "self->machine",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Machine", "kind": "getter" }
+		},
+		{
+			"id": "SetMachine",
+			"cpp": "self->machine = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Machine", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetTransitions",
+			"cpp": "self->transitions",
+			"returns": "list<AnimatorControllerTransition>",
+			"params": [],
+			"csharp": { "member": "Transitions", "kind": "getter" }
+		},
+		{
+			"id": "SetTransitions",
+			"cpp": "self->transitions = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::Transition>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerTransition>" }],
+			"csharp": { "member": "Transitions", "kind": "setter" }
+		}
+	]
+}

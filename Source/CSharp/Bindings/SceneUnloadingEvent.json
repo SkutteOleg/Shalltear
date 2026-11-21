@@ -1,0 +1,26 @@
+{
+	"area": "SceneUnloadingEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneEvents.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.SceneUnloadingEvent",
+	"instance": "SceneUnloadingEvent",
+	"functions": [
+		{
+			"id": "GetScene",
+			"cpp": "self->scene",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Scene", "kind": "getter" }
+		},
+		{
+			"id": "SetScene",
+			"cpp": "self->scene = ::Shalltear::Handle<::Shalltear::Scene>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Scene", "optional": true }],
+			"csharp": { "member": "Scene", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+	"area": "GraphSetting",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphSetting",
+	"instance": "GraphSetting",
+	"functions": [
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

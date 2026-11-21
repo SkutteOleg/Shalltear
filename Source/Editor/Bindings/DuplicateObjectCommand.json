@@ -1,0 +1,38 @@
+{
+	"area": "DuplicateObjectCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.DuplicateObjectCommand",
+	"instance": "DuplicateObjectCommand",
+	"functions": [
+		{
+			"id": "GetCreated",
+			"cpp": "self->GetCreated()",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Created", "kind": "getter" }
+		},
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::DuplicateObjectCommand(::Shalltear::Handle<::Shalltear::SceneObject>(source))",
+			"returns": "DuplicateObjectCommand",
+			"params": [{ "name": "source", "type": "SceneObject", "optional": true }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

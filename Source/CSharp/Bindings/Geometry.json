@@ -1,0 +1,25 @@
+{
+	"area": "Geometry",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.Geometry",
+	"functions": [
+		{
+			"id": "VolumeContribution",
+			"cpp": "::Shalltear::VolumeContribution(isGlobal, *localToWorld, size, blendDistance, weight, point)",
+			"returns": "f32",
+			"params": [
+				{ "name": "isGlobal", "type": "bool" },
+				{ "name": "localToWorld", "type": "Mat4" },
+				{ "name": "size", "type": "Vec3" },
+				{ "name": "blendDistance", "type": "f32" },
+				{ "name": "weight", "type": "f32" },
+				{ "name": "point", "type": "Vec3" }
+			],
+			"csharp": { "member": "VolumeContribution", "kind": "method" }
+		}
+	]
+}

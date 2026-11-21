@@ -1,0 +1,412 @@
+{
+	"area": "TypeInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.TypeInfo",
+	"instance": "TypeInfo",
+	"enums": [
+		{
+			"name": "FieldFlag",
+			"cpp": "::Shalltear::FieldFlag",
+			"underlying": "u32",
+			"values": [
+				{ "name": "FieldFlagNone", "value": 0 },
+				{ "name": "FieldFlagPublicWalkable", "value": 1 },
+				{ "name": "FieldFlagEditorVisible", "value": 2 },
+				{ "name": "FieldFlagReadOnly", "value": 4 },
+				{ "name": "FieldFlagHandle", "value": 8 },
+				{ "name": "FieldFlagSubobject", "value": 16 },
+				{ "name": "FieldFlagSubobjectArray", "value": 32 },
+				{ "name": "FieldFlagLocalIndex", "value": 64 },
+				{ "name": "FieldFlagTransient", "value": 128 },
+				{ "name": "FieldFlagEnum", "value": 256 },
+				{ "name": "FieldFlagScriptBindable", "value": 512 },
+				{ "name": "FieldFlagTriviallyCopyable", "value": 1024 },
+				{ "name": "FieldFlagContainer", "value": 2048 },
+				{ "name": "FieldFlagDefault", "value": 3 }
+			]
+		},
+		{
+			"name": "TypeFlag",
+			"cpp": "::Shalltear::TypeFlag",
+			"underlying": "u32",
+			"values": [
+				{ "name": "TypeFlagNone", "value": 0 },
+				{ "name": "TypeFlagComponent", "value": 1 },
+				{ "name": "TypeFlagAsset", "value": 2 },
+				{ "name": "TypeFlagAbstract", "value": 4 },
+				{ "name": "TypeFlagTriviallyCopyable", "value": 8 },
+				{ "name": "TypeFlagHandle", "value": 16 },
+				{ "name": "TypeFlagSubobject", "value": 32 },
+				{ "name": "TypeFlagPrimitive", "value": 64 },
+				{ "name": "TypeFlagHeapMetadata", "value": 128 },
+				{ "name": "TypeFlagEnum", "value": 256 },
+				{ "name": "TypeFlagTypedCreate", "value": 512 }
+			]
+		},
+		{
+			"name": "MethodFlag",
+			"cpp": "::Shalltear::MethodFlag",
+			"underlying": "u32",
+			"values": [
+				{ "name": "MethodFlagNone", "value": 0 },
+				{ "name": "MethodFlagConst", "value": 1 },
+				{ "name": "MethodFlagStatic", "value": 2 },
+				{ "name": "MethodFlagScriptBindable", "value": 4 }
+			]
+		},
+		{
+			"name": "FieldSync",
+			"cpp": "::Shalltear::FieldSync",
+			"underlying": "u8",
+			"values": [
+				{ "name": "BeforeRead", "value": 0 },
+				{ "name": "AfterWrite", "value": 1 }
+			]
+		},
+		{
+			"name": "FieldWalkFlag",
+			"cpp": "::Shalltear::FieldWalkFlag",
+			"underlying": "u32",
+			"values": [
+				{ "name": "FieldWalkFlagNone", "value": 0 },
+				{ "name": "FieldWalkFlagIncludeInherited", "value": 1 },
+				{ "name": "FieldWalkFlagExcludeHidden", "value": 2 },
+				{ "name": "FieldWalkFlagExcludeReadOnly", "value": 4 },
+				{ "name": "FieldWalkFlagExcludeTransient", "value": 8 },
+				{ "name": "FieldWalkFlagIncludeSubobjects", "value": 16 },
+				{ "name": "FieldWalkFlagIncludeLocalIndices", "value": 32 },
+				{ "name": "FieldWalkFlagDefault", "value": 33 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "TypeInfo", "cpp": "::Shalltear::TypeInfo", "owned": true, "create": true },
+		{ "name": "AttributeInfo", "cpp": "::Shalltear::AttributeInfo", "owned": true, "create": true },
+		{ "name": "ContainerInfo", "cpp": "::Shalltear::ContainerInfo", "owned": true, "create": true },
+		{ "name": "FieldInfo", "cpp": "::Shalltear::FieldInfo", "owned": true, "create": true },
+		{ "name": "MethodInfo", "cpp": "::Shalltear::MethodInfo", "owned": true, "create": true },
+		{ "name": "EnumConstantInfo", "cpp": "::Shalltear::EnumConstantInfo", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "UnqualifiedTypeName",
+			"cpp": "::Shalltear::UnqualifiedTypeName(str(qualified).c_str())",
+			"returns": "string",
+			"params": [{ "name": "qualified", "type": "string" }],
+			"csharp": { "member": "UnqualifiedTypeName", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetAlignment",
+			"cpp": "self->alignment",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Alignment", "kind": "getter" }
+		},
+		{
+			"id": "SetAlignment",
+			"cpp": "self->alignment = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Alignment", "kind": "setter" }
+		},
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetClassId",
+			"cpp": "self->classId",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "ClassId", "kind": "getter" }
+		},
+		{
+			"id": "SetClassId",
+			"cpp": "self->classId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "ClassId", "kind": "setter" }
+		},
+		{
+			"id": "GetModuleEpoch",
+			"cpp": "self->moduleEpoch",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ModuleEpoch", "kind": "getter" }
+		},
+		{
+			"id": "SetModuleEpoch",
+			"cpp": "self->moduleEpoch = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ModuleEpoch", "kind": "setter" }
+		},
+		{
+			"id": "GetConstructor",
+			"cpp": "Slots::Bits(self->constructor)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Constructor", "kind": "getter" }
+		},
+		{
+			"id": "SetConstructor",
+			"cpp": "self->constructor = Slots::FromBits<void (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Constructor", "kind": "setter" }
+		},
+		{
+			"id": "GetDestructor",
+			"cpp": "Slots::Bits(self->destructor)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Destructor", "kind": "getter" }
+		},
+		{
+			"id": "SetDestructor",
+			"cpp": "self->destructor = Slots::FromBits<void (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Destructor", "kind": "setter" }
+		},
+		{
+			"id": "GetFields",
+			"cpp": "self->fields",
+			"returns": "FieldInfo",
+			"params": [],
+			"csharp": { "member": "Fields", "kind": "getter" }
+		},
+		{
+			"id": "SetFields",
+			"cpp": "self->fields = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FieldInfo", "optional": true }],
+			"csharp": { "member": "Fields", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldCount",
+			"cpp": "self->fieldCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "FieldCount", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldCount",
+			"cpp": "self->fieldCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "FieldCount", "kind": "setter" }
+		},
+		{
+			"id": "GetMethods",
+			"cpp": "self->methods",
+			"returns": "MethodInfo",
+			"params": [],
+			"csharp": { "member": "Methods", "kind": "getter" }
+		},
+		{
+			"id": "SetMethods",
+			"cpp": "self->methods = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "MethodInfo", "optional": true }],
+			"csharp": { "member": "Methods", "kind": "setter" }
+		},
+		{
+			"id": "GetMethodCount",
+			"cpp": "self->methodCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MethodCount", "kind": "getter" }
+		},
+		{
+			"id": "SetMethodCount",
+			"cpp": "self->methodCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "MethodCount", "kind": "setter" }
+		},
+		{
+			"id": "GetAttributes",
+			"cpp": "self->attributes",
+			"returns": "AttributeInfo",
+			"params": [],
+			"csharp": { "member": "Attributes", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributes",
+			"cpp": "self->attributes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AttributeInfo", "optional": true }],
+			"csharp": { "member": "Attributes", "kind": "setter" }
+		},
+		{
+			"id": "GetAttributeCount",
+			"cpp": "self->attributeCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AttributeCount", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributeCount",
+			"cpp": "self->attributeCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "AttributeCount", "kind": "setter" }
+		},
+		{
+			"id": "GetLayoutHash",
+			"cpp": "self->layoutHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LayoutHash", "kind": "getter" }
+		},
+		{
+			"id": "SetLayoutHash",
+			"cpp": "self->layoutHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "LayoutHash", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetCreateFn",
+			"cpp": "Slots::Bits(self->createFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "CreateFn", "kind": "getter" }
+		},
+		{
+			"id": "SetCreateFn",
+			"cpp": "self->createFn = Slots::FromBits<Shalltear::Object *(*)(Shalltear::MemTag)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "CreateFn", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerModule",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->ownerModule))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "OwnerModule", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerModule",
+			"cpp": "self->ownerModule = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "OwnerModule", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->displayName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->displayName = Slots::KeepFieldText(self, 0xc8c515d56fb7b8eaull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DisplayName", "kind": "setter" }
+		},
+		{
+			"id": "GetEnumConstants",
+			"cpp": "self->enumConstants",
+			"returns": "EnumConstantInfo",
+			"params": [],
+			"csharp": { "member": "EnumConstants", "kind": "getter" }
+		},
+		{
+			"id": "SetEnumConstants",
+			"cpp": "self->enumConstants = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EnumConstantInfo", "optional": true }],
+			"csharp": { "member": "EnumConstants", "kind": "setter" }
+		},
+		{
+			"id": "GetEnumConstantCount",
+			"cpp": "self->enumConstantCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "EnumConstantCount", "kind": "getter" }
+		},
+		{
+			"id": "SetEnumConstantCount",
+			"cpp": "self->enumConstantCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "EnumConstantCount", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldSyncFn",
+			"cpp": "Slots::Bits(self->fieldSyncFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "FieldSyncFn", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldSyncFn",
+			"cpp": "self->fieldSyncFn = Slots::FromBits<void (*)(void *, Shalltear::FieldSync)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "FieldSyncFn", "kind": "setter" }
+		}
+	]
+}

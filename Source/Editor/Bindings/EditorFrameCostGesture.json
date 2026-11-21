@@ -1,0 +1,81 @@
+{
+	"area": "EditorFrameCostGesture",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostGesture",
+	"instance": "EditorFrameCostGesture",
+	"functions": [
+		{
+			"id": "GetIndex",
+			"cpp": "self->index",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Index", "kind": "getter" }
+		},
+		{
+			"id": "SetIndex",
+			"cpp": "self->index = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Index", "kind": "setter" }
+		},
+		{
+			"id": "GetFrames",
+			"cpp": "self->frames",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Frames", "kind": "getter" }
+		},
+		{
+			"id": "SetFrames",
+			"cpp": "self->frames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Frames", "kind": "setter" }
+		},
+		{
+			"id": "GetMovedFrames",
+			"cpp": "self->movedFrames",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MovedFrames", "kind": "getter" }
+		},
+		{
+			"id": "SetMovedFrames",
+			"cpp": "self->movedFrames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "MovedFrames", "kind": "setter" }
+		},
+		{
+			"id": "GetMoved",
+			"cpp": "self->moved",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Moved", "kind": "getter" }
+		},
+		{
+			"id": "SetMoved",
+			"cpp": "self->moved = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Moved", "kind": "setter" }
+		},
+		{
+			"id": "GetStages",
+			"cpp": "self->stages",
+			"returns": "list<EditorFrameCostDistribution>",
+			"params": [],
+			"csharp": { "member": "Stages", "kind": "getter" }
+		},
+		{
+			"id": "SetStages",
+			"cpp": "Slots::AssignAll(self->stages, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EditorFrameCostDistribution>" }],
+			"csharp": { "member": "Stages", "kind": "setter" }
+		}
+	]
+}

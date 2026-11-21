@@ -1,0 +1,46 @@
+{
+	"area": "SkeletonSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/Skeleton.h",
+		"Shalltear/Core/Graphics/SkeletonAsset.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Skeleton",
+	"instance": "Skeleton",
+	"functions": [
+		{
+			"id": "AddExposedBone",
+			"cpp": "self->AddExposedBone(bone, ::Shalltear::Handle<::Shalltear::SceneObject>(objectValue))",
+			"returns": "void",
+			"params": [
+				{ "name": "bone", "type": "i16" },
+				{ "name": "objectValue", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "AddExposedBone", "kind": "method" }
+		},
+		{
+			"id": "SetExposedBoneCount",
+			"cpp": "self->SetExposedBoneCount(count)",
+			"returns": "void",
+			"params": [{ "name": "count", "type": "u32" }],
+			"csharp": { "member": "SetExposedBoneCount", "kind": "method" }
+		},
+		{
+			"id": "GetLocalPose",
+			"cpp": "self->GetLocalPose()",
+			"returns": "list<EngineBoneTransform>",
+			"params": [],
+			"csharp": { "member": "LocalPose", "kind": "getter" }
+		},
+		{
+			"id": "GetModelPose",
+			"cpp": "self->GetModelPose()",
+			"returns": "list<Mat4>",
+			"params": [],
+			"csharp": { "member": "ModelPose", "kind": "getter" },
+			"owns": true
+		}
+	]
+}

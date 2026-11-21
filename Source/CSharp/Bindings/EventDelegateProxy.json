@@ -1,0 +1,47 @@
+{
+	"area": "EventDelegateProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Event.h"
+	],
+	"class": "Shalltear.EventDelegateProxy",
+	"instance": "EventDelegateProxy",
+	"prelude": [
+		"class EventDelegateProxy final : public ::Shalltear::IEventDelegate {",
+		"public:",
+		"\tstd::function<bool(const void *)> invoke;",
+		"\tbool Invoke(const void * a0) override {",
+		"\t\treturn invoke ? invoke(a0) : Slots::ResultOf<decltype(invoke)>();",
+		"\t}",
+		"\tstd::function<uint64_t()> getObjectId;",
+		"\tuint64_t GetObjectId() const override {",
+		"\t\treturn getObjectId ? getObjectId() : Slots::ResultOf<decltype(getObjectId)>();",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "EventDelegateProxy", "cpp": "EventDelegateProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetInvoke",
+			"cpp": "self->invoke = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool;u64>", "optional": true, "cpp": "std::function<bool(const void *)>" }],
+			"csharp": { "member": "SetInvoke", "kind": "method" }
+		},
+		{
+			"id": "SetGetObjectId",
+			"cpp": "self->getObjectId = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<u64>", "optional": true, "cpp": "std::function<uint64_t()>" }],
+			"csharp": { "member": "SetGetObjectId", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IEventDelegate*>(self)",
+			"returns": "IEventDelegate",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

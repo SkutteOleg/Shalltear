@@ -1,0 +1,39 @@
+{
+	"area": "EditorModuleReloadEndedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorEvents.h"
+	],
+	"class": "Shalltear.Editor.EditorModuleReloadEndedEvent",
+	"instance": "EditorModuleReloadEndedEvent",
+	"functions": [
+		{
+			"id": "GetSucceeded",
+			"cpp": "self->succeeded",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Succeeded", "kind": "getter" }
+		},
+		{
+			"id": "SetSucceeded",
+			"cpp": "self->succeeded = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Succeeded", "kind": "setter" }
+		},
+		{
+			"id": "GetModuleBase",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->moduleBase))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ModuleBase", "kind": "getter" }
+		},
+		{
+			"id": "SetModuleBase",
+			"cpp": "self->moduleBase = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ModuleBase", "kind": "setter" }
+		}
+	]
+}

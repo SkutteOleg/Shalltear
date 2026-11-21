@@ -1,0 +1,40 @@
+{
+	"area": "UIBuilderOpsLibraryGroup",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIBuilderOps.h",
+		"Shalltear/Core/UI/WidgetRegistry.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderOpsLibraryGroup",
+	"instance": "UIBuilderOpsLibraryGroup",
+	"functions": [
+		{
+			"id": "GetCategory",
+			"cpp": "self->category",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Category", "kind": "getter" }
+		},
+		{
+			"id": "SetCategory",
+			"cpp": "self->category = Slots::KeepFieldText(self, 0x346d64b9b126f170ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Category", "kind": "setter" }
+		},
+		{
+			"id": "GetWidgets",
+			"cpp": "self->widgets",
+			"returns": "list<UIWidgetDesc>",
+			"params": [],
+			"csharp": { "member": "Widgets", "kind": "getter" }
+		},
+		{
+			"id": "SetWidgets",
+			"cpp": "self->widgets = Slots::ToVector<const ::Shalltear::UI::WidgetDesc*>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIWidgetDesc>" }],
+			"csharp": { "member": "Widgets", "kind": "setter" }
+		}
+	]
+}

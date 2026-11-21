@@ -1,0 +1,40 @@
+{
+	"area": "ModuleEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ModuleEvents.h"
+	],
+	"class": "Shalltear.ModuleEvents",
+	"functions": [
+		{
+			"id": "SubscribeImageUnloading",
+			"cpp": "EventBridge::Subscribe(::Shalltear::ModuleEvents::ImageUnloading, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;ImageUnloadingEvent>", "cpp": "std::function<void(const ::Shalltear::ImageUnloadingEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeImageUnloading", "kind": "method" }
+		},
+		{
+			"id": "PublishImageUnloading",
+			"cpp": "::Shalltear::ModuleEvents::ImageUnloading.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "ImageUnloadingEvent" }],
+			"csharp": { "member": "PublishImageUnloading", "kind": "method" }
+		},
+		{
+			"id": "SubscribeExtensionsRegistered",
+			"cpp": "EventBridge::Subscribe(::Shalltear::ModuleEvents::ExtensionsRegistered, handler)",
+			"returns": "u64",
+			"params": [{ "name": "handler", "type": "fn<void>", "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SubscribeExtensionsRegistered", "kind": "method" }
+		},
+		{
+			"id": "PublishExtensionsRegistered",
+			"cpp": "::Shalltear::ModuleEvents::ExtensionsRegistered.Publish(::Shalltear::EventBus::GetGlobal(), ::Shalltear::EmptyEventPayload{})",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "PublishExtensionsRegistered", "kind": "method" }
+		}
+	]
+}

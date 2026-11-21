@@ -1,0 +1,465 @@
+{
+	"area": "EditorViewportOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorViewportOps.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Graphics/Camera.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorViewportOps",
+	"enums": [
+		{
+			"name": "EditorViewportOpsGridPlane",
+			"cpp": "::Shalltear::EditorViewportOps::GridPlane",
+			"underlying": "u8",
+			"values": [
+				{ "name": "XZ", "value": 0 },
+				{ "name": "XY", "value": 1 },
+				{ "name": "ZY", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorViewportOpsViewpoint",
+			"cpp": "::Shalltear::EditorViewportOps::Viewpoint",
+			"size": 48,
+			"align": 16,
+			"fields": [
+				{ "name": "position", "type": "Vec3", "offset": 0 },
+				{ "name": "rotation", "type": "Quat", "offset": 16 },
+				{ "name": "aspect", "type": "f32", "offset": 32 },
+				{ "name": "orthographic", "type": "bool", "offset": 36 },
+				{ "name": "orthographicSize", "type": "f32", "offset": 40 }
+			]
+		},
+		{
+			"name": "EditorViewportOpsOrientationKnob",
+			"cpp": "::Shalltear::EditorViewportOps::OrientationKnob",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "axis", "type": "Vec3", "offset": 0 },
+				{ "name": "centerPx", "type": "Vec2", "offset": 12 },
+				{ "name": "depth", "type": "f32", "offset": 20 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorViewportOpsGridBasis", "cpp": "::Shalltear::EditorViewportOps::GridBasis", "owned": true, "create": true },
+		{ "name": "EditorViewportOpsShadingModeInfo", "cpp": "::Shalltear::EditorViewportOps::ShadingModeInfo", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "EDITOR_FOV_DEG", "cpp": "::Shalltear::EditorViewportOps::EDITOR_FOV_DEG", "type": "f32", "value": "0x1.e000000000000p+5" },
+		{ "name": "EDITOR_NEAR_PLANE", "cpp": "::Shalltear::EditorViewportOps::EDITOR_NEAR_PLANE", "type": "f32", "value": "0x1.99999a0000000p-5" },
+		{ "name": "EDITOR_FAR_PLANE", "cpp": "::Shalltear::EditorViewportOps::EDITOR_FAR_PLANE", "type": "f32", "value": "0x1.3880000000000p+12" },
+		{
+			"name": "EDITOR_ORTHOGRAPHIC_SIZE",
+			"cpp": "::Shalltear::EditorViewportOps::EDITOR_ORTHOGRAPHIC_SIZE",
+			"type": "f32",
+			"value": "0x1.4000000000000p+2"
+		},
+		{ "name": "MIN_ORTHOGRAPHIC_SIZE", "cpp": "::Shalltear::EditorViewportOps::MIN_ORTHOGRAPHIC_SIZE", "type": "f32", "value": "0x1.47ae140000000p-7" },
+		{ "name": "MAX_ORTHOGRAPHIC_SIZE", "cpp": "::Shalltear::EditorViewportOps::MAX_ORTHOGRAPHIC_SIZE", "type": "f32", "value": "0x1.3880000000000p+12" },
+		{ "name": "GRID_PLANE_AXIS_COS", "cpp": "::Shalltear::EditorViewportOps::GRID_PLANE_AXIS_COS", "type": "f32", "value": "0x1.ff7cee0000000p-1" },
+		{ "name": "ORIENTATION_KNOB_COUNT", "cpp": "::Shalltear::EditorViewportOps::ORIENTATION_KNOB_COUNT", "type": "u32", "value": 6 },
+		{ "name": "ORIENTATION_KNOB_NONE", "cpp": "::Shalltear::EditorViewportOps::ORIENTATION_KNOB_NONE", "type": "u32", "value": 4294967295 },
+		{
+			"name": "ORIENTATION_ARM_FRACTION",
+			"cpp": "::Shalltear::EditorViewportOps::ORIENTATION_ARM_FRACTION",
+			"type": "f32",
+			"value": "0x1.5c28f60000000p-2"
+		},
+		{
+			"name": "ORIENTATION_KNOB_FRACTION",
+			"cpp": "::Shalltear::EditorViewportOps::ORIENTATION_KNOB_FRACTION",
+			"type": "f32",
+			"value": "0x1.99999a0000000p-4"
+		},
+		{
+			"name": "ORIENTATION_CUBE_FRACTION",
+			"cpp": "::Shalltear::EditorViewportOps::ORIENTATION_CUBE_FRACTION",
+			"type": "f32",
+			"value": "0x1.c28f5c0000000p-4"
+		}
+	],
+	"functions": [
+		{
+			"id": "BuildCameraRotation",
+			"cpp": "::Shalltear::EditorViewportOps::BuildCameraRotation(yawDeg, pitchDeg)",
+			"returns": "Quat",
+			"params": [
+				{ "name": "yawDeg", "type": "f32" },
+				{ "name": "pitchDeg", "type": "f32" }
+			],
+			"csharp": { "member": "BuildCameraRotation", "kind": "method" }
+		},
+		{
+			"id": "BuildViewMatrix",
+			"cpp": "::Shalltear::EditorViewportOps::BuildViewMatrix(position, rotation)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "position", "type": "Vec3" },
+				{ "name": "rotation", "type": "Quat" }
+			],
+			"csharp": { "member": "BuildViewMatrix", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BuildViewMatrix2",
+			"cpp": "::Shalltear::EditorViewportOps::BuildViewMatrix(viewpoint)",
+			"returns": "Mat4",
+			"params": [{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" }],
+			"csharp": { "member": "BuildViewMatrix", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BuildProjection",
+			"cpp": "::Shalltear::EditorViewportOps::BuildProjection(viewpoint)",
+			"returns": "Mat4",
+			"params": [{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" }],
+			"csharp": { "member": "BuildProjection", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BuildProjection2",
+			"cpp": "::Shalltear::EditorViewportOps::BuildProjection(aspect)",
+			"returns": "Mat4",
+			"params": [{ "name": "aspect", "type": "f32" }],
+			"csharp": { "member": "BuildProjection", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "ViewHeightAt",
+			"cpp": "::Shalltear::EditorViewportOps::ViewHeightAt(viewpoint, point)",
+			"returns": "f32",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "point", "type": "Vec3" }
+			],
+			"csharp": { "member": "ViewHeightAt", "kind": "method" }
+		},
+		{
+			"id": "ViewAxisAt",
+			"cpp": "::Shalltear::EditorViewportOps::ViewAxisAt(viewpoint, point)",
+			"returns": "Vec3",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "point", "type": "Vec3" }
+			],
+			"csharp": { "member": "ViewAxisAt", "kind": "method" }
+		},
+		{
+			"id": "GridPlaneFor",
+			"cpp": "::Shalltear::EditorViewportOps::GridPlaneFor(*view, *projection)",
+			"returns": "EditorViewportOpsGridPlane",
+			"params": [
+				{ "name": "view", "type": "Mat4" },
+				{ "name": "projection", "type": "Mat4" }
+			],
+			"csharp": { "member": "GridPlaneFor", "kind": "method" }
+		},
+		{
+			"id": "GridBasisFor",
+			"cpp": "::Shalltear::EditorViewportOps::GridBasisFor(plane)",
+			"returns": "EditorViewportOpsGridBasis",
+			"params": [{ "name": "plane", "type": "EditorViewportOpsGridPlane" }],
+			"csharp": { "member": "GridBasisFor", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "InverseGridProjection",
+			"cpp": "::Shalltear::EditorViewportOps::InverseGridProjection(*basis, *view, *projection, cameraPosition)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "basis", "type": "EditorViewportOpsGridBasis" },
+				{ "name": "view", "type": "Mat4" },
+				{ "name": "projection", "type": "Mat4" },
+				{ "name": "cameraPosition", "type": "Vec3" }
+			],
+			"csharp": { "member": "InverseGridProjection", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BuildViewportRay",
+			"cpp": "::Shalltear::EditorViewportOps::BuildViewportRay(*view, *projection, localPx, sizePx)",
+			"returns": "Ray",
+			"params": [
+				{ "name": "view", "type": "Mat4" },
+				{ "name": "projection", "type": "Mat4" },
+				{ "name": "localPx", "type": "Vec2" },
+				{ "name": "sizePx", "type": "Vec2" }
+			],
+			"csharp": { "member": "BuildViewportRay", "kind": "method" }
+		},
+		{
+			"id": "ProjectToViewport",
+			"cpp": "::Shalltear::EditorViewportOps::ProjectToViewport(*viewProjection, world, sizePx, outLocalPx)",
+			"returns": "bool",
+			"params": [
+				{ "name": "viewProjection", "type": "Mat4" },
+				{ "name": "world", "type": "Vec3" },
+				{ "name": "sizePx", "type": "Vec2" },
+				{ "name": "outLocalPx", "type": "Vec2", "out": true }
+			],
+			"csharp": { "member": "ProjectToViewport", "kind": "method" }
+		},
+		{
+			"id": "ProjectToViewport2",
+			"cpp": "::Shalltear::EditorViewportOps::ProjectToViewport(*viewProjection, world, sizePx, outLocalPx, outDepth)",
+			"returns": "bool",
+			"params": [
+				{ "name": "viewProjection", "type": "Mat4" },
+				{ "name": "world", "type": "Vec3" },
+				{ "name": "sizePx", "type": "Vec2" },
+				{ "name": "outLocalPx", "type": "Vec2", "out": true },
+				{ "name": "outDepth", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "ProjectToViewport", "kind": "method" }
+		},
+		{
+			"id": "PickObject",
+			"cpp": "::Shalltear::EditorViewportOps::PickObject(ray)",
+			"returns": "SceneObject",
+			"params": [{ "name": "ray", "type": "Ray" }],
+			"csharp": { "member": "PickObject", "kind": "method" }
+		},
+		{
+			"id": "FindPlacementPoint",
+			"cpp": "::Shalltear::EditorViewportOps::FindPlacementPoint(ray, outWorld)",
+			"returns": "bool",
+			"params": [
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outWorld", "type": "Vec3", "out": true }
+			],
+			"csharp": { "member": "FindPlacementPoint", "kind": "method" }
+		},
+		{
+			"id": "FindNearestVertexIn",
+			"cpp": "::Shalltear::EditorViewportOps::FindNearestVertexIn(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(roots)), *viewProjection, sizePx, cursorPx, outWorld)",
+			"returns": "bool",
+			"params": [
+				{ "name": "roots", "type": "list<SceneObject>" },
+				{ "name": "viewProjection", "type": "Mat4" },
+				{ "name": "sizePx", "type": "Vec2" },
+				{ "name": "cursorPx", "type": "Vec2" },
+				{ "name": "outWorld", "type": "Vec3", "out": true }
+			],
+			"csharp": { "member": "FindNearestVertexIn", "kind": "method" }
+		},
+		{
+			"id": "FindNearestVertexUnderCursor",
+			"cpp": "::Shalltear::EditorViewportOps::FindNearestVertexUnderCursor(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(excluded)), ray, *viewProjection, sizePx, cursorPx, outWorld)",
+			"returns": "bool",
+			"params": [
+				{ "name": "excluded", "type": "list<SceneObject>" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "viewProjection", "type": "Mat4" },
+				{ "name": "sizePx", "type": "Vec2" },
+				{ "name": "cursorPx", "type": "Vec2" },
+				{ "name": "outWorld", "type": "Vec3", "out": true }
+			],
+			"csharp": { "member": "FindNearestVertexUnderCursor", "kind": "method" }
+		},
+		{
+			"id": "GetObjectWorldBounds",
+			"cpp": "::Shalltear::EditorViewportOps::GetObjectWorldBounds(::Shalltear::Handle<::Shalltear::SceneObject>(objectValue))",
+			"returns": "AABB",
+			"params": [{ "name": "objectValue", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "GetObjectWorldBounds", "kind": "method" }
+		},
+		{
+			"id": "GetGraphWorldBounds",
+			"cpp": "::Shalltear::EditorViewportOps::GetGraphWorldBounds(::Shalltear::Handle<::Shalltear::SceneObject>(root))",
+			"returns": "AABB",
+			"params": [{ "name": "root", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "GetGraphWorldBounds", "kind": "method" }
+		},
+		{
+			"id": "GetSelectionWorldBounds",
+			"cpp": "::Shalltear::EditorViewportOps::GetSelectionWorldBounds()",
+			"returns": "AABB",
+			"params": [],
+			"csharp": { "member": "SelectionWorldBounds", "kind": "getter" }
+		},
+		{
+			"id": "FramePositionFor",
+			"cpp": "::Shalltear::EditorViewportOps::FramePositionFor(bounds, rotation)",
+			"returns": "Vec3",
+			"params": [
+				{ "name": "bounds", "type": "AABB" },
+				{ "name": "rotation", "type": "Quat" }
+			],
+			"csharp": { "member": "FramePositionFor", "kind": "method" }
+		},
+		{
+			"id": "FrameDistanceFor",
+			"cpp": "::Shalltear::EditorViewportOps::FrameDistanceFor(bounds)",
+			"returns": "f32",
+			"params": [{ "name": "bounds", "type": "AABB" }],
+			"csharp": { "member": "FrameDistanceFor", "kind": "method" }
+		},
+		{
+			"id": "FrameSizeFor",
+			"cpp": "::Shalltear::EditorViewportOps::FrameSizeFor(bounds)",
+			"returns": "f32",
+			"params": [{ "name": "bounds", "type": "AABB" }],
+			"csharp": { "member": "FrameSizeFor", "kind": "method" }
+		},
+		{
+			"id": "FollowPositionFor",
+			"cpp": "::Shalltear::EditorViewportOps::FollowPositionFor(::Shalltear::Handle<::Shalltear::SceneObject>(objectValue), rotation, distance, outPosition)",
+			"returns": "bool",
+			"params": [
+				{ "name": "objectValue", "type": "SceneObject", "optional": true },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "distance", "type": "f32" },
+				{ "name": "outPosition", "type": "Vec3", "out": true }
+			],
+			"csharp": { "member": "FollowPositionFor", "kind": "method" }
+		},
+		{
+			"id": "LayOutOrientationKnobs",
+			"cpp": "::Shalltear::EditorViewportOps::LayOutOrientationKnobs(rotation, centerPx, radiusPx, Slots::FixedSpan<std::span<Shalltear::EditorViewportOps::OrientationKnob, 6>>(outValue))",
+			"returns": "void",
+			"params": [
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "centerPx", "type": "Vec2" },
+				{ "name": "radiusPx", "type": "f32" },
+				{ "name": "outValue", "type": "span<EditorViewportOpsOrientationKnob>", "out": true }
+			],
+			"csharp": { "member": "LayOutOrientationKnobs", "kind": "method" }
+		},
+		{
+			"id": "HitOrientationKnob",
+			"cpp": "::Shalltear::EditorViewportOps::HitOrientationKnob(knobs, localPx, knobRadiusPx)",
+			"returns": "u32",
+			"params": [
+				{ "name": "knobs", "type": "list<EditorViewportOpsOrientationKnob>" },
+				{ "name": "localPx", "type": "Vec2" },
+				{ "name": "knobRadiusPx", "type": "f32" }
+			],
+			"csharp": { "member": "HitOrientationKnob", "kind": "method" }
+		},
+		{
+			"id": "ViewAnglesFromAxis",
+			"cpp": "::Shalltear::EditorViewportOps::ViewAnglesFromAxis(axis, currentYawDeg, outYawDeg, outPitchDeg)",
+			"returns": "void",
+			"params": [
+				{ "name": "axis", "type": "Vec3" },
+				{ "name": "currentYawDeg", "type": "f32" },
+				{ "name": "outYawDeg", "type": "f32", "out": true },
+				{ "name": "outPitchDeg", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "ViewAnglesFromAxis", "kind": "method" }
+		},
+		{
+			"id": "FindActiveSceneCamera",
+			"cpp": "::Shalltear::EditorViewportOps::FindActiveSceneCamera()",
+			"returns": "Camera",
+			"params": [],
+			"csharp": { "member": "FindActiveSceneCamera", "kind": "method" }
+		},
+		{
+			"id": "CollectSceneCameras",
+			"cpp": "::Shalltear::EditorViewportOps::CollectSceneCameras(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<Camera>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::Camera>>" }
+			],
+			"csharp": { "member": "CollectSceneCameras", "kind": "method" }
+		},
+		{
+			"id": "CollectCameraPassRows",
+			"cpp": "::Shalltear::EditorViewportOps::CollectCameraPassRows(::Shalltear::Handle<::Shalltear::Camera>(camera), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "camera", "type": "Camera", "optional": true },
+				{ "name": "outValue", "type": "list<RenderPass>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::RenderPass>>" }
+			],
+			"csharp": { "member": "CollectCameraPassRows", "kind": "method" }
+		},
+		{
+			"id": "GetShadingModeCount",
+			"cpp": "::Shalltear::EditorViewportOps::GetShadingModeCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ShadingModeCount", "kind": "getter" }
+		},
+		{
+			"id": "GetShadingMode",
+			"cpp": "::Shalltear::EditorViewportOps::GetShadingMode(index)",
+			"returns": "EditorViewportOpsShadingModeInfo",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "GetShadingMode", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "ResolveSceneObject",
+			"cpp": "::Shalltear::EditorViewportOps::ResolveSceneObject(::Shalltear::Handle<::Shalltear::Object>(selected))",
+			"returns": "SceneObject",
+			"params": [{ "name": "selected", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "ResolveSceneObject", "kind": "method" }
+		},
+		{
+			"id": "GatherDragTargets",
+			"cpp": "::Shalltear::EditorViewportOps::GatherDragTargets(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<SceneObject>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::SceneObject>>" }
+			],
+			"csharp": { "member": "GatherDragTargets", "kind": "method" }
+		},
+		{
+			"id": "BuildSelectionOutlines",
+			"cpp": "::Shalltear::EditorViewportOps::BuildSelectionOutlines(std::span<const ::Shalltear::Handle<::Shalltear::Object>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::Object>>(selection)), selected, children, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "selection", "type": "list<EngineObject>" },
+				{ "name": "selected", "type": "Color32" },
+				{ "name": "children", "type": "Color32" },
+				{ "name": "outValue", "type": "list<ViewOutline>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::ViewOutline>" }
+			],
+			"csharp": { "member": "BuildSelectionOutlines", "kind": "method" }
+		},
+		{
+			"id": "ViewTargetSizeFor",
+			"cpp": "::Shalltear::EditorViewportOps::ViewTargetSizeFor(elementRect)",
+			"returns": "Vec2I",
+			"params": [{ "name": "elementRect", "type": "UIRect" }],
+			"csharp": { "member": "ViewTargetSizeFor", "kind": "method" }
+		},
+		{
+			"id": "ViewportIsOnScreen",
+			"cpp": "::Shalltear::EditorViewportOps::ViewportIsOnScreen(elementRect)",
+			"returns": "bool",
+			"params": [{ "name": "elementRect", "type": "UIRect" }],
+			"csharp": { "member": "ViewportIsOnScreen", "kind": "method" }
+		},
+		{
+			"id": "AppendBoxWireframe",
+			"cpp": "::Shalltear::EditorViewportOps::AppendBoxWireframe(outValue, box, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "box", "type": "AABB" },
+				{ "name": "color", "type": "Color32" }
+			],
+			"csharp": { "member": "AppendBoxWireframe", "kind": "method" }
+		}
+	]
+}

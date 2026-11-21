@@ -1,0 +1,55 @@
+{
+	"area": "UIIconQuery",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.UIIconQuery",
+	"instance": "UIIconQuery",
+	"functions": [
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "VectorAsset",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = ::Shalltear::Handle<::Shalltear::VectorAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "VectorAsset", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		},
+		{
+			"id": "GetSizePx",
+			"cpp": "self->sizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetSizePx",
+			"cpp": "self->sizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetPalette",
+			"cpp": "&self->palette",
+			"returns": "UIIconPalette",
+			"params": [],
+			"csharp": { "member": "Palette", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetPalette",
+			"cpp": "self->palette = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIIconPalette" }],
+			"csharp": { "member": "Palette", "kind": "setter" }
+		}
+	]
+}

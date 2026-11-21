@@ -1,0 +1,82 @@
+{
+	"area": "EditorConsole",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorConsole.h",
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.Editor.EditorConsole",
+	"natives": [
+		{ "name": "ConsoleSummary", "cpp": "::Shalltear::ConsoleSummary", "owned": true, "create": true },
+		{ "name": "ConsoleOrigin", "cpp": "::Shalltear::ConsoleOrigin", "owned": true, "create": true },
+		{ "name": "ConsoleEntry", "cpp": "::Shalltear::ConsoleEntry", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsInitialized",
+			"cpp": "::Shalltear::EditorConsole::IsInitialized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInitialized", "kind": "getter" }
+		},
+		{
+			"id": "Push",
+			"cpp": "::Shalltear::EditorConsole::Push(level, category, message, *origin)",
+			"returns": "void",
+			"params": [
+				{ "name": "level", "type": "LogLevel" },
+				{ "name": "category", "type": "string" },
+				{ "name": "message", "type": "string" },
+				{ "name": "origin", "type": "ConsoleOrigin" }
+			],
+			"csharp": { "member": "Push", "kind": "method" }
+		},
+		{
+			"id": "ReadSince",
+			"cpp": "::Shalltear::EditorConsole::ReadSince(sinceSequence, outValue)",
+			"returns": "u64",
+			"params": [
+				{ "name": "sinceSequence", "type": "u64" },
+				{ "name": "outValue", "type": "list<ConsoleEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::ConsoleEntry>" }
+			],
+			"csharp": { "member": "ReadSince", "kind": "method" }
+		},
+		{
+			"id": "MarkSeenThrough",
+			"cpp": "::Shalltear::EditorConsole::MarkSeenThrough(sequence)",
+			"returns": "void",
+			"params": [{ "name": "sequence", "type": "u64" }],
+			"csharp": { "member": "MarkSeenThrough", "kind": "method" }
+		},
+		{
+			"id": "GetSummary",
+			"cpp": "::Shalltear::EditorConsole::GetSummary(messageFloor)",
+			"returns": "ConsoleSummary",
+			"params": [{ "name": "messageFloor", "type": "LogLevel" }],
+			"csharp": { "member": "GetSummary", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Clear",
+			"cpp": "::Shalltear::EditorConsole::Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "GetBufferedCount",
+			"cpp": "::Shalltear::EditorConsole::GetBufferedCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BufferedCount", "kind": "getter" }
+		},
+		{
+			"id": "GetDroppedCount",
+			"cpp": "::Shalltear::EditorConsole::GetDroppedCount()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "DroppedCount", "kind": "getter" }
+		}
+	]
+}

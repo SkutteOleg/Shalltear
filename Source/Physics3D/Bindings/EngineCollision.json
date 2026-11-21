@@ -1,0 +1,99 @@
+{
+	"area": "EngineCollision",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/PhysicsListener.h",
+		"Shalltear/Physics3D/Colliders.h",
+		"Shalltear/Physics3D/Rigidbody.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.EngineCollision",
+	"instance": "EngineCollision",
+	"constants": [{ "name": "MAX_CONTACTS", "cpp": "::Shalltear::Collision::MAX_CONTACTS", "type": "u32", "value": 4 }],
+	"functions": [
+		{
+			"id": "GetCollider",
+			"cpp": "self->collider",
+			"returns": "Collider",
+			"params": [],
+			"csharp": { "member": "Collider", "kind": "getter" }
+		},
+		{
+			"id": "SetCollider",
+			"cpp": "self->collider = ::Shalltear::Handle<::Shalltear::Collider>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Collider", "optional": true }],
+			"csharp": { "member": "Collider", "kind": "setter" }
+		},
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetRigidbody",
+			"cpp": "self->rigidbody",
+			"returns": "Rigidbody",
+			"params": [],
+			"csharp": { "member": "Rigidbody", "kind": "getter" }
+		},
+		{
+			"id": "SetRigidbody",
+			"cpp": "self->rigidbody = ::Shalltear::Handle<::Shalltear::Rigidbody>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Rigidbody", "optional": true }],
+			"csharp": { "member": "Rigidbody", "kind": "setter" }
+		},
+		{
+			"id": "GetRelativeVelocity",
+			"cpp": "self->relativeVelocity",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "RelativeVelocity", "kind": "getter" }
+		},
+		{
+			"id": "SetRelativeVelocity",
+			"cpp": "self->relativeVelocity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "RelativeVelocity", "kind": "setter" }
+		},
+		{
+			"id": "GetContactCount",
+			"cpp": "self->contactCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ContactCount", "kind": "getter" }
+		},
+		{
+			"id": "SetContactCount",
+			"cpp": "self->contactCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ContactCount", "kind": "setter" }
+		},
+		{
+			"id": "GetContacts",
+			"cpp": "self->contacts",
+			"returns": "list<PhysicsContactPoint>",
+			"params": [],
+			"csharp": { "member": "Contacts", "kind": "getter" }
+		},
+		{
+			"id": "SetContacts",
+			"cpp": "Slots::Assign(self->contacts, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PhysicsContactPoint>" }],
+			"csharp": { "member": "Contacts", "kind": "setter" }
+		}
+	]
+}

@@ -7,6 +7,10 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
+		<InternalsVisibleTo Include="Shalltear.Conformance.Audio" />
+		<InternalsVisibleTo Include="Shalltear.ConformanceAudioAOT" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="../Shalltear.Runtime/Shalltear.Runtime.csproj" Private="false" />
 	</ItemGroup>
 </Project>

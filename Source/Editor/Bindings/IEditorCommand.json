@@ -1,0 +1,66 @@
+{
+	"area": "IEditorCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Editor/EditorCommands.h"
+	],
+	"class": "Shalltear.Editor.IEditorCommand",
+	"instance": "IEditorCommand",
+	"natives": [
+		{ "name": "IEditorCommand", "cpp": "::Shalltear::IEditorCommand" },
+		{ "name": "PropertySetCommand", "cpp": "::Shalltear::PropertySetCommand", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "Apply",
+			"cpp": "self->Apply()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Apply", "kind": "method" }
+		},
+		{
+			"id": "Revert",
+			"cpp": "self->Revert()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Revert", "kind": "method" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->GetLabel()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "TryCoalesce",
+			"cpp": "self->TryCoalesce(*next)",
+			"returns": "bool",
+			"params": [{ "name": "next", "type": "IEditorCommand" }],
+			"csharp": { "member": "TryCoalesce", "kind": "method" }
+		},
+		{
+			"id": "AsPropertySet",
+			"cpp": "self->AsPropertySet()",
+			"returns": "PropertySetCommand",
+			"params": [],
+			"csharp": { "member": "AsPropertySet", "kind": "method" }
+		},
+		{
+			"id": "AsFieldState",
+			"cpp": "self->AsFieldState()",
+			"returns": "SetFieldStateCommand",
+			"params": [],
+			"csharp": { "member": "AsFieldState", "kind": "method" }
+		},
+		{
+			"id": "GetAffectedScene",
+			"cpp": "self->GetAffectedScene()",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "AffectedScene", "kind": "getter" }
+		}
+	]
+}

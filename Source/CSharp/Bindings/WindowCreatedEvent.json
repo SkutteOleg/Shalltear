@@ -1,0 +1,49 @@
+{
+	"area": "WindowCreatedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowEvents.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowCreatedEvent",
+	"instance": "WindowCreatedEvent",
+	"structs": [
+		{
+			"name": "WindowDestroyedEvent",
+			"cpp": "::Shalltear::WindowDestroyedEvent",
+			"size": 8,
+			"align": 8,
+			"fields": [{ "name": "windowId", "type": "u64", "offset": 0 }]
+		}
+	],
+	"natives": [
+		{ "name": "WindowCreatedEvent", "cpp": "::Shalltear::WindowCreatedEvent", "owned": true, "create": true },
+		{ "name": "WindowCloseRequestedEvent", "cpp": "::Shalltear::WindowCloseRequestedEvent", "owned": true, "create": true },
+		{ "name": "WindowDestroyingEvent", "cpp": "::Shalltear::WindowDestroyingEvent", "owned": true, "create": true },
+		{ "name": "WindowResizedEvent", "cpp": "::Shalltear::WindowResizedEvent", "owned": true, "create": true },
+		{ "name": "WindowMovedEvent", "cpp": "::Shalltear::WindowMovedEvent", "owned": true, "create": true },
+		{ "name": "WindowDPIChangedEvent", "cpp": "::Shalltear::WindowDPIChangedEvent", "owned": true, "create": true },
+		{ "name": "WindowFocusEvent", "cpp": "::Shalltear::WindowFocusEvent", "owned": true, "create": true },
+		{ "name": "WindowStateEvent", "cpp": "::Shalltear::WindowStateEvent", "owned": true, "create": true },
+		{ "name": "WindowDragBeganEvent", "cpp": "::Shalltear::WindowDragBeganEvent", "owned": true, "create": true },
+		{ "name": "WindowDragMovedEvent", "cpp": "::Shalltear::WindowDragMovedEvent", "owned": true, "create": true },
+		{ "name": "WindowDragEndedEvent", "cpp": "::Shalltear::WindowDragEndedEvent", "owned": true, "create": true },
+		{ "name": "FilesDroppedEvent", "cpp": "::Shalltear::FilesDroppedEvent", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetWindow",
+			"cpp": "(self->window).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,40 @@
+{
+	"area": "UIDocumentAssetRef",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h",
+		"Shalltear/Core/Asset/Asset.h"
+	],
+	"class": "Shalltear.UIDocumentAssetRef",
+	"instance": "UIDocumentAssetRef",
+	"functions": [
+		{
+			"id": "GetSrc",
+			"cpp": "self->src",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Src", "kind": "getter" }
+		},
+		{
+			"id": "SetSrc",
+			"cpp": "self->src = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Src", "kind": "setter" }
+		},
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "Asset",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = ::Shalltear::Handle<::Shalltear::Asset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Asset", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		}
+	]
+}

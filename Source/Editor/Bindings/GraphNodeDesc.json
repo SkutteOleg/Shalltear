@@ -1,0 +1,208 @@
+{
+	"area": "GraphNodeDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Editor/EditorTheme.h"
+	],
+	"class": "Shalltear.Editor.GraphNodeDesc",
+	"instance": "GraphNodeDesc",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetFill",
+			"cpp": "self->fill",
+			"returns": "EditorThemeColorToken",
+			"params": [],
+			"csharp": { "member": "Fill", "kind": "getter" }
+		},
+		{
+			"id": "SetFill",
+			"cpp": "self->fill = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorThemeColorToken" }],
+			"csharp": { "member": "Fill", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->radius",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Radius", "kind": "getter" }
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->radius = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetInputs",
+			"cpp": "self->inputs",
+			"returns": "list<GraphPortDesc>",
+			"params": [],
+			"csharp": { "member": "Inputs", "kind": "getter" }
+		},
+		{
+			"id": "SetInputs",
+			"cpp": "self->inputs = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphPortDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphPortDesc>" }],
+			"csharp": { "member": "Inputs", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputs",
+			"cpp": "self->outputs",
+			"returns": "list<GraphPortDesc>",
+			"params": [],
+			"csharp": { "member": "Outputs", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputs",
+			"cpp": "self->outputs = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphPortDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphPortDesc>" }],
+			"csharp": { "member": "Outputs", "kind": "setter" }
+		},
+		{
+			"id": "GetCompact",
+			"cpp": "self->compact",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Compact", "kind": "getter" }
+		},
+		{
+			"id": "SetCompact",
+			"cpp": "self->compact = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Compact", "kind": "setter" }
+		},
+		{
+			"id": "GetPreview",
+			"cpp": "self->preview",
+			"returns": "GraphNodePreview",
+			"params": [],
+			"csharp": { "member": "Preview", "kind": "getter" }
+		},
+		{
+			"id": "SetPreview",
+			"cpp": "self->preview = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphNodePreview" }],
+			"csharp": { "member": "Preview", "kind": "setter" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "list<GraphSettingDesc>",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphSettingDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphSettingDesc>" }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		},
+		{
+			"id": "GetStack",
+			"cpp": "self->stack",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Stack", "kind": "getter" }
+		},
+		{
+			"id": "SetStack",
+			"cpp": "self->stack = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Stack", "kind": "setter" }
+		},
+		{
+			"id": "GetBlocks",
+			"cpp": "self->blocks",
+			"returns": "list<GraphBlockDesc>",
+			"params": [],
+			"csharp": { "member": "Blocks", "kind": "getter" }
+		},
+		{
+			"id": "SetBlocks",
+			"cpp": "self->blocks = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphBlockDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphBlockDesc>" }],
+			"csharp": { "member": "Blocks", "kind": "setter" }
+		},
+		{
+			"id": "GetFlowInputs",
+			"cpp": "self->flowInputs",
+			"returns": "list<GraphFlowPortDesc>",
+			"params": [],
+			"csharp": { "member": "FlowInputs", "kind": "getter" }
+		},
+		{
+			"id": "SetFlowInputs",
+			"cpp": "self->flowInputs = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphFlowPortDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphFlowPortDesc>" }],
+			"csharp": { "member": "FlowInputs", "kind": "setter" }
+		},
+		{
+			"id": "GetFlowOutputs",
+			"cpp": "self->flowOutputs",
+			"returns": "list<GraphFlowPortDesc>",
+			"params": [],
+			"csharp": { "member": "FlowOutputs", "kind": "getter" }
+		},
+		{
+			"id": "SetFlowOutputs",
+			"cpp": "self->flowOutputs = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphFlowPortDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphFlowPortDesc>" }],
+			"csharp": { "member": "FlowOutputs", "kind": "setter" }
+		}
+	]
+}

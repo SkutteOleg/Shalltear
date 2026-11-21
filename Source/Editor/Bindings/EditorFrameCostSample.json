@@ -1,0 +1,95 @@
+{
+	"area": "EditorFrameCostSample",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostSample",
+	"instance": "EditorFrameCostSample",
+	"functions": [
+		{
+			"id": "GetStageTicks",
+			"cpp": "self->stageTicks",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "StageTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetStageTicks",
+			"cpp": "Slots::Assign(self->stageTicks, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u64>" }],
+			"csharp": { "member": "StageTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetStartTicks",
+			"cpp": "self->startTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "StartTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetStartTicks",
+			"cpp": "self->startTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "StartTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetPointerDown",
+			"cpp": "self->pointerDown",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "PointerDown", "kind": "getter" }
+		},
+		{
+			"id": "SetPointerDown",
+			"cpp": "self->pointerDown = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "PointerDown", "kind": "setter" }
+		},
+		{
+			"id": "GetPointerMoved",
+			"cpp": "self->pointerMoved",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "PointerMoved", "kind": "getter" }
+		},
+		{
+			"id": "SetPointerMoved",
+			"cpp": "self->pointerMoved = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "PointerMoved", "kind": "setter" }
+		},
+		{
+			"id": "GetModal",
+			"cpp": "self->modal",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Modal", "kind": "getter" }
+		},
+		{
+			"id": "SetModal",
+			"cpp": "self->modal = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Modal", "kind": "setter" }
+		},
+		{
+			"id": "GetThrottled",
+			"cpp": "self->throttled",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Throttled", "kind": "getter" }
+		},
+		{
+			"id": "SetThrottled",
+			"cpp": "self->throttled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Throttled", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,95 @@
+{
+	"area": "GraphProperty",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphProperty",
+	"instance": "GraphProperty",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetReference",
+			"cpp": "self->reference",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Reference", "kind": "getter" }
+		},
+		{
+			"id": "SetReference",
+			"cpp": "self->reference = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Reference", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultValue",
+			"cpp": "self->defaultValue",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultValue", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultValue",
+			"cpp": "self->defaultValue = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DefaultValue", "kind": "setter" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "list<GraphSetting>",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphSetting>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphSetting>" }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		}
+	]
+}

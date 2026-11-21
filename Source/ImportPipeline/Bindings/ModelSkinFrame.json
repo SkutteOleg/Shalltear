@@ -1,0 +1,41 @@
+{
+	"area": "ModelSkinFrame",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelContributors.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.ModelSkinFrame",
+	"instance": "ModelSkinFrame",
+	"functions": [
+		{
+			"id": "GetSkin",
+			"cpp": "self->skin",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Skin", "kind": "getter" }
+		},
+		{
+			"id": "SetSkin",
+			"cpp": "self->skin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Skin", "kind": "setter" }
+		},
+		{
+			"id": "GetMeshToRig",
+			"cpp": "&self->meshToRig",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "MeshToRig", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetMeshToRig",
+			"cpp": "self->meshToRig = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "MeshToRig", "kind": "setter" }
+		}
+	]
+}

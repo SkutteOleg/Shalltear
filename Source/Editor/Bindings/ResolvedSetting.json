@@ -1,0 +1,137 @@
+{
+	"area": "ResolvedSetting",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.ResolvedSetting",
+	"instance": "ResolvedSetting",
+	"functions": [
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "BuildSettingType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildSettingType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetMerge",
+			"cpp": "self->merge",
+			"returns": "BuildMergePolicy",
+			"params": [],
+			"csharp": { "member": "Merge", "kind": "getter" }
+		},
+		{
+			"id": "SetMerge",
+			"cpp": "self->merge = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildMergePolicy" }],
+			"csharp": { "member": "Merge", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetRawValue",
+			"cpp": "self->rawValue",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "RawValue", "kind": "getter" }
+		},
+		{
+			"id": "SetRawValue",
+			"cpp": "self->rawValue = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "RawValue", "kind": "setter" }
+		},
+		{
+			"id": "GetItems",
+			"cpp": "self->items",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Items", "kind": "getter" }
+		},
+		{
+			"id": "SetItems",
+			"cpp": "self->items = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Items", "kind": "setter" }
+		},
+		{
+			"id": "GetRawItems",
+			"cpp": "self->rawItems",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "RawItems", "kind": "getter" }
+		},
+		{
+			"id": "SetRawItems",
+			"cpp": "self->rawItems = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "RawItems", "kind": "setter" }
+		},
+		{
+			"id": "GetSource",
+			"cpp": "self->source",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Source", "kind": "getter" }
+		},
+		{
+			"id": "SetSource",
+			"cpp": "self->source = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Source", "kind": "setter" }
+		},
+		{
+			"id": "GetItemSources",
+			"cpp": "self->itemSources",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "ItemSources", "kind": "getter" }
+		},
+		{
+			"id": "SetItemSources",
+			"cpp": "self->itemSources = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "ItemSources", "kind": "setter" }
+		}
+	]
+}

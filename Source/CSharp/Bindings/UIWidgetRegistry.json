@@ -1,0 +1,50 @@
+{
+	"area": "UIWidgetRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/WidgetRegistry.h"
+	],
+	"class": "Shalltear.UIWidgetRegistry",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::UI::WidgetRegistry::Register(*desc, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [{ "name": "desc", "type": "UIWidgetDesc" }],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "GetAll",
+			"cpp": "::Shalltear::UI::WidgetRegistry::GetAll(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<UIWidgetDesc>", "out": true, "cpp": "::Shalltear::Vector<const ::Shalltear::UI::WidgetDesc*>", "borrowed": true }
+			],
+			"csharp": { "member": "GetAll", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "::Shalltear::UI::WidgetRegistry::Find(tag)",
+			"returns": "UIWidgetDesc",
+			"params": [{ "name": "tag", "type": "string" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::UI::WidgetRegistry::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "IsValidLiteral",
+			"cpp": "::Shalltear::UI::WidgetRegistry::IsValidLiteral(*attribute, text)",
+			"returns": "bool",
+			"params": [
+				{ "name": "attribute", "type": "UIWidgetAttribute" },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "IsValidLiteral", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,81 @@
+{
+	"area": "AudioParameterDefinition",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioEffect.h"
+	],
+	"class": "Shalltear.AudioParameterDefinition",
+	"instance": "AudioParameterDefinition",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0xdbb8807697ba46a2ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetUnit",
+			"cpp": "self->unit",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Unit", "kind": "getter" }
+		},
+		{
+			"id": "SetUnit",
+			"cpp": "self->unit = Slots::KeepFieldText(self, 0x0d995b249285cce3ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Unit", "kind": "setter" }
+		},
+		{
+			"id": "GetMinimum",
+			"cpp": "self->minimum",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Minimum", "kind": "getter" }
+		},
+		{
+			"id": "SetMinimum",
+			"cpp": "self->minimum = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Minimum", "kind": "setter" }
+		},
+		{
+			"id": "GetMaximum",
+			"cpp": "self->maximum",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Maximum", "kind": "getter" }
+		},
+		{
+			"id": "SetMaximum",
+			"cpp": "self->maximum = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Maximum", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultValue",
+			"cpp": "self->defaultValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DefaultValue", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultValue",
+			"cpp": "self->defaultValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DefaultValue", "kind": "setter" }
+		}
+	]
+}

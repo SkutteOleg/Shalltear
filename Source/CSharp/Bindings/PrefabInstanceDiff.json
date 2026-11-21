@@ -1,0 +1,90 @@
+{
+	"area": "PrefabInstanceDiff",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.PrefabInstanceDiff",
+	"instance": "PrefabInstanceDiff",
+	"functions": [
+		{
+			"id": "IsEmpty",
+			"cpp": "self->IsEmpty()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsEmpty", "kind": "getter" }
+		},
+		{
+			"id": "GetProperties",
+			"cpp": "self->properties",
+			"returns": "list<PrefabInstanceDiffProperty>",
+			"params": [],
+			"csharp": { "member": "Properties", "kind": "getter" }
+		},
+		{
+			"id": "SetProperties",
+			"cpp": "self->properties = Slots::Copies<::Shalltear::Vector<::Shalltear::PrefabInstanceDiff::Property>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PrefabInstanceDiffProperty>" }],
+			"csharp": { "member": "Properties", "kind": "setter" }
+		},
+		{
+			"id": "GetAddedComponents",
+			"cpp": "self->addedComponents",
+			"returns": "list<Component>",
+			"params": [],
+			"csharp": { "member": "AddedComponents", "kind": "getter" }
+		},
+		{
+			"id": "SetAddedComponents",
+			"cpp": "self->addedComponents = Slots::ToVector<::Shalltear::Handle<::Shalltear::Component>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Component>" }],
+			"csharp": { "member": "AddedComponents", "kind": "setter" }
+		},
+		{
+			"id": "GetRemovedComponents",
+			"cpp": "self->removedComponents",
+			"returns": "list<PrefabInstanceDiffRemovedComponent>",
+			"params": [],
+			"csharp": { "member": "RemovedComponents", "kind": "getter" }
+		},
+		{
+			"id": "SetRemovedComponents",
+			"cpp": "self->removedComponents = Slots::Copies<::Shalltear::Vector<::Shalltear::PrefabInstanceDiff::RemovedComponent>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PrefabInstanceDiffRemovedComponent>" }],
+			"csharp": { "member": "RemovedComponents", "kind": "setter" }
+		},
+		{
+			"id": "GetAddedObjects",
+			"cpp": "self->addedObjects",
+			"returns": "list<SceneObject>",
+			"params": [],
+			"csharp": { "member": "AddedObjects", "kind": "getter" }
+		},
+		{
+			"id": "SetAddedObjects",
+			"cpp": "self->addedObjects = Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<SceneObject>" }],
+			"csharp": { "member": "AddedObjects", "kind": "setter" }
+		},
+		{
+			"id": "GetRemovedObjects",
+			"cpp": "self->removedObjects",
+			"returns": "list<PrefabInstanceDiffRemovedObject>",
+			"params": [],
+			"csharp": { "member": "RemovedObjects", "kind": "getter" }
+		},
+		{
+			"id": "SetRemovedObjects",
+			"cpp": "self->removedObjects = Slots::Copies<::Shalltear::Vector<::Shalltear::PrefabInstanceDiff::RemovedObject>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PrefabInstanceDiffRemovedObject>" }],
+			"csharp": { "member": "RemovedObjects", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"area": "TextureInspectorOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/TextureInspectorOps.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.Editor.TextureInspectorOps",
+	"functions": [
+		{
+			"id": "ReadImportSettings",
+			"cpp": "::Shalltear::TextureInspectorOps::ReadImportSettings(::Shalltear::Path(str(texturePath)))",
+			"returns": "TextureAssetSettings",
+			"params": [{ "name": "texturePath", "type": "string" }],
+			"csharp": { "member": "ReadImportSettings", "kind": "method" }
+		},
+		{
+			"id": "ApplyImportSettings",
+			"cpp": "::Shalltear::TextureInspectorOps::ApplyImportSettings(::Shalltear::Path(str(texturePath)), settings)",
+			"returns": "bool",
+			"params": [
+				{ "name": "texturePath", "type": "string" },
+				{ "name": "settings", "type": "TextureAssetSettings" }
+			],
+			"csharp": { "member": "ApplyImportSettings", "kind": "method" }
+		}
+	]
+}

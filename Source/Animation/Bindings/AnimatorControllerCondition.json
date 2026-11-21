@@ -1,0 +1,53 @@
+{
+	"area": "AnimatorControllerCondition",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerCondition",
+	"instance": "AnimatorControllerCondition",
+	"functions": [
+		{
+			"id": "GetParameter",
+			"cpp": "self->parameter",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Parameter", "kind": "getter" }
+		},
+		{
+			"id": "SetParameter",
+			"cpp": "self->parameter = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Parameter", "kind": "setter" }
+		},
+		{
+			"id": "GetMode",
+			"cpp": "self->mode",
+			"returns": "AnimatorConditionMode",
+			"params": [],
+			"csharp": { "member": "Mode", "kind": "getter" }
+		},
+		{
+			"id": "SetMode",
+			"cpp": "self->mode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimatorConditionMode" }],
+			"csharp": { "member": "Mode", "kind": "setter" }
+		},
+		{
+			"id": "GetThreshold",
+			"cpp": "self->threshold",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Threshold", "kind": "getter" }
+		},
+		{
+			"id": "SetThreshold",
+			"cpp": "self->threshold = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Threshold", "kind": "setter" }
+		}
+	]
+}

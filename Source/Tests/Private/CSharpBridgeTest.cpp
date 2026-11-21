@@ -286,6 +286,17 @@ TEST_F(CSharpRuntimeFixture, ThrowingSceneHandlerIsReported) {
 	SceneSystem::Terminate();
 }
 
+TEST_F(CSharpRuntimeFixture, ViewFieldCopiesEndAtUnload) {
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	const size_t before = _hooks->countKeptFields();
+	str message;
+	ASSERT_EQ(Run("FieldProbe.LeavesAViewField", message), SLT_OK) << message;
+	EXPECT_EQ(_hooks->countKeptFields(), before + 1);
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+	EXPECT_EQ(_hooks->countKeptFields(), 0u);
+}
+
 TEST_F(CSharpRuntimeFixture, ThrowingContinuationsAreReported) {
 	SceneSystem::Initialize();
 	ASSERT_TRUE(Attach()) << _error;

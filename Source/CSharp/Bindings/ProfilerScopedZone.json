@@ -1,0 +1,21 @@
+{
+	"area": "ProfilerScopedZone",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Profiler.h"
+	],
+	"class": "Shalltear.ProfilerScopedZone",
+	"instance": "ProfilerScopedZone",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::Profiler::ScopedZone(site)",
+			"returns": "ProfilerScopedZone",
+			"params": [{ "name": "site", "type": "u32" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

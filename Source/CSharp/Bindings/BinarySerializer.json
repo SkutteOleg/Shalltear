@@ -1,0 +1,38 @@
+{
+	"area": "BinarySerializer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/BinarySerializer.h",
+		"Shalltear/Core/FileSystem.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.BinarySerializer",
+	"constants": [
+		{ "name": "SLT_MAX_SERIALIZATION_DEPTH", "cpp": "::Shalltear::SLT_MAX_SERIALIZATION_DEPTH", "type": "u32", "value": 32 }
+	],
+	"functions": [
+		{
+			"id": "Serialize",
+			"cpp": "::Shalltear::BinarySerializer::Serialize(reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), type)",
+			"returns": "EngineBuffer",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true }
+			],
+			"csharp": { "member": "Serialize", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Deserialize",
+			"cpp": "::Shalltear::BinarySerializer::Deserialize(reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), type, *buffer)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "buffer", "type": "EngineBuffer" }
+			],
+			"csharp": { "member": "Deserialize", "kind": "method" }
+		}
+	]
+}

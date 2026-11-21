@@ -39,6 +39,14 @@ namespace Shalltear::CSharpImpl::Generated {
 
 	namespace {
 
+		int32_t SlotProbeKeptFieldCount([[maybe_unused]] const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				results[0] = static_cast<uint64_t>((static_cast<uint64_t>(static_cast<uint64_t>(Slots::CountKeptFields()))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t SlotProbeEchoI8(const uint64_t* arguments, uint64_t* results) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				const int8_t value = static_cast<int8_t>(arguments[0]);
@@ -530,10 +538,205 @@ namespace Shalltear::CSharpImpl::Generated {
 			return status;
 		}
 
+		int32_t SlotProbeTally(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<void(::Shalltear::i32&, ::Shalltear::CSharpImpl::SlotProbe::Shape&, ::Shalltear::CSharpImpl::SlotProbe::Tone&, ::Shalltear::Vec3&, ::Shalltear::str&)> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold](auto& a0, auto& a1, auto& a2, auto& a3, const auto& a4) -> Slots::ResultOf<std::function<void(::Shalltear::i32&, ::Shalltear::CSharpImpl::SlotProbe::Shape&, ::Shalltear::CSharpImpl::SlotProbe::Tone&, ::Shalltear::Vec3&, ::Shalltear::str&)>> {
+						uint64_t callArguments[5]{};
+						uint64_t callResults[1]{};
+						callArguments[0] = Slots::Bits(&a0);
+						callArguments[1] = Slots::Bits(&a1);
+						callArguments[2] = Slots::Bits(&a2);
+						callArguments[3] = Slots::Bits(&a3);
+						callArguments[4] = Slots::Pointer<::Shalltear::str>(a4);
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return;
+						}
+					};
+				}
+				results[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(::Shalltear::CSharpImpl::SlotProbe::Tally(handler))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeScale(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<void(std::span<::Shalltear::f32>)> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold](const auto& a0) -> Slots::ResultOf<std::function<void(std::span<::Shalltear::f32>)>> {
+						uint64_t callArguments[2]{};
+						uint64_t callResults[1]{};
+						callArguments[0] = Slots::Bits(a0.data());
+						callArguments[1] = a0.size();
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return;
+						}
+					};
+				}
+				results[0] = Slots::OfF32(::Shalltear::CSharpImpl::SlotProbe::Scale(handler));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbePass(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<::Shalltear::i32(const ::Shalltear::Vector<::Shalltear::i32>&, std::span<const std::string_view>)> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold](const auto& a0, const auto& a1) -> Slots::ResultOf<std::function<::Shalltear::i32(const ::Shalltear::Vector<::Shalltear::i32>&, std::span<const std::string_view>)>> {
+						uint64_t callArguments[4]{};
+						uint64_t callResults[1]{};
+						Slots::KeepList<int32_t>(callArguments, a0);
+						Slots::KeepTexts(callArguments + 2, a1);
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<::Shalltear::i32(const ::Shalltear::Vector<::Shalltear::i32>&, std::span<const std::string_view>)>>();
+						}
+						return static_cast<Slots::ResultOf<std::function<::Shalltear::i32(const ::Shalltear::Vector<::Shalltear::i32>&, std::span<const std::string_view>)>>>(static_cast<int32_t>(callResults[0]));
+					};
+				}
+				results[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(::Shalltear::CSharpImpl::SlotProbe::Pass(handler))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeShaped(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<::Shalltear::CSharpImpl::SlotProbe::Shape(::Shalltear::i32)> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold](const auto& a0) -> Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Shape(::Shalltear::i32)>> {
+						uint64_t callArguments[1]{};
+						uint64_t callResults[1]{};
+						callArguments[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(a0)));
+						::Shalltear::CSharpImpl::SlotProbe::Shape made{};
+						callResults[0] = Slots::Bits(&made);
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Shape(::Shalltear::i32)>>();
+						}
+						return static_cast<Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Shape(::Shalltear::i32)>>>(made);
+					};
+				}
+				Slots::StructOut<::Shalltear::CSharpImpl::SlotProbe::Shape>(results[0], ::Shalltear::CSharpImpl::SlotProbe::Shaped(handler));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeCook(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe*(std::string_view)> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold](const auto& a0) -> Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe*(std::string_view)>> {
+						uint64_t callArguments[2]{};
+						uint64_t callResults[1]{};
+						Slots::Text(callArguments, a0);
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe*(std::string_view)>>();
+						}
+						return static_cast<Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe*(std::string_view)>>>(reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(callResults[0])));
+					};
+				}
+				results[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(::Shalltear::CSharpImpl::SlotProbe::Cook(handler))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbePeek(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<const ::Shalltear::CSharpImpl::SlotProbe::Recipe*()> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold]() -> Slots::ResultOf<std::function<const ::Shalltear::CSharpImpl::SlotProbe::Recipe*()>> {
+						uint64_t callArguments[1]{};
+						uint64_t callResults[1]{};
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<const ::Shalltear::CSharpImpl::SlotProbe::Recipe*()>>();
+						}
+						return static_cast<Slots::ResultOf<std::function<const ::Shalltear::CSharpImpl::SlotProbe::Recipe*()>>>(reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(callResults[0])));
+					};
+				}
+				results[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(::Shalltear::CSharpImpl::SlotProbe::Peek(handler))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeNamed(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe(::Shalltear::i32)> handler;
+				if (const auto handlerHold = Slots::HoldCallback(arguments[0])) {
+					handler = [handlerHold](const auto& a0) -> Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe(::Shalltear::i32)>> {
+						uint64_t callArguments[1]{};
+						uint64_t callResults[1]{};
+						callArguments[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(a0)));
+						if (Slots::InvokeCallback(*handlerHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe(::Shalltear::i32)>>();
+						}
+						const auto* const made = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(callResults[0]));
+						return made ? static_cast<Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe(::Shalltear::i32)>>>(*made) : Slots::ResultOf<std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe(::Shalltear::i32)>>();
+					};
+				}
+				Slots::Text(results, ::Shalltear::CSharpImpl::SlotProbe::Named(handler));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeShareRecipe(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::string_view name = Slots::View(arguments);
+				results[0] = Slots::KeepShared<::Shalltear::CSharpImpl::SlotProbe::Recipe>(::Shalltear::CSharpImpl::SlotProbe::ShareRecipe(name));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeCountShared(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				const std::shared_ptr<::Shalltear::CSharpImpl::SlotProbe::Recipe> recipe = Slots::Shared<::Shalltear::CSharpImpl::SlotProbe::Recipe>(arguments[0]);
+				results[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(::Shalltear::CSharpImpl::SlotProbe::CountShared(recipe))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
+		int32_t SlotProbeGather(const uint64_t* arguments, uint64_t* results) noexcept {
+			const int32_t status = ScriptRuntime::Guard([&] {
+				std::function<::Shalltear::Vector<::Shalltear::i32>()> numbers;
+				if (const auto numbersHold = Slots::HoldCallback(arguments[0])) {
+					numbers = [numbersHold]() -> Slots::ResultOf<std::function<::Shalltear::Vector<::Shalltear::i32>()>> {
+						uint64_t callArguments[1]{};
+						uint64_t callResults[2]{};
+						if (Slots::InvokeCallback(*numbersHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<::Shalltear::Vector<::Shalltear::i32>()>>();
+						}
+						const auto* const items = reinterpret_cast<const int32_t*>(static_cast<uintptr_t>(callResults[0]));
+						return Slots::ResultOf<std::function<::Shalltear::Vector<::Shalltear::i32>()>>(items, items + callResults[1]);
+					};
+				}
+				std::function<std::vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>()> recipes;
+				if (const auto recipesHold = Slots::HoldCallback(arguments[1])) {
+					recipes = [recipesHold]() -> Slots::ResultOf<std::function<std::vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>()>> {
+						uint64_t callArguments[1]{};
+						uint64_t callResults[2]{};
+						if (Slots::InvokeCallback(*recipesHold, callArguments, callResults) != SLT_OK) {
+							return Slots::ResultOf<std::function<std::vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>()>>();
+						}
+						return Slots::Copies<Slots::ResultOf<std::function<std::vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>()>>>(std::span<::Shalltear::CSharpImpl::SlotProbe::Recipe* const>(reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe* const*>(static_cast<uintptr_t>(callResults[0])), static_cast<size_t>(callResults[1])));
+					};
+				}
+				results[0] = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(::Shalltear::CSharpImpl::SlotProbe::Gather(numbers, recipes))));
+			});
+			ManagedTypes::FlushDirty();
+			return status;
+		}
+
 		int32_t SlotProbeProbeRecipeDelete(const uint64_t* arguments, [[maybe_unused]] uint64_t* results) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Recipe* const target = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Recipe*>(static_cast<uintptr_t>(arguments[0]));
-				Delete(target);
+				Slots::ForgetFields(target), delete target;
 			});
 			ManagedTypes::FlushDirty();
 			return status;
@@ -541,7 +744,7 @@ namespace Shalltear::CSharpImpl::Generated {
 
 		int32_t SlotProbeProbeRecipeNew([[maybe_unused]] const uint64_t* arguments, uint64_t* results) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
-				results[0] = Slots::Pointer<::Shalltear::CSharpImpl::SlotProbe::Recipe>(New<::Shalltear::CSharpImpl::SlotProbe::Recipe>(MemTag::Scripting));
+				results[0] = Slots::Pointer<::Shalltear::CSharpImpl::SlotProbe::Recipe>(new ::Shalltear::CSharpImpl::SlotProbe::Recipe());
 			});
 			ManagedTypes::FlushDirty();
 			return status;
@@ -550,7 +753,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		int32_t SlotProbeProbeKitchenDelete(const uint64_t* arguments, [[maybe_unused]] uint64_t* results) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Kitchen* const target = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Kitchen*>(static_cast<uintptr_t>(arguments[0]));
-				Delete(target);
+				Slots::ForgetFields(target), delete target;
 			});
 			ManagedTypes::FlushDirty();
 			return status;
@@ -558,7 +761,7 @@ namespace Shalltear::CSharpImpl::Generated {
 
 		int32_t SlotProbeProbeKitchenNew([[maybe_unused]] const uint64_t* arguments, uint64_t* results) noexcept {
 			const int32_t status = ScriptRuntime::Guard([&] {
-				results[0] = Slots::Pointer<::Shalltear::CSharpImpl::SlotProbe::Kitchen>(New<::Shalltear::CSharpImpl::SlotProbe::Kitchen>(MemTag::Scripting));
+				results[0] = Slots::Pointer<::Shalltear::CSharpImpl::SlotProbe::Kitchen>(new ::Shalltear::CSharpImpl::SlotProbe::Kitchen());
 			});
 			ManagedTypes::FlushDirty();
 			return status;
@@ -567,6 +770,7 @@ namespace Shalltear::CSharpImpl::Generated {
 	} // anonymous namespace
 
 	void FillSlotProbeBindings(SltBindings& table) {
+		table.slotProbeKeptFieldCount = &SlotProbeKeptFieldCount;
 		table.slotProbeEchoI8 = &SlotProbeEchoI8;
 		table.slotProbeEchoI16 = &SlotProbeEchoI16;
 		table.slotProbeEchoU8 = &SlotProbeEchoU8;
@@ -611,6 +815,16 @@ namespace Shalltear::CSharpImpl::Generated {
 		table.slotProbeKeepAction = &SlotProbeKeepAction;
 		table.slotProbeRunKept = &SlotProbeRunKept;
 		table.slotProbeDropKept = &SlotProbeDropKept;
+		table.slotProbeTally = &SlotProbeTally;
+		table.slotProbeScale = &SlotProbeScale;
+		table.slotProbePass = &SlotProbePass;
+		table.slotProbeShaped = &SlotProbeShaped;
+		table.slotProbeCook = &SlotProbeCook;
+		table.slotProbePeek = &SlotProbePeek;
+		table.slotProbeNamed = &SlotProbeNamed;
+		table.slotProbeShareRecipe = &SlotProbeShareRecipe;
+		table.slotProbeCountShared = &SlotProbeCountShared;
+		table.slotProbeGather = &SlotProbeGather;
 		table.slotProbeProbeRecipeDelete = &SlotProbeProbeRecipeDelete;
 		table.slotProbeProbeRecipeNew = &SlotProbeProbeRecipeNew;
 		table.slotProbeProbeKitchenDelete = &SlotProbeProbeKitchenDelete;

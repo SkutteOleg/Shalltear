@@ -1,0 +1,169 @@
+{
+	"area": "Config",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Config.h"
+	],
+	"class": "Shalltear.Config",
+	"instance": "Config",
+	"natives": [{ "name": "Config", "cpp": "::Shalltear::Config", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Parse",
+			"cpp": "self->Parse(text)",
+			"returns": "void",
+			"params": [{ "name": "text", "type": "string" }],
+			"csharp": { "member": "Parse", "kind": "method" }
+		},
+		{
+			"id": "Serialize",
+			"cpp": "self->Serialize()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Serialize", "kind": "method" }
+		},
+		{
+			"id": "Load",
+			"cpp": "self->Load(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "Load", "kind": "method" }
+		},
+		{
+			"id": "Save",
+			"cpp": "self->Save(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "Save", "kind": "method" }
+		},
+		{
+			"id": "GetString",
+			"cpp": "self->GetString(section, key, fallback)",
+			"returns": "string",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "string" }
+			],
+			"csharp": { "member": "GetString", "kind": "method" }
+		},
+		{
+			"id": "GetBool",
+			"cpp": "self->GetBool(section, key, fallback)",
+			"returns": "bool",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "bool" }
+			],
+			"csharp": { "member": "GetBool", "kind": "method" }
+		},
+		{
+			"id": "GetI64",
+			"cpp": "self->GetI64(section, key, fallback)",
+			"returns": "i64",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "i64" }
+			],
+			"csharp": { "member": "GetI64", "kind": "method" }
+		},
+		{
+			"id": "GetF64",
+			"cpp": "self->GetF64(section, key, fallback)",
+			"returns": "f64",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "f64" }
+			],
+			"csharp": { "member": "GetF64", "kind": "method" }
+		},
+		{
+			"id": "SetString",
+			"cpp": "self->SetString(section, key, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "valueValue", "type": "string" }
+			],
+			"csharp": { "member": "SetString", "kind": "method" }
+		},
+		{
+			"id": "SetBool",
+			"cpp": "self->SetBool(section, key, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "valueValue", "type": "bool" }
+			],
+			"csharp": { "member": "SetBool", "kind": "method" }
+		},
+		{
+			"id": "SetI64",
+			"cpp": "self->SetI64(section, key, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "valueValue", "type": "i64" }
+			],
+			"csharp": { "member": "SetI64", "kind": "method" }
+		},
+		{
+			"id": "SetF64",
+			"cpp": "self->SetF64(section, key, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" },
+				{ "name": "valueValue", "type": "f64" }
+			],
+			"csharp": { "member": "SetF64", "kind": "method" }
+		},
+		{
+			"id": "Has",
+			"cpp": "self->Has(section, key)",
+			"returns": "bool",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" }
+			],
+			"csharp": { "member": "Has", "kind": "method" }
+		},
+		{
+			"id": "HasSection",
+			"cpp": "self->HasSection(section)",
+			"returns": "bool",
+			"params": [{ "name": "section", "type": "string" }],
+			"csharp": { "member": "HasSection", "kind": "method" }
+		},
+		{
+			"id": "Remove",
+			"cpp": "self->Remove(section, key)",
+			"returns": "bool",
+			"params": [
+				{ "name": "section", "type": "string" },
+				{ "name": "key", "type": "string" }
+			],
+			"csharp": { "member": "Remove", "kind": "method" }
+		},
+		{
+			"id": "RemoveSection",
+			"cpp": "self->RemoveSection(section)",
+			"returns": "bool",
+			"params": [{ "name": "section", "type": "string" }],
+			"csharp": { "member": "RemoveSection", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		}
+	]
+}

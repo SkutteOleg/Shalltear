@@ -1,0 +1,62 @@
+{
+	"area": "AudioProbe",
+	"include": "AudioProbe.h",
+	"class": "Shalltear.Interop.AudioProbe",
+	"test": true,
+	"slots": true,
+	"functions": [
+		{
+			"id": "RunEffect",
+			"cpp": "::Shalltear::CSharpImpl::AudioProbe::RunEffect(*definition, channels, frames, blocks, sidechain)",
+			"returns": "f32",
+			"params": [
+				{ "name": "definition", "type": "IAudioEffectDefinition" },
+				{ "name": "channels", "type": "u32" },
+				{ "name": "frames", "type": "u32" },
+				{ "name": "blocks", "type": "u32" },
+				{ "name": "sidechain", "type": "bool" }
+			],
+			"csharp": { "member": "RunEffect", "kind": "method" }
+		},
+		{
+			"id": "RunGenerator",
+			"cpp": "::Shalltear::CSharpImpl::AudioProbe::RunGenerator(*instance, frames, blocks)",
+			"returns": "f32",
+			"params": [
+				{ "name": "instance", "type": "IAudioGeneratorInstance" },
+				{ "name": "frames", "type": "u32" },
+				{ "name": "blocks", "type": "u32" }
+			],
+			"csharp": { "member": "RunGenerator", "kind": "method" }
+		},
+		{
+			"id": "RunSpatializer",
+			"cpp": "::Shalltear::CSharpImpl::AudioProbe::RunSpatializer(*spatializer, attenuation, frames, blocks)",
+			"returns": "f32",
+			"params": [
+				{ "name": "spatializer", "type": "IAudioSpatializer" },
+				{ "name": "attenuation", "type": "f32" },
+				{ "name": "frames", "type": "u32" },
+				{ "name": "blocks", "type": "u32" }
+			],
+			"csharp": { "member": "RunSpatializer", "kind": "method" }
+		},
+		{
+			"id": "StartEffectLoop",
+			"cpp": "::Shalltear::CSharpImpl::AudioProbe::StartEffectLoop(*definition, frames)",
+			"returns": "bool",
+			"params": [
+				{ "name": "definition", "type": "IAudioEffectDefinition" },
+				{ "name": "frames", "type": "u32" }
+			],
+			"csharp": { "member": "StartEffectLoop", "kind": "method" }
+		},
+		{
+			"id": "StopEffectLoop",
+			"cpp": "::Shalltear::CSharpImpl::AudioProbe::StopEffectLoop(stats)",
+			"returns": "void",
+			"params": [{ "name": "stats", "type": "span<u64>", "out": true }],
+			"csharp": { "member": "StopEffectLoop", "kind": "method" }
+		}
+	]
+}

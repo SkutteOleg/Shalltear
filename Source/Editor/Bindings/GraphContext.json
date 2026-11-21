@@ -1,0 +1,54 @@
+{
+	"area": "GraphContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphContext",
+	"instance": "GraphContext",
+	"functions": [
+		{
+			"id": "GetNode",
+			"cpp": "&self->node",
+			"returns": "GraphNode",
+			"params": [],
+			"csharp": { "member": "Node", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetNode",
+			"cpp": "self->node = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphNode" }],
+			"csharp": { "member": "Node", "kind": "setter" }
+		},
+		{
+			"id": "GetBlocks",
+			"cpp": "self->blocks",
+			"returns": "list<GraphNode>",
+			"params": [],
+			"csharp": { "member": "Blocks", "kind": "getter" }
+		},
+		{
+			"id": "SetBlocks",
+			"cpp": "self->blocks = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphNode>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphNode>" }],
+			"csharp": { "member": "Blocks", "kind": "setter" }
+		},
+		{
+			"id": "GetFlows",
+			"cpp": "self->flows",
+			"returns": "list<GraphFlow>",
+			"params": [],
+			"csharp": { "member": "Flows", "kind": "getter" }
+		},
+		{
+			"id": "SetFlows",
+			"cpp": "self->flows = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphFlow>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphFlow>" }],
+			"csharp": { "member": "Flows", "kind": "setter" }
+		}
+	]
+}

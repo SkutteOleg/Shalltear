@@ -1,0 +1,83 @@
+{
+	"area": "EditorAssetOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorAssetOps.h",
+		"Shalltear/Core/Asset/Asset.h"
+	],
+	"class": "Shalltear.Editor.EditorAssetOps",
+	"natives": [{ "name": "ActionFn", "cpp": "std::function<void ()>", "owned": true }],
+	"functions": [
+		{
+			"id": "MarkDirty",
+			"cpp": "::Shalltear::EditorAssetOps::MarkDirty(::Shalltear::Handle<::Shalltear::Asset>(asset))",
+			"returns": "void",
+			"params": [{ "name": "asset", "type": "Asset", "optional": true }],
+			"csharp": { "member": "MarkDirty", "kind": "method" }
+		},
+		{
+			"id": "AnyDirty",
+			"cpp": "::Shalltear::EditorAssetOps::AnyDirty()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AnyDirty", "kind": "method" }
+		},
+		{
+			"id": "IsDirty",
+			"cpp": "::Shalltear::EditorAssetOps::IsDirty(::Shalltear::Handle<::Shalltear::Asset>(asset))",
+			"returns": "bool",
+			"params": [{ "name": "asset", "type": "Asset", "optional": true }],
+			"csharp": { "member": "IsDirty", "kind": "method" }
+		},
+		{
+			"id": "SaveAsset",
+			"cpp": "::Shalltear::EditorAssetOps::SaveAsset(::Shalltear::Handle<::Shalltear::Asset>(asset))",
+			"returns": "void",
+			"params": [{ "name": "asset", "type": "Asset", "optional": true }],
+			"csharp": { "member": "SaveAsset", "kind": "method" }
+		},
+		{
+			"id": "SaveAllDirty",
+			"cpp": "::Shalltear::EditorAssetOps::SaveAllDirty()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "SaveAllDirty", "kind": "method" }
+		},
+		{
+			"id": "DiscardAllDirty",
+			"cpp": "::Shalltear::EditorAssetOps::DiscardAllDirty()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DiscardAllDirty", "kind": "method" }
+		},
+		{
+			"id": "ReloadChanged",
+			"cpp": "::Shalltear::EditorAssetOps::ReloadChanged(std::span<const ::Shalltear::Path>(Slots::ToPaths(changed)), onConflict)",
+			"returns": "u32",
+			"params": [
+				{ "name": "changed", "type": "list<string>" },
+				{
+					"name": "onConflict",
+					"type": "fn<void;string;ActionFn>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::Path &, std::function<void ()>)>"
+				}
+			],
+			"csharp": { "member": "ReloadChanged", "kind": "method" }
+		},
+		{
+			"id": "RevertToFile",
+			"cpp": "::Shalltear::EditorAssetOps::RevertToFile(::Shalltear::Handle<::Shalltear::Asset>(asset))",
+			"returns": "bool",
+			"params": [{ "name": "asset", "type": "Asset", "optional": true }],
+			"csharp": { "member": "RevertToFile", "kind": "method" }
+		},
+		{
+			"id": "Reimport",
+			"cpp": "::Shalltear::EditorAssetOps::Reimport(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "Reimport", "kind": "method" }
+		}
+	]
+}

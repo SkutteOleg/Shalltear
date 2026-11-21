@@ -1,0 +1,97 @@
+{
+	"area": "GraphInlineValue",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.Editor.GraphInlineValue",
+	"instance": "GraphInlineValue",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "GraphInlineKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphInlineKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->count",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "SetCount",
+			"cpp": "self->count = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "Count", "kind": "setter" }
+		},
+		{
+			"id": "GetValues",
+			"cpp": "self->values",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Values", "kind": "getter" }
+		},
+		{
+			"id": "SetValues",
+			"cpp": "Slots::Assign(self->values, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Values", "kind": "setter" }
+		},
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		},
+		{
+			"id": "GetCurve",
+			"cpp": "&self->curve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "Curve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetCurve",
+			"cpp": "self->curve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "Curve", "kind": "setter" }
+		},
+		{
+			"id": "GetRamp",
+			"cpp": "self->ramp",
+			"returns": "list<Color>",
+			"params": [],
+			"csharp": { "member": "Ramp", "kind": "getter" }
+		},
+		{
+			"id": "SetRamp",
+			"cpp": "self->ramp = Slots::ToVector<::Shalltear::Color>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Color>" }],
+			"csharp": { "member": "Ramp", "kind": "setter" }
+		}
+	]
+}

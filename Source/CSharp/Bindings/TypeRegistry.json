@@ -1,0 +1,131 @@
+{
+	"area": "TypeRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeRegistry.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/Memory.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.TypeRegistry",
+	"natives": [
+		{ "name": "TypeRegistrarNode", "cpp": "::Shalltear::TypeRegistrarNode", "owned": true },
+		{ "name": "FieldRef", "cpp": "::Shalltear::FieldRef", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::TypeRegistry::Register(typeInfo, reinterpret_cast<const void*>(static_cast<uintptr_t>(ownerHint)))",
+			"returns": "TypeInfo",
+			"params": [
+				{ "name": "typeInfo", "type": "TypeInfo", "optional": true },
+				{ "name": "ownerHint", "type": "u64" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "RegisterOwned",
+			"cpp": "::Shalltear::TypeRegistry::RegisterOwned(typeInfo, reinterpret_cast<const void*>(static_cast<uintptr_t>(ownerToken)))",
+			"returns": "TypeInfo",
+			"params": [
+				{ "name": "typeInfo", "type": "TypeInfo", "optional": true },
+				{ "name": "ownerToken", "type": "u64" }
+			],
+			"csharp": { "member": "RegisterOwned", "kind": "method" }
+		},
+		{
+			"id": "IsOwnerToken",
+			"cpp": "::Shalltear::TypeRegistry::IsOwnerToken(ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsOwnerToken", "kind": "getter" }
+		},
+		{
+			"id": "Unregister",
+			"cpp": "::Shalltear::TypeRegistry::Unregister(name)",
+			"returns": "void",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "Unregister", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::TypeRegistry::UnregisterOwnedBy(reinterpret_cast<const void*>(static_cast<uintptr_t>(imageBase)))",
+			"returns": "u32",
+			"params": [{ "name": "imageBase", "type": "u64" }],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "FindType",
+			"cpp": "::Shalltear::TypeRegistry::FindType(name)",
+			"returns": "TypeInfo",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "FindType", "kind": "method" }
+		},
+		{
+			"id": "IsDerivedFrom",
+			"cpp": "::Shalltear::TypeRegistry::IsDerivedFrom(child, parent)",
+			"returns": "bool",
+			"params": [
+				{ "name": "child", "type": "TypeInfo", "optional": true },
+				{ "name": "parent", "type": "TypeInfo", "optional": true }
+			],
+			"csharp": { "member": "IsDerivedFrom", "kind": "method" }
+		},
+		{
+			"id": "GetTypeCount",
+			"cpp": "::Shalltear::TypeRegistry::GetTypeCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TypeCount", "kind": "getter" }
+		},
+		{
+			"id": "ForEachType",
+			"cpp": "::Shalltear::TypeRegistry::ForEachType(Slots::FromBits<void (*)(const Shalltear::TypeInfo *, void *)>(visitor), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "void",
+			"params": [
+				{ "name": "visitor", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "ForEachType", "kind": "method" }
+		},
+		{
+			"id": "CreateObjectInstance",
+			"cpp": "::Shalltear::TypeRegistry::CreateObjectInstance(type, tag)",
+			"returns": "EngineObject",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "tag", "type": "MemTag" }
+			],
+			"csharp": { "member": "CreateObjectInstance", "kind": "method" }
+		},
+		{
+			"id": "DestroyObjectInstance",
+			"cpp": "::Shalltear::TypeRegistry::DestroyObjectInstance(objectValue)",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "DestroyObjectInstance", "kind": "method" }
+		},
+		{
+			"id": "AddPendingRegistration",
+			"cpp": "::Shalltear::TypeRegistry::AddPendingRegistration(node)",
+			"returns": "void",
+			"params": [{ "name": "node", "type": "TypeRegistrarNode", "optional": true }],
+			"csharp": { "member": "AddPendingRegistration", "kind": "method" }
+		},
+		{
+			"id": "RegisterPendingTypes",
+			"cpp": "::Shalltear::TypeRegistry::RegisterPendingTypes()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterPendingTypes", "kind": "method" }
+		},
+		{
+			"id": "UnlinkPendingRegistrationsIn",
+			"cpp": "::Shalltear::TypeRegistry::UnlinkPendingRegistrationsIn(reinterpret_cast<const void*>(static_cast<uintptr_t>(imageBase)))",
+			"returns": "u32",
+			"params": [{ "name": "imageBase", "type": "u64" }],
+			"csharp": { "member": "UnlinkPendingRegistrationsIn", "kind": "method" }
+		}
+	]
+}

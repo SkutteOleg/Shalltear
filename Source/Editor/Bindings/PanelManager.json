@@ -1,0 +1,201 @@
+{
+	"area": "PanelManager",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PanelManager.h",
+		"Shalltear/Editor/EditorPanel.h",
+		"Shalltear/Editor/EditorEvents.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.Editor.PanelManager",
+	"functions": [
+		{
+			"id": "SetDefaultWindow",
+			"cpp": "::Shalltear::PanelManager::SetDefaultWindow(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "void",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "SetDefaultWindow", "kind": "method" }
+		},
+		{
+			"id": "OpenPanel",
+			"cpp": "::Shalltear::PanelManager::OpenPanel(type, ::Shalltear::Handle<::Shalltear::Window>(targetWindow))",
+			"returns": "EditorPanel",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "targetWindow", "type": "Window", "optional": true }
+			],
+			"csharp": { "member": "OpenPanel", "kind": "method" }
+		},
+		{
+			"id": "RestorePanel",
+			"cpp": "::Shalltear::PanelManager::RestorePanel(type, serial, stateJSON)",
+			"returns": "EditorPanel",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "serial", "type": "u32" },
+				{ "name": "stateJSON", "type": "string" }
+			],
+			"csharp": { "member": "RestorePanel", "kind": "method" }
+		},
+		{
+			"id": "ClosePanel",
+			"cpp": "::Shalltear::PanelManager::ClosePanel(::Shalltear::Handle<::Shalltear::EditorPanel>(panel))",
+			"returns": "void",
+			"params": [{ "name": "panel", "type": "EditorPanel", "optional": true }],
+			"csharp": { "member": "ClosePanel", "kind": "method" }
+		},
+		{
+			"id": "CloseAllPanels",
+			"cpp": "::Shalltear::PanelManager::CloseAllPanels()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "CloseAllPanels", "kind": "method" }
+		},
+		{
+			"id": "CloseByDockId",
+			"cpp": "::Shalltear::PanelManager::CloseByDockId(dockId)",
+			"returns": "void",
+			"params": [{ "name": "dockId", "type": "StringHash" }],
+			"csharp": { "member": "CloseByDockId", "kind": "method" }
+		},
+		{
+			"id": "ConfirmUnsavedPanelsThen",
+			"cpp": "::Shalltear::PanelManager::ConfirmUnsavedPanelsThen(*context, proceed)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "proceed", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "ConfirmUnsavedPanelsThen", "kind": "method" }
+		},
+		{
+			"id": "FindPanelByDockId",
+			"cpp": "::Shalltear::PanelManager::FindPanelByDockId(dockId)",
+			"returns": "EditorPanel",
+			"params": [{ "name": "dockId", "type": "StringHash" }],
+			"csharp": { "member": "FindPanelByDockId", "kind": "method" }
+		},
+		{
+			"id": "GetFocusedPanel",
+			"cpp": "::Shalltear::PanelManager::GetFocusedPanel()",
+			"returns": "EditorPanel",
+			"params": [],
+			"csharp": { "member": "FocusedPanel", "kind": "getter" }
+		},
+		{
+			"id": "GetPlayModeState",
+			"cpp": "::Shalltear::PanelManager::GetPlayModeState()",
+			"returns": "PlayModeState",
+			"params": [],
+			"csharp": { "member": "PlayModeState", "kind": "getter" }
+		},
+		{
+			"id": "GetOpenPanels",
+			"cpp": "::Shalltear::PanelManager::GetOpenPanels(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<EditorPanel>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::EditorPanel>>" }
+			],
+			"csharp": { "member": "GetOpenPanels", "kind": "method" }
+		},
+		{
+			"id": "GetOpenPanelCount",
+			"cpp": "::Shalltear::PanelManager::GetOpenPanelCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "OpenPanelCount", "kind": "getter" }
+		},
+		{
+			"id": "GetPanelTypes",
+			"cpp": "::Shalltear::PanelManager::GetPanelTypes(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<TypeInfo>", "out": true, "cpp": "::Shalltear::Vector<const ::Shalltear::TypeInfo*>", "borrowed": true }
+			],
+			"csharp": { "member": "GetPanelTypes", "kind": "method" }
+		},
+		{
+			"id": "GetPanelTypeName",
+			"cpp": "::Shalltear::PanelManager::GetPanelTypeName(type)",
+			"returns": "string",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "GetPanelTypeName", "kind": "method" }
+		},
+		{
+			"id": "GetPanelTypeCategory",
+			"cpp": "::Shalltear::PanelManager::GetPanelTypeCategory(type)",
+			"returns": "string",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "GetPanelTypeCategory", "kind": "method" }
+		},
+		{
+			"id": "FocusPanel",
+			"cpp": "::Shalltear::PanelManager::FocusPanel(::Shalltear::Handle<::Shalltear::EditorPanel>(panel))",
+			"returns": "bool",
+			"params": [{ "name": "panel", "type": "EditorPanel", "optional": true }],
+			"csharp": { "member": "FocusPanel", "kind": "method" }
+		},
+		{
+			"id": "RevealPanel",
+			"cpp": "::Shalltear::PanelManager::RevealPanel(::Shalltear::Handle<::Shalltear::EditorPanel>(panel))",
+			"returns": "bool",
+			"params": [{ "name": "panel", "type": "EditorPanel", "optional": true }],
+			"csharp": { "member": "RevealPanel", "kind": "method" }
+		},
+		{
+			"id": "FocusPanelOfType",
+			"cpp": "::Shalltear::PanelManager::FocusPanelOfType(typeName)",
+			"returns": "bool",
+			"params": [{ "name": "typeName", "type": "StringHash" }],
+			"csharp": { "member": "FocusPanelOfType", "kind": "method" }
+		},
+		{
+			"id": "MakeDockId",
+			"cpp": "::Shalltear::PanelManager::MakeDockId(type, serial)",
+			"returns": "StringHash",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "serial", "type": "u32" }
+			],
+			"csharp": { "member": "MakeDockId", "kind": "method" }
+		},
+		{
+			"id": "SubmitViews",
+			"cpp": "::Shalltear::PanelManager::SubmitViews(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "SubmitViews", "kind": "method" }
+		},
+		{
+			"id": "CaptureModulePanels",
+			"cpp": "::Shalltear::PanelManager::CaptureModulePanels(reinterpret_cast<const void*>(static_cast<uintptr_t>(moduleBase)))",
+			"returns": "u32",
+			"params": [{ "name": "moduleBase", "type": "u64" }],
+			"csharp": { "member": "CaptureModulePanels", "kind": "method" }
+		},
+		{
+			"id": "RestoreModulePanels",
+			"cpp": "::Shalltear::PanelManager::RestoreModulePanels()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RestoreModulePanels", "kind": "method" }
+		},
+		{
+			"id": "GetCapturedPanelCount",
+			"cpp": "::Shalltear::PanelManager::GetCapturedPanelCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "CapturedPanelCount", "kind": "getter" }
+		},
+		{
+			"id": "RegisterBuiltInPanels",
+			"cpp": "::Shalltear::RegisterBuiltInPanels()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltInPanels", "kind": "method" }
+		}
+	]
+}

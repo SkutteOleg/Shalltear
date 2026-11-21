@@ -1,0 +1,225 @@
+{
+	"area": "AssetBrowserOpsEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AssetBrowserOps.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.AssetBrowserOpsEntry",
+	"instance": "AssetBrowserOpsEntry",
+	"enums": [
+		{
+			"name": "AssetBrowserOpsEntryCommand",
+			"cpp": "::Shalltear::AssetBrowserOps::EntryCommand",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Rename", "value": 0 },
+				{ "name": "Delete", "value": 1 },
+				{ "name": "Move", "value": 2 },
+				{ "name": "Duplicate", "value": 3 },
+				{ "name": "Extract", "value": 4 }
+			]
+		},
+		{
+			"name": "AssetBrowserOpsEntryKind",
+			"cpp": "::Shalltear::AssetBrowserOps::EntryKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Directory", "value": 0 },
+				{ "name": "File", "value": 1 },
+				{ "name": "Product", "value": 2 },
+				{ "name": "Link", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "AssetBrowserOpsGridCellSize",
+			"cpp": "::Shalltear::AssetBrowserOps::GridCellSize",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "widthPx", "type": "f32", "offset": 0 },
+				{ "name": "heightPx", "type": "f32", "offset": 4 }
+			]
+		},
+		{
+			"name": "AssetBrowserOpsGridWindow",
+			"cpp": "::Shalltear::AssetBrowserOps::GridWindow",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "firstIndex", "type": "u32", "offset": 0 },
+				{ "name": "count", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "AssetBrowserOpsFoldOutSegment",
+			"cpp": "::Shalltear::AssetBrowserOps::FoldOutSegment",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "first", "type": "u32", "offset": 0 },
+				{ "name": "last", "type": "u32", "offset": 4 },
+				{ "name": "fromAbove", "type": "bool", "offset": 8 },
+				{ "name": "continuesBelow", "type": "bool", "offset": 9 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "AssetBrowserOpsEntry", "cpp": "::Shalltear::AssetBrowserOps::Entry", "owned": true, "create": true },
+		{ "name": "AssetBrowserOpsAssignableAsset", "cpp": "::Shalltear::AssetBrowserOps::AssignableAsset", "owned": true, "create": true },
+		{ "name": "AssetBrowserOpsFolderHistory", "cpp": "::Shalltear::AssetBrowserOps::FolderHistory", "owned": true, "create": true },
+		{ "name": "AssetBrowserOpsCreateMenuEntry", "cpp": "::Shalltear::AssetBrowserOps::CreateMenuEntry", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsDirectory",
+			"cpp": "self->IsDirectory()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsDirectory", "kind": "getter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetRelPath",
+			"cpp": "self->relPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "RelPath", "kind": "getter" }
+		},
+		{
+			"id": "SetRelPath",
+			"cpp": "self->relPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "RelPath", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "AssetBrowserOpsEntryKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AssetBrowserOpsEntryKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		},
+		{
+			"id": "GetProductKey",
+			"cpp": "self->productKey",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProductKey", "kind": "getter" }
+		},
+		{
+			"id": "SetProductKey",
+			"cpp": "self->productKey = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ProductKey", "kind": "setter" }
+		},
+		{
+			"id": "GetAssetType",
+			"cpp": "self->assetType",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "AssetType", "kind": "getter" }
+		},
+		{
+			"id": "SetAssetType",
+			"cpp": "self->assetType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "AssetType", "kind": "setter" }
+		},
+		{
+			"id": "GetSourceRelPath",
+			"cpp": "self->sourceRelPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SourceRelPath", "kind": "getter" }
+		},
+		{
+			"id": "SetSourceRelPath",
+			"cpp": "self->sourceRelPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SourceRelPath", "kind": "setter" }
+		},
+		{
+			"id": "GetExtractedRelPath",
+			"cpp": "self->extractedRelPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ExtractedRelPath", "kind": "getter" }
+		},
+		{
+			"id": "SetExtractedRelPath",
+			"cpp": "self->extractedRelPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ExtractedRelPath", "kind": "setter" }
+		}
+	]
+}

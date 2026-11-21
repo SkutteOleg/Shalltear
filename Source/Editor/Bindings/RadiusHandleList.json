@@ -1,0 +1,47 @@
+{
+	"area": "RadiusHandleList",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h"
+	],
+	"class": "Shalltear.Editor.RadiusHandleList",
+	"instance": "RadiusHandleList",
+	"functions": [
+		{
+			"id": "GetCount",
+			"cpp": "static_cast<int32_t>(self->size())",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "Get",
+			"cpp": "Slots::At(*self, index)",
+			"returns": "RadiusHandle",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "Get", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "Add",
+			"cpp": "self->push_back(*item)",
+			"returns": "void",
+			"params": [{ "name": "item", "type": "RadiusHandle" }],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "ToArray",
+			"cpp": "*self",
+			"returns": "list<RadiusHandle>",
+			"params": [],
+			"csharp": { "member": "ToArray", "kind": "method" }
+		}
+	]
+}

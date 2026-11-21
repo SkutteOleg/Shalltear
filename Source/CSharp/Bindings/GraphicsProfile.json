@@ -1,0 +1,419 @@
+{
+	"area": "GraphicsProfile",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/GraphicsProfile.h"
+	],
+	"class": "Shalltear.GraphicsProfile",
+	"instance": "GraphicsProfile",
+	"types": [
+		{ "name": "GraphicsProfile", "cpp": "::Shalltear::GraphicsProfile", "engine": "GraphicsProfile", "base": "Asset" }
+	],
+	"enums": [
+		{
+			"name": "TonemapCurve",
+			"cpp": "::Shalltear::TonemapCurve",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Neutral", "value": 1 },
+				{ "name": "ACES", "value": 2 },
+				{ "name": "AgX", "value": 3 }
+			]
+		},
+		{
+			"name": "ShadowCascadeFit",
+			"cpp": "::Shalltear::ShadowCascadeFit",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Fixed", "value": 0 },
+				{ "name": "VisibleDepth", "value": 1 }
+			]
+		},
+		{
+			"name": "ShadowFilter",
+			"cpp": "::Shalltear::ShadowFilter",
+			"underlying": "u8",
+			"values": [
+				{ "name": "PCF", "value": 0 },
+				{ "name": "Moments", "value": 1 }
+			]
+		},
+		{
+			"name": "TextureAnisotropy",
+			"cpp": "::Shalltear::TextureAnisotropy",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Disabled", "value": 0 },
+				{ "name": "PerTexture", "value": 1 },
+				{ "name": "ForcedOn", "value": 2 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetMSAA",
+			"cpp": "self->msaa",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "MSAA", "kind": "getter" }
+		},
+		{
+			"id": "SetMSAA",
+			"cpp": "self->msaa = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "MSAA", "kind": "setter" }
+		},
+		{
+			"id": "GetRenderScale",
+			"cpp": "self->renderScale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RenderScale", "kind": "getter" }
+		},
+		{
+			"id": "SetRenderScale",
+			"cpp": "self->renderScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RenderScale", "kind": "setter" }
+		},
+		{
+			"id": "GetTonemap",
+			"cpp": "self->tonemap",
+			"returns": "TonemapCurve",
+			"params": [],
+			"csharp": { "member": "Tonemap", "kind": "getter" }
+		},
+		{
+			"id": "SetTonemap",
+			"cpp": "self->tonemap = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TonemapCurve" }],
+			"csharp": { "member": "Tonemap", "kind": "setter" }
+		},
+		{
+			"id": "GetLightsPerView",
+			"cpp": "self->lightsPerView",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "LightsPerView", "kind": "getter" }
+		},
+		{
+			"id": "SetLightsPerView",
+			"cpp": "self->lightsPerView = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "LightsPerView", "kind": "setter" }
+		},
+		{
+			"id": "GetLightsPerCluster",
+			"cpp": "self->lightsPerCluster",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "LightsPerCluster", "kind": "getter" }
+		},
+		{
+			"id": "SetLightsPerCluster",
+			"cpp": "self->lightsPerCluster = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "LightsPerCluster", "kind": "setter" }
+		},
+		{
+			"id": "GetDecalsPerCluster",
+			"cpp": "self->decalsPerCluster",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "DecalsPerCluster", "kind": "getter" }
+		},
+		{
+			"id": "SetDecalsPerCluster",
+			"cpp": "self->decalsPerCluster = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "DecalsPerCluster", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowDistance",
+			"cpp": "self->shadowDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowDistance",
+			"cpp": "self->shadowDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowCascades",
+			"cpp": "self->shadowCascades",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ShadowCascades", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowCascades",
+			"cpp": "self->shadowCascades = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ShadowCascades", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowFirstCascadeDistance",
+			"cpp": "self->shadowFirstCascadeDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowFirstCascadeDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowFirstCascadeDistance",
+			"cpp": "self->shadowFirstCascadeDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowFirstCascadeDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowCascadeFit",
+			"cpp": "self->shadowCascadeFit",
+			"returns": "ShadowCascadeFit",
+			"params": [],
+			"csharp": { "member": "ShadowCascadeFit", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowCascadeFit",
+			"cpp": "self->shadowCascadeFit = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShadowCascadeFit" }],
+			"csharp": { "member": "ShadowCascadeFit", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowPCFTaps",
+			"cpp": "self->shadowPcfTaps",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ShadowPCFTaps", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowPCFTaps",
+			"cpp": "self->shadowPcfTaps = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ShadowPCFTaps", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowFilter",
+			"cpp": "self->shadowFilter",
+			"returns": "ShadowFilter",
+			"params": [],
+			"csharp": { "member": "ShadowFilter", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowFilter",
+			"cpp": "self->shadowFilter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShadowFilter" }],
+			"csharp": { "member": "ShadowFilter", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowMomentBlur",
+			"cpp": "self->shadowMomentBlur",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ShadowMomentBlur", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowMomentBlur",
+			"cpp": "self->shadowMomentBlur = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ShadowMomentBlur", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowMomentPositiveExponent",
+			"cpp": "self->shadowMomentPositiveExponent",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowMomentPositiveExponent", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowMomentPositiveExponent",
+			"cpp": "self->shadowMomentPositiveExponent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowMomentPositiveExponent", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowMomentNegativeExponent",
+			"cpp": "self->shadowMomentNegativeExponent",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowMomentNegativeExponent", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowMomentNegativeExponent",
+			"cpp": "self->shadowMomentNegativeExponent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowMomentNegativeExponent", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowMomentBleedReduction",
+			"cpp": "self->shadowMomentBleedReduction",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowMomentBleedReduction", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowMomentBleedReduction",
+			"cpp": "self->shadowMomentBleedReduction = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowMomentBleedReduction", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowAtlasSize",
+			"cpp": "self->shadowAtlasSize",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ShadowAtlasSize", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowAtlasSize",
+			"cpp": "self->shadowAtlasSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ShadowAtlasSize", "kind": "setter" }
+		},
+		{
+			"id": "GetObjectShadows",
+			"cpp": "self->objectShadows",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ObjectShadows", "kind": "getter" }
+		},
+		{
+			"id": "SetObjectShadows",
+			"cpp": "self->objectShadows = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ObjectShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetObjectShadowResolution",
+			"cpp": "self->objectShadowResolution",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ObjectShadowResolution", "kind": "getter" }
+		},
+		{
+			"id": "SetObjectShadowResolution",
+			"cpp": "self->objectShadowResolution = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ObjectShadowResolution", "kind": "setter" }
+		},
+		{
+			"id": "GetTransparentReceiveShadows",
+			"cpp": "self->transparentReceiveShadows",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "TransparentReceiveShadows", "kind": "getter" }
+		},
+		{
+			"id": "SetTransparentReceiveShadows",
+			"cpp": "self->transparentReceiveShadows = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "TransparentReceiveShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetReflectionProbeResolution",
+			"cpp": "self->reflectionProbeResolution",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ReflectionProbeResolution", "kind": "getter" }
+		},
+		{
+			"id": "SetReflectionProbeResolution",
+			"cpp": "self->reflectionProbeResolution = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ReflectionProbeResolution", "kind": "setter" }
+		},
+		{
+			"id": "GetAnisotropicFiltering",
+			"cpp": "self->anisotropicFiltering",
+			"returns": "TextureAnisotropy",
+			"params": [],
+			"csharp": { "member": "AnisotropicFiltering", "kind": "getter" }
+		},
+		{
+			"id": "SetAnisotropicFiltering",
+			"cpp": "self->anisotropicFiltering = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TextureAnisotropy" }],
+			"csharp": { "member": "AnisotropicFiltering", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxAnisotropy",
+			"cpp": "self->maxAnisotropy",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "MaxAnisotropy", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxAnisotropy",
+			"cpp": "self->maxAnisotropy = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "MaxAnisotropy", "kind": "setter" }
+		},
+		{
+			"id": "GetLODBias",
+			"cpp": "self->lodBias",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LODBias", "kind": "getter" }
+		},
+		{
+			"id": "SetLODBias",
+			"cpp": "self->lodBias = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LODBias", "kind": "setter" }
+		},
+		{
+			"id": "GetMaximumLODLevel",
+			"cpp": "self->maximumLODLevel",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "MaximumLODLevel", "kind": "getter" }
+		},
+		{
+			"id": "SetMaximumLODLevel",
+			"cpp": "self->maximumLODLevel = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "MaximumLODLevel", "kind": "setter" }
+		},
+		{
+			"id": "GetLODCrossFade",
+			"cpp": "self->lodCrossFade",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "LODCrossFade", "kind": "getter" }
+		},
+		{
+			"id": "SetLODCrossFade",
+			"cpp": "self->lodCrossFade = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "LODCrossFade", "kind": "setter" }
+		}
+	]
+}

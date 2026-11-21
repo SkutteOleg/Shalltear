@@ -1,0 +1,59 @@
+{
+	"area": "CppToolchain",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CppToolchain.h"
+	],
+	"class": "Shalltear.Editor.CppToolchain",
+	"functions": [
+		{
+			"id": "Discover",
+			"cpp": "::Shalltear::CppToolchain::Discover(*options)",
+			"returns": "CppToolchainToolchainInfo",
+			"params": [{ "name": "options", "type": "CppToolchainDiscoveryOptions" }],
+			"csharp": { "member": "Discover", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Discover2",
+			"cpp": "::Shalltear::CppToolchain::Discover()",
+			"returns": "CppToolchainToolchainInfo",
+			"params": [],
+			"csharp": { "member": "Discover", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Describe",
+			"cpp": "::Shalltear::CppToolchain::Describe(*info)",
+			"returns": "string",
+			"params": [{ "name": "info", "type": "CppToolchainToolchainInfo" }],
+			"csharp": { "member": "Describe", "kind": "method" }
+		},
+		{
+			"id": "ReadSDKIdentity",
+			"cpp": "::Shalltear::CppToolchain::ReadSDKIdentity(str(sdkRoot), *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "sdkRoot", "type": "string" },
+				{ "name": "outValue", "type": "CppToolchainToolchainInfo" }
+			],
+			"csharp": { "member": "ReadSDKIdentity", "kind": "method" }
+		},
+		{
+			"id": "GetCompilerDriverName",
+			"cpp": "::Shalltear::CppToolchain::GetCompilerDriverName(*info)",
+			"returns": "string",
+			"params": [{ "name": "info", "type": "CppToolchainToolchainInfo" }],
+			"csharp": { "member": "GetCompilerDriverName", "kind": "method" }
+		},
+		{
+			"id": "GetEngineIdentity",
+			"cpp": "::Shalltear::CppToolchain::GetEngineIdentity()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "EngineIdentity", "kind": "getter" }
+		}
+	]
+}

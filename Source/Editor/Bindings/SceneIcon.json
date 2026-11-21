@@ -1,0 +1,55 @@
+{
+	"area": "SceneIcon",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Editor.SceneIcon",
+	"instance": "SceneIcon",
+	"functions": [
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldPosition",
+			"cpp": "self->worldPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "WorldPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetWorldPosition",
+			"cpp": "self->worldPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "WorldPosition", "kind": "setter" }
+		}
+	]
+}

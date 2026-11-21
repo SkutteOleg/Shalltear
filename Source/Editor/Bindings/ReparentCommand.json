@@ -1,0 +1,36 @@
+{
+	"area": "ReparentCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.ReparentCommand",
+	"instance": "ReparentCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::ReparentCommand(::Shalltear::Handle<::Shalltear::SceneObject>(argument0), ::Shalltear::Handle<::Shalltear::SceneObject>(newParent), newSiblingIndex, worldStays)",
+			"returns": "ReparentCommand",
+			"params": [
+				{ "name": "argument0", "type": "SceneObject", "optional": true },
+				{ "name": "newParent", "type": "SceneObject", "optional": true },
+				{ "name": "newSiblingIndex", "type": "u32" },
+				{ "name": "worldStays", "type": "bool" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,48 @@
+{
+	"area": "ILogSink",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.ILogSink",
+	"instance": "ILogSink",
+	"enums": [
+		{
+			"name": "LogLevel",
+			"cpp": "::Shalltear::LogLevel",
+			"underlying": "i32",
+			"values": [
+				{ "name": "Trace", "value": 0 },
+				{ "name": "Debug", "value": 1 },
+				{ "name": "Info", "value": 2 },
+				{ "name": "Warn", "value": 3 },
+				{ "name": "Error", "value": 4 },
+				{ "name": "Fatal", "value": 5 },
+				{ "name": "None", "value": 6 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ILogSink", "cpp": "::Shalltear::ILogSink" },
+		{ "name": "LogEvent", "cpp": "::Shalltear::LogEvent", "owned": true, "create": true },
+		{ "name": "LogInitConfig", "cpp": "::Shalltear::LogInitConfig", "owned": true, "create": true },
+		{ "name": "ConsoleSink", "cpp": "::Shalltear::ConsoleSink", "owned": true, "create": true },
+		{ "name": "FileSink", "cpp": "::Shalltear::FileSink", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "ReceiveLog",
+			"cpp": "self->ReceiveLog(*eventValue)",
+			"returns": "void",
+			"params": [{ "name": "eventValue", "type": "LogEvent" }],
+			"csharp": { "member": "ReceiveLog", "kind": "method" }
+		},
+		{
+			"id": "Flush",
+			"cpp": "self->Flush()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Flush", "kind": "method" }
+		}
+	]
+}

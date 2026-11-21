@@ -19,6 +19,7 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		str packagesRoot;
 		str editorExecutable;
 		Vector<str> packageAssemblies{GetMemoryResource(MemTag::Editor)};
+		str editorAssembly;
 		CSharpAssemblies::Set assemblies;
 		DotNetToolchain::Pin pin;
 		bool allowUnsafeCode = false;

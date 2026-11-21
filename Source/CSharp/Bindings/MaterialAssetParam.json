@@ -1,0 +1,83 @@
+{
+	"area": "MaterialAssetParam",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.MaterialAssetParam",
+	"instance": "MaterialAssetParam",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetHash",
+			"cpp": "self->hash",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Hash", "kind": "getter" }
+		},
+		{
+			"id": "SetHash",
+			"cpp": "self->hash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Hash", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "UniformMemberType",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UniformMemberType" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetNumbers",
+			"cpp": "self->numbers",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Numbers", "kind": "getter" }
+		},
+		{
+			"id": "SetNumbers",
+			"cpp": "Slots::Assign(self->numbers, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Numbers", "kind": "setter" }
+		},
+		{
+			"id": "GetInteger",
+			"cpp": "self->integer",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Integer", "kind": "getter" }
+		},
+		{
+			"id": "SetInteger",
+			"cpp": "self->integer = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Integer", "kind": "setter" }
+		}
+	]
+}

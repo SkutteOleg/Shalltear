@@ -1,0 +1,67 @@
+{
+	"area": "UniformMember",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.UniformMember",
+	"instance": "UniformMember",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "UniformMemberType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UniformMemberType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetOffset",
+			"cpp": "self->offset",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Offset", "kind": "getter" }
+		},
+		{
+			"id": "SetOffset",
+			"cpp": "self->offset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Offset", "kind": "setter" }
+		},
+		{
+			"id": "GetSizeBytes",
+			"cpp": "self->sizeBytes",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SizeBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetSizeBytes",
+			"cpp": "self->sizeBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SizeBytes", "kind": "setter" }
+		}
+	]
+}

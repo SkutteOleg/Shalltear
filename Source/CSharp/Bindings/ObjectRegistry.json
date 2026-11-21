@@ -1,0 +1,59 @@
+{
+	"area": "ObjectRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Object.h"
+	],
+	"class": "Shalltear.ObjectRegistry",
+	"types": [{ "name": "EngineObject", "cpp": "::Shalltear::Object", "extern": true }],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::ObjectRegistry::Register(obj)",
+			"returns": "u64",
+			"params": [{ "name": "obj", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "Unregister",
+			"cpp": "::Shalltear::ObjectRegistry::Unregister(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "Unregister", "kind": "method" }
+		},
+		{
+			"id": "ForEachLiveObject",
+			"cpp": "::Shalltear::ObjectRegistry::ForEachLiveObject(Slots::FromBits<void (*)(Shalltear::Object *, uint64_t, void *)>(visitor), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "void",
+			"params": [
+				{ "name": "visitor", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "ForEachLiveObject", "kind": "method" }
+		},
+		{
+			"id": "DetachPreservingSlot",
+			"cpp": "::Shalltear::ObjectRegistry::DetachPreservingSlot(*objectValue)",
+			"returns": "bool",
+			"params": [{ "name": "objectValue", "type": "EngineObject" }],
+			"csharp": { "member": "DetachPreservingSlot", "kind": "method" }
+		},
+		{
+			"id": "RebindPreservedSlot",
+			"cpp": "::Shalltear::ObjectRegistry::RebindPreservedSlot(*replacement, preservedId)",
+			"returns": "bool",
+			"params": [
+				{ "name": "replacement", "type": "EngineObject" },
+				{ "name": "preservedId", "type": "u64" }
+			],
+			"csharp": { "member": "RebindPreservedSlot", "kind": "method" }
+		},
+		{
+			"id": "ReleaseReservedSlot",
+			"cpp": "::Shalltear::ObjectRegistry::ReleaseReservedSlot(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "ReleaseReservedSlot", "kind": "method" }
+		}
+	]
+}

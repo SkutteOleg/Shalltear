@@ -1,0 +1,355 @@
+{
+	"area": "ViewDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Graphics/Camera.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.ViewDesc",
+	"instance": "ViewDesc",
+	"functions": [
+		{
+			"id": "GetView",
+			"cpp": "&self->view",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "View", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetView",
+			"cpp": "self->view = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "View", "kind": "setter" }
+		},
+		{
+			"id": "GetProjection",
+			"cpp": "&self->projection",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Projection", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetProjection",
+			"cpp": "self->projection = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "Projection", "kind": "setter" }
+		},
+		{
+			"id": "GetCameraPosition",
+			"cpp": "self->cameraPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "CameraPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetCameraPosition",
+			"cpp": "self->cameraPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "CameraPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetClearColor",
+			"cpp": "self->clearColor",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "ClearColor", "kind": "getter" }
+		},
+		{
+			"id": "SetClearColor",
+			"cpp": "self->clearColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "ClearColor", "kind": "setter" }
+		},
+		{
+			"id": "GetFill",
+			"cpp": "self->fill",
+			"returns": "ViewFill",
+			"params": [],
+			"csharp": { "member": "Fill", "kind": "getter" }
+		},
+		{
+			"id": "SetFill",
+			"cpp": "self->fill = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ViewFill" }],
+			"csharp": { "member": "Fill", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugView",
+			"cpp": "self->debugView",
+			"returns": "DebugView",
+			"params": [],
+			"csharp": { "member": "DebugView", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugView",
+			"cpp": "self->debugView = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "DebugView" }],
+			"csharp": { "member": "DebugView", "kind": "setter" }
+		},
+		{
+			"id": "GetWireColor",
+			"cpp": "self->wireColor",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "WireColor", "kind": "getter" }
+		},
+		{
+			"id": "SetWireColor",
+			"cpp": "self->wireColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color32" }],
+			"csharp": { "member": "WireColor", "kind": "setter" }
+		},
+		{
+			"id": "GetPasses",
+			"cpp": "self->passes",
+			"returns": "list<RenderPass>",
+			"params": [],
+			"csharp": { "member": "Passes", "kind": "getter" }
+		},
+		{
+			"id": "SetPasses",
+			"cpp": "self->passes = Slots::KeepFieldHandles(self, 0xa516db7ac9ae033cull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RenderPass>" }],
+			"csharp": { "member": "Passes", "kind": "setter" }
+		},
+		{
+			"id": "GetLines",
+			"cpp": "self->lines",
+			"returns": "list<DebugLine>",
+			"params": [],
+			"csharp": { "member": "Lines", "kind": "getter" }
+		},
+		{
+			"id": "SetLines",
+			"cpp": "self->lines = Slots::KeepFieldSpan(self, 0x350296d97c85e6fcull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<DebugLine>" }],
+			"csharp": { "member": "Lines", "kind": "setter" }
+		},
+		{
+			"id": "GetOverlayLines",
+			"cpp": "self->overlayLines",
+			"returns": "list<DebugLine>",
+			"params": [],
+			"csharp": { "member": "OverlayLines", "kind": "getter" }
+		},
+		{
+			"id": "SetOverlayLines",
+			"cpp": "self->overlayLines = Slots::KeepFieldSpan(self, 0x2bc79509e3d31a2eull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<DebugLine>" }],
+			"csharp": { "member": "OverlayLines", "kind": "setter" }
+		},
+		{
+			"id": "GetScenes",
+			"cpp": "self->scenes",
+			"returns": "list<Scene>",
+			"params": [],
+			"csharp": { "member": "Scenes", "kind": "getter" }
+		},
+		{
+			"id": "SetScenes",
+			"cpp": "self->scenes = Slots::KeepFieldHandles(self, 0x2b6ce1721b924ba0ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Scene>" }],
+			"csharp": { "member": "Scenes", "kind": "setter" }
+		},
+		{
+			"id": "GetSkippedProceduralTypes",
+			"cpp": "self->skippedProceduralTypes",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "SkippedProceduralTypes", "kind": "getter" }
+		},
+		{
+			"id": "SetSkippedProceduralTypes",
+			"cpp": "self->skippedProceduralTypes = Slots::KeepFieldSpan(self, 0xb6b593c2c6e547fdull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "SkippedProceduralTypes", "kind": "setter" }
+		},
+		{
+			"id": "GetRetainCascadeFit",
+			"cpp": "self->retainCascadeFit",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "RetainCascadeFit", "kind": "getter" }
+		},
+		{
+			"id": "SetRetainCascadeFit",
+			"cpp": "self->retainCascadeFit = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "RetainCascadeFit", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowFitView",
+			"cpp": "self->shadowFitView",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "ShadowFitView", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowFitView",
+			"cpp": "self->shadowFitView = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4", "optional": true }],
+			"csharp": { "member": "ShadowFitView", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowFitProjection",
+			"cpp": "self->shadowFitProjection",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "ShadowFitProjection", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowFitProjection",
+			"cpp": "self->shadowFitProjection = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4", "optional": true }],
+			"csharp": { "member": "ShadowFitProjection", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugOverlay",
+			"cpp": "self->debugOverlay",
+			"returns": "DebugOverlay",
+			"params": [],
+			"csharp": { "member": "DebugOverlay", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugOverlay",
+			"cpp": "self->debugOverlay = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "DebugOverlay" }],
+			"csharp": { "member": "DebugOverlay", "kind": "setter" }
+		},
+		{
+			"id": "GetTime",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->time))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Time", "kind": "getter" }
+		},
+		{
+			"id": "SetTime",
+			"cpp": "self->time = reinterpret_cast<const ::Shalltear::f64*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Time", "kind": "setter" }
+		},
+		{
+			"id": "GetTonemap",
+			"cpp": "self->tonemap",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Tonemap", "kind": "getter" }
+		},
+		{
+			"id": "SetTonemap",
+			"cpp": "self->tonemap = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Tonemap", "kind": "setter" }
+		},
+		{
+			"id": "GetCamera",
+			"cpp": "self->camera",
+			"returns": "Camera",
+			"params": [],
+			"csharp": { "member": "Camera", "kind": "getter" }
+		},
+		{
+			"id": "SetCamera",
+			"cpp": "self->camera = ::Shalltear::Handle<::Shalltear::Camera>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Camera", "optional": true }],
+			"csharp": { "member": "Camera", "kind": "setter" }
+		},
+		{
+			"id": "GetOutlines",
+			"cpp": "self->outlines",
+			"returns": "list<ViewOutline>",
+			"params": [],
+			"csharp": { "member": "Outlines", "kind": "getter" }
+		},
+		{
+			"id": "SetOutlines",
+			"cpp": "self->outlines = Slots::KeepFieldCopies(self, 0x213cfbf67723170aull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ViewOutline>" }],
+			"csharp": { "member": "Outlines", "kind": "setter" }
+		},
+		{
+			"id": "GetOutlineWidth",
+			"cpp": "self->outlineWidth",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "OutlineWidth", "kind": "getter" }
+		},
+		{
+			"id": "SetOutlineWidth",
+			"cpp": "self->outlineWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "OutlineWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetOutlineHiddenOpacity",
+			"cpp": "self->outlineHiddenOpacity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "OutlineHiddenOpacity", "kind": "getter" }
+		},
+		{
+			"id": "SetOutlineHiddenOpacity",
+			"cpp": "self->outlineHiddenOpacity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "OutlineHiddenOpacity", "kind": "setter" }
+		},
+		{
+			"id": "GetPick",
+			"cpp": "Slots::Bits(self->pick)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Pick", "kind": "getter" }
+		},
+		{
+			"id": "SetPick",
+			"cpp": "self->pick = Slots::OptionalPointer<::Shalltear::ViewPick>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ViewPick>" }],
+			"csharp": { "member": "SetPick", "kind": "method" }
+		},
+		{
+			"id": "GetRadianceCapture",
+			"cpp": "self->radianceCapture",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "RadianceCapture", "kind": "getter" }
+		},
+		{
+			"id": "SetRadianceCapture",
+			"cpp": "self->radianceCapture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "RadianceCapture", "kind": "setter" }
+		}
+	]
+}

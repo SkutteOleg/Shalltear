@@ -1,0 +1,237 @@
+{
+	"area": "EditorGizmos",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.EditorGizmos",
+	"enums": [
+		{
+			"name": "SceneHandleKind",
+			"cpp": "::Shalltear::SceneHandleKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Transform", "value": 0 },
+				{ "name": "Position", "value": 1 },
+				{ "name": "Rotation", "value": 2 },
+				{ "name": "Slider", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "SceneHandle", "cpp": "::Shalltear::SceneHandle", "owned": true, "create": true },
+		{ "name": "GizmoDrawContext", "cpp": "::Shalltear::GizmoDrawContext", "owned": true, "create": true },
+		{ "name": "ComponentGizmoFn", "cpp": "std::function<void (Shalltear::GizmoDrawContext &, Shalltear::Handle<Shalltear::Component>)>", "owned": true },
+		{ "name": "RadiusHandle", "cpp": "::Shalltear::RadiusHandle", "owned": true, "create": true },
+		{ "name": "RadiusHandleList", "cpp": "::Shalltear::Vector<::Shalltear::RadiusHandle>" },
+		{ "name": "ComponentRadius", "cpp": "::Shalltear::ComponentRadius", "owned": true, "create": true },
+		{ "name": "SceneHandleList", "cpp": "::Shalltear::Vector<::Shalltear::SceneHandle>" },
+		{ "name": "OfferedSceneHandle", "cpp": "::Shalltear::OfferedSceneHandle", "owned": true, "create": true },
+		{ "name": "SceneIcon", "cpp": "::Shalltear::SceneIcon", "owned": true, "create": true },
+		{ "name": "SceneIconPlacement", "cpp": "::Shalltear::SceneIconPlacement", "owned": true, "create": true }
+	],
+	"constants": [{ "name": "SCENE_ICON_NONE", "cpp": "::Shalltear::SCENE_ICON_NONE", "type": "u32", "value": 4294967295 }],
+	"functions": [
+		{
+			"id": "RegisterComponentGizmo",
+			"cpp": "::Shalltear::EditorGizmos::RegisterComponentGizmo(componentTypeName, gizmo, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "componentTypeName", "type": "StringHash" },
+				{
+					"name": "gizmo",
+					"type": "fn<void;GizmoDrawContext;Component>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::GizmoDrawContext &, Shalltear::Handle<Shalltear::Component>)>"
+				}
+			],
+			"csharp": { "member": "RegisterComponentGizmo", "kind": "method" }
+		},
+		{
+			"id": "FindComponentGizmo",
+			"cpp": "::Shalltear::EditorGizmos::FindComponentGizmo(componentTypeName)",
+			"returns": "ComponentGizmoFn",
+			"params": [{ "name": "componentTypeName", "type": "StringHash" }],
+			"csharp": { "member": "FindComponentGizmo", "kind": "method" }
+		},
+		{
+			"id": "RegisterSceneGizmo",
+			"cpp": "::Shalltear::EditorGizmos::RegisterSceneGizmo(name, gizmo, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "gizmo", "type": "fn<void;GizmoDrawContext>", "optional": true, "cpp": "std::function<void (Shalltear::GizmoDrawContext &)>" }
+			],
+			"csharp": { "member": "RegisterSceneGizmo", "kind": "method" }
+		},
+		{
+			"id": "RegisterSceneIcon",
+			"cpp": "::Shalltear::EditorGizmos::RegisterSceneIcon(componentTypeName, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [{ "name": "componentTypeName", "type": "StringHash" }],
+			"csharp": { "member": "RegisterSceneIcon", "kind": "method" }
+		},
+		{
+			"id": "RegisterRadiusHandles",
+			"cpp": "::Shalltear::EditorGizmos::RegisterRadiusHandles(componentTypeName, handles, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "componentTypeName", "type": "StringHash" },
+				{
+					"name": "handles",
+					"type": "fn<void;Component;RadiusHandleList>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::Handle<Shalltear::Component>, std::vector<Shalltear::RadiusHandle, std::pmr::polymorphic_allocator<Shalltear::RadiusHandle>> &)>"
+				}
+			],
+			"csharp": { "member": "RegisterRadiusHandles", "kind": "method" }
+		},
+		{
+			"id": "GatherRadiusHandles",
+			"cpp": "::Shalltear::EditorGizmos::GatherRadiusHandles(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<ComponentRadius>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::ComponentRadius>" }
+			],
+			"csharp": { "member": "GatherRadiusHandles", "kind": "method" }
+		},
+		{
+			"id": "RegisterSceneHandles",
+			"cpp": "::Shalltear::EditorGizmos::RegisterSceneHandles(name, handles, write, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{
+					"name": "handles",
+					"type": "fn<void;SceneHandleList>",
+					"optional": true,
+					"cpp": "std::function<void (std::vector<Shalltear::SceneHandle, std::pmr::polymorphic_allocator<Shalltear::SceneHandle>> &)>"
+				},
+				{ "name": "write", "type": "fn<void;SceneHandle>", "optional": true, "cpp": "std::function<void (const Shalltear::SceneHandle &)>" }
+			],
+			"csharp": { "member": "RegisterSceneHandles", "kind": "method" }
+		},
+		{
+			"id": "GatherSceneHandles",
+			"cpp": "::Shalltear::EditorGizmos::GatherSceneHandles(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<OfferedSceneHandle>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::OfferedSceneHandle>" }
+			],
+			"csharp": { "member": "GatherSceneHandles", "kind": "method" }
+		},
+		{
+			"id": "WriteSceneHandle",
+			"cpp": "::Shalltear::EditorGizmos::WriteSceneHandle(source, *dragged)",
+			"returns": "bool",
+			"params": [
+				{ "name": "source", "type": "StringHash" },
+				{ "name": "dragged", "type": "SceneHandle" }
+			],
+			"csharp": { "member": "WriteSceneHandle", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorGizmos::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "AppendCircle",
+			"cpp": "::Shalltear::EditorGizmos::AppendCircle(outValue, center, normal, radius, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "center", "type": "Vec3" },
+				{ "name": "normal", "type": "Vec3" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "color", "type": "Color32" }
+			],
+			"csharp": { "member": "AppendCircle", "kind": "method" }
+		},
+		{
+			"id": "AppendOrientedBox",
+			"cpp": "::Shalltear::EditorGizmos::AppendOrientedBox(outValue, center, rotation, halfExtents, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "center", "type": "Vec3" },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "halfExtents", "type": "Vec3" },
+				{ "name": "color", "type": "Color32" }
+			],
+			"csharp": { "member": "AppendOrientedBox", "kind": "method" }
+		},
+		{
+			"id": "AppendCapsule",
+			"cpp": "::Shalltear::EditorGizmos::AppendCapsule(outValue, pointA, pointB, radius, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "pointA", "type": "Vec3" },
+				{ "name": "pointB", "type": "Vec3" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "color", "type": "Color32" }
+			],
+			"csharp": { "member": "AppendCapsule", "kind": "method" }
+		},
+		{
+			"id": "LayOutSceneIcons",
+			"cpp": "::Shalltear::EditorGizmos::LayOutSceneIcons(std::span<const ::Shalltear::SceneIcon>(Slots::Copies<::Shalltear::Vector<::Shalltear::SceneIcon>>(icons)), *viewProjection, viewportSizePx, sizePx, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "icons", "type": "list<SceneIcon>" },
+				{ "name": "viewProjection", "type": "Mat4" },
+				{ "name": "viewportSizePx", "type": "Vec2" },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "outValue", "type": "list<SceneIconPlacement>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::SceneIconPlacement>" }
+			],
+			"csharp": { "member": "LayOutSceneIcons", "kind": "method" }
+		},
+		{
+			"id": "HitSceneIcon",
+			"cpp": "::Shalltear::EditorGizmos::HitSceneIcon(std::span<const ::Shalltear::SceneIconPlacement>(Slots::Copies<::Shalltear::Vector<::Shalltear::SceneIconPlacement>>(placements)), localPx, sizePx)",
+			"returns": "u32",
+			"params": [
+				{ "name": "placements", "type": "list<SceneIconPlacement>" },
+				{ "name": "localPx", "type": "Vec2" },
+				{ "name": "sizePx", "type": "f32" }
+			],
+			"csharp": { "member": "HitSceneIcon", "kind": "method" }
+		},
+		{
+			"id": "AppendCascadeFitLines",
+			"cpp": "::Shalltear::EditorGizmos::AppendCascadeFitLines(outValue, std::span<const ::Shalltear::CascadeFit>(Slots::Copies<::Shalltear::Vector<::Shalltear::CascadeFit>>(fits)), cascadeIndex)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "fits", "type": "list<CascadeFit>" },
+				{ "name": "cascadeIndex", "type": "i32" }
+			],
+			"csharp": { "member": "AppendCascadeFitLines", "kind": "method" }
+		},
+		{
+			"id": "AppendViewFrustumLines",
+			"cpp": "::Shalltear::EditorGizmos::AppendViewFrustumLines(outValue, *viewProjection)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "viewProjection", "type": "Mat4" }
+			],
+			"csharp": { "member": "AppendViewFrustumLines", "kind": "method" }
+		},
+		{
+			"id": "DrawSceneGizmos",
+			"cpp": "::Shalltear::EditorGizmos::DrawSceneGizmos(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "GizmoDrawContext" }],
+			"csharp": { "member": "DrawSceneGizmos", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,74 @@
+{
+	"area": "SceneEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneEvents.h"
+	],
+	"class": "Shalltear.SceneEvents",
+	"functions": [
+		{
+			"id": "SubscribeLoaded",
+			"cpp": "EventBridge::Subscribe(::Shalltear::SceneEvents::Loaded, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;SceneLoadedEvent>", "cpp": "std::function<void(const ::Shalltear::SceneLoadedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeLoaded", "kind": "method" }
+		},
+		{
+			"id": "PublishLoaded",
+			"cpp": "::Shalltear::SceneEvents::Loaded.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "SceneLoadedEvent" }],
+			"csharp": { "member": "PublishLoaded", "kind": "method" }
+		},
+		{
+			"id": "SubscribeUnloading",
+			"cpp": "EventBridge::Subscribe(::Shalltear::SceneEvents::Unloading, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;SceneUnloadingEvent>", "cpp": "std::function<void(const ::Shalltear::SceneUnloadingEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeUnloading", "kind": "method" }
+		},
+		{
+			"id": "PublishUnloading",
+			"cpp": "::Shalltear::SceneEvents::Unloading.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "SceneUnloadingEvent" }],
+			"csharp": { "member": "PublishUnloading", "kind": "method" }
+		},
+		{
+			"id": "SubscribeUnloaded",
+			"cpp": "EventBridge::Subscribe(::Shalltear::SceneEvents::Unloaded, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;SceneUnloadedEvent>", "cpp": "std::function<void(const ::Shalltear::SceneUnloadedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeUnloaded", "kind": "method" }
+		},
+		{
+			"id": "PublishUnloaded",
+			"cpp": "::Shalltear::SceneEvents::Unloaded.Publish(::Shalltear::EventBus::GetGlobal(), payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "SceneUnloadedEvent" }],
+			"csharp": { "member": "PublishUnloaded", "kind": "method" }
+		},
+		{
+			"id": "SubscribeLoadCompleted",
+			"cpp": "EventBridge::Subscribe(::Shalltear::SceneEvents::LoadCompleted, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;SceneLoadCompletedEvent>", "cpp": "std::function<void(const ::Shalltear::SceneLoadCompletedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeLoadCompleted", "kind": "method" }
+		},
+		{
+			"id": "PublishLoadCompleted",
+			"cpp": "::Shalltear::SceneEvents::LoadCompleted.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "SceneLoadCompletedEvent" }],
+			"csharp": { "member": "PublishLoadCompleted", "kind": "method" }
+		}
+	]
+}

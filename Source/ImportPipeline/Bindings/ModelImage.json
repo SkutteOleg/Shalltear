@@ -1,0 +1,118 @@
+{
+	"area": "ModelImage",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelImage",
+	"instance": "ModelImage",
+	"enums": [
+		{
+			"name": "ModelInterpolation",
+			"cpp": "::Shalltear::ModelInterpolation",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Step", "value": 0 },
+				{ "name": "Linear", "value": 1 },
+				{ "name": "CubicSpline", "value": 2 }
+			]
+		},
+		{
+			"name": "ModelChannel",
+			"cpp": "::Shalltear::ModelChannel",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Translation", "value": 0 },
+				{ "name": "Rotation", "value": 1 },
+				{ "name": "Scale", "value": 2 },
+				{ "name": "MorphWeight", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "ModelParseOptions",
+			"cpp": "::Shalltear::ModelParseOptions",
+			"size": 1,
+			"align": 1,
+			"fields": [{ "name": "tracks", "type": "bool", "offset": 0 }]
+		}
+	],
+	"natives": [
+		{ "name": "ModelParseResult", "cpp": "::Shalltear::ModelParseResult", "owned": true, "create": true },
+		{ "name": "ModelImage", "cpp": "::Shalltear::ModelImage", "owned": true, "create": true },
+		{ "name": "ModelMaterial", "cpp": "::Shalltear::ModelMaterial", "owned": true, "create": true },
+		{ "name": "ModelSkin", "cpp": "::Shalltear::ModelSkin", "owned": true, "create": true },
+		{ "name": "ModelBlendShape", "cpp": "::Shalltear::ModelBlendShape", "owned": true, "create": true },
+		{ "name": "ModelBlendChannel", "cpp": "::Shalltear::ModelBlendChannel", "owned": true, "create": true },
+		{ "name": "ModelMesh", "cpp": "::Shalltear::ModelMesh", "owned": true, "create": true },
+		{ "name": "ModelNode", "cpp": "::Shalltear::ModelNode", "owned": true, "create": true },
+		{ "name": "ModelTrack", "cpp": "::Shalltear::ModelTrack", "owned": true, "create": true },
+		{ "name": "ModelTakeRange", "cpp": "::Shalltear::ModelTakeRange", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsExternal",
+			"cpp": "self->IsExternal()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsExternal", "kind": "getter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetExternalPath",
+			"cpp": "self->externalPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ExternalPath", "kind": "getter" }
+		},
+		{
+			"id": "SetExternalPath",
+			"cpp": "self->externalPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ExternalPath", "kind": "setter" }
+		},
+		{
+			"id": "GetEmbeddedBytes",
+			"cpp": "self->embeddedBytes",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "EmbeddedBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetEmbeddedBytes",
+			"cpp": "self->embeddedBytes = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "EmbeddedBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetExtension",
+			"cpp": "self->extension",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Extension", "kind": "getter" }
+		},
+		{
+			"id": "SetExtension",
+			"cpp": "self->extension = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Extension", "kind": "setter" }
+		}
+	]
+}

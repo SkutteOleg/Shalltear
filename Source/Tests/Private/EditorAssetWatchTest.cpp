@@ -8,6 +8,7 @@
 #include "Shalltear/Editor/EditorAssetOps.h"
 #include "Shalltear/Editor/EditorAssetWatch.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <filesystem>
@@ -309,5 +310,7 @@ TEST(EditorReimportTest, OnlyEditorAssetOpsReimports) {
 		}
 	}
 	EXPECT_GT(scanned, 500u);
-	EXPECT_EQ(callers, std::vector<std::string>{"Editor/Private/EditorAssetOps.cpp"});
+	const std::vector<std::string> expected{"CSharp/Private/Generated/AssetDatabaseSlots.generated.cpp", "Editor/Private/EditorAssetOps.cpp"};
+	std::sort(callers.begin(), callers.end());
+	EXPECT_EQ(callers, expected);
 }

@@ -1,0 +1,53 @@
+{
+	"area": "UIDebugOpsTarget",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsTarget",
+	"instance": "UIDebugOpsTarget",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "UIDebugOpsTargetKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDebugOpsTargetKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		}
+	]
+}

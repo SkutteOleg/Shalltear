@@ -1,0 +1,38 @@
+{
+	"area": "FullScreenPass",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FullScreenPass.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.FullScreenPass",
+	"instance": "FullScreenPass",
+	"types": [
+		{ "name": "FullScreenPass", "cpp": "::Shalltear::FullScreenPass", "engine": "FullScreenPass", "base": "Asset" }
+	],
+	"functions": [
+		{
+			"id": "Draws",
+			"cpp": "::Shalltear::FullScreenPass::Draws(*shader)",
+			"returns": "bool",
+			"params": [{ "name": "shader", "type": "ShaderAsset" }],
+			"csharp": { "member": "Draws", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetMaterial",
+			"cpp": "self->material",
+			"returns": "Material",
+			"params": [],
+			"csharp": { "member": "Material", "kind": "getter" }
+		},
+		{
+			"id": "SetMaterial",
+			"cpp": "self->material = ::Shalltear::Handle<::Shalltear::MaterialAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Material", "optional": true }],
+			"csharp": { "member": "Material", "kind": "setter" }
+		}
+	]
+}

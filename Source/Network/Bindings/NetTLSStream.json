@@ -1,0 +1,96 @@
+{
+	"area": "NetTLSStream",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/TLS.h",
+		"Shalltear/Network/Socket.h"
+	],
+	"class": "Shalltear.NetTLSStream",
+	"instance": "NetTLSStream",
+	"functions": [
+		{
+			"id": "Connect",
+			"cpp": "(::Shalltear::Net::TLSStream::Connect(host, port, *options)).release()",
+			"returns": "NetTLSStream",
+			"params": [
+				{ "name": "host", "type": "string" },
+				{ "name": "port", "type": "u16" },
+				{ "name": "options", "type": "NetTLSOptions" }
+			],
+			"csharp": { "member": "Connect", "kind": "method" },
+			"adopts": true,
+			"static": true
+		},
+		{
+			"id": "Accept",
+			"cpp": "(::Shalltear::Net::TLSStream::Accept(std::move(socket), identity)).release()",
+			"returns": "NetTLSStream",
+			"params": [
+				{ "name": "socket", "type": "NetTCPSocket", "optional": true, "shared": "unique" },
+				{ "name": "identity", "type": "NetTLSIdentity", "optional": true, "shared": "take" }
+			],
+			"csharp": { "member": "Accept", "kind": "method" },
+			"adopts": true,
+			"static": true
+		},
+		{
+			"id": "IsAvailable",
+			"cpp": "::Shalltear::Net::TLSStream::IsAvailable()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsAvailable", "kind": "getter" },
+			"static": true
+		},
+		{
+			"id": "GetState",
+			"cpp": "self->GetState()",
+			"returns": "NetSocketState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" }
+		},
+		{
+			"id": "Send",
+			"cpp": "self->Send(data)",
+			"returns": "u64",
+			"params": [{ "name": "data", "type": "list<u8>" }],
+			"csharp": { "member": "Send", "kind": "method" }
+		},
+		{
+			"id": "Receive",
+			"cpp": "self->Receive(outValue)",
+			"returns": "u64",
+			"params": [{ "name": "outValue", "type": "span<u8>", "out": true }],
+			"csharp": { "member": "Receive", "kind": "method" }
+		},
+		{
+			"id": "Close",
+			"cpp": "self->Close()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Close", "kind": "method" }
+		},
+		{
+			"id": "GetError",
+			"cpp": "self->GetError()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Error", "kind": "getter" }
+		},
+		{
+			"id": "GetPeerCertificateHash",
+			"cpp": "self->GetPeerCertificateHash(outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "std::array<unsigned char, 32>" }],
+			"csharp": { "member": "GetPeerCertificateHash", "kind": "method" }
+		},
+		{
+			"id": "SetCallback",
+			"cpp": "self->SetCallback(callback)",
+			"returns": "void",
+			"params": [
+				{ "name": "callback", "type": "fn<void;NetSocketEvent>", "optional": true, "cpp": "std::function<void (Shalltear::Net::SocketEvent)>" }
+			],
+			"csharp": { "member": "SetCallback", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,109 @@
+{
+	"area": "CompilerDiagnostic",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileService.h"
+	],
+	"class": "Shalltear.Editor.CompilerDiagnostic",
+	"instance": "CompilerDiagnostic",
+	"functions": [
+		{
+			"id": "GetSeverity",
+			"cpp": "self->severity",
+			"returns": "CompilerDiagnosticSeverity",
+			"params": [],
+			"csharp": { "member": "Severity", "kind": "getter" }
+		},
+		{
+			"id": "SetSeverity",
+			"cpp": "self->severity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CompilerDiagnosticSeverity" }],
+			"csharp": { "member": "Severity", "kind": "setter" }
+		},
+		{
+			"id": "GetFile",
+			"cpp": "self->file",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "File", "kind": "getter" }
+		},
+		{
+			"id": "SetFile",
+			"cpp": "self->file = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "File", "kind": "setter" }
+		},
+		{
+			"id": "GetLine",
+			"cpp": "self->line",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Line", "kind": "getter" }
+		},
+		{
+			"id": "SetLine",
+			"cpp": "self->line = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Line", "kind": "setter" }
+		},
+		{
+			"id": "GetColumn",
+			"cpp": "self->column",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Column", "kind": "getter" }
+		},
+		{
+			"id": "SetColumn",
+			"cpp": "self->column = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Column", "kind": "setter" }
+		},
+		{
+			"id": "GetMessage",
+			"cpp": "self->message",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Message", "kind": "getter" }
+		},
+		{
+			"id": "SetMessage",
+			"cpp": "self->message = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Message", "kind": "setter" }
+		},
+		{
+			"id": "GetRaw",
+			"cpp": "self->raw",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Raw", "kind": "getter" }
+		},
+		{
+			"id": "SetRaw",
+			"cpp": "self->raw = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Raw", "kind": "setter" }
+		},
+		{
+			"id": "GetHasBody",
+			"cpp": "self->hasBody",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasBody", "kind": "getter" }
+		},
+		{
+			"id": "SetHasBody",
+			"cpp": "self->hasBody = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "HasBody", "kind": "setter" }
+		}
+	]
+}

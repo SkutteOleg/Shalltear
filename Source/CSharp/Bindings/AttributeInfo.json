@@ -1,0 +1,42 @@
+{
+	"area": "AttributeInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.AttributeInfo",
+	"instance": "AttributeInfo",
+	"functions": [
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "&self->value",
+			"returns": "Variant",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Variant" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

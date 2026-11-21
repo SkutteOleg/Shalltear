@@ -1,0 +1,133 @@
+{
+	"area": "AnimatorControllerSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorController",
+	"instance": "AnimatorController",
+	"enums": [
+		{
+			"name": "AnimatorBlendKind",
+			"cpp": "::Shalltear::AnimatorBlendKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Clip", "value": 0 },
+				{ "name": "Simple1D", "value": 1 },
+				{ "name": "FreeformCartesian2D", "value": 2 },
+				{ "name": "FreeformDirectional2D", "value": 3 },
+				{ "name": "Direct", "value": 4 }
+			]
+		},
+		{
+			"name": "AnimatorConditionMode",
+			"cpp": "::Shalltear::AnimatorConditionMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Greater", "value": 0 },
+				{ "name": "Less", "value": 1 },
+				{ "name": "Equals", "value": 2 },
+				{ "name": "NotEqual", "value": 3 },
+				{ "name": "If", "value": 4 },
+				{ "name": "IfNot", "value": 5 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "AnimatorControllerParameter", "cpp": "::Shalltear::AnimatorController::Parameter", "owned": true, "create": true },
+		{ "name": "AnimatorControllerMotionNode", "cpp": "::Shalltear::AnimatorController::MotionNode", "owned": true, "create": true },
+		{ "name": "AnimatorControllerState", "cpp": "::Shalltear::AnimatorController::State", "owned": true, "create": true },
+		{ "name": "AnimatorControllerStateMachine", "cpp": "::Shalltear::AnimatorController::StateMachine", "owned": true, "create": true },
+		{ "name": "AnimatorControllerLayer", "cpp": "::Shalltear::AnimatorController::Layer", "owned": true, "create": true },
+		{ "name": "AnimatorControllerCondition", "cpp": "::Shalltear::AnimatorController::Condition", "owned": true, "create": true },
+		{ "name": "AnimatorControllerTransition", "cpp": "::Shalltear::AnimatorController::Transition", "owned": true, "create": true },
+		{ "name": "AnimatorControllerMotionChild", "cpp": "::Shalltear::AnimatorController::MotionChild", "owned": true, "create": true },
+		{ "name": "AnimatorControllerLayerMaskEntry", "cpp": "::Shalltear::AnimatorController::Layer::MaskEntry", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetParameters",
+			"cpp": "self->parameters",
+			"returns": "list<AnimatorControllerParameter>",
+			"params": [],
+			"csharp": { "member": "Parameters", "kind": "getter" }
+		},
+		{
+			"id": "SetParameters",
+			"cpp": "self->parameters = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::Parameter>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerParameter>" }],
+			"csharp": { "member": "Parameters", "kind": "setter" }
+		},
+		{
+			"id": "GetNodes",
+			"cpp": "self->nodes",
+			"returns": "list<AnimatorControllerMotionNode>",
+			"params": [],
+			"csharp": { "member": "Nodes", "kind": "getter" }
+		},
+		{
+			"id": "SetNodes",
+			"cpp": "self->nodes = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::MotionNode>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerMotionNode>" }],
+			"csharp": { "member": "Nodes", "kind": "setter" }
+		},
+		{
+			"id": "GetStates",
+			"cpp": "self->states",
+			"returns": "list<AnimatorControllerState>",
+			"params": [],
+			"csharp": { "member": "States", "kind": "getter" }
+		},
+		{
+			"id": "SetStates",
+			"cpp": "self->states = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::State>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerState>" }],
+			"csharp": { "member": "States", "kind": "setter" }
+		},
+		{
+			"id": "GetMachines",
+			"cpp": "self->machines",
+			"returns": "list<AnimatorControllerStateMachine>",
+			"params": [],
+			"csharp": { "member": "Machines", "kind": "getter" }
+		},
+		{
+			"id": "SetMachines",
+			"cpp": "self->machines = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::StateMachine>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerStateMachine>" }],
+			"csharp": { "member": "Machines", "kind": "setter" }
+		},
+		{
+			"id": "GetLayers",
+			"cpp": "self->layers",
+			"returns": "list<AnimatorControllerLayer>",
+			"params": [],
+			"csharp": { "member": "Layers", "kind": "getter" }
+		},
+		{
+			"id": "SetLayers",
+			"cpp": "self->layers = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::Layer>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerLayer>" }],
+			"csharp": { "member": "Layers", "kind": "setter" }
+		},
+		{
+			"id": "GetGraphRevision",
+			"cpp": "self->graphRevision",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "GraphRevision", "kind": "getter" }
+		},
+		{
+			"id": "SetGraphRevision",
+			"cpp": "self->graphRevision = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "GraphRevision", "kind": "setter" }
+		}
+	]
+}

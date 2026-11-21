@@ -1,0 +1,95 @@
+{
+	"area": "AnimatorControllerTransition",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerTransition",
+	"instance": "AnimatorControllerTransition",
+	"functions": [
+		{
+			"id": "GetDestination",
+			"cpp": "self->destination",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Destination", "kind": "getter" }
+		},
+		{
+			"id": "SetDestination",
+			"cpp": "self->destination = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Destination", "kind": "setter" }
+		},
+		{
+			"id": "GetConditions",
+			"cpp": "self->conditions",
+			"returns": "list<AnimatorControllerCondition>",
+			"params": [],
+			"csharp": { "member": "Conditions", "kind": "getter" }
+		},
+		{
+			"id": "SetConditions",
+			"cpp": "self->conditions = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::Condition>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerCondition>" }],
+			"csharp": { "member": "Conditions", "kind": "setter" }
+		},
+		{
+			"id": "GetExitTime",
+			"cpp": "self->exitTime",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ExitTime", "kind": "getter" }
+		},
+		{
+			"id": "SetExitTime",
+			"cpp": "self->exitTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ExitTime", "kind": "setter" }
+		},
+		{
+			"id": "GetDuration",
+			"cpp": "self->duration",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Duration", "kind": "getter" }
+		},
+		{
+			"id": "SetDuration",
+			"cpp": "self->duration = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Duration", "kind": "setter" }
+		},
+		{
+			"id": "GetOffset",
+			"cpp": "self->offset",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Offset", "kind": "getter" }
+		},
+		{
+			"id": "SetOffset",
+			"cpp": "self->offset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Offset", "kind": "setter" }
+		},
+		{
+			"id": "GetSyncPhase",
+			"cpp": "self->syncPhase",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SyncPhase", "kind": "getter" }
+		},
+		{
+			"id": "SetSyncPhase",
+			"cpp": "self->syncPhase = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SyncPhase", "kind": "setter" }
+		}
+	]
+}

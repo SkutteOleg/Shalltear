@@ -1,0 +1,50 @@
+{
+	"area": "ObjectField",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ObjectField.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.ObjectField",
+	"structs": [
+		{
+			"name": "ObjectFieldParts",
+			"cpp": "::Shalltear::ObjectField::Parts",
+			"size": 48,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "caption", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "picker", "type": "UIElementHandle", "offset": 24 },
+				{ "name": "clear", "type": "UIElementHandle", "offset": 36 }
+			]
+		}
+	],
+	"natives": [{ "name": "ObjectFieldDesc", "cpp": "::Shalltear::ObjectField::Desc", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "TakesTexture",
+			"cpp": "::Shalltear::ObjectField::TakesTexture(*payload, dimension)",
+			"returns": "bool",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "dimension", "type": "RHITextureDimension" }
+			],
+			"csharp": { "member": "TakesTexture", "kind": "method" }
+		},
+		{
+			"id": "Build",
+			"cpp": "::Shalltear::ObjectField::Build(*context, parent, *desc)",
+			"returns": "ObjectFieldParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "ObjectFieldDesc" }
+			],
+			"csharp": { "member": "Build", "kind": "method" }
+		}
+	]
+}

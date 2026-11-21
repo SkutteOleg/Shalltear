@@ -1,0 +1,27 @@
+{
+	"area": "AudioEffects",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioEffect.h"
+	],
+	"class": "Shalltear.AudioEffects",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::AudioEffects::Register(name, definition, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "definition", "type": "IAudioEffectDefinition", "optional": true }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::AudioEffects::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

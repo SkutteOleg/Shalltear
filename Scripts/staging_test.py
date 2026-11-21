@@ -124,6 +124,16 @@ CSHARP_CASES = (
 	('Shalltear.Audio.xml', build_sdk.SHIP),
 	('Shalltear.Animation.dll', build_sdk.SHIP),
 	('Shalltear.Animation.xml', build_sdk.SHIP),
+	('Shalltear.Network.dll', build_sdk.SHIP),
+	('Shalltear.Network.xml', build_sdk.SHIP),
+	('Shalltear.PostProcessing.dll', build_sdk.SHIP),
+	('Shalltear.PostProcessing.xml', build_sdk.SHIP),
+	('Shalltear.VisualEffects.dll', build_sdk.SHIP),
+	('Shalltear.VisualEffects.xml', build_sdk.SHIP),
+	('Shalltear.ImportPipeline.dll', build_sdk.SHIP),
+	('Shalltear.ImportPipeline.xml', build_sdk.SHIP),
+	('Shalltear.Editor.dll', build_sdk.SHIP),
+	('Shalltear.Editor.xml', build_sdk.SHIP),
 	('Shalltear.Generators.dll', build_sdk.SHIP),
 	('Renamer/Shalltear.Renamer.dll', build_sdk.SHIP),
 	('Renamer/Shalltear.Renamer.runtimeconfig.json', build_sdk.SHIP),
@@ -134,6 +144,7 @@ CSHARP_CASES = (
 	('native/libs/kernel32.lib', build_sdk.SHIP),
 	('Shalltear.Conformance.dll', build_sdk.DROP),
 	('Shalltear.Conformance.Audio.dll', build_sdk.DROP),
+	('Shalltear.Conformance.Editor.dll', build_sdk.DROP),
 )
 
 CSHARP_UNGOVERNED = (

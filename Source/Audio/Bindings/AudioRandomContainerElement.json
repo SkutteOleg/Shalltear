@@ -1,0 +1,143 @@
+{
+	"area": "AudioRandomContainerElement",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioContainer.h",
+		"Shalltear/Audio/AudioResource.h"
+	],
+	"class": "Shalltear.AudioRandomContainerElement",
+	"instance": "AudioRandomContainerElement",
+	"enums": [
+		{
+			"name": "AudioRandomContainerTriggerMode",
+			"cpp": "::Shalltear::AudioRandomContainerTriggerMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Manual", "value": 0 },
+				{ "name": "Automatic", "value": 1 }
+			]
+		},
+		{
+			"name": "AudioRandomContainerPlaybackMode",
+			"cpp": "::Shalltear::AudioRandomContainerPlaybackMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Sequential", "value": 0 },
+				{ "name": "Shuffle", "value": 1 },
+				{ "name": "Random", "value": 2 }
+			]
+		},
+		{
+			"name": "AudioRandomContainerAutomaticTriggerMode",
+			"cpp": "::Shalltear::AudioRandomContainerAutomaticTriggerMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Pulse", "value": 0 },
+				{ "name": "Offset", "value": 1 }
+			]
+		},
+		{
+			"name": "AudioRandomContainerLoopMode",
+			"cpp": "::Shalltear::AudioRandomContainerLoopMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Infinite", "value": 0 },
+				{ "name": "Clips", "value": 1 },
+				{ "name": "Cycles", "value": 2 }
+			]
+		},
+		{
+			"name": "AudioInteractiveAutoAdvanceMode",
+			"cpp": "::Shalltear::AudioInteractiveAutoAdvanceMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Disabled", "value": 0 },
+				{ "name": "Enabled", "value": 1 },
+				{ "name": "ReturnToHold", "value": 2 }
+			]
+		},
+		{
+			"name": "AudioInteractiveTransitionFromTime",
+			"cpp": "::Shalltear::AudioInteractiveTransitionFromTime",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Immediate", "value": 0 },
+				{ "name": "NextBeat", "value": 1 },
+				{ "name": "NextBar", "value": 2 },
+				{ "name": "End", "value": 3 }
+			]
+		},
+		{
+			"name": "AudioInteractiveTransitionToTime",
+			"cpp": "::Shalltear::AudioInteractiveTransitionToTime",
+			"underlying": "u8",
+			"values": [
+				{ "name": "SamePosition", "value": 0 },
+				{ "name": "Start", "value": 1 },
+				{ "name": "PreviousPosition", "value": 2 }
+			]
+		},
+		{
+			"name": "AudioInteractiveFadeMode",
+			"cpp": "::Shalltear::AudioInteractiveFadeMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Disabled", "value": 0 },
+				{ "name": "In", "value": 1 },
+				{ "name": "Out", "value": 2 },
+				{ "name": "Cross", "value": 3 },
+				{ "name": "Automatic", "value": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "AudioRandomContainerElement", "cpp": "::Shalltear::AudioRandomContainerElement", "owned": true, "create": true },
+		{ "name": "AudioLayeredContainerLayer", "cpp": "::Shalltear::AudioLayeredContainerLayer", "owned": true, "create": true },
+		{ "name": "AudioInteractiveContainerClip", "cpp": "::Shalltear::AudioInteractiveContainerClip", "owned": true, "create": true },
+		{ "name": "AudioInteractiveContainerTransition", "cpp": "::Shalltear::AudioInteractiveContainerTransition", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetResource",
+			"cpp": "self->resource",
+			"returns": "AudioResource",
+			"params": [],
+			"csharp": { "member": "Resource", "kind": "getter" }
+		},
+		{
+			"id": "SetResource",
+			"cpp": "self->resource = ::Shalltear::Handle<::Shalltear::AudioResource>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioResource", "optional": true }],
+			"csharp": { "member": "Resource", "kind": "setter" }
+		},
+		{
+			"id": "GetEnabledField",
+			"cpp": "self->enabled",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnabledField", "kind": "getter" }
+		},
+		{
+			"id": "SetEnabledField",
+			"cpp": "self->enabled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnabledField", "kind": "setter" }
+		},
+		{
+			"id": "GetVolume",
+			"cpp": "self->volume",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Volume", "kind": "getter" }
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "self->volume = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Volume", "kind": "setter" }
+		}
+	]
+}

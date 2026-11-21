@@ -1,0 +1,363 @@
+{
+	"area": "BuildContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h",
+		"Shalltear/Editor/BuildProfile.h",
+		"Shalltear/Editor/BuildTarget.h"
+	],
+	"class": "Shalltear.Editor.BuildContext",
+	"instance": "BuildContext",
+	"functions": [
+		{
+			"id": "Log",
+			"cpp": "self->Log(message)",
+			"returns": "void",
+			"params": [{ "name": "message", "type": "string" }],
+			"csharp": { "member": "Log", "kind": "method" }
+		},
+		{
+			"id": "AddIssue",
+			"cpp": "self->AddIssue(severity, key, message)",
+			"returns": "void",
+			"params": [
+				{ "name": "severity", "type": "BuildIssueSeverity" },
+				{ "name": "key", "type": "string" },
+				{ "name": "message", "type": "string" }
+			],
+			"csharp": { "member": "AddIssue", "kind": "method" }
+		},
+		{
+			"id": "GetIssues",
+			"cpp": "self->GetIssues()",
+			"returns": "list<BuildIssue>",
+			"params": [],
+			"csharp": { "member": "Issues", "kind": "getter" }
+		},
+		{
+			"id": "IsCancelRequested",
+			"cpp": "self->IsCancelRequested()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsCancelRequested", "kind": "getter" }
+		},
+		{
+			"id": "StartCommand",
+			"cpp": "self->StartCommand(str(commandLine), str(workingDirectory))",
+			"returns": "bool",
+			"params": [
+				{ "name": "commandLine", "type": "string" },
+				{ "name": "workingDirectory", "type": "string" }
+			],
+			"csharp": { "member": "StartCommand", "kind": "method" }
+		},
+		{
+			"id": "HasCommand",
+			"cpp": "self->HasCommand()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasCommand", "kind": "getter" }
+		},
+		{
+			"id": "TryFinishCommand",
+			"cpp": "self->TryFinishCommand(outExitCode)",
+			"returns": "bool",
+			"params": [{ "name": "outExitCode", "type": "i32", "out": true }],
+			"csharp": { "member": "TryFinishCommand", "kind": "method" }
+		},
+		{
+			"id": "GetProfile",
+			"cpp": "self->profile",
+			"returns": "ResolvedProfile",
+			"params": [],
+			"csharp": { "member": "Profile", "kind": "getter" }
+		},
+		{
+			"id": "SetProfile",
+			"cpp": "self->profile = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ResolvedProfile", "optional": true }],
+			"csharp": { "member": "Profile", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "IBuildTarget",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "IBuildTarget", "optional": true }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetProjectRoot",
+			"cpp": "self->projectRoot",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProjectRoot", "kind": "getter" }
+		},
+		{
+			"id": "SetProjectRoot",
+			"cpp": "self->projectRoot = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ProjectRoot", "kind": "setter" }
+		},
+		{
+			"id": "GetStagingDir",
+			"cpp": "self->stagingDir",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "StagingDir", "kind": "getter" }
+		},
+		{
+			"id": "SetStagingDir",
+			"cpp": "self->stagingDir = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "StagingDir", "kind": "setter" }
+		},
+		{
+			"id": "GetIntermediateDir",
+			"cpp": "self->intermediateDir",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "IntermediateDir", "kind": "getter" }
+		},
+		{
+			"id": "SetIntermediateDir",
+			"cpp": "self->intermediateDir = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "IntermediateDir", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKRoot",
+			"cpp": "self->sdkRoot",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKRoot", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKRoot",
+			"cpp": "self->sdkRoot = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKRoot", "kind": "setter" }
+		},
+		{
+			"id": "GetEntrySource",
+			"cpp": "self->entrySource",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "EntrySource", "kind": "getter" }
+		},
+		{
+			"id": "SetEntrySource",
+			"cpp": "self->entrySource = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "EntrySource", "kind": "setter" }
+		},
+		{
+			"id": "GetWindowedSubsystem",
+			"cpp": "self->windowedSubsystem",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WindowedSubsystem", "kind": "getter" }
+		},
+		{
+			"id": "SetWindowedSubsystem",
+			"cpp": "self->windowedSubsystem = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "WindowedSubsystem", "kind": "setter" }
+		},
+		{
+			"id": "GetExecutableName",
+			"cpp": "self->executableName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ExecutableName", "kind": "getter" }
+		},
+		{
+			"id": "SetExecutableName",
+			"cpp": "self->executableName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ExecutableName", "kind": "setter" }
+		},
+		{
+			"id": "GetDefines",
+			"cpp": "self->defines",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Defines", "kind": "getter" }
+		},
+		{
+			"id": "SetDefines",
+			"cpp": "self->defines = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Defines", "kind": "setter" }
+		},
+		{
+			"id": "GetConfiguration",
+			"cpp": "self->configuration",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Configuration", "kind": "getter" }
+		},
+		{
+			"id": "SetConfiguration",
+			"cpp": "self->configuration = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Configuration", "kind": "setter" }
+		},
+		{
+			"id": "GetBuildNumber",
+			"cpp": "self->buildNumber",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BuildNumber", "kind": "getter" }
+		},
+		{
+			"id": "SetBuildNumber",
+			"cpp": "self->buildNumber = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "BuildNumber", "kind": "setter" }
+		},
+		{
+			"id": "GetBuildTimeUnix",
+			"cpp": "self->buildTimeUnix",
+			"returns": "i64",
+			"params": [],
+			"csharp": { "member": "BuildTimeUnix", "kind": "getter" }
+		},
+		{
+			"id": "SetBuildTimeUnix",
+			"cpp": "self->buildTimeUnix = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i64" }],
+			"csharp": { "member": "BuildTimeUnix", "kind": "setter" }
+		},
+		{
+			"id": "GetBuildTimeIso",
+			"cpp": "self->buildTimeIso",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "BuildTimeIso", "kind": "getter" }
+		},
+		{
+			"id": "SetBuildTimeIso",
+			"cpp": "self->buildTimeIso = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "BuildTimeIso", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		},
+		{
+			"id": "GetBootManifest",
+			"cpp": "self->bootManifest",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "BootManifest", "kind": "getter" }
+		},
+		{
+			"id": "SetBootManifest",
+			"cpp": "self->bootManifest = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "BootManifest", "kind": "setter" }
+		},
+		{
+			"id": "GetRuntimeFiles",
+			"cpp": "self->runtimeFiles",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "RuntimeFiles", "kind": "getter" }
+		},
+		{
+			"id": "SetRuntimeFiles",
+			"cpp": "self->runtimeFiles = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "RuntimeFiles", "kind": "setter" }
+		},
+		{
+			"id": "GetExecutableIconSizes",
+			"cpp": "self->executableIconSizes",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "ExecutableIconSizes", "kind": "getter" }
+		},
+		{
+			"id": "SetExecutableIconSizes",
+			"cpp": "self->executableIconSizes = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "ExecutableIconSizes", "kind": "setter" }
+		},
+		{
+			"id": "GetWindowIconSizes",
+			"cpp": "self->windowIconSizes",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "WindowIconSizes", "kind": "getter" }
+		},
+		{
+			"id": "SetWindowIconSizes",
+			"cpp": "self->windowIconSizes = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "WindowIconSizes", "kind": "setter" }
+		},
+		{
+			"id": "GetExecutableIconFile",
+			"cpp": "self->executableIconFile",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ExecutableIconFile", "kind": "getter" }
+		},
+		{
+			"id": "SetExecutableIconFile",
+			"cpp": "self->executableIconFile = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ExecutableIconFile", "kind": "setter" }
+		},
+		{
+			"id": "GetWindowIconDocument",
+			"cpp": "self->windowIconDocument",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "WindowIconDocument", "kind": "getter" }
+		},
+		{
+			"id": "SetWindowIconDocument",
+			"cpp": "self->windowIconDocument = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "WindowIconDocument", "kind": "setter" }
+		}
+	]
+}

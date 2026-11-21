@@ -6,6 +6,7 @@
 #include "CSharpScriptEditor.h"
 #include "CSharpSettings.h"
 #include "CSharpSetup.h"
+#include "EditorBindings.h"
 
 #include "Shalltear/Core/Frame/FrameStages.h"
 
@@ -26,6 +27,7 @@ namespace Shalltear::CSharpEditor {
 	void RegisterEditorExtensions(const void* owner) {
 		CSharpSettings::Declare();
 		CSharpSettings::RegisterPage(owner);
+		EditorBindings::Register();
 		InstallComponentMenu();
 		RegisterScriptEditor(owner);
 		CSharpProjectFiles::RegisterAttachConfiguration(owner);

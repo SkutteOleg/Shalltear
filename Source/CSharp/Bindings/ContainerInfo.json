@@ -1,0 +1,95 @@
+{
+	"area": "ContainerInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.ContainerInfo",
+	"instance": "ContainerInfo",
+	"functions": [
+		{
+			"id": "GetElementType",
+			"cpp": "self->elementType",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "ElementType", "kind": "getter" }
+		},
+		{
+			"id": "SetElementType",
+			"cpp": "self->elementType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "ElementType", "kind": "setter" }
+		},
+		{
+			"id": "GetElementFlags",
+			"cpp": "self->elementFlags",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ElementFlags", "kind": "getter" }
+		},
+		{
+			"id": "SetElementFlags",
+			"cpp": "self->elementFlags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ElementFlags", "kind": "setter" }
+		},
+		{
+			"id": "GetElementSize",
+			"cpp": "self->elementSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ElementSize", "kind": "getter" }
+		},
+		{
+			"id": "SetElementSize",
+			"cpp": "self->elementSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ElementSize", "kind": "setter" }
+		},
+		{
+			"id": "GetSizeFn",
+			"cpp": "Slots::Bits(self->sizeFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SizeFn", "kind": "getter" }
+		},
+		{
+			"id": "SetSizeFn",
+			"cpp": "self->sizeFn = Slots::FromBits<uint64_t (*)(const void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "SizeFn", "kind": "setter" }
+		},
+		{
+			"id": "GetResizeFn",
+			"cpp": "Slots::Bits(self->resizeFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ResizeFn", "kind": "getter" }
+		},
+		{
+			"id": "SetResizeFn",
+			"cpp": "self->resizeFn = Slots::FromBits<void (*)(void *, uint64_t)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ResizeFn", "kind": "setter" }
+		},
+		{
+			"id": "GetAtFn",
+			"cpp": "Slots::Bits(self->atFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "AtFn", "kind": "getter" }
+		},
+		{
+			"id": "SetAtFn",
+			"cpp": "self->atFn = Slots::FromBits<void *(*)(void *, uint64_t)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "AtFn", "kind": "setter" }
+		}
+	]
+}

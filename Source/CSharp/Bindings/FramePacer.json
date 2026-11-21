@@ -1,0 +1,25 @@
+{
+	"area": "FramePacer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/FrameLoop.h"
+	],
+	"class": "Shalltear.FramePacer",
+	"instance": "FramePacer",
+	"functions": [
+		{
+			"id": "BeginFrame",
+			"cpp": "self->BeginFrame()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BeginFrame", "kind": "method" }
+		},
+		{
+			"id": "GetUnscaledDeltaTime",
+			"cpp": "self->GetUnscaledDeltaTime()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "UnscaledDeltaTime", "kind": "getter" }
+		}
+	]
+}

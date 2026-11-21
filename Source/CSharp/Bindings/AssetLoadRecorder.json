@@ -1,0 +1,21 @@
+{
+	"area": "AssetLoadRecorder",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetDatabase.h"
+	],
+	"class": "Shalltear.AssetLoadRecorder",
+	"instance": "AssetLoadRecorder",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::AssetLoadRecorder(*sink)",
+			"returns": "AssetLoadRecorder",
+			"params": [{ "name": "sink", "type": "EngineGuidList" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

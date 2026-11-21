@@ -1,0 +1,41 @@
+{
+	"area": "OfferedSceneHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.OfferedSceneHandle",
+	"instance": "OfferedSceneHandle",
+	"functions": [
+		{
+			"id": "GetSource",
+			"cpp": "self->source",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Source", "kind": "getter" }
+		},
+		{
+			"id": "SetSource",
+			"cpp": "self->source = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Source", "kind": "setter" }
+		},
+		{
+			"id": "GetHandle",
+			"cpp": "&self->handle",
+			"returns": "SceneHandle",
+			"params": [],
+			"csharp": { "member": "Handle", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetHandle",
+			"cpp": "self->handle = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneHandle" }],
+			"csharp": { "member": "Handle", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,57 @@
+{
+	"area": "ProfilerModules",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ProfilerModules.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.ProfilerModules",
+	"natives": [{ "name": "ProfilerModule", "cpp": "::Shalltear::ProfilerModule", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::ProfilerModules::Register(id, *module, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "module", "type": "ProfilerModule" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::ProfilerModules::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "ForEach",
+			"cpp": "::Shalltear::ProfilerModules::ForEach(visit)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "visit",
+					"type": "fn<void;StringHash;ProfilerModule>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::StringHash, const Shalltear::ProfilerModule &)>"
+				}
+			],
+			"csharp": { "member": "ForEach", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "::Shalltear::ProfilerModules::Find(id)",
+			"returns": "ProfilerModule",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "::Shalltear::ProfilerModules::GetVersion()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		}
+	]
+}

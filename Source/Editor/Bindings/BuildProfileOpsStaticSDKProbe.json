@@ -1,0 +1,53 @@
+{
+	"area": "BuildProfileOpsStaticSDKProbe",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildProfileOpsStaticSDKProbe",
+	"instance": "BuildProfileOpsStaticSDKProbe",
+	"functions": [
+		{
+			"id": "GetRoot",
+			"cpp": "self->root",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" }
+		},
+		{
+			"id": "SetRoot",
+			"cpp": "self->root = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Root", "kind": "setter" }
+		},
+		{
+			"id": "GetSource",
+			"cpp": "self->source",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Source", "kind": "getter" }
+		},
+		{
+			"id": "SetSource",
+			"cpp": "self->source = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Source", "kind": "setter" }
+		},
+		{
+			"id": "GetFix",
+			"cpp": "self->fix",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Fix", "kind": "getter" }
+		},
+		{
+			"id": "SetFix",
+			"cpp": "self->fix = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Fix", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,54 @@
+{
+	"area": "UIVectorIconSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/UI/UIAtlas.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.UIVectorIconSystem",
+	"instance": "UIVectorIconSystem",
+	"functions": [
+		{
+			"id": "GetIcon",
+			"cpp": "self->GetIcon(*query, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "query", "type": "UIIconQuery" },
+				{ "name": "outValue", "type": "UIRasterizedIcon", "out": true }
+			],
+			"csharp": { "member": "GetIcon", "kind": "method" }
+		},
+		{
+			"id": "MeasureIcon",
+			"cpp": "self->MeasureIcon(::Shalltear::Handle<::Shalltear::VectorAsset>(asset), sizePx)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "asset", "type": "VectorAsset", "optional": true },
+				{ "name": "sizePx", "type": "f32" }
+			],
+			"csharp": { "member": "MeasureIcon", "kind": "method" }
+		},
+		{
+			"id": "EndFrame",
+			"cpp": "self->EndFrame()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "EndFrame", "kind": "method" }
+		},
+		{
+			"id": "GetStats",
+			"cpp": "self->GetStats()",
+			"returns": "UIVectorIconSystemStats",
+			"params": [],
+			"csharp": { "member": "Stats", "kind": "getter" }
+		},
+		{
+			"id": "GetAtlasPage",
+			"cpp": "self->GetAtlasPage(outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "UIAtlasPage", "out": true }],
+			"csharp": { "member": "GetAtlasPage", "kind": "method" }
+		}
+	]
+}

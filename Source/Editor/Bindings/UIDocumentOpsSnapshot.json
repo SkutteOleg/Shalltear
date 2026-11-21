@@ -1,0 +1,55 @@
+{
+	"area": "UIDocumentOpsSnapshot",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDocumentOps.h",
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.Editor.UIDocumentOpsSnapshot",
+	"instance": "UIDocumentOpsSnapshot",
+	"functions": [
+		{
+			"id": "GetRoot",
+			"cpp": "&self->root",
+			"returns": "UIDocumentNode",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetRoot",
+			"cpp": "self->root = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDocumentNode" }],
+			"csharp": { "member": "Root", "kind": "setter" }
+		},
+		{
+			"id": "GetSheets",
+			"cpp": "self->sheets",
+			"returns": "list<UIDocumentSheet>",
+			"params": [],
+			"csharp": { "member": "Sheets", "kind": "getter" }
+		},
+		{
+			"id": "SetSheets",
+			"cpp": "self->sheets = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentSheet>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentSheet>" }],
+			"csharp": { "member": "Sheets", "kind": "setter" }
+		},
+		{
+			"id": "GetTemplates",
+			"cpp": "self->templates",
+			"returns": "list<UIDocumentTemplate>",
+			"params": [],
+			"csharp": { "member": "Templates", "kind": "getter" }
+		},
+		{
+			"id": "SetTemplates",
+			"cpp": "self->templates = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentTemplate>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentTemplate>" }],
+			"csharp": { "member": "Templates", "kind": "setter" }
+		}
+	]
+}

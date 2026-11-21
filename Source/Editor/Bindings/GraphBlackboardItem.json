@@ -1,0 +1,55 @@
+{
+	"area": "GraphBlackboardItem",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphBlackboard.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.GraphBlackboardItem",
+	"instance": "GraphBlackboardItem",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "SetOnBuildControls",
+			"cpp": "self->onBuildControls = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnBuildControls", "kind": "method" }
+		}
+	]
+}

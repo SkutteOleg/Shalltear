@@ -1,0 +1,91 @@
+{
+	"area": "EditorPingTarget",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorEvents.h"
+	],
+	"class": "Shalltear.Editor.EditorPingTarget",
+	"instance": "EditorPingTarget",
+	"enums": [
+		{
+			"name": "PlayModeState",
+			"cpp": "::Shalltear::PlayModeState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Editing", "value": 0 },
+				{ "name": "Playing", "value": 1 },
+				{ "name": "Paused", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorPingTarget",
+			"cpp": "::Shalltear::EditorPingTarget",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "asset", "type": "EngineGuid", "offset": 0 },
+				{ "name": "objectValue", "type": "u64", "offset": 16, "cpp": "object" }
+			]
+		},
+		{
+			"name": "EditorIdRemap",
+			"cpp": "::Shalltear::EditorIdRemap",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "oldId", "type": "u64", "offset": 0 },
+				{ "name": "newId", "type": "u64", "offset": 8 }
+			]
+		},
+		{
+			"name": "EditorPlayModeChangedEvent",
+			"cpp": "::Shalltear::EditorPlayModeChangedEvent",
+			"size": 1,
+			"align": 1,
+			"fields": [{ "name": "state", "type": "PlayModeState", "offset": 0 }]
+		},
+		{
+			"name": "EditorPingRequestedEvent",
+			"cpp": "::Shalltear::EditorPingRequestedEvent",
+			"size": 24,
+			"align": 8,
+			"fields": [{ "name": "target", "type": "EditorPingTarget", "offset": 0 }]
+		},
+		{
+			"name": "EditorFollowRequestedEvent",
+			"cpp": "::Shalltear::EditorFollowRequestedEvent",
+			"size": 8,
+			"align": 8,
+			"fields": [{ "name": "objectValue", "type": "u64", "offset": 0, "cpp": "object" }]
+		},
+		{
+			"name": "EditorCompileStateChangedEvent",
+			"cpp": "::Shalltear::EditorCompileStateChangedEvent",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "state", "type": "u8", "offset": 0 },
+				{ "name": "errorCount", "type": "u32", "offset": 4 },
+				{ "name": "warningCount", "type": "u32", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorSceneDirtiedEvent", "cpp": "::Shalltear::EditorSceneDirtiedEvent", "owned": true, "create": true },
+		{ "name": "EditorModuleReloadBeganEvent", "cpp": "::Shalltear::EditorModuleReloadBeganEvent", "owned": true, "create": true },
+		{ "name": "EditorModuleReloadEndedEvent", "cpp": "::Shalltear::EditorModuleReloadEndedEvent", "owned": true, "create": true },
+		{ "name": "EditorWorldRemappedEvent", "cpp": "::Shalltear::EditorWorldRemappedEvent", "owned": true, "create": true },
+		{ "name": "EditorTransformGestureEvent", "cpp": "::Shalltear::EditorTransformGestureEvent", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

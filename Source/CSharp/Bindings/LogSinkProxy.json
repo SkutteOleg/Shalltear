@@ -1,0 +1,53 @@
+{
+	"area": "LogSinkProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.LogSinkProxy",
+	"instance": "LogSinkProxy",
+	"prelude": [
+		"class LogSinkProxy final : public ::Shalltear::ILogSink {",
+		"public:",
+		"\tstd::function<void(const Shalltear::LogEvent &)> receiveLog;",
+		"\tvoid ReceiveLog(const Shalltear::LogEvent & a0) override {",
+		"\t\tif (receiveLog) {",
+		"\t\t\treceiveLog(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> flush;",
+		"\tvoid Flush() override {",
+		"\t\tif (flush) {",
+		"\t\t\tflush();",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "LogSinkProxy", "cpp": "LogSinkProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetReceiveLog",
+			"cpp": "self->receiveLog = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;LogEvent>", "optional": true, "cpp": "std::function<void(const Shalltear::LogEvent &)>" }
+			],
+			"csharp": { "member": "SetReceiveLog", "kind": "method" }
+		},
+		{
+			"id": "SetFlush",
+			"cpp": "self->flush = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetFlush", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::ILogSink*>(self)",
+			"returns": "ILogSink",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

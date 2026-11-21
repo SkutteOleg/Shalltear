@@ -1,0 +1,363 @@
+{
+	"area": "Mat4",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.Mat4",
+	"instance": "Mat4",
+	"functions": [
+		{
+			"id": "Identity",
+			"cpp": "::Shalltear::Mat4::Identity()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Identity", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromColumns",
+			"cpp": "::Shalltear::Mat4::FromColumns(c0, c1, c2, c3)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "c0", "type": "Vec4" },
+				{ "name": "c1", "type": "Vec4" },
+				{ "name": "c2", "type": "Vec4" },
+				{ "name": "c3", "type": "Vec4" }
+			],
+			"csharp": { "member": "FromColumns", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromRows",
+			"cpp": "::Shalltear::Mat4::FromRows(r0, r1, r2, r3)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "r0", "type": "Vec4" },
+				{ "name": "r1", "type": "Vec4" },
+				{ "name": "r2", "type": "Vec4" },
+				{ "name": "r3", "type": "Vec4" }
+			],
+			"csharp": { "member": "FromRows", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromMat3",
+			"cpp": "::Shalltear::Mat4::FromMat3(*m3)",
+			"returns": "Mat4",
+			"params": [{ "name": "m3", "type": "Mat3" }],
+			"csharp": { "member": "FromMat3", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "At",
+			"cpp": "self->operator()(row, col)",
+			"returns": "f32",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "col", "type": "u64" }
+			],
+			"csharp": { "member": "At", "kind": "method" }
+		},
+		{
+			"id": "SetAt",
+			"cpp": "self->operator()(row, col) = value",
+			"returns": "void",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "col", "type": "u64" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetAt", "kind": "method" }
+		},
+		{
+			"id": "At2",
+			"cpp": "self->operator[](index)",
+			"returns": "f32",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "At", "kind": "method" }
+		},
+		{
+			"id": "SetAt2",
+			"cpp": "self->operator[](index) = value",
+			"returns": "void",
+			"params": [
+				{ "name": "index", "type": "u64" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetAt", "kind": "method" }
+		},
+		{
+			"id": "GetColumn",
+			"cpp": "self->GetColumn(col)",
+			"returns": "Vec4",
+			"params": [{ "name": "col", "type": "u64" }],
+			"csharp": { "member": "GetColumn", "kind": "method" }
+		},
+		{
+			"id": "SetColumn",
+			"cpp": "self->SetColumn(col, v)",
+			"returns": "void",
+			"params": [
+				{ "name": "col", "type": "u64" },
+				{ "name": "v", "type": "Vec4" }
+			],
+			"csharp": { "member": "SetColumn", "kind": "method" }
+		},
+		{
+			"id": "GetRow",
+			"cpp": "self->GetRow(row)",
+			"returns": "Vec4",
+			"params": [{ "name": "row", "type": "u64" }],
+			"csharp": { "member": "GetRow", "kind": "method" }
+		},
+		{
+			"id": "SetRow",
+			"cpp": "self->SetRow(row, v)",
+			"returns": "void",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "v", "type": "Vec4" }
+			],
+			"csharp": { "member": "SetRow", "kind": "method" }
+		},
+		{
+			"id": "ToMat3",
+			"cpp": "self->ToMat3()",
+			"returns": "Mat3",
+			"params": [],
+			"csharp": { "member": "ToMat3", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Approximately",
+			"cpp": "::Shalltear::Mat4::Approximately(*a, *b, epsilon)",
+			"returns": "bool",
+			"params": [
+				{ "name": "a", "type": "Mat4" },
+				{ "name": "b", "type": "Mat4" },
+				{ "name": "epsilon", "type": "f32" }
+			],
+			"csharp": { "member": "Approximately", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "TransformPoint",
+			"cpp": "self->TransformPoint(p)",
+			"returns": "Vec3",
+			"params": [{ "name": "p", "type": "Vec3" }],
+			"csharp": { "member": "TransformPoint", "kind": "method" }
+		},
+		{
+			"id": "TransformVector",
+			"cpp": "self->TransformVector(v)",
+			"returns": "Vec3",
+			"params": [{ "name": "v", "type": "Vec3" }],
+			"csharp": { "member": "TransformVector", "kind": "method" }
+		},
+		{
+			"id": "ProjectPoint",
+			"cpp": "self->ProjectPoint(p)",
+			"returns": "Vec3",
+			"params": [{ "name": "p", "type": "Vec3" }],
+			"csharp": { "member": "ProjectPoint", "kind": "method" }
+		},
+		{
+			"id": "Transposed",
+			"cpp": "self->Transposed()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Transposed", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Determinant",
+			"cpp": "self->Determinant()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Determinant", "kind": "method" }
+		},
+		{
+			"id": "TryInvert",
+			"cpp": "self->TryInvert(*outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "Mat4" }],
+			"csharp": { "member": "TryInvert", "kind": "method" }
+		},
+		{
+			"id": "Inverse",
+			"cpp": "self->Inverse()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Inverse", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Translation",
+			"cpp": "::Shalltear::Mat4::Translation(t)",
+			"returns": "Mat4",
+			"params": [{ "name": "t", "type": "Vec3" }],
+			"csharp": { "member": "Translation", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromQuat",
+			"cpp": "::Shalltear::Mat4::FromQuat(q)",
+			"returns": "Mat4",
+			"params": [{ "name": "q", "type": "Quat" }],
+			"csharp": { "member": "FromQuat", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Scale",
+			"cpp": "::Shalltear::Mat4::Scale(s)",
+			"returns": "Mat4",
+			"params": [{ "name": "s", "type": "Vec3" }],
+			"csharp": { "member": "Scale", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "TRS",
+			"cpp": "::Shalltear::Mat4::TRS(translation, rotation, scale)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "translation", "type": "Vec3" },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "scale", "type": "Vec3" }
+			],
+			"csharp": { "member": "TRS", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "DecomposeTRS",
+			"cpp": "::Shalltear::Mat4::DecomposeTRS(*m, outTranslation, outRotation, outScale)",
+			"returns": "bool",
+			"params": [
+				{ "name": "m", "type": "Mat4" },
+				{ "name": "outTranslation", "type": "Vec3", "out": true },
+				{ "name": "outRotation", "type": "Quat", "out": true },
+				{ "name": "outScale", "type": "Vec3", "out": true }
+			],
+			"csharp": { "member": "DecomposeTRS", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "LookAt",
+			"cpp": "::Shalltear::Mat4::LookAt(eye, target, up)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "eye", "type": "Vec3" },
+				{ "name": "target", "type": "Vec3" },
+				{ "name": "up", "type": "Vec3" }
+			],
+			"csharp": { "member": "LookAt", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Perspective",
+			"cpp": "::Shalltear::Mat4::Perspective(fovYDegrees, aspect, zNear, zFar)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "fovYDegrees", "type": "f32" },
+				{ "name": "aspect", "type": "f32" },
+				{ "name": "zNear", "type": "f32" },
+				{ "name": "zFar", "type": "f32" }
+			],
+			"csharp": { "member": "Perspective", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "PerspectiveReverseZ",
+			"cpp": "::Shalltear::Mat4::PerspectiveReverseZ(fovYDegrees, aspect, zNear, zFar)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "fovYDegrees", "type": "f32" },
+				{ "name": "aspect", "type": "f32" },
+				{ "name": "zNear", "type": "f32" },
+				{ "name": "zFar", "type": "f32" }
+			],
+			"csharp": { "member": "PerspectiveReverseZ", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Orthographic",
+			"cpp": "::Shalltear::Mat4::Orthographic(left, right, bottom, top, zNear, zFar)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "left", "type": "f32" },
+				{ "name": "right", "type": "f32" },
+				{ "name": "bottom", "type": "f32" },
+				{ "name": "top", "type": "f32" },
+				{ "name": "zNear", "type": "f32" },
+				{ "name": "zFar", "type": "f32" }
+			],
+			"csharp": { "member": "Orthographic", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "OrthographicReverseZ",
+			"cpp": "::Shalltear::Mat4::OrthographicReverseZ(left, right, bottom, top, zNear, zFar)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "left", "type": "f32" },
+				{ "name": "right", "type": "f32" },
+				{ "name": "bottom", "type": "f32" },
+				{ "name": "top", "type": "f32" },
+				{ "name": "zNear", "type": "f32" },
+				{ "name": "zFar", "type": "f32" }
+			],
+			"csharp": { "member": "OrthographicReverseZ", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "ToString",
+			"cpp": "self->ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ToText", "kind": "method" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "self->data",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" }
+		},
+		{
+			"id": "SetData",
+			"cpp": "Slots::Assign(self->data, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Data", "kind": "setter" }
+		}
+	]
+}

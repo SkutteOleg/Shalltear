@@ -1,0 +1,278 @@
+{
+	"area": "EditorFrameCostRecorder",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostRecorder",
+	"instance": "EditorFrameCostRecorder",
+	"enums": [
+		{
+			"name": "EditorFrameCostClass",
+			"cpp": "::Shalltear::EditorFrameCost::Class",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Steady", "value": 0 },
+				{ "name": "Drag", "value": 1 },
+				{ "name": "Modal", "value": 2 },
+				{ "name": "Count", "value": 3 }
+			]
+		},
+		{
+			"name": "EditorFrameCostStage",
+			"cpp": "::Shalltear::EditorFrameCost::Stage",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Pump", "value": 0 },
+				{ "name": "UI", "value": 1 },
+				{ "name": "Update", "value": 2 },
+				{ "name": "Render", "value": 3 },
+				{ "name": "Frame", "value": 4 },
+				{ "name": "Count", "value": 5 }
+			]
+		},
+		{
+			"name": "EditorFrameCostExclusion",
+			"cpp": "::Shalltear::EditorFrameCost::Exclusion",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Warmup", "value": 0 },
+				{ "name": "Modal", "value": 1 },
+				{ "name": "Throttled", "value": 2 },
+				{ "name": "Count", "value": 3 }
+			]
+		},
+		{
+			"name": "EditorFrameCostCounter",
+			"cpp": "::Shalltear::EditorFrameCost::Counter",
+			"underlying": "u8",
+			"values": [
+				{ "name": "MeasureCalls", "value": 0 },
+				{ "name": "MeasureWork", "value": 1 },
+				{ "name": "ArrangeCalls", "value": 2 },
+				{ "name": "ArrangeWork", "value": 3 },
+				{ "name": "LayoutPasses", "value": 4 },
+				{ "name": "ElementsVisited", "value": 5 },
+				{ "name": "ElementsPainted", "value": 6 },
+				{ "name": "ScopesWalked", "value": 7 },
+				{ "name": "ScopesSorted", "value": 8 },
+				{ "name": "LinkOps", "value": 9 },
+				{ "name": "LinkWork", "value": 10 },
+				{ "name": "TextWalks", "value": 11 },
+				{ "name": "GlyphsResolved", "value": 12 },
+				{ "name": "RunsBuilt", "value": 13 },
+				{ "name": "UIDrawCalls", "value": 14 },
+				{ "name": "UIQuads", "value": 15 },
+				{ "name": "UIContexts", "value": 16 },
+				{ "name": "VramBytes", "value": 17 },
+				{ "name": "LiveBuffers", "value": 18 },
+				{ "name": "LiveTextures", "value": 19 },
+				{ "name": "LiveSamplers", "value": 20 },
+				{ "name": "LivePipelines", "value": 21 },
+				{ "name": "Count", "value": 22 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorFrameCostRecorder", "cpp": "::Shalltear::EditorFrameCost::Recorder", "owned": true },
+		{ "name": "EditorFrameCostSample", "cpp": "::Shalltear::EditorFrameCost::Sample", "owned": true, "create": true },
+		{ "name": "EditorFrameCostGesture", "cpp": "::Shalltear::EditorFrameCost::Gesture", "owned": true, "create": true },
+		{ "name": "EditorFrameCostModalPeriod", "cpp": "::Shalltear::EditorFrameCost::ModalPeriod", "owned": true, "create": true },
+		{ "name": "EditorFrameCostCounters", "cpp": "::Shalltear::EditorFrameCost::Counters", "owned": true, "create": true },
+		{ "name": "EditorFrameCostEpoch", "cpp": "::Shalltear::EditorFrameCost::Epoch", "owned": true, "create": true },
+		{ "name": "EditorFrameCostDistribution", "cpp": "::Shalltear::EditorFrameCost::Distribution", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Record",
+			"cpp": "self->Record(*sample)",
+			"returns": "void",
+			"params": [{ "name": "sample", "type": "EditorFrameCostSample" }],
+			"csharp": { "member": "Record", "kind": "method" }
+		},
+		{
+			"id": "Finish",
+			"cpp": "self->Finish()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Finish", "kind": "method" }
+		},
+		{
+			"id": "TakeGesture",
+			"cpp": "self->TakeGesture(*outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "EditorFrameCostGesture" }],
+			"csharp": { "member": "TakeGesture", "kind": "method" }
+		},
+		{
+			"id": "BeginModalPeriod",
+			"cpp": "self->BeginModalPeriod(startTicks)",
+			"returns": "void",
+			"params": [{ "name": "startTicks", "type": "u64" }],
+			"csharp": { "member": "BeginModalPeriod", "kind": "method" }
+		},
+		{
+			"id": "EndModalPeriod",
+			"cpp": "self->EndModalPeriod(endTicks)",
+			"returns": "void",
+			"params": [{ "name": "endTicks", "type": "u64" }],
+			"csharp": { "member": "EndModalPeriod", "kind": "method" }
+		},
+		{
+			"id": "NoteModalMove",
+			"cpp": "self->NoteModalMove()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NoteModalMove", "kind": "method" }
+		},
+		{
+			"id": "NoteModalResize",
+			"cpp": "self->NoteModalResize()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NoteModalResize", "kind": "method" }
+		},
+		{
+			"id": "RecordModal",
+			"cpp": "self->RecordModal(*sample)",
+			"returns": "void",
+			"params": [{ "name": "sample", "type": "EditorFrameCostSample" }],
+			"csharp": { "member": "RecordModal", "kind": "method" }
+		},
+		{
+			"id": "TakeModalPeriod",
+			"cpp": "self->TakeModalPeriod(*outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "EditorFrameCostModalPeriod" }],
+			"csharp": { "member": "TakeModalPeriod", "kind": "method" }
+		},
+		{
+			"id": "EpochElapsed",
+			"cpp": "self->EpochElapsed()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EpochElapsed", "kind": "method" }
+		},
+		{
+			"id": "CloseEpoch",
+			"cpp": "self->CloseEpoch(*counters, atShutdown)",
+			"returns": "bool",
+			"params": [
+				{ "name": "counters", "type": "EditorFrameCostCounters" },
+				{ "name": "atShutdown", "type": "bool" }
+			],
+			"csharp": { "member": "CloseEpoch", "kind": "method" }
+		},
+		{
+			"id": "TakeEpoch",
+			"cpp": "self->TakeEpoch(*outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "EditorFrameCostEpoch" }],
+			"csharp": { "member": "TakeEpoch", "kind": "method" }
+		},
+		{
+			"id": "GetLostEpochs",
+			"cpp": "self->GetLostEpochs()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LostEpochs", "kind": "getter" }
+		},
+		{
+			"id": "Get",
+			"cpp": "self->Get(frameClass, stage)",
+			"returns": "EditorFrameCostDistribution",
+			"params": [
+				{ "name": "frameClass", "type": "EditorFrameCostClass" },
+				{ "name": "stage", "type": "EditorFrameCostStage" }
+			],
+			"csharp": { "member": "Get", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "GetExcluded",
+			"cpp": "self->GetExcluded(reason)",
+			"returns": "u64",
+			"params": [{ "name": "reason", "type": "EditorFrameCostExclusion" }],
+			"csharp": { "member": "GetExcluded", "kind": "method" }
+		},
+		{
+			"id": "GetDiscardedGestures",
+			"cpp": "self->GetDiscardedGestures()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "DiscardedGestures", "kind": "getter" }
+		},
+		{
+			"id": "GetLostGestures",
+			"cpp": "self->GetLostGestures()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LostGestures", "kind": "getter" }
+		},
+		{
+			"id": "GetLostModalPeriods",
+			"cpp": "self->GetLostModalPeriods()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LostModalPeriods", "kind": "getter" }
+		},
+		{
+			"id": "GetUnpairedModalFrames",
+			"cpp": "self->GetUnpairedModalFrames()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "UnpairedModalFrames", "kind": "getter" }
+		},
+		{
+			"id": "PercentileMs",
+			"cpp": "self->PercentileMs(*distribution, quantile)",
+			"returns": "f64",
+			"params": [
+				{ "name": "distribution", "type": "EditorFrameCostDistribution" },
+				{ "name": "quantile", "type": "f64" }
+			],
+			"csharp": { "member": "PercentileMs", "kind": "method" }
+		},
+		{
+			"id": "MinMs",
+			"cpp": "self->MinMs(*distribution)",
+			"returns": "f64",
+			"params": [{ "name": "distribution", "type": "EditorFrameCostDistribution" }],
+			"csharp": { "member": "MinMs", "kind": "method" }
+		},
+		{
+			"id": "MaxMs",
+			"cpp": "self->MaxMs(*distribution)",
+			"returns": "f64",
+			"params": [{ "name": "distribution", "type": "EditorFrameCostDistribution" }],
+			"csharp": { "member": "MaxMs", "kind": "method" }
+		},
+		{
+			"id": "MeanMs",
+			"cpp": "self->MeanMs(*distribution)",
+			"returns": "f64",
+			"params": [{ "name": "distribution", "type": "EditorFrameCostDistribution" }],
+			"csharp": { "member": "MeanMs", "kind": "method" }
+		},
+		{
+			"id": "BucketFloorMs",
+			"cpp": "self->BucketFloorMs(bucket)",
+			"returns": "f64",
+			"params": [{ "name": "bucket", "type": "u32" }],
+			"csharp": { "member": "BucketFloorMs", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::EditorFrameCost::Recorder(ticksPerSecond, epochSeconds)",
+			"returns": "EditorFrameCostRecorder",
+			"params": [
+				{ "name": "ticksPerSecond", "type": "u64" },
+				{ "name": "epochSeconds", "type": "f64" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

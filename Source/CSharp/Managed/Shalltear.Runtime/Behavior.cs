@@ -15,6 +15,9 @@ public abstract class Behavior : Component {
 	/// <summary>Runs in edit mode too (keep it free of game logic).</summary>
 	protected Behavior() {}
 
+	/// <summary>Frame hooks called by the engine on this script.</summary>
+	public BehaviorTick TickMask => (BehaviorTick)(byte)Interop.BehaviorBindings.GetTickMask(this);
+
 	/// <summary>Once per frame.</summary>
 	protected virtual void OnUpdate() {}
 

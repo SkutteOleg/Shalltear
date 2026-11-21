@@ -1,0 +1,39 @@
+{
+	"area": "RHIRenderPassDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHIRenderPassDesc",
+	"instance": "RHIRenderPassDesc",
+	"functions": [
+		{
+			"id": "GetColorAttachments",
+			"cpp": "self->colorAttachments",
+			"returns": "list<RHIRenderPassDescAttachment>",
+			"params": [],
+			"csharp": { "member": "ColorAttachments", "kind": "getter" }
+		},
+		{
+			"id": "SetColorAttachments",
+			"cpp": "self->colorAttachments = Slots::KeepFieldSpan(self, 0x13982ecb9c6fd4f5ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIRenderPassDescAttachment>" }],
+			"csharp": { "member": "ColorAttachments", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "Slots::Bits(self->depth)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = Slots::OptionalPointer<::Shalltear::RHI::RenderPassDesc::DepthAttachment>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIRenderPassDescDepthAttachment>" }],
+			"csharp": { "member": "SetDepth", "kind": "method" }
+		}
+	]
+}

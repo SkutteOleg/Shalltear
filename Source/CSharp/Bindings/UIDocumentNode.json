@@ -1,0 +1,179 @@
+{
+	"area": "UIDocumentNode",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.UIDocumentNode",
+	"instance": "UIDocumentNode",
+	"functions": [
+		{
+			"id": "GetTag",
+			"cpp": "self->tag",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "SetTag",
+			"cpp": "self->tag = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tag", "kind": "setter" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetClasses",
+			"cpp": "self->classes",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Classes", "kind": "getter" }
+		},
+		{
+			"id": "SetClasses",
+			"cpp": "Slots::AssignAll(self->classes, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Classes", "kind": "setter" }
+		},
+		{
+			"id": "GetClassCount",
+			"cpp": "self->classCount",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "ClassCount", "kind": "getter" }
+		},
+		{
+			"id": "SetClassCount",
+			"cpp": "self->classCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "ClassCount", "kind": "setter" }
+		},
+		{
+			"id": "GetStyle",
+			"cpp": "self->style",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Style", "kind": "getter" }
+		},
+		{
+			"id": "SetStyle",
+			"cpp": "self->style = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Style", "kind": "setter" }
+		},
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		},
+		{
+			"id": "GetTextKey",
+			"cpp": "self->textKey",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TextKey", "kind": "getter" }
+		},
+		{
+			"id": "SetTextKey",
+			"cpp": "self->textKey = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TextKey", "kind": "setter" }
+		},
+		{
+			"id": "GetRichText",
+			"cpp": "self->richText",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "RichText", "kind": "getter" }
+		},
+		{
+			"id": "SetRichText",
+			"cpp": "self->richText = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "RichText", "kind": "setter" }
+		},
+		{
+			"id": "GetAttributes",
+			"cpp": "self->attributes",
+			"returns": "list<UIDocumentAttribute>",
+			"params": [],
+			"csharp": { "member": "Attributes", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributes",
+			"cpp": "self->attributes = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentAttribute>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentAttribute>" }],
+			"csharp": { "member": "Attributes", "kind": "setter" }
+		},
+		{
+			"id": "GetTemplateName",
+			"cpp": "self->templateName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TemplateName", "kind": "getter" }
+		},
+		{
+			"id": "SetTemplateName",
+			"cpp": "self->templateName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TemplateName", "kind": "setter" }
+		},
+		{
+			"id": "GetOverrides",
+			"cpp": "self->overrides",
+			"returns": "list<UIDocumentOverride>",
+			"params": [],
+			"csharp": { "member": "Overrides", "kind": "getter" }
+		},
+		{
+			"id": "SetOverrides",
+			"cpp": "self->overrides = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentOverride>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentOverride>" }],
+			"csharp": { "member": "Overrides", "kind": "setter" }
+		},
+		{
+			"id": "GetChildren",
+			"cpp": "self->children",
+			"returns": "list<UIDocumentNode>",
+			"params": [],
+			"csharp": { "member": "Children", "kind": "getter" }
+		},
+		{
+			"id": "SetChildren",
+			"cpp": "self->children = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentNode>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentNode>" }],
+			"csharp": { "member": "Children", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,25 @@
+{
+	"area": "EditorFrameCostCounters",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostCounters",
+	"instance": "EditorFrameCostCounters",
+	"functions": [
+		{
+			"id": "GetValues",
+			"cpp": "self->values",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Values", "kind": "getter" }
+		},
+		{
+			"id": "SetValues",
+			"cpp": "Slots::Assign(self->values, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u64>" }],
+			"csharp": { "member": "Values", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,88 @@
+{
+	"area": "RenderPassProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"DerivedTypes.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.RenderPassProxy",
+	"instance": "RenderPassProxy",
+	"prelude": [
+		"class RenderPassProxy final : public ::Shalltear::RenderPass {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::RenderPass::GetType(); }",
+		"\t~RenderPassProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<void(Shalltear::PassContext &)> record;",
+		"\tvoid Record(Shalltear::PassContext & a0) override {",
+		"\t\tif (record) {",
+		"\t\t\trecord(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<Shalltear::PassRequests()> getRequests;",
+		"\tShalltear::PassRequests GetRequests() const override {",
+		"\t\treturn getRequests ? getRequests() : ::Shalltear::RenderPass::GetRequests();",
+		"\t}",
+		"\tstd::function<void(Shalltear::PassPlan &)> declarePlan;",
+		"\tvoid DeclarePlan(Shalltear::PassPlan & a0) override {",
+		"\t\tif (declarePlan) {",
+		"\t\t\tdeclarePlan(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::RenderPass::DeclarePlan(a0);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "RenderPassProxy", "cpp": "RenderPassProxy" }],
+	"functions": [
+		{
+			"id": "SetRecord",
+			"cpp": "self->record = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;PassContext>", "optional": true, "cpp": "std::function<void(Shalltear::PassContext &)>" }
+			],
+			"csharp": { "member": "SetRecord", "kind": "method" }
+		},
+		{
+			"id": "SetGetRequests",
+			"cpp": "self->getRequests = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<PassRequests>", "optional": true, "cpp": "std::function<Shalltear::PassRequests()>" }
+			],
+			"csharp": { "member": "SetGetRequests", "kind": "method" }
+		},
+		{
+			"id": "SetDeclarePlan",
+			"cpp": "self->declarePlan = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;PassPlan>", "optional": true, "cpp": "std::function<void(Shalltear::PassPlan &)>" }
+			],
+			"csharp": { "member": "SetDeclarePlan", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::RenderPass*>(self)",
+			"returns": "RenderPass",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<RenderPassProxy, ::Shalltear::RenderPass>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;RenderPassProxy>", "cpp": "std::function<void(RenderPassProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

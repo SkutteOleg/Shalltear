@@ -1,0 +1,37 @@
+{
+	"area": "RemoveContainerElementCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.RemoveContainerElementCommand",
+	"instance": "RemoveContainerElementCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::RemoveContainerElementCommand(*target, field, index, label)",
+			"returns": "RemoveContainerElementCommand",
+			"params": [
+				{ "name": "target", "type": "EditTarget" },
+				{ "name": "field", "type": "StringHash" },
+				{ "name": "index", "type": "u32" },
+				{ "name": "label", "type": "string" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

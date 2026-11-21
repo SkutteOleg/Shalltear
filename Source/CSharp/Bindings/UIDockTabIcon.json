@@ -1,0 +1,40 @@
+{
+	"area": "UIDockTabIcon",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Docking.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.UIDockTabIcon",
+	"instance": "UIDockTabIcon",
+	"functions": [
+		{
+			"id": "GetImage",
+			"cpp": "self->image",
+			"returns": "VectorAsset",
+			"params": [],
+			"csharp": { "member": "Image", "kind": "getter" }
+		},
+		{
+			"id": "SetImage",
+			"cpp": "self->image = ::Shalltear::Handle<::Shalltear::VectorAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "VectorAsset", "optional": true }],
+			"csharp": { "member": "Image", "kind": "setter" }
+		},
+		{
+			"id": "GetSizePx",
+			"cpp": "self->sizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetSizePx",
+			"cpp": "self->sizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SizePx", "kind": "setter" }
+		}
+	]
+}

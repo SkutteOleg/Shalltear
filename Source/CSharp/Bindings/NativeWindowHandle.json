@@ -1,0 +1,67 @@
+{
+	"area": "NativeWindowHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/NativeWindow.h"
+	],
+	"class": "Shalltear.NativeWindowHandle",
+	"instance": "NativeWindowHandle",
+	"enums": [
+		{
+			"name": "NativeWindowSystem",
+			"cpp": "::Shalltear::NativeWindowSystem",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Win32", "value": 1 },
+				{ "name": "Xlib", "value": 2 },
+				{ "name": "Wayland", "value": 3 }
+			]
+		}
+	],
+	"natives": [{ "name": "NativeWindowHandle", "cpp": "::Shalltear::NativeWindowHandle", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetSystemField",
+			"cpp": "self->system",
+			"returns": "NativeWindowSystem",
+			"params": [],
+			"csharp": { "member": "SystemField", "kind": "getter" }
+		},
+		{
+			"id": "SetSystemField",
+			"cpp": "self->system = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "NativeWindowSystem" }],
+			"csharp": { "member": "SystemField", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplay",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->display))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Display", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplay",
+			"cpp": "self->display = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Display", "kind": "setter" }
+		},
+		{
+			"id": "GetWindow",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->window))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		}
+	]
+}

@@ -7,6 +7,7 @@
 #include "CSharpScenarioUtil.h"
 #include "EditorTestHooks.h"
 #include "TestPlatform.h"
+#include "UITestUtil.h"
 
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Module/ScriptFunctions.h"
@@ -16,6 +17,7 @@
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CompileStatus.h"
 #include "Shalltear/Editor/EditorConsole.h"
+#include "Shalltear/Editor/EditorMenus.h"
 
 #include <algorithm>
 #include <chrono>
@@ -330,6 +332,54 @@ TEST_F(CSharpAssembliesTest, DefinitionMistakesAreReported) {
 	EXPECT_TRUE(HasProblem(set, "Assets/N/Symbols.slassembly", "defines 'NOT-A-SYMBOL' (ignored)"));
 	EXPECT_TRUE(HasProblem(set, "Assets/O/Self.slassembly", "references itself (ignored)"));
 	EXPECT_EQ(set.problems.size(), 12u);
+}
+
+TEST_F(CSharpAssembliesTest, EditorOnlyAssemblyReachesEditorAPI) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	_editor->registerEditorBindings();
+	Put("Assets/Tools/Tools.slassembly", "{\"assemblyName\": \"Game.Tools\", \"editorOnly\": true}");
+	Put("Assets/Tools/Menu.cs", R"(using Shalltear;
+using Shalltear.Editor;
+
+namespace Game.Tools;
+
+static class Menu {
+	[EditorLoad]
+	internal static void Add() {
+		EditorMenusMenuItemDesc item = new() { Label = "From Tools" };
+		item.SetOnSelect(static context => Log.Info("Tools", "tools item selected"));
+		EditorMenus.Register("ToolsProbe", item);
+	}
+}
+)");
+	Put("Assets/Bonus.cs", BONUS);
+	if (!Prepare()) {
+		SceneSystem::Terminate();
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+
+	_editor->notifySourceChanged();
+	ASSERT_TRUE(CompileAgain()) << Said();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded) << Said();
+	UITest::MockFontSystem fonts;
+	UI::Context context(UI::ContextDesc{}, &fonts);
+	Vector<UI::Widgets::MenuItem> items{GetMemoryResource(MemTag::Editor)};
+	EditorMenus::AppendContributed("ToolsProbe", context, items);
+	ASSERT_EQ(items.size(), 1u) << Said();
+	EXPECT_EQ(items[0].label, "From Tools");
+	items[0].onSelect();
+	EXPECT_EQ(_log.Delivered().Count("tools item selected"), 1u) << Said();
+	items.clear();
+
+	Put("Assets/Bonus.cs", str(BONUS) + "\nstatic class Reach { static object item = new Shalltear.Editor.EditorMenusMenuItemDesc(); }\n");
+	_editor->notifySourceChanged();
+	EXPECT_FALSE(CompileAgain()) << Said();
+	EXPECT_NE(Said().find("CS0234"), str::npos) << Said();
+
+	_editor->shutdownAuthoring();
+	EditorMenus::Terminate();
+	SceneSystem::Terminate();
 }
 
 TEST_F(CSharpAssembliesTest, DefinitionsCompileAndLoadTogether) {

@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.network.csharp",
+	"version": "1.0.0",
+	"displayName": "Network for C#",
+	"description": "The C# API of Network.",
+	"kind": "engine",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.network": "1.0.0",
+		"dev.shalltear.csharp": "1.0.0"
+	}
+}

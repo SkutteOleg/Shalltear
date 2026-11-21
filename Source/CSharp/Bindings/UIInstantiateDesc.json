@@ -1,0 +1,54 @@
+{
+	"area": "UIInstantiateDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIInstantiateDesc",
+	"instance": "UIInstantiateDesc",
+	"functions": [
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetTextColor",
+			"cpp": "self->textColor",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "TextColor", "kind": "getter" }
+		},
+		{
+			"id": "SetTextColor",
+			"cpp": "self->textColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "TextColor", "kind": "setter" }
+		}
+	]
+}

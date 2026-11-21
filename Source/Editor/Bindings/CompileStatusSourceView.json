@@ -1,0 +1,54 @@
+{
+	"area": "CompileStatusSourceView",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileStatus.h"
+	],
+	"class": "Shalltear.Editor.CompileStatusSourceView",
+	"instance": "CompileStatusSourceView",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetHeading",
+			"cpp": "self->heading",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Heading", "kind": "getter" }
+		},
+		{
+			"id": "SetHeading",
+			"cpp": "self->heading = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Heading", "kind": "setter" }
+		},
+		{
+			"id": "GetState",
+			"cpp": "&self->state",
+			"returns": "CompileStatusSourceState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetState",
+			"cpp": "self->state = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CompileStatusSourceState" }],
+			"csharp": { "member": "State", "kind": "setter" }
+		}
+	]
+}

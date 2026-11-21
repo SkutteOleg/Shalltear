@@ -1,0 +1,151 @@
+{
+	"area": "UIDocumentAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIDocumentAsset",
+	"instance": "UIDocumentAsset",
+	"natives": [
+		{ "name": "UIInstantiateDesc", "cpp": "::Shalltear::UIInstantiateDesc", "owned": true, "create": true },
+		{ "name": "UIInstantiateMapping", "cpp": "::Shalltear::UIInstantiateMapping", "owned": true, "create": true },
+		{ "name": "UIDocumentAttribute", "cpp": "::Shalltear::UIDocumentAttribute", "owned": true, "create": true },
+		{ "name": "UIDocumentSheet", "cpp": "::Shalltear::UIDocumentSheet", "owned": true, "create": true },
+		{ "name": "UIDocumentTemplate", "cpp": "::Shalltear::UIDocumentTemplate", "owned": true, "create": true },
+		{ "name": "UIDocumentAssetRef", "cpp": "::Shalltear::UIDocumentAssetRef", "owned": true, "create": true },
+		{ "name": "UIDocumentOverride", "cpp": "::Shalltear::UIDocumentOverride", "owned": true, "create": true },
+		{ "name": "UIDocumentNode", "cpp": "::Shalltear::UIDocumentNode", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "FORMAT_VERSION", "cpp": "::Shalltear::UIDocumentAsset::FORMAT_VERSION", "type": "u32", "value": 1 }
+	],
+	"functions": [
+		{
+			"id": "ResolveAssetReferences",
+			"cpp": "self->ResolveAssetReferences(error)",
+			"returns": "bool",
+			"params": [{ "name": "error", "type": "string", "out": true }],
+			"csharp": { "member": "ResolveAssetReferences", "kind": "method" }
+		},
+		{
+			"id": "GetContentVersion",
+			"cpp": "self->GetContentVersion()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ContentVersion", "kind": "getter" }
+		},
+		{
+			"id": "Parse",
+			"cpp": "self->Parse(source, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Parse", "kind": "method" }
+		},
+		{
+			"id": "Write",
+			"cpp": "self->Write()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Write", "kind": "method" }
+		},
+		{
+			"id": "Instantiate",
+			"cpp": "self->Instantiate(*context, parent, *desc)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIInstantiateDesc" }
+			],
+			"csharp": { "member": "Instantiate", "kind": "method" }
+		},
+		{
+			"id": "Instantiate2",
+			"cpp": "self->Instantiate(*context, parent, *desc, mapping)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIInstantiateDesc" },
+				{ "name": "mapping", "type": "list<UIInstantiateMapping>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIInstantiateMapping>" }
+			],
+			"csharp": { "member": "Instantiate", "kind": "method" }
+		},
+		{
+			"id": "GetRoot",
+			"cpp": "&self->root",
+			"returns": "UIDocumentNode",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetRoot",
+			"cpp": "self->root = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDocumentNode" }],
+			"csharp": { "member": "Root", "kind": "setter" }
+		},
+		{
+			"id": "GetSheets",
+			"cpp": "self->sheets",
+			"returns": "list<UIDocumentSheet>",
+			"params": [],
+			"csharp": { "member": "Sheets", "kind": "getter" }
+		},
+		{
+			"id": "SetSheets",
+			"cpp": "self->sheets = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentSheet>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentSheet>" }],
+			"csharp": { "member": "Sheets", "kind": "setter" }
+		},
+		{
+			"id": "GetTemplates",
+			"cpp": "self->templates",
+			"returns": "list<UIDocumentTemplate>",
+			"params": [],
+			"csharp": { "member": "Templates", "kind": "getter" }
+		},
+		{
+			"id": "SetTemplates",
+			"cpp": "self->templates = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentTemplate>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentTemplate>" }],
+			"csharp": { "member": "Templates", "kind": "setter" }
+		},
+		{
+			"id": "GetAssets",
+			"cpp": "self->assets",
+			"returns": "list<UIDocumentAssetRef>",
+			"params": [],
+			"csharp": { "member": "Assets", "kind": "getter" }
+		},
+		{
+			"id": "SetAssets",
+			"cpp": "self->assets = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentAssetRef>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentAssetRef>" }],
+			"csharp": { "member": "Assets", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		}
+	]
+}

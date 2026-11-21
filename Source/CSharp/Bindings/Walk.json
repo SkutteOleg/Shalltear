@@ -1,0 +1,189 @@
+{
+	"area": "Walk",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/Walk.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.Walk",
+	"functions": [
+		{
+			"id": "ForEachField",
+			"cpp": "::Shalltear::ForEachField(reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), type, Slots::FromBits<void (*)(const Shalltear::FieldInfo *, const Shalltear::Variant *, void *)>(callback), reinterpret_cast<void*>(static_cast<uintptr_t>(userData)), walkFlags)",
+			"returns": "void",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "callback", "type": "u64" },
+				{ "name": "userData", "type": "u64" },
+				{ "name": "walkFlags", "type": "u32" }
+			],
+			"csharp": { "member": "ForEachField", "kind": "method" }
+		},
+		{
+			"id": "ForEachFieldRaw",
+			"cpp": "::Shalltear::ForEachFieldRaw(reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), type, Slots::FromBits<void (*)(const Shalltear::FieldInfo *, void *, void *)>(callback), reinterpret_cast<void*>(static_cast<uintptr_t>(userData)), walkFlags)",
+			"returns": "void",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "callback", "type": "u64" },
+				{ "name": "userData", "type": "u64" },
+				{ "name": "walkFlags", "type": "u32" }
+			],
+			"csharp": { "member": "ForEachFieldRaw", "kind": "method" }
+		},
+		{
+			"id": "GetField",
+			"cpp": "::Shalltear::GetField(reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), type, fieldName, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "fieldName", "type": "StringHash" },
+				{ "name": "outValue", "type": "Variant", "optional": true }
+			],
+			"csharp": { "member": "GetField", "kind": "method" }
+		},
+		{
+			"id": "SetField",
+			"cpp": "::Shalltear::SetField(reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), type, fieldName, inValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "fieldName", "type": "StringHash" },
+				{ "name": "inValue", "type": "Variant", "optional": true }
+			],
+			"csharp": { "member": "SetField", "kind": "method" }
+		},
+		{
+			"id": "FindField",
+			"cpp": "::Shalltear::FindField(type, fieldName)",
+			"returns": "FieldInfo",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "fieldName", "type": "StringHash" }
+			],
+			"csharp": { "member": "FindField", "kind": "method" }
+		},
+		{
+			"id": "GetFieldValue",
+			"cpp": "::Shalltear::GetFieldValue(field, reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "field", "type": "FieldInfo", "optional": true },
+				{ "name": "instance", "type": "u64" },
+				{ "name": "outValue", "type": "Variant", "optional": true }
+			],
+			"csharp": { "member": "GetFieldValue", "kind": "method" }
+		},
+		{
+			"id": "SetFieldValue",
+			"cpp": "::Shalltear::SetFieldValue(field, reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), inValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "field", "type": "FieldInfo", "optional": true },
+				{ "name": "instance", "type": "u64" },
+				{ "name": "inValue", "type": "Variant", "optional": true }
+			],
+			"csharp": { "member": "SetFieldValue", "kind": "method" }
+		},
+		{
+			"id": "SyncFieldsBeforeRead",
+			"cpp": "::Shalltear::SyncFieldsBeforeRead(reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), type)",
+			"returns": "void",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true }
+			],
+			"csharp": { "member": "SyncFieldsBeforeRead", "kind": "method" }
+		},
+		{
+			"id": "SyncFieldsAfterWrite",
+			"cpp": "::Shalltear::SyncFieldsAfterWrite(reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), type)",
+			"returns": "void",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true }
+			],
+			"csharp": { "member": "SyncFieldsAfterWrite", "kind": "method" }
+		},
+		{
+			"id": "FindMethod",
+			"cpp": "::Shalltear::FindMethod(type, methodName)",
+			"returns": "MethodInfo",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "methodName", "type": "StringHash" }
+			],
+			"csharp": { "member": "FindMethod", "kind": "method" }
+		},
+		{
+			"id": "InvokeMethod",
+			"cpp": "::Shalltear::InvokeMethod(reinterpret_cast<void*>(static_cast<uintptr_t>(instance)), type, methodName, args, argCount, outReturn)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "methodName", "type": "StringHash" },
+				{ "name": "args", "type": "Variant", "optional": true },
+				{ "name": "argCount", "type": "u32" },
+				{ "name": "outReturn", "type": "Variant", "optional": true }
+			],
+			"csharp": { "member": "InvokeMethod", "kind": "method" }
+		},
+		{
+			"id": "FindEnumConstantByValue",
+			"cpp": "::Shalltear::FindEnumConstantByValue(type, rawBits)",
+			"returns": "EnumConstantInfo",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "rawBits", "type": "u64" }
+			],
+			"csharp": { "member": "FindEnumConstantByValue", "kind": "method" }
+		},
+		{
+			"id": "FindEnumConstantByName",
+			"cpp": "::Shalltear::FindEnumConstantByName(type, name)",
+			"returns": "EnumConstantInfo",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "FindEnumConstantByName", "kind": "method" }
+		},
+		{
+			"id": "EnumValueToBits",
+			"cpp": "::Shalltear::EnumValueToBits(type, valueValue)",
+			"returns": "u64",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "valueValue", "type": "i64" }
+			],
+			"csharp": { "member": "EnumValueToBits", "kind": "method" }
+		},
+		{
+			"id": "FindFieldAttribute",
+			"cpp": "::Shalltear::FindFieldAttribute(field, key)",
+			"returns": "AttributeInfo",
+			"params": [
+				{ "name": "field", "type": "FieldInfo", "optional": true },
+				{ "name": "key", "type": "StringHash" }
+			],
+			"csharp": { "member": "FindFieldAttribute", "kind": "method" }
+		},
+		{
+			"id": "FindTypeAttribute",
+			"cpp": "::Shalltear::FindTypeAttribute(type, key)",
+			"returns": "AttributeInfo",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "key", "type": "StringHash" }
+			],
+			"csharp": { "member": "FindTypeAttribute", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,757 @@
+{
+	"area": "UIStyle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Style.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/Window/Window.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIStyle",
+	"instance": "UIStyle",
+	"constants": [{ "name": "MAX_BOX_SHADOWS", "cpp": "::Shalltear::UI::Style::MAX_BOX_SHADOWS", "type": "u32", "value": 6 }],
+	"functions": [
+		{
+			"id": "AddBoxShadow",
+			"cpp": "self->AddBoxShadow(shadow)",
+			"returns": "void",
+			"params": [{ "name": "shadow", "type": "UIBoxShadow" }],
+			"csharp": { "member": "AddBoxShadow", "kind": "method" }
+		},
+		{
+			"id": "GetDisplay",
+			"cpp": "self->display",
+			"returns": "UIDisplay",
+			"params": [],
+			"csharp": { "member": "Display", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplay",
+			"cpp": "self->display = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDisplay" }],
+			"csharp": { "member": "Display", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "UIPosition",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIPosition" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetFlexDirection",
+			"cpp": "self->flexDirection",
+			"returns": "UIFlexDirection",
+			"params": [],
+			"csharp": { "member": "FlexDirection", "kind": "getter" }
+		},
+		{
+			"id": "SetFlexDirection",
+			"cpp": "self->flexDirection = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIFlexDirection" }],
+			"csharp": { "member": "FlexDirection", "kind": "setter" }
+		},
+		{
+			"id": "GetJustifyContent",
+			"cpp": "self->justifyContent",
+			"returns": "UIAlign",
+			"params": [],
+			"csharp": { "member": "JustifyContent", "kind": "getter" }
+		},
+		{
+			"id": "SetJustifyContent",
+			"cpp": "self->justifyContent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAlign" }],
+			"csharp": { "member": "JustifyContent", "kind": "setter" }
+		},
+		{
+			"id": "GetAlignItems",
+			"cpp": "self->alignItems",
+			"returns": "UIAlign",
+			"params": [],
+			"csharp": { "member": "AlignItems", "kind": "getter" }
+		},
+		{
+			"id": "SetAlignItems",
+			"cpp": "self->alignItems = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAlign" }],
+			"csharp": { "member": "AlignItems", "kind": "setter" }
+		},
+		{
+			"id": "GetAlignSelf",
+			"cpp": "self->alignSelf",
+			"returns": "UIAlign",
+			"params": [],
+			"csharp": { "member": "AlignSelf", "kind": "getter" }
+		},
+		{
+			"id": "SetAlignSelf",
+			"cpp": "self->alignSelf = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAlign" }],
+			"csharp": { "member": "AlignSelf", "kind": "setter" }
+		},
+		{
+			"id": "GetOverflow",
+			"cpp": "self->overflow",
+			"returns": "UIOverflow",
+			"params": [],
+			"csharp": { "member": "Overflow", "kind": "getter" }
+		},
+		{
+			"id": "SetOverflow",
+			"cpp": "self->overflow = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIOverflow" }],
+			"csharp": { "member": "Overflow", "kind": "setter" }
+		},
+		{
+			"id": "GetWidth",
+			"cpp": "self->width",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "Width", "kind": "getter" }
+		},
+		{
+			"id": "SetWidth",
+			"cpp": "self->width = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "Width", "kind": "setter" }
+		},
+		{
+			"id": "GetHeight",
+			"cpp": "self->height",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "Height", "kind": "getter" }
+		},
+		{
+			"id": "SetHeight",
+			"cpp": "self->height = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "Height", "kind": "setter" }
+		},
+		{
+			"id": "GetMinWidth",
+			"cpp": "self->minWidth",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "MinWidth", "kind": "getter" }
+		},
+		{
+			"id": "SetMinWidth",
+			"cpp": "self->minWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "MinWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetMinHeight",
+			"cpp": "self->minHeight",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "MinHeight", "kind": "getter" }
+		},
+		{
+			"id": "SetMinHeight",
+			"cpp": "self->minHeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "MinHeight", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxWidth",
+			"cpp": "self->maxWidth",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "MaxWidth", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxWidth",
+			"cpp": "self->maxWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "MaxWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxHeight",
+			"cpp": "self->maxHeight",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "MaxHeight", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxHeight",
+			"cpp": "self->maxHeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "MaxHeight", "kind": "setter" }
+		},
+		{
+			"id": "GetMargin",
+			"cpp": "self->margin",
+			"returns": "UIEdges",
+			"params": [],
+			"csharp": { "member": "Margin", "kind": "getter" }
+		},
+		{
+			"id": "SetMargin",
+			"cpp": "self->margin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIEdges" }],
+			"csharp": { "member": "Margin", "kind": "setter" }
+		},
+		{
+			"id": "GetPadding",
+			"cpp": "self->padding",
+			"returns": "UIEdges",
+			"params": [],
+			"csharp": { "member": "Padding", "kind": "getter" }
+		},
+		{
+			"id": "SetPadding",
+			"cpp": "self->padding = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIEdges" }],
+			"csharp": { "member": "Padding", "kind": "setter" }
+		},
+		{
+			"id": "GetFlexGrow",
+			"cpp": "self->flexGrow",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FlexGrow", "kind": "getter" }
+		},
+		{
+			"id": "SetFlexGrow",
+			"cpp": "self->flexGrow = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FlexGrow", "kind": "setter" }
+		},
+		{
+			"id": "GetFlexShrink",
+			"cpp": "self->flexShrink",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FlexShrink", "kind": "getter" }
+		},
+		{
+			"id": "SetFlexShrink",
+			"cpp": "self->flexShrink = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FlexShrink", "kind": "setter" }
+		},
+		{
+			"id": "TryGetLeft",
+			"cpp": "Slots::Take(self->left, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UILength", "out": true }],
+			"csharp": { "member": "TryGetLeft", "kind": "method" }
+		},
+		{
+			"id": "ClearLeft",
+			"cpp": "self->left.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearLeft", "kind": "method" }
+		},
+		{
+			"id": "SetLeft",
+			"cpp": "self->left = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "SetLeft", "kind": "method" }
+		},
+		{
+			"id": "TryGetTop",
+			"cpp": "Slots::Take(self->top, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UILength", "out": true }],
+			"csharp": { "member": "TryGetTop", "kind": "method" }
+		},
+		{
+			"id": "ClearTop",
+			"cpp": "self->top.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearTop", "kind": "method" }
+		},
+		{
+			"id": "SetTop",
+			"cpp": "self->top = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "SetTop", "kind": "method" }
+		},
+		{
+			"id": "TryGetRight",
+			"cpp": "Slots::Take(self->right, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UILength", "out": true }],
+			"csharp": { "member": "TryGetRight", "kind": "method" }
+		},
+		{
+			"id": "ClearRight",
+			"cpp": "self->right.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearRight", "kind": "method" }
+		},
+		{
+			"id": "SetRight",
+			"cpp": "self->right = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "SetRight", "kind": "method" }
+		},
+		{
+			"id": "TryGetBottom",
+			"cpp": "Slots::Take(self->bottom, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UILength", "out": true }],
+			"csharp": { "member": "TryGetBottom", "kind": "method" }
+		},
+		{
+			"id": "ClearBottom",
+			"cpp": "self->bottom.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearBottom", "kind": "method" }
+		},
+		{
+			"id": "SetBottom",
+			"cpp": "self->bottom = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "SetBottom", "kind": "method" }
+		},
+		{
+			"id": "GetBackground",
+			"cpp": "self->background",
+			"returns": "UIBrush",
+			"params": [],
+			"csharp": { "member": "Background", "kind": "getter" }
+		},
+		{
+			"id": "SetBackground",
+			"cpp": "self->background = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIBrush" }],
+			"csharp": { "member": "Background", "kind": "setter" }
+		},
+		{
+			"id": "GetBorderColor",
+			"cpp": "self->borderColor",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "BorderColor", "kind": "getter" }
+		},
+		{
+			"id": "SetBorderColor",
+			"cpp": "self->borderColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "BorderColor", "kind": "setter" }
+		},
+		{
+			"id": "GetBorderWidth",
+			"cpp": "self->borderWidth",
+			"returns": "UIEdges",
+			"params": [],
+			"csharp": { "member": "BorderWidth", "kind": "getter" }
+		},
+		{
+			"id": "SetBorderWidth",
+			"cpp": "self->borderWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIEdges" }],
+			"csharp": { "member": "BorderWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetBorderRadius",
+			"cpp": "self->borderRadius",
+			"returns": "UIRadii",
+			"params": [],
+			"csharp": { "member": "BorderRadius", "kind": "getter" }
+		},
+		{
+			"id": "SetBorderRadius",
+			"cpp": "self->borderRadius = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIRadii" }],
+			"csharp": { "member": "BorderRadius", "kind": "setter" }
+		},
+		{
+			"id": "GetBoxShadows",
+			"cpp": "self->boxShadows",
+			"returns": "list<UIBoxShadow>",
+			"params": [],
+			"csharp": { "member": "BoxShadows", "kind": "getter" }
+		},
+		{
+			"id": "SetBoxShadows",
+			"cpp": "Slots::Assign(self->boxShadows, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIBoxShadow>" }],
+			"csharp": { "member": "BoxShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetBoxShadowCount",
+			"cpp": "self->boxShadowCount",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "BoxShadowCount", "kind": "getter" }
+		},
+		{
+			"id": "SetBoxShadowCount",
+			"cpp": "self->boxShadowCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "BoxShadowCount", "kind": "setter" }
+		},
+		{
+			"id": "GetDropShadow",
+			"cpp": "self->dropShadow",
+			"returns": "UIDropShadow",
+			"params": [],
+			"csharp": { "member": "DropShadow", "kind": "getter" }
+		},
+		{
+			"id": "SetDropShadow",
+			"cpp": "self->dropShadow = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDropShadow" }],
+			"csharp": { "member": "DropShadow", "kind": "setter" }
+		},
+		{
+			"id": "GetOpacity",
+			"cpp": "self->opacity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Opacity", "kind": "getter" }
+		},
+		{
+			"id": "SetOpacity",
+			"cpp": "self->opacity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Opacity", "kind": "setter" }
+		},
+		{
+			"id": "GetZIndex",
+			"cpp": "self->zIndex",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ZIndex", "kind": "getter" }
+		},
+		{
+			"id": "SetZIndex",
+			"cpp": "self->zIndex = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ZIndex", "kind": "setter" }
+		},
+		{
+			"id": "GetRotate",
+			"cpp": "self->rotate",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Rotate", "kind": "getter" }
+		},
+		{
+			"id": "SetRotate",
+			"cpp": "self->rotate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Rotate", "kind": "setter" }
+		},
+		{
+			"id": "GetTransformOrigin",
+			"cpp": "self->transformOrigin",
+			"returns": "UITransformOrigin",
+			"params": [],
+			"csharp": { "member": "TransformOrigin", "kind": "getter" }
+		},
+		{
+			"id": "SetTransformOrigin",
+			"cpp": "self->transformOrigin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UITransformOrigin" }],
+			"csharp": { "member": "TransformOrigin", "kind": "setter" }
+		},
+		{
+			"id": "TryGetFont",
+			"cpp": "Slots::Take(self->font, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "FontAsset", "out": true }],
+			"csharp": { "member": "TryGetFont", "kind": "method" }
+		},
+		{
+			"id": "ClearFont",
+			"cpp": "self->font.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFont", "kind": "method" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "SetFont", "kind": "method" }
+		},
+		{
+			"id": "TryGetFontSize",
+			"cpp": "Slots::Take(self->fontSize, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UILength", "out": true }],
+			"csharp": { "member": "TryGetFontSize", "kind": "method" }
+		},
+		{
+			"id": "ClearFontSize",
+			"cpp": "self->fontSize.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFontSize", "kind": "method" }
+		},
+		{
+			"id": "SetFontSize",
+			"cpp": "self->fontSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "SetFontSize", "kind": "method" }
+		},
+		{
+			"id": "TryGetColor",
+			"cpp": "Slots::Take(self->color, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "Color", "out": true }],
+			"csharp": { "member": "TryGetColor", "kind": "method" }
+		},
+		{
+			"id": "ClearColor",
+			"cpp": "self->color.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearColor", "kind": "method" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "SetColor", "kind": "method" }
+		},
+		{
+			"id": "TryGetTextOutlineColor",
+			"cpp": "Slots::Take(self->textOutlineColor, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "Color", "out": true }],
+			"csharp": { "member": "TryGetTextOutlineColor", "kind": "method" }
+		},
+		{
+			"id": "ClearTextOutlineColor",
+			"cpp": "self->textOutlineColor.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearTextOutlineColor", "kind": "method" }
+		},
+		{
+			"id": "SetTextOutlineColor",
+			"cpp": "self->textOutlineColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "SetTextOutlineColor", "kind": "method" }
+		},
+		{
+			"id": "TryGetLineHeight",
+			"cpp": "Slots::Take(self->lineHeight, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UILength", "out": true }],
+			"csharp": { "member": "TryGetLineHeight", "kind": "method" }
+		},
+		{
+			"id": "ClearLineHeight",
+			"cpp": "self->lineHeight.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearLineHeight", "kind": "method" }
+		},
+		{
+			"id": "SetLineHeight",
+			"cpp": "self->lineHeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UILength" }],
+			"csharp": { "member": "SetLineHeight", "kind": "method" }
+		},
+		{
+			"id": "TryGetLetterSpacing",
+			"cpp": "Slots::Take(self->letterSpacing, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "f32", "out": true }],
+			"csharp": { "member": "TryGetLetterSpacing", "kind": "method" }
+		},
+		{
+			"id": "ClearLetterSpacing",
+			"cpp": "self->letterSpacing.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearLetterSpacing", "kind": "method" }
+		},
+		{
+			"id": "SetLetterSpacing",
+			"cpp": "self->letterSpacing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SetLetterSpacing", "kind": "method" }
+		},
+		{
+			"id": "TryGetTextOutlineWidth",
+			"cpp": "Slots::Take(self->textOutlineWidth, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "f32", "out": true }],
+			"csharp": { "member": "TryGetTextOutlineWidth", "kind": "method" }
+		},
+		{
+			"id": "ClearTextOutlineWidth",
+			"cpp": "self->textOutlineWidth.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearTextOutlineWidth", "kind": "method" }
+		},
+		{
+			"id": "SetTextOutlineWidth",
+			"cpp": "self->textOutlineWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SetTextOutlineWidth", "kind": "method" }
+		},
+		{
+			"id": "TryGetFontWeight",
+			"cpp": "Slots::Take(self->fontWeight, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "u16", "out": true }],
+			"csharp": { "member": "TryGetFontWeight", "kind": "method" }
+		},
+		{
+			"id": "ClearFontWeight",
+			"cpp": "self->fontWeight.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFontWeight", "kind": "method" }
+		},
+		{
+			"id": "SetFontWeight",
+			"cpp": "self->fontWeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "SetFontWeight", "kind": "method" }
+		},
+		{
+			"id": "TryGetFontStyle",
+			"cpp": "Slots::Take(self->fontStyle, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "UIFontStyle", "out": true }],
+			"csharp": { "member": "TryGetFontStyle", "kind": "method" }
+		},
+		{
+			"id": "ClearFontStyle",
+			"cpp": "self->fontStyle.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFontStyle", "kind": "method" }
+		},
+		{
+			"id": "SetFontStyle",
+			"cpp": "self->fontStyle = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIFontStyle" }],
+			"csharp": { "member": "SetFontStyle", "kind": "method" }
+		},
+		{
+			"id": "GetTextAlign",
+			"cpp": "self->textAlign",
+			"returns": "UIAlign",
+			"params": [],
+			"csharp": { "member": "TextAlign", "kind": "getter" }
+		},
+		{
+			"id": "SetTextAlign",
+			"cpp": "self->textAlign = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAlign" }],
+			"csharp": { "member": "TextAlign", "kind": "setter" }
+		},
+		{
+			"id": "GetTextAlignVertical",
+			"cpp": "self->textAlignVertical",
+			"returns": "UIAlign",
+			"params": [],
+			"csharp": { "member": "TextAlignVertical", "kind": "getter" }
+		},
+		{
+			"id": "SetTextAlignVertical",
+			"cpp": "self->textAlignVertical = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAlign" }],
+			"csharp": { "member": "TextAlignVertical", "kind": "setter" }
+		},
+		{
+			"id": "GetTextOverflow",
+			"cpp": "self->textOverflow",
+			"returns": "UITextOverflow",
+			"params": [],
+			"csharp": { "member": "TextOverflow", "kind": "getter" }
+		},
+		{
+			"id": "SetTextOverflow",
+			"cpp": "self->textOverflow = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UITextOverflow" }],
+			"csharp": { "member": "TextOverflow", "kind": "setter" }
+		},
+		{
+			"id": "GetPointerEvents",
+			"cpp": "self->pointerEvents",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "PointerEvents", "kind": "getter" }
+		},
+		{
+			"id": "SetPointerEvents",
+			"cpp": "self->pointerEvents = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "PointerEvents", "kind": "setter" }
+		},
+		{
+			"id": "GetCursor",
+			"cpp": "self->cursor",
+			"returns": "SystemCursor",
+			"params": [],
+			"csharp": { "member": "Cursor", "kind": "getter" }
+		},
+		{
+			"id": "SetCursor",
+			"cpp": "self->cursor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SystemCursor" }],
+			"csharp": { "member": "Cursor", "kind": "setter" }
+		}
+	]
+}

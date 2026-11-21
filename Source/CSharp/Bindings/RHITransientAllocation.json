@@ -1,0 +1,60 @@
+{
+	"area": "RHITransientAllocation",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHITransientAllocation",
+	"instance": "RHITransientAllocation",
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		},
+		{
+			"id": "GetBuffer",
+			"cpp": "self->buffer",
+			"returns": "RHIBufferHandle",
+			"params": [],
+			"csharp": { "member": "Buffer", "kind": "getter" }
+		},
+		{
+			"id": "SetBuffer",
+			"cpp": "self->buffer = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "Buffer", "kind": "setter" }
+		},
+		{
+			"id": "GetOffset",
+			"cpp": "self->offset",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Offset", "kind": "getter" }
+		},
+		{
+			"id": "SetOffset",
+			"cpp": "self->offset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Offset", "kind": "setter" }
+		},
+		{
+			"id": "GetCPU",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->cpu))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "CPU", "kind": "getter" }
+		},
+		{
+			"id": "SetCPU",
+			"cpp": "self->cpu = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "CPU", "kind": "setter" }
+		}
+	]
+}

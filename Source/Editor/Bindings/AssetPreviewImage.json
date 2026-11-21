@@ -1,0 +1,141 @@
+{
+	"area": "AssetPreviewImage",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.AssetPreviewImage",
+	"instance": "AssetPreviewImage",
+	"functions": [
+		{
+			"id": "GetTexture",
+			"cpp": "self->texture",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "self->texture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureHandle" }],
+			"csharp": { "member": "Texture", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetSampler",
+			"cpp": "self->sampler",
+			"returns": "UISamplerKind",
+			"params": [],
+			"csharp": { "member": "Sampler", "kind": "getter" }
+		},
+		{
+			"id": "SetSampler",
+			"cpp": "self->sampler = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UISamplerKind" }],
+			"csharp": { "member": "Sampler", "kind": "setter" }
+		},
+		{
+			"id": "GetDetail",
+			"cpp": "self->detail",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Detail", "kind": "getter" }
+		},
+		{
+			"id": "SetDetail",
+			"cpp": "self->detail = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Detail", "kind": "setter" }
+		},
+		{
+			"id": "GetPixels",
+			"cpp": "self->pixels",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Pixels", "kind": "getter" }
+		},
+		{
+			"id": "SetPixels",
+			"cpp": "self->pixels = Slots::KeepFieldSpan(self, 0x535b2219109eb167ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Pixels", "kind": "setter" }
+		},
+		{
+			"id": "GetPixelsFormat",
+			"cpp": "self->pixelsFormat",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "PixelsFormat", "kind": "getter" }
+		},
+		{
+			"id": "SetPixelsFormat",
+			"cpp": "self->pixelsFormat = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFormat" }],
+			"csharp": { "member": "PixelsFormat", "kind": "setter" }
+		},
+		{
+			"id": "GetDecodedPixels",
+			"cpp": "self->decodedPixels",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "DecodedPixels", "kind": "getter" }
+		},
+		{
+			"id": "SetDecodedPixels",
+			"cpp": "self->decodedPixels = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "DecodedPixels", "kind": "setter" }
+		},
+		{
+			"id": "GetDependencies",
+			"cpp": "self->dependencies",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Dependencies", "kind": "getter" }
+		},
+		{
+			"id": "SetDependencies",
+			"cpp": "self->dependencies = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Dependencies", "kind": "setter" }
+		},
+		{
+			"id": "GetSubjectBounds",
+			"cpp": "self->subjectBounds",
+			"returns": "AABB",
+			"params": [],
+			"csharp": { "member": "SubjectBounds", "kind": "getter" }
+		},
+		{
+			"id": "SetSubjectBounds",
+			"cpp": "self->subjectBounds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AABB" }],
+			"csharp": { "member": "SubjectBounds", "kind": "setter" }
+		}
+	]
+}

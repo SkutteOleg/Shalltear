@@ -1,0 +1,39 @@
+{
+	"area": "ShaderAssetDependency",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.ShaderAssetDependency",
+	"instance": "ShaderAssetDependency",
+	"functions": [
+		{
+			"id": "GetPhysicalPath",
+			"cpp": "self->physicalPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "PhysicalPath", "kind": "getter" }
+		},
+		{
+			"id": "SetPhysicalPath",
+			"cpp": "self->physicalPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "PhysicalPath", "kind": "setter" }
+		},
+		{
+			"id": "GetContentHash",
+			"cpp": "self->contentHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ContentHash", "kind": "getter" }
+		},
+		{
+			"id": "SetContentHash",
+			"cpp": "self->contentHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ContentHash", "kind": "setter" }
+		}
+	]
+}

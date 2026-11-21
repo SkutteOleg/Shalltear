@@ -1,0 +1,173 @@
+{
+	"area": "PackageOpsPackageManifest",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PackageOps.h",
+		"Shalltear/Core/Frame/FrameStages.h"
+	],
+	"class": "Shalltear.Editor.PackageOpsPackageManifest",
+	"instance": "PackageOpsPackageManifest",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->displayName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->displayName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DisplayName", "kind": "setter" }
+		},
+		{
+			"id": "GetDescription",
+			"cpp": "self->description",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Description", "kind": "getter" }
+		},
+		{
+			"id": "SetDescription",
+			"cpp": "self->description = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Description", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "PackageOpsPackageKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PackageOpsPackageKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetRequired",
+			"cpp": "self->required",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Required", "kind": "getter" }
+		},
+		{
+			"id": "SetRequired",
+			"cpp": "self->required = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Required", "kind": "setter" }
+		},
+		{
+			"id": "GetScaffold",
+			"cpp": "self->scaffold",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Scaffold", "kind": "getter" }
+		},
+		{
+			"id": "SetScaffold",
+			"cpp": "self->scaffold = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Scaffold", "kind": "setter" }
+		},
+		{
+			"id": "GetBridgeField",
+			"cpp": "self->bridge",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BridgeField", "kind": "getter" }
+		},
+		{
+			"id": "SetBridgeField",
+			"cpp": "self->bridge = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BridgeField", "kind": "setter" }
+		},
+		{
+			"id": "TryGetStage",
+			"cpp": "Slots::Take(self->stage, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "FrameStage", "out": true }],
+			"csharp": { "member": "TryGetStage", "kind": "method" }
+		},
+		{
+			"id": "ClearStage",
+			"cpp": "self->stage.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearStage", "kind": "method" }
+		},
+		{
+			"id": "SetStage",
+			"cpp": "self->stage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FrameStage" }],
+			"csharp": { "member": "SetStage", "kind": "method" }
+		},
+		{
+			"id": "GetDependencies",
+			"cpp": "self->dependencies",
+			"returns": "list<PackageOpsPackageDependency>",
+			"params": [],
+			"csharp": { "member": "Dependencies", "kind": "getter" }
+		},
+		{
+			"id": "SetDependencies",
+			"cpp": "self->dependencies = Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageDependency>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PackageOpsPackageDependency>" }],
+			"csharp": { "member": "Dependencies", "kind": "setter" }
+		},
+		{
+			"id": "GetDirectory",
+			"cpp": "(self->directory).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Directory", "kind": "getter" }
+		},
+		{
+			"id": "SetDirectory",
+			"cpp": "self->directory = ::Shalltear::Path(str(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Directory", "kind": "setter" }
+		}
+	]
+}

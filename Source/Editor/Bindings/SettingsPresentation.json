@@ -1,0 +1,80 @@
+{
+	"area": "SettingsPresentation",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SettingsPresentation.h"
+	],
+	"class": "Shalltear.Editor.SettingsPresentation",
+	"enums": [
+		{
+			"name": "SettingsAudience",
+			"cpp": "::Shalltear::SettingsAudience",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Unspecified", "value": 0 },
+				{ "name": "EditorOnly", "value": 1 },
+				{ "name": "EditorAndPlayer", "value": 2 },
+				{ "name": "PlayerOnly", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "SettingsCategoryPresentation", "cpp": "::Shalltear::SettingsCategoryPresentation", "owned": true, "create": true },
+		{ "name": "SettingsFieldPresentation", "cpp": "::Shalltear::SettingsFieldPresentation", "owned": true, "create": true },
+		{ "name": "SettingsFieldCondition", "cpp": "::Shalltear::SettingsFieldCondition", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "RegisterCategory",
+			"cpp": "::Shalltear::SettingsPresentation::RegisterCategory(categoryPath, *presentation, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "presentation", "type": "SettingsCategoryPresentation" }
+			],
+			"csharp": { "member": "RegisterCategory", "kind": "method" }
+		},
+		{
+			"id": "RegisterField",
+			"cpp": "::Shalltear::SettingsPresentation::RegisterField(categoryPath, fieldName, *presentation, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" },
+				{ "name": "presentation", "type": "SettingsFieldPresentation" }
+			],
+			"csharp": { "member": "RegisterField", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::SettingsPresentation::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "FindCategory",
+			"cpp": "::Shalltear::SettingsPresentation::FindCategory(categoryPath)",
+			"returns": "SettingsCategoryPresentation",
+			"params": [{ "name": "categoryPath", "type": "string" }],
+			"csharp": { "member": "FindCategory", "kind": "method" }
+		},
+		{
+			"id": "FindField",
+			"cpp": "::Shalltear::SettingsPresentation::FindField(categoryPath, fieldName)",
+			"returns": "SettingsFieldPresentation",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" }
+			],
+			"csharp": { "member": "FindField", "kind": "method" }
+		},
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::SettingsPresentation::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		}
+	]
+}

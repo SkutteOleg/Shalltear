@@ -1,0 +1,53 @@
+{
+	"area": "UIDocumentTemplate",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.UIDocumentTemplate",
+	"instance": "UIDocumentTemplate",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetSrc",
+			"cpp": "self->src",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Src", "kind": "getter" }
+		},
+		{
+			"id": "SetSrc",
+			"cpp": "self->src = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Src", "kind": "setter" }
+		},
+		{
+			"id": "GetDocument",
+			"cpp": "self->document",
+			"returns": "UIDocumentAsset",
+			"params": [],
+			"csharp": { "member": "Document", "kind": "getter" }
+		},
+		{
+			"id": "SetDocument",
+			"cpp": "self->document = ::Shalltear::Handle<::Shalltear::UIDocumentAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDocumentAsset", "optional": true }],
+			"csharp": { "member": "Document", "kind": "setter" }
+		}
+	]
+}

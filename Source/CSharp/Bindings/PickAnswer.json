@@ -1,0 +1,40 @@
+{
+	"area": "PickAnswer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.PickAnswer",
+	"instance": "PickAnswer",
+	"functions": [
+		{
+			"id": "GetTag",
+			"cpp": "self->tag",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "SetTag",
+			"cpp": "self->tag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Tag", "kind": "setter" }
+		},
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,261 @@
+{
+	"area": "VariantValues",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/MathReflect.h",
+		"Shalltear/Core/Reflection/Primitives.h",
+		"Shalltear/Core/Reflection/Variant.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Variant",
+	"instance": "Variant",
+	"functions": [
+		{
+			"id": "FromBool",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromInt32",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromInt64",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "i64" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromUInt32",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromUInt64",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromSingle",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromDouble",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromText",
+			"cpp": "::Shalltear::Variant(::Shalltear::str(value))",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromVec2",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromVec3",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromVec4",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "Vec4" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromQuat",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "FromColor",
+			"cpp": "::Shalltear::Variant(value)",
+			"returns": "Variant",
+			"owns": true,
+			"static": true,
+			"nullable": false,
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "From", "kind": "method" },
+			"doc": "Variant with the value."
+		},
+		{
+			"id": "TryGetBool",
+			"cpp": "Slots::TakeAt(self->TryGet<bool>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "bool", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetInt32",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::i32>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "i32", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetInt64",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::i64>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "i64", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetUInt32",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::u32>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "u32", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetUInt64",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::u64>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "u64", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetSingle",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::f32>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "f32", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetDouble",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::f64>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "f64", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetText",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::str>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "string", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetVec2",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::Vec2>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "Vec2", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetVec3",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::Vec3>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "Vec3", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetVec4",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::Vec4>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "Vec4", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetQuat",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::Quat>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "Quat", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		},
+		{
+			"id": "TryGetColor",
+			"cpp": "Slots::TakeAt(self->TryGet<::Shalltear::Color>(), value)",
+			"returns": "bool",
+			"params": [{ "name": "value", "type": "Color", "out": true }],
+			"csharp": { "member": "TryGet", "kind": "method" },
+			"doc": "Reads the value (false when the variant has another type)."
+		}
+	]
+}

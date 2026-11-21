@@ -1,0 +1,109 @@
+{
+	"area": "AudioMixerUnit",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMixer.h"
+	],
+	"class": "Shalltear.AudioMixerUnit",
+	"instance": "AudioMixerUnit",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "AudioMixerUnitKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioMixerUnitKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetUnit",
+			"cpp": "self->targetUnit",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TargetUnit", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetUnit",
+			"cpp": "self->targetUnit = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TargetUnit", "kind": "setter" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetEffect",
+			"cpp": "self->effect",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Effect", "kind": "getter" }
+		},
+		{
+			"id": "SetEffect",
+			"cpp": "self->effect = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Effect", "kind": "setter" }
+		},
+		{
+			"id": "GetBypass",
+			"cpp": "self->bypass",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Bypass", "kind": "getter" }
+		},
+		{
+			"id": "SetBypass",
+			"cpp": "self->bypass = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Bypass", "kind": "setter" }
+		},
+		{
+			"id": "GetWetMixing",
+			"cpp": "self->wetMixing",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WetMixing", "kind": "getter" }
+		},
+		{
+			"id": "SetWetMixing",
+			"cpp": "self->wetMixing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "WetMixing", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,97 @@
+{
+	"area": "StringTableAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Localization.h"
+	],
+	"class": "Shalltear.StringTableAsset",
+	"instance": "StringTableAsset",
+	"types": [
+		{ "name": "StringTableAsset", "cpp": "::Shalltear::StringTableAsset", "engine": "StringTableAsset", "base": "Asset" }
+	],
+	"functions": [
+		{
+			"id": "Parse",
+			"cpp": "self->Parse(csv, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "csv", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Parse", "kind": "method" }
+		},
+		{
+			"id": "FindLanguage",
+			"cpp": "self->FindLanguage(code)",
+			"returns": "i32",
+			"params": [{ "name": "code", "type": "string" }],
+			"csharp": { "member": "FindLanguage", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "self->Find(key, language)",
+			"returns": "string",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "language", "type": "u32" }
+			],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "GetLanguages",
+			"cpp": "self->languages",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Languages", "kind": "getter" }
+		},
+		{
+			"id": "SetLanguages",
+			"cpp": "self->languages = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Languages", "kind": "setter" }
+		},
+		{
+			"id": "GetKeys",
+			"cpp": "self->keys",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Keys", "kind": "getter" }
+		},
+		{
+			"id": "SetKeys",
+			"cpp": "self->keys = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Keys", "kind": "setter" }
+		},
+		{
+			"id": "GetCells",
+			"cpp": "self->cells",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Cells", "kind": "getter" }
+		},
+		{
+			"id": "SetCells",
+			"cpp": "self->cells = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Cells", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,45 @@
+{
+	"area": "UIRendererProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.UIRendererProxy",
+	"instance": "UIRendererProxy",
+	"prelude": [
+		"class UIRendererProxy final : public ::Shalltear::UI::IRenderer {",
+		"public:",
+		"\tstd::function<void(const Shalltear::UI::RenderList &, const Shalltear::UI::SubmitInfo &)> submit;",
+		"\tvoid Submit(const Shalltear::UI::RenderList & a0, const Shalltear::UI::SubmitInfo & a1) override {",
+		"\t\tif (submit) {",
+		"\t\t\tsubmit(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "UIRendererProxy", "cpp": "UIRendererProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetSubmit",
+			"cpp": "self->submit = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIRenderList;UISubmitInfo>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::UI::RenderList &, const Shalltear::UI::SubmitInfo &)>"
+				}
+			],
+			"csharp": { "member": "SetSubmit", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::UI::IRenderer*>(self)",
+			"returns": "UIRenderer",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

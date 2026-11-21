@@ -1,0 +1,207 @@
+{
+	"area": "AssetDatabaseSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetDatabase.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Serialization/JSON.h",
+		"Shalltear/Core/Asset/PakFormat.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.AssetDatabase",
+	"natives": [
+		{ "name": "AssetProduct", "cpp": "::Shalltear::AssetProduct", "owned": true, "create": true },
+		{ "name": "AssetLoadRecorder", "cpp": "::Shalltear::AssetLoadRecorder", "owned": true },
+		{ "name": "EngineGuidList", "cpp": "::Shalltear::Vector<::Shalltear::Guid>", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "MountPackage",
+			"cpp": "::Shalltear::AssetDatabase::MountPackage(::Shalltear::Path(str(physicalPath)), outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "physicalPath", "type": "string" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "MountPackage", "kind": "method" }
+		},
+		{
+			"id": "ReadPackageDocument",
+			"cpp": "::Shalltear::AssetDatabase::ReadPackageDocument(kind, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "kind", "type": "PakDocumentKind" },
+				{ "name": "outValue", "type": "string", "out": true }
+			],
+			"csharp": { "member": "ReadPackageDocument", "kind": "method" }
+		},
+		{
+			"id": "LoadAsset",
+			"cpp": "::Shalltear::AssetDatabase::LoadAsset(::Shalltear::Path(str(virtualPath)))",
+			"returns": "Asset",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "LoadAsset", "kind": "method" }
+		},
+		{
+			"id": "LoadAssetByGuid",
+			"cpp": "::Shalltear::AssetDatabase::LoadAssetByGuid(assetId)",
+			"returns": "Asset",
+			"params": [{ "name": "assetId", "type": "EngineGuid" }],
+			"csharp": { "member": "LoadAssetByGuid", "kind": "method" }
+		},
+		{
+			"id": "FindLoadedByGuid",
+			"cpp": "::Shalltear::AssetDatabase::FindLoadedByGuid(assetId)",
+			"returns": "Asset",
+			"params": [{ "name": "assetId", "type": "EngineGuid" }],
+			"csharp": { "member": "FindLoadedByGuid", "kind": "method" }
+		},
+		{
+			"id": "EnsureAssetIdentity",
+			"cpp": "::Shalltear::AssetDatabase::EnsureAssetIdentity(::Shalltear::Path(str(virtualPath)))",
+			"returns": "EngineGuid",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "EnsureAssetIdentity", "kind": "method" }
+		},
+		{
+			"id": "SaveAsset",
+			"cpp": "::Shalltear::AssetDatabase::SaveAsset(asset)",
+			"returns": "void",
+			"params": [{ "name": "asset", "type": "Asset", "optional": true }],
+			"csharp": { "member": "SaveAsset", "kind": "method" }
+		},
+		{
+			"id": "WriteImporterSettings",
+			"cpp": "::Shalltear::AssetDatabase::WriteImporterSettings(::Shalltear::Path(str(virtualPath)), *settings)",
+			"returns": "bool",
+			"params": [
+				{ "name": "virtualPath", "type": "string" },
+				{ "name": "settings", "type": "JSONValue" }
+			],
+			"csharp": { "member": "WriteImporterSettings", "kind": "method" }
+		},
+		{
+			"id": "ReimportAsset",
+			"cpp": "::Shalltear::AssetDatabase::ReimportAsset(::Shalltear::Path(str(virtualPath)))",
+			"returns": "bool",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "ReimportAsset", "kind": "method" }
+		},
+		{
+			"id": "CreateAsset",
+			"cpp": "::Shalltear::AssetDatabase::CreateAsset(::Shalltear::Path(str(virtualPath)), typeId, templateIndex)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "virtualPath", "type": "string" },
+				{ "name": "typeId", "type": "StringHash" },
+				{ "name": "templateIndex", "type": "u32" }
+			],
+			"csharp": { "member": "CreateAsset", "kind": "method" }
+		},
+		{
+			"id": "UnloadAsset",
+			"cpp": "::Shalltear::AssetDatabase::UnloadAsset(asset)",
+			"returns": "void",
+			"params": [{ "name": "asset", "type": "Asset", "optional": true }],
+			"csharp": { "member": "UnloadAsset", "kind": "method" }
+		},
+		{
+			"id": "GenerateGuid",
+			"cpp": "::Shalltear::AssetDatabase::GenerateGuid()",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "GenerateGuid", "kind": "method" }
+		},
+		{
+			"id": "GetMetaPath",
+			"cpp": "(::Shalltear::AssetDatabase::GetMetaPath(::Shalltear::Path(str(assetPath)))).ToString()",
+			"returns": "string",
+			"params": [{ "name": "assetPath", "type": "string" }],
+			"csharp": { "member": "GetMetaPath", "kind": "method" }
+		},
+		{
+			"id": "ScanProjectDirectory",
+			"cpp": "::Shalltear::AssetDatabase::ScanProjectDirectory()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ScanProjectDirectory", "kind": "method" }
+		},
+		{
+			"id": "RebuildDatabase",
+			"cpp": "::Shalltear::AssetDatabase::RebuildDatabase()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RebuildDatabase", "kind": "method" }
+		},
+		{
+			"id": "IsAssetPath",
+			"cpp": "::Shalltear::AssetDatabase::IsAssetPath(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "IsAssetPath", "kind": "method" }
+		},
+		{
+			"id": "LookupGuid",
+			"cpp": "::Shalltear::AssetDatabase::LookupGuid(::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "LookupGuid", "kind": "method" }
+		},
+		{
+			"id": "FindAssets",
+			"cpp": "::Shalltear::AssetDatabase::FindAssets(typeId, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "typeId", "type": "StringHash" },
+				{ "name": "outValue", "type": "list<EngineGuid>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Guid>" }
+			],
+			"csharp": { "member": "FindAssets", "kind": "method" }
+		},
+		{
+			"id": "GetProducts",
+			"cpp": "::Shalltear::AssetDatabase::GetProducts(sourceGuid, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "sourceGuid", "type": "EngineGuid" },
+				{ "name": "outValue", "type": "list<AssetProduct>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::AssetProduct>" }
+			],
+			"csharp": { "member": "GetProducts", "kind": "method" }
+		},
+		{
+			"id": "GetProductSource",
+			"cpp": "::Shalltear::AssetDatabase::GetProductSource(productGuid)",
+			"returns": "EngineGuid",
+			"params": [{ "name": "productGuid", "type": "EngineGuid" }],
+			"csharp": { "member": "GetProductSource", "kind": "method" }
+		},
+		{
+			"id": "ExtractProduct",
+			"cpp": "::Shalltear::AssetDatabase::ExtractProduct(productGuid, ::Shalltear::Path(str(virtualPath)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "productGuid", "type": "EngineGuid" },
+				{ "name": "virtualPath", "type": "string" }
+			],
+			"csharp": { "member": "ExtractProduct", "kind": "method" }
+		},
+		{
+			"id": "GetEngineBuiltinRoots",
+			"cpp": "::Shalltear::AssetDatabase::GetEngineBuiltinRoots()",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "EngineBuiltinRoots", "kind": "getter" }
+		},
+		{
+			"id": "ValidatePackage",
+			"cpp": "::Shalltear::AssetDatabase::ValidatePackage(::Shalltear::Path(str(physicalPath)), expected, outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "physicalPath", "type": "string" },
+				{ "name": "expected", "type": "list<EngineGuid>" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "ValidatePackage", "kind": "method" }
+		}
+	]
+}

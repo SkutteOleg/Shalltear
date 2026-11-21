@@ -1,0 +1,101 @@
+{
+	"area": "EditorPreviewStore",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.EditorPreviewStore",
+	"functions": [
+		{
+			"id": "Request",
+			"cpp": "::Shalltear::EditorPreviewStore::Request(guid, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "guid", "type": "EngineGuid" },
+				{ "name": "outValue", "type": "AssetPreviewEntry" }
+			],
+			"csharp": { "member": "Request", "kind": "method" }
+		},
+		{
+			"id": "Peek",
+			"cpp": "::Shalltear::EditorPreviewStore::Peek(guid, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "guid", "type": "EngineGuid" },
+				{ "name": "outValue", "type": "AssetPreviewEntry" }
+			],
+			"csharp": { "member": "Peek", "kind": "method" }
+		},
+		{
+			"id": "Drain",
+			"cpp": "::Shalltear::EditorPreviewStore::Drain()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Drain", "kind": "method" }
+		},
+		{
+			"id": "SetCapacity",
+			"cpp": "::Shalltear::EditorPreviewStore::SetCapacity(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Capacity", "kind": "setter" }
+		},
+		{
+			"id": "GetCapacity",
+			"cpp": "::Shalltear::EditorPreviewStore::GetCapacity()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Capacity", "kind": "getter" }
+		},
+		{
+			"id": "SetFrameBudgetMs",
+			"cpp": "::Shalltear::EditorPreviewStore::SetFrameBudgetMs(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FrameBudgetMs", "kind": "setter" }
+		},
+		{
+			"id": "GetFrameBudgetMs",
+			"cpp": "::Shalltear::EditorPreviewStore::GetFrameBudgetMs()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FrameBudgetMs", "kind": "getter" }
+		},
+		{
+			"id": "GetCachedCount",
+			"cpp": "::Shalltear::EditorPreviewStore::GetCachedCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "CachedCount", "kind": "getter" }
+		},
+		{
+			"id": "GetCachedBytes",
+			"cpp": "::Shalltear::EditorPreviewStore::GetCachedBytes()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "CachedBytes", "kind": "getter" }
+		},
+		{
+			"id": "GetPendingCount",
+			"cpp": "::Shalltear::EditorPreviewStore::GetPendingCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PendingCount", "kind": "getter" }
+		},
+		{
+			"id": "Invalidate",
+			"cpp": "::Shalltear::EditorPreviewStore::Invalidate(guid)",
+			"returns": "void",
+			"params": [{ "name": "guid", "type": "EngineGuid" }],
+			"csharp": { "member": "Invalidate", "kind": "method" }
+		},
+		{
+			"id": "InvalidateAll",
+			"cpp": "::Shalltear::EditorPreviewStore::InvalidateAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "InvalidateAll", "kind": "method" }
+		}
+	]
+}

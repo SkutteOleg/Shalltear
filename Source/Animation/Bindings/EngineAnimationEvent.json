@@ -1,0 +1,84 @@
+{
+	"area": "EngineAnimationEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimationEvent.h",
+		"Shalltear/Animation/AnimationClip.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.EngineAnimationEvent",
+	"instance": "EngineAnimationEvent",
+	"natives": [{ "name": "EngineAnimationEvent", "cpp": "::Shalltear::AnimationEvent", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetClip",
+			"cpp": "self->clip",
+			"returns": "AnimationClip",
+			"params": [],
+			"csharp": { "member": "Clip", "kind": "getter" }
+		},
+		{
+			"id": "SetClip",
+			"cpp": "self->clip = ::Shalltear::Handle<::Shalltear::AnimationClip>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationClip", "optional": true }],
+			"csharp": { "member": "Clip", "kind": "setter" }
+		},
+		{
+			"id": "GetLayer",
+			"cpp": "self->layer",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Layer", "kind": "getter" }
+		},
+		{
+			"id": "SetLayer",
+			"cpp": "self->layer = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Layer", "kind": "setter" }
+		},
+		{
+			"id": "GetTime",
+			"cpp": "self->time",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Time", "kind": "getter" }
+		},
+		{
+			"id": "SetTime",
+			"cpp": "self->time = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Time", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "Vec4",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec4" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

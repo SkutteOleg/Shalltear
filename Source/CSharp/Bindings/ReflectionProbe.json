@@ -1,0 +1,113 @@
+{
+	"area": "ReflectionProbe",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ReflectionProbe.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.ReflectionProbe",
+	"instance": "ReflectionProbe",
+	"types": [
+		{ "name": "ReflectionProbe", "cpp": "::Shalltear::ReflectionProbe", "engine": "ReflectionProbe", "base": "Component" }
+	],
+	"functions": [
+		{
+			"id": "GetBakedCubemap",
+			"cpp": "self->GetBakedCubemap()",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "BakedCubemap", "kind": "getter" }
+		},
+		{
+			"id": "SetBakedCubemap",
+			"cpp": "self->SetBakedCubemap(::Shalltear::Handle<::Shalltear::TextureAsset>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Texture", "optional": true }],
+			"csharp": { "member": "BakedCubemap", "kind": "setter" }
+		},
+		{
+			"id": "GetBoxSize",
+			"cpp": "self->GetBoxSize()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "BoxSize", "kind": "getter" }
+		},
+		{
+			"id": "SetBoxSize",
+			"cpp": "self->SetBoxSize(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "BoxSize", "kind": "setter" }
+		},
+		{
+			"id": "GetBoxOffset",
+			"cpp": "self->GetBoxOffset()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "BoxOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetBoxOffset",
+			"cpp": "self->SetBoxOffset(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "BoxOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetBoxProjection",
+			"cpp": "self->GetBoxProjection()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BoxProjection", "kind": "getter" }
+		},
+		{
+			"id": "SetBoxProjection",
+			"cpp": "self->SetBoxProjection(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BoxProjection", "kind": "setter" }
+		},
+		{
+			"id": "GetImportance",
+			"cpp": "self->GetImportance()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Importance", "kind": "getter" }
+		},
+		{
+			"id": "SetImportance",
+			"cpp": "self->SetImportance(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Importance", "kind": "setter" }
+		},
+		{
+			"id": "GetNearPlane",
+			"cpp": "self->GetNearPlane()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "NearPlane", "kind": "getter" }
+		},
+		{
+			"id": "SetNearPlane",
+			"cpp": "self->SetNearPlane(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "NearPlane", "kind": "setter" }
+		},
+		{
+			"id": "GetFarPlane",
+			"cpp": "self->GetFarPlane()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FarPlane", "kind": "getter" }
+		},
+		{
+			"id": "SetFarPlane",
+			"cpp": "self->SetFarPlane(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FarPlane", "kind": "setter" }
+		}
+	]
+}

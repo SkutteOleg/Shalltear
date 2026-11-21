@@ -1,0 +1,24 @@
+{
+	"area": "VisualEffectListener",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffectListener.h",
+		"Shalltear/VisualEffects/VisualEffect.h"
+	],
+	"class": "Shalltear.VisualEffectListener",
+	"instance": "VisualEffectListener",
+	"natives": [{ "name": "VisualEffectListener", "cpp": "::Shalltear::VisualEffectListener", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "OnVisualEffectOutputEvent",
+			"cpp": "self->OnVisualEffectOutputEvent(*effect, name, *attributes)",
+			"returns": "void",
+			"params": [
+				{ "name": "effect", "type": "VisualEffect" },
+				{ "name": "name", "type": "string" },
+				{ "name": "attributes", "type": "VisualEffectEventAttributes" }
+			],
+			"csharp": { "member": "OnVisualEffectOutputEvent", "kind": "method" }
+		}
+	]
+}

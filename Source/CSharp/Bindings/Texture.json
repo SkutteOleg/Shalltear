@@ -1,0 +1,180 @@
+{
+	"area": "Texture",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/TextureAsset.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.Texture",
+	"instance": "Texture",
+	"functions": [
+		{
+			"id": "GetDimension",
+			"cpp": "self->GetDimension()",
+			"returns": "RHITextureDimension",
+			"params": [],
+			"csharp": { "member": "Dimension", "kind": "getter" }
+		},
+		{
+			"id": "FindSprite",
+			"cpp": "self->FindSprite(identity)",
+			"returns": "TextureSprite",
+			"params": [{ "name": "identity", "type": "string" }],
+			"csharp": { "member": "FindSprite", "kind": "method" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "TextureAssetSettings",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TextureAssetSettings" }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		},
+		{
+			"id": "GetPixels",
+			"cpp": "self->pixels",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Pixels", "kind": "getter" }
+		},
+		{
+			"id": "SetPixels",
+			"cpp": "self->pixels = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Pixels", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetSlices",
+			"cpp": "self->slices",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Slices", "kind": "getter" }
+		},
+		{
+			"id": "SetSlices",
+			"cpp": "self->slices = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Slices", "kind": "setter" }
+		},
+		{
+			"id": "GetFormat",
+			"cpp": "self->format",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "Format", "kind": "getter" }
+		},
+		{
+			"id": "SetFormat",
+			"cpp": "self->format = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFormat" }],
+			"csharp": { "member": "Format", "kind": "setter" }
+		},
+		{
+			"id": "GetStoredMipLevels",
+			"cpp": "self->storedMipLevels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "StoredMipLevels", "kind": "getter" }
+		},
+		{
+			"id": "SetStoredMipLevels",
+			"cpp": "self->storedMipLevels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "StoredMipLevels", "kind": "setter" }
+		},
+		{
+			"id": "GetIsCube",
+			"cpp": "self->isCube",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsCube", "kind": "getter" }
+		},
+		{
+			"id": "SetIsCube",
+			"cpp": "self->isCube = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IsCube", "kind": "setter" }
+		},
+		{
+			"id": "GetIrradianceSH",
+			"cpp": "self->irradianceSH",
+			"returns": "list<Vec3>",
+			"params": [],
+			"csharp": { "member": "IrradianceSH", "kind": "getter" }
+		},
+		{
+			"id": "SetIrradianceSH",
+			"cpp": "self->irradianceSH = Slots::ToVector<::Shalltear::Vec3>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec3>" }],
+			"csharp": { "member": "IrradianceSH", "kind": "setter" }
+		},
+		{
+			"id": "GetSprites",
+			"cpp": "self->sprites",
+			"returns": "list<TextureSprite>",
+			"params": [],
+			"csharp": { "member": "Sprites", "kind": "getter" }
+		},
+		{
+			"id": "SetSprites",
+			"cpp": "self->sprites = Slots::Copies<::Shalltear::Vector<::Shalltear::TextureSprite>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<TextureSprite>" }],
+			"csharp": { "member": "Sprites", "kind": "setter" }
+		},
+		{
+			"id": "GetTextureField",
+			"cpp": "self->texture",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "TextureField", "kind": "getter" }
+		},
+		{
+			"id": "SetTextureField",
+			"cpp": "self->texture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureHandle" }],
+			"csharp": { "member": "TextureField", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		}
+	]
+}

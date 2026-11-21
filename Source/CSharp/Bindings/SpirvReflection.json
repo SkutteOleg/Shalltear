@@ -1,0 +1,125 @@
+{
+	"area": "SpirvReflection",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Math/Vector.h"
+	],
+	"class": "Shalltear.SpirvReflection",
+	"instance": "SpirvReflection",
+	"functions": [
+		{
+			"id": "GetValid",
+			"cpp": "self->valid",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Valid", "kind": "getter" }
+		},
+		{
+			"id": "SetValid",
+			"cpp": "self->valid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Valid", "kind": "setter" }
+		},
+		{
+			"id": "GetError",
+			"cpp": "self->error",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Error", "kind": "getter" }
+		},
+		{
+			"id": "SetError",
+			"cpp": "self->error = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Error", "kind": "setter" }
+		},
+		{
+			"id": "GetStage",
+			"cpp": "self->stage",
+			"returns": "RHIShaderStage",
+			"params": [],
+			"csharp": { "member": "Stage", "kind": "getter" }
+		},
+		{
+			"id": "SetStage",
+			"cpp": "self->stage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIShaderStage" }],
+			"csharp": { "member": "Stage", "kind": "setter" }
+		},
+		{
+			"id": "GetBindingsField",
+			"cpp": "self->bindings",
+			"returns": "list<RHIDescriptorBindingDesc>",
+			"params": [],
+			"csharp": { "member": "BindingsField", "kind": "getter" }
+		},
+		{
+			"id": "SetBindingsField",
+			"cpp": "self->bindings = Slots::ToVector<::Shalltear::RHI::DescriptorBindingDesc>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIDescriptorBindingDesc>" }],
+			"csharp": { "member": "BindingsField", "kind": "setter" }
+		},
+		{
+			"id": "GetPushConstantSize",
+			"cpp": "self->pushConstantSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PushConstantSize", "kind": "getter" }
+		},
+		{
+			"id": "SetPushConstantSize",
+			"cpp": "self->pushConstantSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PushConstantSize", "kind": "setter" }
+		},
+		{
+			"id": "GetThreadGroupSize",
+			"cpp": "self->threadGroupSize",
+			"returns": "Vec3I",
+			"params": [],
+			"csharp": { "member": "ThreadGroupSize", "kind": "getter" }
+		},
+		{
+			"id": "SetThreadGroupSize",
+			"cpp": "self->threadGroupSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3I" }],
+			"csharp": { "member": "ThreadGroupSize", "kind": "setter" }
+		},
+		{
+			"id": "GetUniformBlocks",
+			"cpp": "self->uniformBlocks",
+			"returns": "list<UniformBlockLayout>",
+			"params": [],
+			"csharp": { "member": "UniformBlocks", "kind": "getter" }
+		},
+		{
+			"id": "SetUniformBlocks",
+			"cpp": "self->uniformBlocks = Slots::Copies<::Shalltear::Vector<::Shalltear::UniformBlockLayout>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UniformBlockLayout>" }],
+			"csharp": { "member": "UniformBlocks", "kind": "setter" }
+		},
+		{
+			"id": "GetResources",
+			"cpp": "self->resources",
+			"returns": "list<ShaderResourceInfo>",
+			"params": [],
+			"csharp": { "member": "Resources", "kind": "getter" }
+		},
+		{
+			"id": "SetResources",
+			"cpp": "self->resources = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderResourceInfo>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderResourceInfo>" }],
+			"csharp": { "member": "Resources", "kind": "setter" }
+		}
+	]
+}

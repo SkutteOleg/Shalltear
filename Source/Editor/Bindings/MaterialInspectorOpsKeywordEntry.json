@@ -1,0 +1,39 @@
+{
+	"area": "MaterialInspectorOpsKeywordEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/MaterialInspectorOps.h"
+	],
+	"class": "Shalltear.Editor.MaterialInspectorOpsKeywordEntry",
+	"instance": "MaterialInspectorOpsKeywordEntry",
+	"functions": [
+		{
+			"id": "GetKeyword",
+			"cpp": "self->keyword",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Keyword", "kind": "getter" }
+		},
+		{
+			"id": "SetKeyword",
+			"cpp": "self->keyword = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Keyword", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		}
+	]
+}

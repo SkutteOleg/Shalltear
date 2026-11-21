@@ -1,0 +1,99 @@
+{
+	"area": "AssetPreviewRequest",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Graphics/FullScreenPass.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.Editor.AssetPreviewRequest",
+	"instance": "AssetPreviewRequest",
+	"functions": [
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		},
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "Asset",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Asset", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		},
+		{
+			"id": "GetStage",
+			"cpp": "self->stage",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Stage", "kind": "getter" }
+		},
+		{
+			"id": "SetStage",
+			"cpp": "self->stage = ::Shalltear::Handle<::Shalltear::Scene>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Scene", "optional": true }],
+			"csharp": { "member": "Stage", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetSize",
+			"cpp": "self->targetSize",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "TargetSize", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetSize",
+			"cpp": "self->targetSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "TargetSize", "kind": "setter" }
+		},
+		{
+			"id": "GetRow",
+			"cpp": "self->row",
+			"returns": "FullScreenPass",
+			"params": [],
+			"csharp": { "member": "Row", "kind": "getter" }
+		},
+		{
+			"id": "SetRow",
+			"cpp": "self->row = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FullScreenPass", "optional": true }],
+			"csharp": { "member": "Row", "kind": "setter" }
+		}
+	]
+}

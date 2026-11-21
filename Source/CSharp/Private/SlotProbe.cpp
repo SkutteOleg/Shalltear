@@ -338,6 +338,78 @@ namespace Shalltear::CSharpImpl::SlotProbe {
 		_keptAction = nullptr;
 	}
 
+	i32 Tally(const std::function<void(i32&, Shape&, Tone&, Vec3&, str&)>& fill) {
+		i32 total = 1;
+		Shape shape;
+		shape.count = 2;
+		Tone tone = Tone::Low;
+		Vec3 at(1.0f, 2.0f, 3.0f);
+		str label = "a";
+		if (fill) {
+			fill(total, shape, tone, at, label);
+		}
+		return total * 10000 + shape.count * 1000 + static_cast<i32>(tone) * 100 + static_cast<i32>(at.x) * 10 + static_cast<i32>(label.size());
+	}
+
+	f32 Scale(const std::function<void(std::span<f32>)>& scale) {
+		f32 values[3] = {1.0f, 2.0f, 3.0f};
+		if (scale) {
+			scale(values);
+		}
+		return values[0] + values[1] + values[2];
+	}
+
+	i32 Pass(const std::function<i32(const Vector<i32>&, std::span<const std::string_view>)>& count) {
+		const Vector<i32> numbers = {1, 2, 3};
+		const std::string_view words[2] = {"one", "two"};
+		return count ? count(numbers, words) : -1;
+	}
+
+	Shape Shaped(const std::function<Shape(i32)>& make) {
+		return make ? make(3) : Shape{};
+	}
+
+	i32 Cook(const std::function<Recipe*(std::string_view)>& make) {
+		Recipe* const made = make ? make("soup") : nullptr;
+		const i32 steps = made ? static_cast<i32>(made->steps.size()) : -1;
+		delete made;
+		return steps;
+	}
+
+	i32 Peek(const std::function<const Recipe*()>& find) {
+		const Recipe* const found = find ? find() : nullptr;
+		return found ? static_cast<i32>(found->steps.size()) : -1;
+	}
+
+	str Named(const std::function<Recipe(i32)>& make) {
+		return make ? make(2).name : str("none");
+	}
+
+	i32 Gather(const std::function<Vector<i32>()>& numbers, const std::function<std::vector<Recipe>()>& recipes) {
+		i32 total = 0;
+		if (numbers) {
+			for (const i32 number : numbers()) {
+				total += number;
+			}
+		}
+		if (recipes) {
+			for (const Recipe& recipe : recipes()) {
+				total += 100 * static_cast<i32>(recipe.steps.size());
+			}
+		}
+		return total;
+	}
+
+	std::shared_ptr<Recipe> ShareRecipe(std::string_view name) {
+		std::shared_ptr<Recipe> made = std::make_shared<Recipe>();
+		made->name = name;
+		return made;
+	}
+
+	i32 CountShared(const std::shared_ptr<Recipe>& recipe) {
+		return recipe ? static_cast<i32>(recipe.use_count()) : 0;
+	}
+
 } // namespace Shalltear::CSharpImpl::SlotProbe
 
 #endif

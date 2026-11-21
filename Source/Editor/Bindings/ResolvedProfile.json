@@ -1,0 +1,102 @@
+{
+	"area": "ResolvedProfile",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.ResolvedProfile",
+	"instance": "ResolvedProfile",
+	"functions": [
+		{
+			"id": "Find",
+			"cpp": "self->Find(key)",
+			"returns": "ResolvedSetting",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetSource",
+			"cpp": "self->targetSource",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TargetSource", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetSource",
+			"cpp": "self->targetSource = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TargetSource", "kind": "setter" }
+		},
+		{
+			"id": "GetChain",
+			"cpp": "self->chain",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Chain", "kind": "getter" }
+		},
+		{
+			"id": "SetChain",
+			"cpp": "self->chain = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Chain", "kind": "setter" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "list<ResolvedSetting>",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = Slots::Copies<::Shalltear::Vector<::Shalltear::ResolvedSetting>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ResolvedSetting>" }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		},
+		{
+			"id": "GetIssues",
+			"cpp": "self->issues",
+			"returns": "list<BuildIssue>",
+			"params": [],
+			"csharp": { "member": "Issues", "kind": "getter" }
+		},
+		{
+			"id": "SetIssues",
+			"cpp": "self->issues = Slots::Copies<::Shalltear::Vector<::Shalltear::BuildIssue>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<BuildIssue>" }],
+			"csharp": { "member": "Issues", "kind": "setter" }
+		}
+	]
+}

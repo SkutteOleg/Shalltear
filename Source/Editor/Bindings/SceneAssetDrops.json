@@ -1,0 +1,54 @@
+{
+	"area": "SceneAssetDrops",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneAssetDrops.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/DragDrop.h"
+	],
+	"class": "Shalltear.Editor.SceneAssetDrops",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::SceneAssetDrops::Register(assetType, component, assetField, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "assetType", "type": "StringHash" },
+				{ "name": "component", "type": "StringHash" },
+				{ "name": "assetField", "type": "StringHash" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::SceneAssetDrops::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Accepts",
+			"cpp": "::Shalltear::SceneAssetDrops::Accepts(*payload, ::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "scene", "type": "Scene", "optional": true }
+			],
+			"csharp": { "member": "Accepts", "kind": "method" }
+		},
+		{
+			"id": "Drop",
+			"cpp": "::Shalltear::SceneAssetDrops::Drop(*payload, ::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent), Slots::OptionalPointer<::Shalltear::Vec3>(worldPosition))",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "worldPosition", "type": "list<Vec3>" }
+			],
+			"csharp": { "member": "Drop", "kind": "method" }
+		}
+	]
+}

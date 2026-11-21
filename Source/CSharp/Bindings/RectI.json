@@ -1,0 +1,127 @@
+{
+	"area": "RectI",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.RectI",
+	"instance": "RectI",
+	"enums": [
+		{
+			"name": "FrustumPlaneIndex",
+			"cpp": "::Shalltear::Frustum::PlaneIndex",
+			"underlying": "u32",
+			"values": [
+				{ "name": "Left", "value": 0 },
+				{ "name": "Right", "value": 1 },
+				{ "name": "Bottom", "value": 2 },
+				{ "name": "Top", "value": 3 },
+				{ "name": "NearZ", "value": 4 },
+				{ "name": "FarZ", "value": 5 },
+				{ "name": "Count", "value": 6 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "AABB",
+			"cpp": "::Shalltear::AABB",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "min", "type": "Vec3", "offset": 0 },
+				{ "name": "max", "type": "Vec3", "offset": 12 }
+			]
+		},
+		{
+			"name": "RectI",
+			"cpp": "::Shalltear::RectI",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "position", "type": "Vec2I", "offset": 0 },
+				{ "name": "size", "type": "Vec2I", "offset": 8 }
+			]
+		},
+		{
+			"name": "Plane",
+			"cpp": "::Shalltear::Plane",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "normal", "type": "Vec3", "offset": 0 },
+				{ "name": "distance", "type": "f32", "offset": 12 }
+			]
+		},
+		{
+			"name": "Ray",
+			"cpp": "::Shalltear::Ray",
+			"size": 24,
+			"align": 4,
+			"extern": true,
+			"fields": []
+		},
+		{
+			"name": "Sphere",
+			"cpp": "::Shalltear::Sphere",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "center", "type": "Vec3", "offset": 0 },
+				{ "name": "radius", "type": "f32", "offset": 12 }
+			]
+		}
+	],
+	"natives": [{ "name": "Frustum", "cpp": "::Shalltear::Frustum", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Left",
+			"cpp": "self->Left()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Left", "kind": "method" }
+		},
+		{
+			"id": "Top",
+			"cpp": "self->Top()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Top", "kind": "method" }
+		},
+		{
+			"id": "Right",
+			"cpp": "self->Right()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Right", "kind": "method" }
+		},
+		{
+			"id": "Bottom",
+			"cpp": "self->Bottom()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Bottom", "kind": "method" }
+		},
+		{
+			"id": "Center",
+			"cpp": "self->Center()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Center", "kind": "method" }
+		},
+		{
+			"id": "Contains",
+			"cpp": "self->Contains(point)",
+			"returns": "bool",
+			"params": [{ "name": "point", "type": "Vec2I" }],
+			"csharp": { "member": "Contains", "kind": "method" }
+		},
+		{
+			"id": "Intersects",
+			"cpp": "self->Intersects(other)",
+			"returns": "bool",
+			"params": [{ "name": "other", "type": "RectI" }],
+			"csharp": { "member": "Intersects", "kind": "method" }
+		}
+	]
+}

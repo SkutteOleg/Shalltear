@@ -1,0 +1,391 @@
+{
+	"area": "RHIDevice",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHIDevice.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/RHICommandList.h",
+		"Shalltear/Core/Graphics/RHISwapChain.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.RHIDevice",
+	"instance": "RHIDevice",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "::Shalltear::RHI::Device::Create(desc)",
+			"returns": "RHIDevice",
+			"params": [{ "name": "desc", "type": "RHIDeviceDesc" }],
+			"csharp": { "member": "Create", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Destroy",
+			"cpp": "::Shalltear::RHI::Device::Destroy(device)",
+			"returns": "void",
+			"params": [{ "name": "device", "type": "RHIDevice", "optional": true }],
+			"csharp": { "member": "Destroy", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetAdapters",
+			"cpp": "self->GetAdapters()",
+			"returns": "list<RHIAdapterInfo>",
+			"params": [],
+			"csharp": { "member": "Adapters", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "GetSelectedAdapter",
+			"cpp": "self->GetSelectedAdapter()",
+			"returns": "RHIAdapterInfo",
+			"params": [],
+			"csharp": { "member": "SelectedAdapter", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetSupportedSampleCounts",
+			"cpp": "self->GetSupportedSampleCounts(format, usage)",
+			"returns": "u32",
+			"params": [
+				{ "name": "format", "type": "RHIFormat" },
+				{ "name": "usage", "type": "RHITextureUsage" }
+			],
+			"csharp": { "member": "GetSupportedSampleCounts", "kind": "method" }
+		},
+		{
+			"id": "CreateBufferResource",
+			"cpp": "self->CreateBufferResource(*desc)",
+			"returns": "RHIBufferHandle",
+			"params": [{ "name": "desc", "type": "RHIBufferDesc" }],
+			"csharp": { "member": "CreateBufferResource", "kind": "method" }
+		},
+		{
+			"id": "CreateTextureResource",
+			"cpp": "self->CreateTextureResource(*desc)",
+			"returns": "RHITextureHandle",
+			"params": [{ "name": "desc", "type": "RHITextureDesc" }],
+			"csharp": { "member": "CreateTextureResource", "kind": "method" }
+		},
+		{
+			"id": "CreateSamplerResource",
+			"cpp": "self->CreateSamplerResource(*desc)",
+			"returns": "RHISamplerHandle",
+			"params": [{ "name": "desc", "type": "RHISamplerDesc" }],
+			"csharp": { "member": "CreateSamplerResource", "kind": "method" }
+		},
+		{
+			"id": "CreateGraphicsPipeline",
+			"cpp": "self->CreateGraphicsPipeline(*desc)",
+			"returns": "RHIPipelineHandle",
+			"params": [{ "name": "desc", "type": "RHIGraphicsPipelineDesc" }],
+			"csharp": { "member": "CreateGraphicsPipeline", "kind": "method" }
+		},
+		{
+			"id": "CreateComputePipeline",
+			"cpp": "self->CreateComputePipeline(*desc)",
+			"returns": "RHIPipelineHandle",
+			"params": [{ "name": "desc", "type": "RHIComputePipelineDesc" }],
+			"csharp": { "member": "CreateComputePipeline", "kind": "method" }
+		},
+		{
+			"id": "DestroyResource",
+			"cpp": "self->DestroyResource(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "DestroyResource", "kind": "method" }
+		},
+		{
+			"id": "DestroyResource2",
+			"cpp": "self->DestroyResource(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "RHITextureHandle" }],
+			"csharp": { "member": "DestroyResource", "kind": "method" }
+		},
+		{
+			"id": "DestroyResource3",
+			"cpp": "self->DestroyResource(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "RHISamplerHandle" }],
+			"csharp": { "member": "DestroyResource", "kind": "method" }
+		},
+		{
+			"id": "DestroyResource4",
+			"cpp": "self->DestroyResource(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "RHIPipelineHandle" }],
+			"csharp": { "member": "DestroyResource", "kind": "method" }
+		},
+		{
+			"id": "GetTableIndex",
+			"cpp": "self->GetTableIndex(texture)",
+			"returns": "u32",
+			"params": [{ "name": "texture", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GetTableIndex", "kind": "method" }
+		},
+		{
+			"id": "GetTableIndex2",
+			"cpp": "self->GetTableIndex(sampler)",
+			"returns": "u32",
+			"params": [{ "name": "sampler", "type": "RHISamplerHandle" }],
+			"csharp": { "member": "GetTableIndex", "kind": "method" }
+		},
+		{
+			"id": "GetBufferDeviceAddress",
+			"cpp": "self->GetBufferDeviceAddress(buffer)",
+			"returns": "u64",
+			"params": [{ "name": "buffer", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "GetBufferDeviceAddress", "kind": "method" }
+		},
+		{
+			"id": "GetMappedPointer",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->GetMappedPointer(buffer)))",
+			"returns": "u64",
+			"params": [{ "name": "buffer", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "GetMappedPointer", "kind": "method" }
+		},
+		{
+			"id": "IsAlive",
+			"cpp": "self->IsAlive(texture)",
+			"returns": "bool",
+			"params": [{ "name": "texture", "type": "RHITextureHandle" }],
+			"csharp": { "member": "IsTextureAlive", "kind": "method" }
+		},
+		{
+			"id": "GetTextureSize",
+			"cpp": "self->GetTextureSize(texture)",
+			"returns": "Vec2I",
+			"params": [{ "name": "texture", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GetTextureSize", "kind": "method" }
+		},
+		{
+			"id": "GetTextureFormat",
+			"cpp": "self->GetTextureFormat(texture)",
+			"returns": "RHIFormat",
+			"params": [{ "name": "texture", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GetTextureFormat", "kind": "method" }
+		},
+		{
+			"id": "GetTextureUsage",
+			"cpp": "self->GetTextureUsage(texture)",
+			"returns": "RHITextureUsage",
+			"params": [{ "name": "texture", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GetTextureUsage", "kind": "method" }
+		},
+		{
+			"id": "GetTextureState",
+			"cpp": "self->GetTextureState(texture)",
+			"returns": "RHIResourceState",
+			"params": [{ "name": "texture", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GetTextureState", "kind": "method" }
+		},
+		{
+			"id": "UploadBuffer",
+			"cpp": "self->UploadBuffer(target, data, offset)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "RHIBufferHandle" },
+				{ "name": "data", "type": "list<u8>" },
+				{ "name": "offset", "type": "u64" }
+			],
+			"csharp": { "member": "UploadBuffer", "kind": "method" }
+		},
+		{
+			"id": "UploadTexture",
+			"cpp": "self->UploadTexture(target, data, mipLevel, layer)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "RHITextureHandle" },
+				{ "name": "data", "type": "list<u8>" },
+				{ "name": "mipLevel", "type": "u32" },
+				{ "name": "layer", "type": "u32" }
+			],
+			"csharp": { "member": "UploadTexture", "kind": "method" }
+		},
+		{
+			"id": "UploadTextureRegion",
+			"cpp": "self->UploadTextureRegion(target, data, region, mipLevel)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "RHITextureHandle" },
+				{ "name": "data", "type": "list<u8>" },
+				{ "name": "region", "type": "RectI" },
+				{ "name": "mipLevel", "type": "u32" }
+			],
+			"csharp": { "member": "UploadTextureRegion", "kind": "method" }
+		},
+		{
+			"id": "GenerateMips",
+			"cpp": "self->GenerateMips(target)",
+			"returns": "void",
+			"params": [{ "name": "target", "type": "RHITextureHandle" }],
+			"csharp": { "member": "GenerateMips", "kind": "method" }
+		},
+		{
+			"id": "ReadbackTexture",
+			"cpp": "self->ReadbackTexture(source, outValue, mipLevel, layer)",
+			"returns": "void",
+			"params": [
+				{ "name": "source", "type": "RHITextureHandle" },
+				{ "name": "outValue", "type": "span<u8>", "out": true },
+				{ "name": "mipLevel", "type": "u32" },
+				{ "name": "layer", "type": "u32" }
+			],
+			"csharp": { "member": "ReadbackTexture", "kind": "method" }
+		},
+		{
+			"id": "ReadbackBuffer",
+			"cpp": "self->ReadbackBuffer(source, outValue, offset)",
+			"returns": "void",
+			"params": [
+				{ "name": "source", "type": "RHIBufferHandle" },
+				{ "name": "outValue", "type": "span<u8>", "out": true },
+				{ "name": "offset", "type": "u64" }
+			],
+			"csharp": { "member": "ReadbackBuffer", "kind": "method" }
+		},
+		{
+			"id": "CreateSwapChainForWindow",
+			"cpp": "self->CreateSwapChainForWindow(*desc)",
+			"returns": "RHISwapChain",
+			"params": [{ "name": "desc", "type": "RHINativeSwapChainDesc" }],
+			"csharp": { "member": "CreateSwapChainForWindow", "kind": "method" }
+		},
+		{
+			"id": "DestroySwapChain",
+			"cpp": "self->DestroySwapChain(swapChain)",
+			"returns": "void",
+			"params": [{ "name": "swapChain", "type": "RHISwapChain", "optional": true }],
+			"csharp": { "member": "DestroySwapChain", "kind": "method" }
+		},
+		{
+			"id": "BeginFrame",
+			"cpp": "self->BeginFrame()",
+			"returns": "RHICommandList",
+			"params": [],
+			"csharp": { "member": "BeginFrame", "kind": "method" }
+		},
+		{
+			"id": "EndFrame",
+			"cpp": "self->EndFrame()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "EndFrame", "kind": "method" }
+		},
+		{
+			"id": "IsInFrame",
+			"cpp": "self->IsInFrame()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInFrame", "kind": "getter" }
+		},
+		{
+			"id": "AllocateTransient",
+			"cpp": "self->AllocateTransient(size, alignment)",
+			"returns": "RHITransientAllocation",
+			"params": [
+				{ "name": "size", "type": "u64" },
+				{ "name": "alignment", "type": "u64" }
+			],
+			"csharp": { "member": "AllocateTransient", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "CreateTransientSet",
+			"cpp": "self->CreateTransientSet(pipeline, setIndex)",
+			"returns": "RHITransientSetWriter",
+			"params": [
+				{ "name": "pipeline", "type": "RHIPipelineHandle" },
+				{ "name": "setIndex", "type": "u32" }
+			],
+			"csharp": { "member": "CreateTransientSet", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "LoadPipelineCache",
+			"cpp": "self->LoadPipelineCache(blob)",
+			"returns": "void",
+			"params": [{ "name": "blob", "type": "list<u8>" }],
+			"csharp": { "member": "LoadPipelineCache", "kind": "method" }
+		},
+		{
+			"id": "SavePipelineCache",
+			"cpp": "self->SavePipelineCache(outValue)",
+			"returns": "u64",
+			"params": [{ "name": "outValue", "type": "span<u8>", "out": true }],
+			"csharp": { "member": "SavePipelineCache", "kind": "method" }
+		},
+		{
+			"id": "GetVideoMemoryInfo",
+			"cpp": "self->GetVideoMemoryInfo()",
+			"returns": "RHIVideoMemoryInfo",
+			"params": [],
+			"csharp": { "member": "VideoMemoryInfo", "kind": "getter" }
+		},
+		{
+			"id": "GetLiveBufferCount",
+			"cpp": "self->GetLiveBufferCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LiveBufferCount", "kind": "getter" }
+		},
+		{
+			"id": "GetLiveTextureCount",
+			"cpp": "self->GetLiveTextureCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LiveTextureCount", "kind": "getter" }
+		},
+		{
+			"id": "GetLiveSamplerCount",
+			"cpp": "self->GetLiveSamplerCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LiveSamplerCount", "kind": "getter" }
+		},
+		{
+			"id": "GetLivePipelineCount",
+			"cpp": "self->GetLivePipelineCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LivePipelineCount", "kind": "getter" }
+		},
+		{
+			"id": "WaitIdle",
+			"cpp": "self->WaitIdle()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "WaitIdle", "kind": "method" }
+		},
+		{
+			"id": "IsLost",
+			"cpp": "self->IsLost()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsLost", "kind": "getter" }
+		},
+		{
+			"id": "Recover",
+			"cpp": "self->Recover()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Recover", "kind": "method" }
+		},
+		{
+			"id": "GetFailedRebuildCount",
+			"cpp": "self->GetFailedRebuildCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "FailedRebuildCount", "kind": "getter" }
+		},
+		{
+			"id": "SimulateLoss",
+			"cpp": "self->SimulateLoss(failedRebuilds)",
+			"returns": "void",
+			"params": [{ "name": "failedRebuilds", "type": "u32" }],
+			"csharp": { "member": "SimulateLoss", "kind": "method" }
+		}
+	]
+}

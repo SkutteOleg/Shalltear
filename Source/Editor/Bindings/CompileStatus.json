@@ -1,0 +1,80 @@
+{
+	"area": "CompileStatus",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileStatus.h"
+	],
+	"class": "Shalltear.Editor.CompileStatus",
+	"structs": [
+		{
+			"name": "CompileStatusSummary",
+			"cpp": "::Shalltear::CompileStatus::Summary",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "compile", "type": "CompileState", "offset": 0 },
+				{ "name": "errors", "type": "u32", "offset": 4 },
+				{ "name": "warnings", "type": "u32", "offset": 8 },
+				{ "name": "reloadHeld", "type": "bool", "offset": 12 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "CompileStatusSourceDesc", "cpp": "::Shalltear::CompileStatus::SourceDesc", "owned": true, "create": true },
+		{ "name": "CompileStatusSourceView", "cpp": "::Shalltear::CompileStatus::SourceView", "owned": true, "create": true },
+		{ "name": "CompileStatusSourceState", "cpp": "::Shalltear::CompileStatus::SourceState", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "RegisterSource",
+			"cpp": "::Shalltear::CompileStatus::RegisterSource(*desc, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [{ "name": "desc", "type": "CompileStatusSourceDesc" }],
+			"csharp": { "member": "RegisterSource", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::CompileStatus::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "GetSources",
+			"cpp": "::Shalltear::CompileStatus::GetSources(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<CompileStatusSourceView>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::CompileStatus::SourceView>" }
+			],
+			"csharp": { "member": "GetSources", "kind": "method" }
+		},
+		{
+			"id": "GetSourceCount",
+			"cpp": "::Shalltear::CompileStatus::GetSourceCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SourceCount", "kind": "getter" }
+		},
+		{
+			"id": "Combine",
+			"cpp": "::Shalltear::CompileStatus::Combine()",
+			"returns": "CompileStatusSummary",
+			"params": [],
+			"csharp": { "member": "Combine", "kind": "method" }
+		},
+		{
+			"id": "RequestCompile",
+			"cpp": "::Shalltear::CompileStatus::RequestCompile()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RequestCompile", "kind": "method" }
+		},
+		{
+			"id": "RequestReload",
+			"cpp": "::Shalltear::CompileStatus::RequestReload()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RequestReload", "kind": "method" }
+		}
+	]
+}

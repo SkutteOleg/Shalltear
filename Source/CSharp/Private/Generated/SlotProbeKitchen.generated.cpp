@@ -12,21 +12,17 @@ namespace Shalltear::CSharpImpl::Generated {
 	namespace {
 
 		int32_t SlotProbeKitchenGetMain(const uint64_t* arguments, uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Kitchen* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Kitchen*>(static_cast<uintptr_t>(arguments[0]));
 				results[0] = Slots::Pointer<::Shalltear::CSharpImpl::SlotProbe::Recipe>(&self->main);
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 		int32_t SlotProbeKitchenGetShelf(const uint64_t* arguments, uint64_t* results) noexcept {
-			const int32_t status = ScriptRuntime::Guard([&] {
+			return ScriptRuntime::Guard([&] {
 				::Shalltear::CSharpImpl::SlotProbe::Kitchen* const self = reinterpret_cast<::Shalltear::CSharpImpl::SlotProbe::Kitchen*>(static_cast<uintptr_t>(arguments[0]));
 				Slots::KeepPointers(results, self->shelf);
 			});
-			ManagedTypes::FlushDirty();
-			return status;
 		}
 
 	} // anonymous namespace

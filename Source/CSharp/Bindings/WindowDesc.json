@@ -1,0 +1,116 @@
+{
+	"area": "WindowDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowDesc",
+	"instance": "WindowDesc",
+	"functions": [
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetClientSize",
+			"cpp": "self->clientSize",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "ClientSize", "kind": "getter" }
+		},
+		{
+			"id": "SetClientSize",
+			"cpp": "self->clientSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "ClientSize", "kind": "setter" }
+		},
+		{
+			"id": "TryGetPosition",
+			"cpp": "Slots::Take(self->position, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "Vec2I", "out": true }],
+			"csharp": { "member": "TryGetPosition", "kind": "method" }
+		},
+		{
+			"id": "ClearPosition",
+			"cpp": "self->position.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearPosition", "kind": "method" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "SetPosition", "kind": "method" }
+		},
+		{
+			"id": "GetMinClientSize",
+			"cpp": "self->minClientSize",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "MinClientSize", "kind": "getter" }
+		},
+		{
+			"id": "SetMinClientSize",
+			"cpp": "self->minClientSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "MinClientSize", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxClientSize",
+			"cpp": "self->maxClientSize",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "MaxClientSize", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxClientSize",
+			"cpp": "self->maxClientSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "MaxClientSize", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "WindowFlags",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "WindowFlags" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerField",
+			"cpp": "(self->owner).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		}
+	]
+}

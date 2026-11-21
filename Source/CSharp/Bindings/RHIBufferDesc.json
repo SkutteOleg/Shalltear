@@ -1,0 +1,67 @@
+{
+	"area": "RHIBufferDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHIBufferDesc",
+	"instance": "RHIBufferDesc",
+	"functions": [
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetUsage",
+			"cpp": "self->usage",
+			"returns": "RHIBufferUsage",
+			"params": [],
+			"csharp": { "member": "Usage", "kind": "getter" }
+		},
+		{
+			"id": "SetUsage",
+			"cpp": "self->usage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIBufferUsage" }],
+			"csharp": { "member": "Usage", "kind": "setter" }
+		},
+		{
+			"id": "GetAccess",
+			"cpp": "self->access",
+			"returns": "RHIMemoryAccess",
+			"params": [],
+			"csharp": { "member": "Access", "kind": "getter" }
+		},
+		{
+			"id": "SetAccess",
+			"cpp": "self->access = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIMemoryAccess" }],
+			"csharp": { "member": "Access", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugName",
+			"cpp": "self->debugName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DebugName", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugName",
+			"cpp": "self->debugName = Slots::KeepFieldText(self, 0xfeaeb69c21b2f19bull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DebugName", "kind": "setter" }
+		}
+	]
+}

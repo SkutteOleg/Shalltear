@@ -1,0 +1,273 @@
+{
+	"area": "TrailRenderer",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/TrailRenderer.h",
+		"Shalltear/Core/Math/AnimationCurve.h",
+		"Shalltear/Core/Math/Gradient.h",
+		"Shalltear/VisualEffects/LineRenderer.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Graphics/ShadowCasting.h"
+	],
+	"class": "Shalltear.TrailRenderer",
+	"instance": "TrailRenderer",
+	"types": [
+		{ "name": "TrailRenderer", "cpp": "::Shalltear::TrailRenderer", "engine": "TrailRenderer", "base": "Component" }
+	],
+	"functions": [
+		{
+			"id": "AddPosition",
+			"cpp": "self->AddPosition(position)",
+			"returns": "void",
+			"params": [{ "name": "position", "type": "Vec3" }],
+			"csharp": { "member": "AddPosition", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "GetPositionCount",
+			"cpp": "self->GetPositionCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PositionCount", "kind": "getter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->GetPosition(index)",
+			"returns": "Vec3",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetPosition", "kind": "method" }
+		},
+		{
+			"id": "GetWidth",
+			"cpp": "&self->width",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "Width", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetWidth",
+			"cpp": "self->width = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "Width", "kind": "setter" }
+		},
+		{
+			"id": "GetWidthMultiplier",
+			"cpp": "self->widthMultiplier",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "WidthMultiplier", "kind": "getter" }
+		},
+		{
+			"id": "SetWidthMultiplier",
+			"cpp": "self->widthMultiplier = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "WidthMultiplier", "kind": "setter" }
+		},
+		{
+			"id": "GetTime",
+			"cpp": "self->time",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Time", "kind": "getter" }
+		},
+		{
+			"id": "SetTime",
+			"cpp": "self->time = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Time", "kind": "setter" }
+		},
+		{
+			"id": "GetMinVertexDistance",
+			"cpp": "self->minVertexDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MinVertexDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetMinVertexDistance",
+			"cpp": "self->minVertexDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MinVertexDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetAutodestruct",
+			"cpp": "self->autodestruct",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Autodestruct", "kind": "getter" }
+		},
+		{
+			"id": "SetAutodestruct",
+			"cpp": "self->autodestruct = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Autodestruct", "kind": "setter" }
+		},
+		{
+			"id": "GetEmitting",
+			"cpp": "self->emitting",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Emitting", "kind": "getter" }
+		},
+		{
+			"id": "SetEmitting",
+			"cpp": "self->emitting = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Emitting", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "&self->color",
+			"returns": "Gradient",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Gradient" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		},
+		{
+			"id": "GetCornerVertices",
+			"cpp": "self->cornerVertices",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "CornerVertices", "kind": "getter" }
+		},
+		{
+			"id": "SetCornerVertices",
+			"cpp": "self->cornerVertices = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "CornerVertices", "kind": "setter" }
+		},
+		{
+			"id": "GetEndCapVertices",
+			"cpp": "self->endCapVertices",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "EndCapVertices", "kind": "getter" }
+		},
+		{
+			"id": "SetEndCapVertices",
+			"cpp": "self->endCapVertices = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "EndCapVertices", "kind": "setter" }
+		},
+		{
+			"id": "GetAlignment",
+			"cpp": "self->alignment",
+			"returns": "LineAlignment",
+			"params": [],
+			"csharp": { "member": "Alignment", "kind": "getter" }
+		},
+		{
+			"id": "SetAlignment",
+			"cpp": "self->alignment = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LineAlignment" }],
+			"csharp": { "member": "Alignment", "kind": "setter" }
+		},
+		{
+			"id": "GetTextureMode",
+			"cpp": "self->textureMode",
+			"returns": "LineTextureMode",
+			"params": [],
+			"csharp": { "member": "TextureMode", "kind": "getter" }
+		},
+		{
+			"id": "SetTextureMode",
+			"cpp": "self->textureMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LineTextureMode" }],
+			"csharp": { "member": "TextureMode", "kind": "setter" }
+		},
+		{
+			"id": "GetTextureScale",
+			"cpp": "self->textureScale",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "TextureScale", "kind": "getter" }
+		},
+		{
+			"id": "SetTextureScale",
+			"cpp": "self->textureScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "TextureScale", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowBias",
+			"cpp": "self->shadowBias",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowBias", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowBias",
+			"cpp": "self->shadowBias = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowBias", "kind": "setter" }
+		},
+		{
+			"id": "GetMaterials",
+			"cpp": "self->materials",
+			"returns": "list<Material>",
+			"params": [],
+			"csharp": { "member": "Materials", "kind": "getter" }
+		},
+		{
+			"id": "SetMaterials",
+			"cpp": "self->materials = Slots::ToVector<::Shalltear::Handle<::Shalltear::MaterialAsset>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Material>" }],
+			"csharp": { "member": "Materials", "kind": "setter" }
+		},
+		{
+			"id": "GetCastShadows",
+			"cpp": "self->castShadows",
+			"returns": "ShadowCasting",
+			"params": [],
+			"csharp": { "member": "CastShadows", "kind": "getter" }
+		},
+		{
+			"id": "SetCastShadows",
+			"cpp": "self->castShadows = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShadowCasting" }],
+			"csharp": { "member": "CastShadows", "kind": "setter" }
+		},
+		{
+			"id": "GetReceiveShadows",
+			"cpp": "self->receiveShadows",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ReceiveShadows", "kind": "getter" }
+		},
+		{
+			"id": "SetReceiveShadows",
+			"cpp": "self->receiveShadows = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ReceiveShadows", "kind": "setter" }
+		}
+	]
+}

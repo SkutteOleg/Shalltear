@@ -28,6 +28,13 @@ namespace Shalltear::CSharpImpl {
 
 		SltEngineAPI MakeEngineAPI();
 
+		SHALLTEAR_CSHARP_API const void* GetScriptsOwner();
+
+		using OwnerSweep = void (*)(const void* owner);
+
+		SHALLTEAR_CSHARP_API bool AddOwnerSweep(OwnerSweep sweep);
+		SHALLTEAR_CSHARP_API void RemoveOwnerSweep(OwnerSweep sweep);
+
 		SHALLTEAR_CSHARP_API void SetLastError(std::string_view text);
 
 		// valid until this thread's next KeepString

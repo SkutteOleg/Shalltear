@@ -1,0 +1,31 @@
+{
+	"area": "AudioGeneratorControl",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioGenerator.h",
+		"Shalltear/Audio/Audio.h"
+	],
+	"class": "Shalltear.AudioGeneratorControl",
+	"instance": "AudioGeneratorControl",
+	"functions": [
+		{
+			"id": "GetVoice",
+			"cpp": "self->GetVoice()",
+			"returns": "EngineAudioVoice",
+			"params": [],
+			"csharp": { "member": "Voice", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetParameter",
+			"cpp": "self->SetParameter(index, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "index", "type": "u32" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "SetParameter", "kind": "method" }
+		}
+	]
+}

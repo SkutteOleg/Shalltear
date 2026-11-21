@@ -1,0 +1,67 @@
+{
+	"area": "StyleSheetAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/StyleSheetAsset.h"
+	],
+	"class": "Shalltear.StyleSheetAsset",
+	"instance": "StyleSheetAsset",
+	"types": [
+		{ "name": "StyleSheetAsset", "cpp": "::Shalltear::StyleSheetAsset", "engine": "StyleSheetAsset", "base": "Asset" }
+	],
+	"natives": [{ "name": "StyleSheetFont", "cpp": "::Shalltear::StyleSheetFont", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Parse",
+			"cpp": "self->Parse(text, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "text", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Parse", "kind": "method" }
+		},
+		{
+			"id": "GetSource",
+			"cpp": "self->source",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Source", "kind": "getter" }
+		},
+		{
+			"id": "SetSource",
+			"cpp": "self->source = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Source", "kind": "setter" }
+		},
+		{
+			"id": "GetFonts",
+			"cpp": "self->fonts",
+			"returns": "list<StyleSheetFont>",
+			"params": [],
+			"csharp": { "member": "Fonts", "kind": "getter" }
+		},
+		{
+			"id": "SetFonts",
+			"cpp": "self->fonts = Slots::Copies<::Shalltear::Vector<::Shalltear::StyleSheetFont>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StyleSheetFont>" }],
+			"csharp": { "member": "Fonts", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		}
+	]
+}

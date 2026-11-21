@@ -1,0 +1,46 @@
+{
+	"area": "RevertRemovedComponentCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.RevertRemovedComponentCommand",
+	"instance": "RevertRemovedComponentCommand",
+	"functions": [
+		{
+			"id": "GetRestored",
+			"cpp": "self->GetRestored()",
+			"returns": "Component",
+			"params": [],
+			"csharp": { "member": "Restored", "kind": "getter" }
+		},
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::RevertRemovedComponentCommand(::Shalltear::Handle<::Shalltear::SceneObject>(instanceRoot), ::Shalltear::Handle<::Shalltear::SceneObject>(owner), *row, typeName)",
+			"returns": "RevertRemovedComponentCommand",
+			"params": [
+				{ "name": "instanceRoot", "type": "SceneObject", "optional": true },
+				{ "name": "owner", "type": "SceneObject", "optional": true },
+				{ "name": "row", "type": "PrefabTargetPath" },
+				{ "name": "typeName", "type": "StringHash" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

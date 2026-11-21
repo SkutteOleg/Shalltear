@@ -1,0 +1,40 @@
+{
+	"area": "ObjectShadow",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ObjectShadow.h"
+	],
+	"class": "Shalltear.ObjectShadow",
+	"instance": "ObjectShadow",
+	"types": [{ "name": "ObjectShadow", "cpp": "::Shalltear::ObjectShadow", "engine": "ObjectShadow", "base": "Component" }],
+	"functions": [
+		{
+			"id": "GetPriority",
+			"cpp": "self->GetPriority()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Priority", "kind": "getter" }
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->SetPriority(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetNormalOffset",
+			"cpp": "self->GetNormalOffset()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "NormalOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetNormalOffset",
+			"cpp": "self->SetNormalOffset(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "NormalOffset", "kind": "setter" }
+		}
+	]
+}

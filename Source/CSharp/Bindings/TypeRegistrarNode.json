@@ -1,0 +1,49 @@
+{
+	"area": "TypeRegistrarNode",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeRegistry.h"
+	],
+	"class": "Shalltear.TypeRegistrarNode",
+	"instance": "TypeRegistrarNode",
+	"functions": [
+		{
+			"id": "GetRegisterFn",
+			"cpp": "Slots::Bits(self->registerFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "RegisterFn", "kind": "getter" }
+		},
+		{
+			"id": "SetRegisterFn",
+			"cpp": "self->registerFn = Slots::FromBits<const Shalltear::TypeInfo *(*)()>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "RegisterFn", "kind": "setter" }
+		},
+		{
+			"id": "GetNext",
+			"cpp": "self->next",
+			"returns": "TypeRegistrarNode",
+			"params": [],
+			"csharp": { "member": "Next", "kind": "getter" }
+		},
+		{
+			"id": "SetNext",
+			"cpp": "self->next = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeRegistrarNode", "optional": true }],
+			"csharp": { "member": "Next", "kind": "setter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::TypeRegistrarNode(Slots::FromBits<const Shalltear::TypeInfo *(*)()>(fn))",
+			"returns": "TypeRegistrarNode",
+			"params": [{ "name": "fn", "type": "u64" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

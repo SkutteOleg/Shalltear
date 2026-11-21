@@ -1,0 +1,63 @@
+{
+	"area": "EditorIconsMark",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorIcons.h"
+	],
+	"class": "Shalltear.Editor.EditorIconsMark",
+	"constants": [
+		{ "name": "Logo", "cpp": "::Shalltear::EditorIcons::Mark::Logo", "type": "string", "value": "engine://Icons/Logo.svg" },
+		{ "name": "Transform", "cpp": "::Shalltear::EditorIcons::Mark::Transform", "type": "string", "value": "engine://Icons/Components/Transform.svg" },
+		{ "name": "Camera", "cpp": "::Shalltear::EditorIcons::Mark::Camera", "type": "string", "value": "engine://Icons/Components/Camera.svg" },
+		{ "name": "Light", "cpp": "::Shalltear::EditorIcons::Mark::Light", "type": "string", "value": "engine://Icons/Components/Light.svg" },
+		{ "name": "Decal", "cpp": "::Shalltear::EditorIcons::Mark::Decal", "type": "string", "value": "engine://Icons/Components/Decal.svg" },
+		{
+			"name": "MeshRenderer",
+			"cpp": "::Shalltear::EditorIcons::Mark::MeshRenderer",
+			"type": "string",
+			"value": "engine://Icons/Components/MeshRenderer.svg"
+		},
+		{
+			"name": "SkinnedMeshRenderer",
+			"cpp": "::Shalltear::EditorIcons::Mark::SkinnedMeshRenderer",
+			"type": "string",
+			"value": "engine://Icons/Components/SkinnedMeshRenderer.svg"
+		},
+		{ "name": "Skeleton", "cpp": "::Shalltear::EditorIcons::Mark::Skeleton", "type": "string", "value": "engine://Icons/Components/Skeleton.svg" },
+		{ "name": "Environment", "cpp": "::Shalltear::EditorIcons::Mark::Environment", "type": "string", "value": "engine://Icons/Components/Environment.svg" },
+		{
+			"name": "ReflectionProbe",
+			"cpp": "::Shalltear::EditorIcons::Mark::ReflectionProbe",
+			"type": "string",
+			"value": "engine://Icons/Components/ReflectionProbe.svg"
+		},
+		{
+			"name": "UIPanelRenderer",
+			"cpp": "::Shalltear::EditorIcons::Mark::UIPanelRenderer",
+			"type": "string",
+			"value": "engine://Icons/Components/UIPanelRenderer.svg"
+		},
+		{
+			"name": "ProceduralRenderer",
+			"cpp": "::Shalltear::EditorIcons::Mark::ProceduralRenderer",
+			"type": "string",
+			"value": "engine://Icons/Components/ProceduralRenderer.svg"
+		},
+		{ "name": "LODGroup", "cpp": "::Shalltear::EditorIcons::Mark::LODGroup", "type": "string", "value": "engine://Icons/Components/LODGroup.svg" },
+		{
+			"name": "ObjectShadow",
+			"cpp": "::Shalltear::EditorIcons::Mark::ObjectShadow",
+			"type": "string",
+			"value": "engine://Icons/Components/ObjectShadow.svg"
+		},
+		{ "name": "Behavior", "cpp": "::Shalltear::EditorIcons::Mark::Behavior", "type": "string", "value": "engine://Icons/Components/Behavior.svg" },
+		{ "name": "Component", "cpp": "::Shalltear::EditorIcons::Mark::Component", "type": "string", "value": "engine://Icons/Components/Component.svg" },
+		{
+			"name": "MissingComponent",
+			"cpp": "::Shalltear::EditorIcons::Mark::MissingComponent",
+			"type": "string",
+			"value": "engine://Icons/Components/Missing.svg"
+		}
+	],
+	"functions": []
+}

@@ -572,6 +572,7 @@ namespace {
 		{"Source/Core/Private/Config.cpp", "Config itself"},
 		{"Source/Core/Private/Settings.cpp", "scope documents are INI files"},
 		{"Source/Core/Public/Shalltear.h", "SDK umbrella"},
+		{"Source/CSharp/Private/Generated/Config.generated.cpp", "C# binding of Config"},
 		{"Source/Editor/Private/SettingsOps.cpp", "legacy file migration"},
 		{"Source/Editor/Private/EditorConfig.h", "Layout.ini is state"},
 		{"Source/Editor/Private/EditorLayoutOps.cpp", "layout document (state)"},

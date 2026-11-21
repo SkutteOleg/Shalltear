@@ -1,0 +1,27 @@
+{
+	"area": "TypeReplacement",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/TypeReplacement.h"
+	],
+	"class": "Shalltear.TypeReplacement",
+	"functions": [
+		{
+			"id": "CanReplace",
+			"cpp": "::Shalltear::TypeReplacement::CanReplace()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CanReplace", "kind": "getter" }
+		},
+		{
+			"id": "Replace",
+			"cpp": "::Shalltear::TypeReplacement::Replace(ScriptRuntime::GetScriptsOwner(), Slots::FromBits<bool (*)(void *)>(swap), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "swap", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "Replace", "kind": "method" }
+		}
+	]
+}

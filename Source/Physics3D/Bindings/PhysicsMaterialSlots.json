@@ -1,0 +1,110 @@
+{
+	"area": "PhysicsMaterialSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/PhysicsMaterial.h"
+	],
+	"class": "Shalltear.PhysicsMaterial",
+	"instance": "PhysicsMaterial",
+	"constants": [
+		{ "name": "PHYSICS_COMBINE_FRICTION_SHIFT", "cpp": "::Shalltear::PHYSICS_COMBINE_FRICTION_SHIFT", "type": "u32", "value": 0 },
+		{ "name": "PHYSICS_COMBINE_BOUNCE_SHIFT", "cpp": "::Shalltear::PHYSICS_COMBINE_BOUNCE_SHIFT", "type": "u32", "value": 2 }
+	],
+	"functions": [
+		{
+			"id": "PackPhysicsMaterialCombine",
+			"cpp": "::Shalltear::PackPhysicsMaterialCombine(friction, bounce)",
+			"returns": "u64",
+			"params": [
+				{ "name": "friction", "type": "PhysicsMaterialCombine" },
+				{ "name": "bounce", "type": "PhysicsMaterialCombine" }
+			],
+			"csharp": { "member": "PackPhysicsMaterialCombine", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "CombinePhysicsMaterialValue",
+			"cpp": "::Shalltear::CombinePhysicsMaterialValue(a, bitsA, b, bitsB, shift)",
+			"returns": "f32",
+			"params": [
+				{ "name": "a", "type": "f32" },
+				{ "name": "bitsA", "type": "u64" },
+				{ "name": "b", "type": "f32" },
+				{ "name": "bitsB", "type": "u64" },
+				{ "name": "shift", "type": "u32" }
+			],
+			"csharp": { "member": "CombinePhysicsMaterialValue", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetFrictionField",
+			"cpp": "self->friction",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FrictionField", "kind": "getter" }
+		},
+		{
+			"id": "SetFrictionField",
+			"cpp": "self->friction = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FrictionField", "kind": "setter" }
+		},
+		{
+			"id": "GetBouncinessField",
+			"cpp": "self->bounciness",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BouncinessField", "kind": "getter" }
+		},
+		{
+			"id": "SetBouncinessField",
+			"cpp": "self->bounciness = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BouncinessField", "kind": "setter" }
+		},
+		{
+			"id": "GetRollingResistanceField",
+			"cpp": "self->rollingResistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RollingResistanceField", "kind": "getter" }
+		},
+		{
+			"id": "SetRollingResistanceField",
+			"cpp": "self->rollingResistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RollingResistanceField", "kind": "setter" }
+		},
+		{
+			"id": "GetFrictionCombineField",
+			"cpp": "self->frictionCombine",
+			"returns": "PhysicsMaterialCombine",
+			"params": [],
+			"csharp": { "member": "FrictionCombineField", "kind": "getter" }
+		},
+		{
+			"id": "SetFrictionCombineField",
+			"cpp": "self->frictionCombine = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PhysicsMaterialCombine" }],
+			"csharp": { "member": "FrictionCombineField", "kind": "setter" }
+		},
+		{
+			"id": "GetBounceCombineField",
+			"cpp": "self->bounceCombine",
+			"returns": "PhysicsMaterialCombine",
+			"params": [],
+			"csharp": { "member": "BounceCombineField", "kind": "getter" }
+		},
+		{
+			"id": "SetBounceCombineField",
+			"cpp": "self->bounceCombine = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PhysicsMaterialCombine" }],
+			"csharp": { "member": "BounceCombineField", "kind": "setter" }
+		}
+	]
+}

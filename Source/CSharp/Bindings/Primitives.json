@@ -1,0 +1,31 @@
+{
+	"area": "Primitives",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/Primitives.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Primitives",
+	"structs": [
+		{
+			"name": "AttrRangeData",
+			"cpp": "::Shalltear::AttrRangeData",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "min", "type": "f32", "offset": 0 },
+				{ "name": "max", "type": "f32", "offset": 4 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "HandlePointeeName",
+			"cpp": "::Shalltear::HandlePointeeName(*handleType)",
+			"returns": "StringHash",
+			"params": [{ "name": "handleType", "type": "TypeInfo" }],
+			"csharp": { "member": "HandlePointeeName", "kind": "method" }
+		}
+	]
+}

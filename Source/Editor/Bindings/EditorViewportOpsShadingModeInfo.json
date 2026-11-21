@@ -1,0 +1,54 @@
+{
+	"area": "EditorViewportOpsShadingModeInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorViewportOps.h",
+		"Shalltear/Core/Graphics/RenderSystem.h"
+	],
+	"class": "Shalltear.Editor.EditorViewportOpsShadingModeInfo",
+	"instance": "EditorViewportOpsShadingModeInfo",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = Slots::KeepFieldText(self, 0x46008fad7d08dd8bull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetFill",
+			"cpp": "self->fill",
+			"returns": "ViewFill",
+			"params": [],
+			"csharp": { "member": "Fill", "kind": "getter" }
+		},
+		{
+			"id": "SetFill",
+			"cpp": "self->fill = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ViewFill" }],
+			"csharp": { "member": "Fill", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugView",
+			"cpp": "self->debugView",
+			"returns": "DebugView",
+			"params": [],
+			"csharp": { "member": "DebugView", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugView",
+			"cpp": "self->debugView = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "DebugView" }],
+			"csharp": { "member": "DebugView", "kind": "setter" }
+		}
+	]
+}

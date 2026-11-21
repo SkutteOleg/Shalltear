@@ -1,0 +1,128 @@
+{
+	"area": "AnimationCurve",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.AnimationCurve",
+	"instance": "AnimationCurve",
+	"enums": [
+		{
+			"name": "KeyframeTangentMode",
+			"cpp": "::Shalltear::KeyframeTangentMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Free", "value": 0 },
+				{ "name": "Auto", "value": 1 },
+				{ "name": "Linear", "value": 2 },
+				{ "name": "Constant", "value": 3 },
+				{ "name": "ClampedAuto", "value": 4 }
+			]
+		},
+		{
+			"name": "AnimationCurveWrapMode",
+			"cpp": "::Shalltear::AnimationCurveWrapMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Clamp", "value": 0 },
+				{ "name": "Loop", "value": 1 },
+				{ "name": "PingPong", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "Keyframe",
+			"cpp": "::Shalltear::Keyframe",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "time", "type": "f32", "offset": 0 },
+				{ "name": "value", "type": "f32", "offset": 4 },
+				{ "name": "inTangent", "type": "f32", "offset": 8 },
+				{ "name": "outTangent", "type": "f32", "offset": 12 },
+				{ "name": "inTangentMode", "type": "KeyframeTangentMode", "offset": 16 },
+				{ "name": "outTangentMode", "type": "KeyframeTangentMode", "offset": 17 },
+				{ "name": "broken", "type": "bool", "offset": 18 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "AnimationCurve", "cpp": "::Shalltear::AnimationCurve", "owned": true, "create": true },
+		{ "name": "MemoryResource", "cpp": "::std::pmr::memory_resource" }
+	],
+	"functions": [
+		{
+			"id": "Evaluate",
+			"cpp": "self->Evaluate(time)",
+			"returns": "f32",
+			"params": [{ "name": "time", "type": "f32" }],
+			"csharp": { "member": "Evaluate", "kind": "method" }
+		},
+		{
+			"id": "GetKeys",
+			"cpp": "self->keys",
+			"returns": "list<Keyframe>",
+			"params": [],
+			"csharp": { "member": "Keys", "kind": "getter" }
+		},
+		{
+			"id": "SetKeys",
+			"cpp": "self->keys = Slots::ToVector<::Shalltear::Keyframe>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Keyframe>" }],
+			"csharp": { "member": "Keys", "kind": "setter" }
+		},
+		{
+			"id": "GetPreWrapMode",
+			"cpp": "self->preWrapMode",
+			"returns": "AnimationCurveWrapMode",
+			"params": [],
+			"csharp": { "member": "PreWrapMode", "kind": "getter" }
+		},
+		{
+			"id": "SetPreWrapMode",
+			"cpp": "self->preWrapMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurveWrapMode" }],
+			"csharp": { "member": "PreWrapMode", "kind": "setter" }
+		},
+		{
+			"id": "GetPostWrapMode",
+			"cpp": "self->postWrapMode",
+			"returns": "AnimationCurveWrapMode",
+			"params": [],
+			"csharp": { "member": "PostWrapMode", "kind": "getter" }
+		},
+		{
+			"id": "SetPostWrapMode",
+			"cpp": "self->postWrapMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurveWrapMode" }],
+			"csharp": { "member": "PostWrapMode", "kind": "setter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::AnimationCurve(resource)",
+			"returns": "AnimationCurve",
+			"params": [{ "name": "resource", "type": "MemoryResource", "optional": true }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		},
+		{
+			"id": "Create2",
+			"cpp": "Slots::WithInitializerList<::Shalltear::Keyframe>(initial, [&](std::initializer_list<::Shalltear::Keyframe> initialList) { return new ::Shalltear::AnimationCurve(initialList, resource); })",
+			"returns": "AnimationCurve",
+			"params": [
+				{ "name": "initial", "type": "list<Keyframe>" },
+				{ "name": "resource", "type": "MemoryResource", "optional": true }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

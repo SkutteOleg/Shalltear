@@ -1,0 +1,77 @@
+{
+	"area": "TimeSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Time.h"
+	],
+	"class": "Shalltear.Time",
+	"constants": [
+		{ "name": "DEFAULT_MAXIMUM_DELTA_TIME", "cpp": "::Shalltear::DEFAULT_MAXIMUM_DELTA_TIME", "type": "f32", "value": "0x1.99999a0000000p-4" },
+		{ "name": "DEFAULT_FIXED_DELTA_TIME", "cpp": "::Shalltear::DEFAULT_FIXED_DELTA_TIME", "type": "f32", "value": "0x1.1111120000000p-6" }
+	],
+	"functions": [
+		{
+			"id": "GetTicks",
+			"cpp": "::Shalltear::Time::GetTicks()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Ticks", "kind": "getter" }
+		},
+		{
+			"id": "GetTicksPerSecond",
+			"cpp": "::Shalltear::Time::GetTicksPerSecond()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TicksPerSecond", "kind": "getter" }
+		},
+		{
+			"id": "GetRealtimeSinceStartup",
+			"cpp": "::Shalltear::Time::GetRealtimeSinceStartup()",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "RealtimeSinceStartup", "kind": "getter" }
+		},
+		{
+			"id": "GetFrame",
+			"cpp": "::Shalltear::Time::GetFrame()",
+			"returns": "FrameTime",
+			"params": [],
+			"csharp": { "member": "Frame", "kind": "getter" }
+		},
+		{
+			"id": "GetFixedAlpha",
+			"cpp": "::Shalltear::Time::GetFixedAlpha()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FixedAlpha", "kind": "getter" }
+		},
+		{
+			"id": "IsInFixedTimeStep",
+			"cpp": "::Shalltear::Time::IsInFixedTimeStep()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInFixedTimeStep", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetFrameRate",
+			"cpp": "::Shalltear::Time::SetTargetFrameRate(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "TargetFrameRate", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetFrameRate",
+			"cpp": "::Shalltear::Time::GetTargetFrameRate()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "TargetFrameRate", "kind": "getter" }
+		},
+		{
+			"id": "ResetFrameClock",
+			"cpp": "::Shalltear::Time::ResetFrameClock()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetFrameClock", "kind": "method" }
+		}
+	]
+}

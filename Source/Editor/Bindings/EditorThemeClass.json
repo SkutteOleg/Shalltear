@@ -1,0 +1,452 @@
+{
+	"area": "EditorThemeClass",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorTheme.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.EditorThemeClass",
+	"functions": [
+		{
+			"id": "ForLabel",
+			"cpp": "::Shalltear::EditorTheme::Class::ForLabel(labelColor)",
+			"returns": "StringHash",
+			"params": [{ "name": "labelColor", "type": "u8" }],
+			"csharp": { "member": "ForLabel", "kind": "method" }
+		},
+		{
+			"id": "GetLabelClassCount",
+			"cpp": "::Shalltear::EditorTheme::Class::GetLabelClassCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LabelClassCount", "kind": "getter" }
+		},
+		{
+			"id": "GetChromeBar",
+			"cpp": "::Shalltear::EditorTheme::Class::ChromeBar",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ChromeBar", "kind": "getter" }
+		},
+		{
+			"id": "GetTitleBar",
+			"cpp": "::Shalltear::EditorTheme::Class::TitleBar",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TitleBar", "kind": "getter" }
+		},
+		{
+			"id": "GetTitleZone",
+			"cpp": "::Shalltear::EditorTheme::Class::TitleZone",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TitleZone", "kind": "getter" }
+		},
+		{
+			"id": "GetTitleMenu",
+			"cpp": "::Shalltear::EditorTheme::Class::TitleMenu",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TitleMenu", "kind": "getter" }
+		},
+		{
+			"id": "GetToolButton",
+			"cpp": "::Shalltear::EditorTheme::Class::ToolButton",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ToolButton", "kind": "getter" }
+		},
+		{
+			"id": "GetCaptionClose",
+			"cpp": "::Shalltear::EditorTheme::Class::CaptionClose",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "CaptionClose", "kind": "getter" }
+		},
+		{
+			"id": "GetIconButton",
+			"cpp": "::Shalltear::EditorTheme::Class::IconButton",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "IconButton", "kind": "getter" }
+		},
+		{
+			"id": "GetToolButtonOn",
+			"cpp": "::Shalltear::EditorTheme::Class::ToolButtonOn",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ToolButtonOn", "kind": "getter" }
+		},
+		{
+			"id": "GetSwitchGroup",
+			"cpp": "::Shalltear::EditorTheme::Class::SwitchGroup",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SwitchGroup", "kind": "getter" }
+		},
+		{
+			"id": "GetPathCrumb",
+			"cpp": "::Shalltear::EditorTheme::Class::PathCrumb",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "PathCrumb", "kind": "getter" }
+		},
+		{
+			"id": "GetFieldRefused",
+			"cpp": "::Shalltear::EditorTheme::Class::FieldRefused",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "FieldRefused", "kind": "getter" }
+		},
+		{
+			"id": "GetPanelHeader",
+			"cpp": "::Shalltear::EditorTheme::Class::PanelHeader",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "PanelHeader", "kind": "getter" }
+		},
+		{
+			"id": "GetPanelHeaderDrop",
+			"cpp": "::Shalltear::EditorTheme::Class::PanelHeaderDrop",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "PanelHeaderDrop", "kind": "getter" }
+		},
+		{
+			"id": "GetLayoutBar",
+			"cpp": "::Shalltear::EditorTheme::Class::LayoutBar",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "LayoutBar", "kind": "getter" }
+		},
+		{
+			"id": "GetStatusBar",
+			"cpp": "::Shalltear::EditorTheme::Class::StatusBar",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "StatusBar", "kind": "getter" }
+		},
+		{
+			"id": "GetStatusNotice",
+			"cpp": "::Shalltear::EditorTheme::Class::StatusNotice",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "StatusNotice", "kind": "getter" }
+		},
+		{
+			"id": "GetDockGutter",
+			"cpp": "::Shalltear::EditorTheme::Class::DockGutter",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "DockGutter", "kind": "getter" }
+		},
+		{
+			"id": "GetPopupCard",
+			"cpp": "::Shalltear::EditorTheme::Class::PopupCard",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "PopupCard", "kind": "getter" }
+		},
+		{
+			"id": "GetPopupCardCompact",
+			"cpp": "::Shalltear::EditorTheme::Class::PopupCardCompact",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "PopupCardCompact", "kind": "getter" }
+		},
+		{
+			"id": "GetAboutCard",
+			"cpp": "::Shalltear::EditorTheme::Class::AboutCard",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "AboutCard", "kind": "getter" }
+		},
+		{
+			"id": "GetSectionCard",
+			"cpp": "::Shalltear::EditorTheme::Class::SectionCard",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SectionCard", "kind": "getter" }
+		},
+		{
+			"id": "GetHubBody",
+			"cpp": "::Shalltear::EditorTheme::Class::HubBody",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "HubBody", "kind": "getter" }
+		},
+		{
+			"id": "GetHubColumns",
+			"cpp": "::Shalltear::EditorTheme::Class::HubColumns",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "HubColumns", "kind": "getter" }
+		},
+		{
+			"id": "GetHubRow",
+			"cpp": "::Shalltear::EditorTheme::Class::HubRow",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "HubRow", "kind": "getter" }
+		},
+		{
+			"id": "GetClickable",
+			"cpp": "::Shalltear::EditorTheme::Class::Clickable",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Clickable", "kind": "getter" }
+		},
+		{
+			"id": "GetDragHandle",
+			"cpp": "::Shalltear::EditorTheme::Class::DragHandle",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "DragHandle", "kind": "getter" }
+		},
+		{
+			"id": "GetRowPing",
+			"cpp": "::Shalltear::EditorTheme::Class::RowPing",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "RowPing", "kind": "getter" }
+		},
+		{
+			"id": "GetSectionHeader",
+			"cpp": "::Shalltear::EditorTheme::Class::SectionHeader",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SectionHeader", "kind": "getter" }
+		},
+		{
+			"id": "GetComponentCard",
+			"cpp": "::Shalltear::EditorTheme::Class::ComponentCard",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ComponentCard", "kind": "getter" }
+		},
+		{
+			"id": "GetStageBreadcrumb",
+			"cpp": "::Shalltear::EditorTheme::Class::StageBreadcrumb",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "StageBreadcrumb", "kind": "getter" }
+		},
+		{
+			"id": "GetInsertStrip",
+			"cpp": "::Shalltear::EditorTheme::Class::InsertStrip",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "InsertStrip", "kind": "getter" }
+		},
+		{
+			"id": "GetFieldLabel",
+			"cpp": "::Shalltear::EditorTheme::Class::FieldLabel",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "FieldLabel", "kind": "getter" }
+		},
+		{
+			"id": "GetRowText",
+			"cpp": "::Shalltear::EditorTheme::Class::RowText",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "RowText", "kind": "getter" }
+		},
+		{
+			"id": "GetLogRow",
+			"cpp": "::Shalltear::EditorTheme::Class::LogRow",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "LogRow", "kind": "getter" }
+		},
+		{
+			"id": "GetOverrideMark",
+			"cpp": "::Shalltear::EditorTheme::Class::OverrideMark",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "OverrideMark", "kind": "getter" }
+		},
+		{
+			"id": "GetObjectField",
+			"cpp": "::Shalltear::EditorTheme::Class::ObjectField",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ObjectField", "kind": "getter" }
+		},
+		{
+			"id": "GetObjectFieldButton",
+			"cpp": "::Shalltear::EditorTheme::Class::ObjectFieldButton",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ObjectFieldButton", "kind": "getter" }
+		},
+		{
+			"id": "GetRowReveal",
+			"cpp": "::Shalltear::EditorTheme::Class::RowReveal",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "RowReveal", "kind": "getter" }
+		},
+		{
+			"id": "GetRowOff",
+			"cpp": "::Shalltear::EditorTheme::Class::RowOff",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "RowOff", "kind": "getter" }
+		},
+		{
+			"id": "GetDisabled",
+			"cpp": "::Shalltear::EditorTheme::Class::Disabled",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Disabled", "kind": "getter" }
+		},
+		{
+			"id": "GetGraph",
+			"cpp": "::Shalltear::EditorTheme::Class::Graph",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Graph", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphPreviewWell",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphPreviewWell",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphPreviewWell", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphPreviewStrip",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphPreviewStrip",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphPreviewStrip", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphInlineField",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphInlineField",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphInlineField", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphBlock",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphBlock",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphBlock", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphFlowPort",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphFlowPort",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphFlowPort", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphSettingAction",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphSettingAction",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphSettingAction", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphSpaceButton",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphSpaceButton",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphSpaceButton", "kind": "getter" }
+		},
+		{
+			"id": "GetGraphBoard",
+			"cpp": "::Shalltear::EditorTheme::Class::GraphBoard",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "GraphBoard", "kind": "getter" }
+		},
+		{
+			"id": "GetCurveEditor",
+			"cpp": "::Shalltear::EditorTheme::Class::CurveEditor",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "CurveEditor", "kind": "getter" }
+		},
+		{
+			"id": "GetCurveEditorPlot",
+			"cpp": "::Shalltear::EditorTheme::Class::CurveEditorPlot",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "CurveEditorPlot", "kind": "getter" }
+		},
+		{
+			"id": "GetViewportPlaceholder",
+			"cpp": "::Shalltear::EditorTheme::Class::ViewportPlaceholder",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "ViewportPlaceholder", "kind": "getter" }
+		},
+		{
+			"id": "GetSceneFollow",
+			"cpp": "::Shalltear::EditorTheme::Class::SceneFollow",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SceneFollow", "kind": "getter" }
+		},
+		{
+			"id": "GetSceneOrientation",
+			"cpp": "::Shalltear::EditorTheme::Class::SceneOrientation",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SceneOrientation", "kind": "getter" }
+		},
+		{
+			"id": "GetSceneOrientationCube",
+			"cpp": "::Shalltear::EditorTheme::Class::SceneOrientationCube",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SceneOrientationCube", "kind": "getter" }
+		},
+		{
+			"id": "GetSceneOverlay",
+			"cpp": "::Shalltear::EditorTheme::Class::SceneOverlay",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SceneOverlay", "kind": "getter" }
+		},
+		{
+			"id": "GetSceneOverlayCard",
+			"cpp": "::Shalltear::EditorTheme::Class::SceneOverlayCard",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "SceneOverlayCard", "kind": "getter" }
+		},
+		{
+			"id": "GetPlayTint",
+			"cpp": "::Shalltear::EditorTheme::Class::PlayTint",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "PlayTint", "kind": "getter" }
+		},
+		{
+			"id": "GetUIDebugBand",
+			"cpp": "::Shalltear::EditorTheme::Class::UIDebugBand",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "UIDebugBand", "kind": "getter" }
+		},
+		{
+			"id": "GetUIDebugValue",
+			"cpp": "::Shalltear::EditorTheme::Class::UIDebugValue",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "UIDebugValue", "kind": "getter" }
+		},
+		{
+			"id": "GetUIDebugLink",
+			"cpp": "::Shalltear::EditorTheme::Class::UIDebugLink",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "UIDebugLink", "kind": "getter" }
+		}
+	]
+}

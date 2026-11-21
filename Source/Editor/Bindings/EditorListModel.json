@@ -1,0 +1,21 @@
+{
+	"area": "EditorListModel",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorListModel.h",
+		"Shalltear/Core/Input/InputCodes.h"
+	],
+	"class": "Shalltear.Editor.EditorListModel",
+	"functions": [
+		{
+			"id": "TranslateKey",
+			"cpp": "::Shalltear::TranslateKey(key, mods)",
+			"returns": "ListNavigation",
+			"params": [
+				{ "name": "key", "type": "Key" },
+				{ "name": "mods", "type": "KeyMod" }
+			],
+			"csharp": { "member": "TranslateKey", "kind": "method" }
+		}
+	]
+}

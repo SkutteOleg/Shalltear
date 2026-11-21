@@ -1,0 +1,55 @@
+{
+	"area": "RHINativeSwapChainDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/NativeWindow.h"
+	],
+	"class": "Shalltear.RHINativeSwapChainDesc",
+	"instance": "RHINativeSwapChainDesc",
+	"functions": [
+		{
+			"id": "GetWindow",
+			"cpp": "&self->window",
+			"returns": "NativeWindowHandle",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "NativeWindowHandle" }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		},
+		{
+			"id": "GetSizePx",
+			"cpp": "self->sizePx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetSizePx",
+			"cpp": "self->sizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "SizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetVsync",
+			"cpp": "self->vsync",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Vsync", "kind": "getter" }
+		},
+		{
+			"id": "SetVsync",
+			"cpp": "self->vsync = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Vsync", "kind": "setter" }
+		}
+	]
+}

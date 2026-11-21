@@ -23,6 +23,16 @@ sealed class Awaiter : Behavior {
 	}
 }
 
+static class FieldProbe {
+	static RHIBufferDesc? _left;
+
+	[ConformanceTest]
+	internal static void LeavesAViewField() {
+		_left = new RHIBufferDesc();
+		_left.DebugName = "left for the unload";
+	}
+}
+
 static class AwaitProbe {
 	static async void ThrowAfterFrame() {
 		await Time.NextFrame();

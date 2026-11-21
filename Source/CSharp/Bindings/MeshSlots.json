@@ -1,0 +1,168 @@
+{
+	"area": "MeshSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MeshAsset.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.Mesh",
+	"instance": "Mesh",
+	"functions": [
+		{
+			"id": "GetVertices",
+			"cpp": "self->vertices",
+			"returns": "list<MeshVertex>",
+			"params": [],
+			"csharp": { "member": "Vertices", "kind": "getter" }
+		},
+		{
+			"id": "SetVertices",
+			"cpp": "self->vertices = Slots::ToVector<::Shalltear::MeshVertex>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MeshVertex>" }],
+			"csharp": { "member": "Vertices", "kind": "setter" }
+		},
+		{
+			"id": "GetIndices",
+			"cpp": "self->indices",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "Indices", "kind": "getter" }
+		},
+		{
+			"id": "SetIndices",
+			"cpp": "self->indices = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "Indices", "kind": "setter" }
+		},
+		{
+			"id": "GetSubmeshes",
+			"cpp": "self->submeshes",
+			"returns": "list<SubMesh>",
+			"params": [],
+			"csharp": { "member": "Submeshes", "kind": "getter" }
+		},
+		{
+			"id": "SetSubmeshes",
+			"cpp": "self->submeshes = Slots::ToVector<::Shalltear::SubMesh>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<SubMesh>" }],
+			"csharp": { "member": "Submeshes", "kind": "setter" }
+		},
+		{
+			"id": "GetBounds",
+			"cpp": "self->bounds",
+			"returns": "AABB",
+			"params": [],
+			"csharp": { "member": "Bounds", "kind": "getter" }
+		},
+		{
+			"id": "SetBounds",
+			"cpp": "self->bounds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AABB" }],
+			"csharp": { "member": "Bounds", "kind": "setter" }
+		},
+		{
+			"id": "GetSkinInfluences",
+			"cpp": "self->skinInfluences",
+			"returns": "list<MeshSkinInfluence>",
+			"params": [],
+			"csharp": { "member": "SkinInfluences", "kind": "getter" }
+		},
+		{
+			"id": "SetSkinInfluences",
+			"cpp": "self->skinInfluences = Slots::Copies<::Shalltear::Vector<::Shalltear::MeshSkinInfluence>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MeshSkinInfluence>" }],
+			"csharp": { "member": "SkinInfluences", "kind": "setter" }
+		},
+		{
+			"id": "GetBlendShapes",
+			"cpp": "self->blendShapes",
+			"returns": "list<MeshBlendShape>",
+			"params": [],
+			"csharp": { "member": "BlendShapes", "kind": "getter" }
+		},
+		{
+			"id": "SetBlendShapes",
+			"cpp": "self->blendShapes = Slots::Copies<::Shalltear::Vector<::Shalltear::MeshBlendShape>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MeshBlendShape>" }],
+			"csharp": { "member": "BlendShapes", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultMaterials",
+			"cpp": "self->defaultMaterials",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "DefaultMaterials", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultMaterials",
+			"cpp": "self->defaultMaterials = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "DefaultMaterials", "kind": "setter" }
+		},
+		{
+			"id": "GetVertexBuffer",
+			"cpp": "self->vertexBuffer",
+			"returns": "RHIBufferHandle",
+			"params": [],
+			"csharp": { "member": "VertexBuffer", "kind": "getter" }
+		},
+		{
+			"id": "SetVertexBuffer",
+			"cpp": "self->vertexBuffer = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "VertexBuffer", "kind": "setter" }
+		},
+		{
+			"id": "GetIndexBuffer",
+			"cpp": "self->indexBuffer",
+			"returns": "RHIBufferHandle",
+			"params": [],
+			"csharp": { "member": "IndexBuffer", "kind": "getter" }
+		},
+		{
+			"id": "SetIndexBuffer",
+			"cpp": "self->indexBuffer = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIBufferHandle" }],
+			"csharp": { "member": "IndexBuffer", "kind": "setter" }
+		},
+		{
+			"id": "GetVertexBufferAddress",
+			"cpp": "self->vertexBufferAddress",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "VertexBufferAddress", "kind": "getter" }
+		},
+		{
+			"id": "SetVertexBufferAddress",
+			"cpp": "self->vertexBufferAddress = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "VertexBufferAddress", "kind": "setter" }
+		},
+		{
+			"id": "GetIndexBufferAddress",
+			"cpp": "self->indexBufferAddress",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "IndexBufferAddress", "kind": "getter" }
+		},
+		{
+			"id": "SetIndexBufferAddress",
+			"cpp": "self->indexBufferAddress = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "IndexBufferAddress", "kind": "setter" }
+		}
+	]
+}

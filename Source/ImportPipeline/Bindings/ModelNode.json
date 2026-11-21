@@ -1,0 +1,139 @@
+{
+	"area": "ModelNode",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.ModelNode",
+	"instance": "ModelNode",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetRotation",
+			"cpp": "self->rotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "Rotation", "kind": "getter" }
+		},
+		{
+			"id": "SetRotation",
+			"cpp": "self->rotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "Rotation", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "getter" }
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetShearedMatrix",
+			"cpp": "self->shearedMatrix",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ShearedMatrix", "kind": "getter" }
+		},
+		{
+			"id": "SetShearedMatrix",
+			"cpp": "self->shearedMatrix = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ShearedMatrix", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalMatrix",
+			"cpp": "&self->localMatrix",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "LocalMatrix", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetLocalMatrix",
+			"cpp": "self->localMatrix = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "LocalMatrix", "kind": "setter" }
+		},
+		{
+			"id": "GetMesh",
+			"cpp": "self->mesh",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Mesh", "kind": "getter" }
+		},
+		{
+			"id": "SetMesh",
+			"cpp": "self->mesh = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Mesh", "kind": "setter" }
+		},
+		{
+			"id": "GetSkin",
+			"cpp": "self->skin",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Skin", "kind": "getter" }
+		},
+		{
+			"id": "SetSkin",
+			"cpp": "self->skin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Skin", "kind": "setter" }
+		}
+	]
+}

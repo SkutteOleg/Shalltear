@@ -1,0 +1,123 @@
+{
+	"area": "SceneObjectSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.SceneObject",
+	"instance": "SceneObject",
+	"functions": [
+		{
+			"id": "GetScene",
+			"cpp": "self->GetScene()",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Scene", "kind": "getter" }
+		},
+		{
+			"id": "GetLocalId",
+			"cpp": "self->GetLocalId()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LocalId", "kind": "getter" }
+		},
+		{
+			"id": "GetPrefabKey",
+			"cpp": "self->GetPrefabKey()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PrefabKey", "kind": "getter" }
+		},
+		{
+			"id": "IsPendingDestroy",
+			"cpp": "self->IsPendingDestroy()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPendingDestroy", "kind": "getter" }
+		},
+		{
+			"id": "SetSiblingIndex",
+			"cpp": "self->SetSiblingIndex(index)",
+			"returns": "void",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "SetSiblingIndex", "kind": "method" }
+		},
+		{
+			"id": "GetWorldMatrix",
+			"cpp": "self->GetWorldMatrix()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "WorldMatrix", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "TransformPoint",
+			"cpp": "self->TransformPoint(point)",
+			"returns": "Vec3",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "TransformPoint", "kind": "method" }
+		},
+		{
+			"id": "TransformDirection",
+			"cpp": "self->TransformDirection(direction)",
+			"returns": "Vec3",
+			"params": [{ "name": "direction", "type": "Vec3" }],
+			"csharp": { "member": "TransformDirection", "kind": "method" }
+		},
+		{
+			"id": "InverseTransformPoint",
+			"cpp": "self->InverseTransformPoint(point)",
+			"returns": "Vec3",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "InverseTransformPoint", "kind": "method" }
+		},
+		{
+			"id": "GetComponentCount",
+			"cpp": "self->GetComponentCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ComponentCount", "kind": "getter" }
+		},
+		{
+			"id": "GetComponentAt",
+			"cpp": "self->GetComponentAt(index)",
+			"returns": "Component",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetComponentAt", "kind": "method" }
+		},
+		{
+			"id": "SetComponentIndex",
+			"cpp": "self->SetComponentIndex(::Shalltear::Handle<::Shalltear::Component>(component), index)",
+			"returns": "void",
+			"params": [
+				{ "name": "component", "type": "Component", "optional": true },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "SetComponentIndex", "kind": "method" }
+		},
+		{
+			"id": "NotifyLocalTransformWritten",
+			"cpp": "self->NotifyLocalTransformWritten()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NotifyLocalTransformWritten", "kind": "method" }
+		},
+		{
+			"id": "GetNameField",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "NameField", "kind": "getter" }
+		},
+		{
+			"id": "SetNameField",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "NameField", "kind": "setter" }
+		}
+	]
+}

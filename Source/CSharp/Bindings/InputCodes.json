@@ -1,0 +1,58 @@
+{
+	"area": "InputCodes",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Input/InputCodes.h"
+	],
+	"class": "Shalltear.InputCodes",
+	"functions": [
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "KeyMod" },
+				{ "name": "flags", "type": "KeyMod" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "KeyMod" },
+				{ "name": "flags", "type": "KeyMod" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "KeyFromString",
+			"cpp": "::Shalltear::KeyFromString(name)",
+			"returns": "Key",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "KeyFromString", "kind": "method" }
+		},
+		{
+			"id": "MouseButtonFromString",
+			"cpp": "::Shalltear::MouseButtonFromString(name)",
+			"returns": "MouseButton",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "MouseButtonFromString", "kind": "method" }
+		},
+		{
+			"id": "GamepadButtonFromString",
+			"cpp": "::Shalltear::GamepadButtonFromString(name)",
+			"returns": "GamepadButton",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GamepadButtonFromString", "kind": "method" }
+		},
+		{
+			"id": "GamepadAxisFromString",
+			"cpp": "::Shalltear::GamepadAxisFromString(name)",
+			"returns": "GamepadAxis",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GamepadAxisFromString", "kind": "method" }
+		}
+	]
+}

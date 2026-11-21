@@ -1,0 +1,81 @@
+{
+	"area": "GraphSearchEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphSearch.h"
+	],
+	"class": "Shalltear.Editor.GraphSearchEntry",
+	"instance": "GraphSearchEntry",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetCategory",
+			"cpp": "self->category",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Category", "kind": "getter" }
+		},
+		{
+			"id": "SetCategory",
+			"cpp": "self->category = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Category", "kind": "setter" }
+		},
+		{
+			"id": "GetSynonyms",
+			"cpp": "self->synonyms",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Synonyms", "kind": "getter" }
+		},
+		{
+			"id": "SetSynonyms",
+			"cpp": "self->synonyms = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Synonyms", "kind": "setter" }
+		},
+		{
+			"id": "GetDetail",
+			"cpp": "self->detail",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Detail", "kind": "getter" }
+		},
+		{
+			"id": "SetDetail",
+			"cpp": "self->detail = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Detail", "kind": "setter" }
+		},
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,470 @@
+{
+	"area": "EditorGizmoOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmoOps.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Editor/EditorViewportOps.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.EditorGizmoOps",
+	"enums": [
+		{
+			"name": "EditorGizmoOpsGizmoHandle",
+			"cpp": "::Shalltear::EditorGizmoOps::GizmoHandle",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "AxisX", "value": 1 },
+				{ "name": "AxisY", "value": 2 },
+				{ "name": "AxisZ", "value": 3 },
+				{ "name": "PlaneYZ", "value": 4 },
+				{ "name": "PlaneZX", "value": 5 },
+				{ "name": "PlaneXY", "value": 6 },
+				{ "name": "Screen", "value": 7 },
+				{ "name": "ScreenRotate", "value": 8 }
+			]
+		},
+		{
+			"name": "GizmoMode",
+			"cpp": "::Shalltear::GizmoMode",
+			"underlying": "i32",
+			"values": [
+				{ "name": "Translate", "value": 0 },
+				{ "name": "Rotate", "value": 1 },
+				{ "name": "Scale", "value": 2 }
+			]
+		},
+		{
+			"name": "GizmoSpace",
+			"cpp": "::Shalltear::GizmoSpace",
+			"underlying": "i32",
+			"values": [
+				{ "name": "Local", "value": 0 },
+				{ "name": "World", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorGizmoOpsGizmoDesc",
+			"cpp": "::Shalltear::EditorGizmoOps::GizmoDesc",
+			"size": 96,
+			"align": 16,
+			"fields": [
+				{ "name": "origin", "type": "Vec3", "offset": 0 },
+				{ "name": "orientation", "type": "Quat", "offset": 16 },
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint", "offset": 32 },
+				{ "name": "mode", "type": "GizmoMode", "offset": 80 },
+				{ "name": "scale", "type": "f32", "offset": 84 },
+				{ "name": "pickTolerance", "type": "f32", "offset": 88 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsGizmoHit",
+			"cpp": "::Shalltear::EditorGizmoOps::GizmoHit",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "handle", "type": "EditorGizmoOpsGizmoHandle", "offset": 0 },
+				{ "name": "distance", "type": "f32", "offset": 4 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsDragState",
+			"cpp": "::Shalltear::EditorGizmoOps::DragState",
+			"size": 88,
+			"align": 4,
+			"fields": [
+				{ "name": "handle", "type": "EditorGizmoOpsGizmoHandle", "offset": 0 },
+				{ "name": "origin", "type": "Vec3", "offset": 4 },
+				{ "name": "axisWorld", "type": "Vec3", "offset": 16 },
+				{ "name": "scaleMask", "type": "Vec3", "offset": 28 },
+				{ "name": "planeNormal", "type": "Vec3", "offset": 40 },
+				{ "name": "grabPoint", "type": "Vec3", "offset": 52 },
+				{ "name": "dragDirection", "type": "Vec3", "offset": 64 },
+				{ "name": "previousAngle", "type": "f32", "offset": 76 },
+				{ "name": "accumulatedAngle", "type": "f32", "offset": 80 },
+				{ "name": "referenceScale", "type": "f32", "offset": 84 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsDragValue",
+			"cpp": "::Shalltear::EditorGizmoOps::DragValue",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "translation", "type": "Vec3", "offset": 0 },
+				{ "name": "angleRadians", "type": "f32", "offset": 12 },
+				{ "name": "scaleMultiplier", "type": "Vec3", "offset": 16 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsSnapSettings",
+			"cpp": "::Shalltear::EditorGizmoOps::SnapSettings",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "translate", "type": "f32", "offset": 0 },
+				{ "name": "rotateDeg", "type": "f32", "offset": 4 },
+				{ "name": "scale", "type": "f32", "offset": 8 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsDragOutcome",
+			"cpp": "::Shalltear::EditorGizmoOps::DragOutcome",
+			"size": 48,
+			"align": 16,
+			"fields": [
+				{ "name": "localPosition", "type": "Vec3", "offset": 0 },
+				{ "name": "localRotation", "type": "Quat", "offset": 16 },
+				{ "name": "localScale", "type": "Vec3", "offset": 32 },
+				{ "name": "positionChanged", "type": "bool", "offset": 44 },
+				{ "name": "rotationChanged", "type": "bool", "offset": 45 },
+				{ "name": "scaleChanged", "type": "bool", "offset": 46 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsRadiusDot",
+			"cpp": "::Shalltear::EditorGizmoOps::RadiusDot",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "position", "type": "Vec3", "offset": 0 },
+				{ "name": "axis", "type": "Vec3", "offset": 12 },
+				{ "name": "front", "type": "bool", "offset": 24 }
+			]
+		},
+		{
+			"name": "EditorGizmoOpsRadiusDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::RadiusDrag",
+			"size": 44,
+			"align": 4,
+			"fields": [
+				{ "name": "center", "type": "Vec3", "offset": 0 },
+				{ "name": "axis", "type": "Vec3", "offset": 12 },
+				{ "name": "planeNormal", "type": "Vec3", "offset": 24 },
+				{ "name": "startRadius", "type": "f32", "offset": 36 },
+				{ "name": "grabAlong", "type": "f32", "offset": 40 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorGizmoOpsDragSnapshot", "cpp": "::Shalltear::EditorGizmoOps::DragSnapshot", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "HANDLE_PICK_PX", "cpp": "::Shalltear::EditorGizmoOps::HANDLE_PICK_PX", "type": "f32", "value": "0x1.4000000000000p+3" },
+		{ "name": "GIZMO_VIEW_FRACTION", "cpp": "::Shalltear::EditorGizmoOps::GIZMO_VIEW_FRACTION", "type": "f32", "value": "0x1.3f40a20000000p-3" },
+		{ "name": "RING_GRAZING_MINIMUM", "cpp": "::Shalltear::EditorGizmoOps::RING_GRAZING_MINIMUM", "type": "f32", "value": "0x1.47ae140000000p-6" },
+		{ "name": "RING_BACK_HALF_COS", "cpp": "::Shalltear::EditorGizmoOps::RING_BACK_HALF_COS", "type": "f32", "value": "0x1.99999a0000000p-5" },
+		{ "name": "PLANE_HANDLE_OFFSET", "cpp": "::Shalltear::EditorGizmoOps::PLANE_HANDLE_OFFSET", "type": "f32", "value": "0x1.6666660000000p-2" },
+		{ "name": "PLANE_HANDLE_SIZE", "cpp": "::Shalltear::EditorGizmoOps::PLANE_HANDLE_SIZE", "type": "f32", "value": "0x1.3333340000000p-2" },
+		{ "name": "SCREEN_HANDLE_HALF", "cpp": "::Shalltear::EditorGizmoOps::SCREEN_HANDLE_HALF", "type": "f32", "value": "0x1.eb851e0000000p-4" },
+		{ "name": "VERTEX_MARKER_HALF", "cpp": "::Shalltear::EditorGizmoOps::VERTEX_MARKER_HALF", "type": "f32", "value": "0x1.1eb8520000000p-4" },
+		{ "name": "SCREEN_RING_SCALE", "cpp": "::Shalltear::EditorGizmoOps::SCREEN_RING_SCALE", "type": "f32", "value": "0x1.3333340000000p+0" },
+		{ "name": "RADIUS_AXIS_MIN_DEGREES", "cpp": "::Shalltear::EditorGizmoOps::RADIUS_AXIS_MIN_DEGREES", "type": "f32", "value": "0x1.4000000000000p+2" },
+		{ "name": "RADIUS_DOT_HALF", "cpp": "::Shalltear::EditorGizmoOps::RADIUS_DOT_HALF", "type": "f32", "value": "0x1.eb851e0000000p-6" }
+	],
+	"functions": [
+		{
+			"id": "HandleIsInMode",
+			"cpp": "::Shalltear::EditorGizmoOps::HandleIsInMode(handle, mode)",
+			"returns": "bool",
+			"params": [
+				{ "name": "handle", "type": "EditorGizmoOpsGizmoHandle" },
+				{ "name": "mode", "type": "GizmoMode" }
+			],
+			"csharp": { "member": "HandleIsInMode", "kind": "method" }
+		},
+		{
+			"id": "OrientationForSpace",
+			"cpp": "::Shalltear::EditorGizmoOps::OrientationForSpace(space, mode, targetWorldRotation)",
+			"returns": "Quat",
+			"params": [
+				{ "name": "space", "type": "GizmoSpace" },
+				{ "name": "mode", "type": "GizmoMode" },
+				{ "name": "targetWorldRotation", "type": "Quat" }
+			],
+			"csharp": { "member": "OrientationForSpace", "kind": "method" }
+		},
+		{
+			"id": "SnapToIncrement",
+			"cpp": "::Shalltear::EditorGizmoOps::SnapToIncrement(valueValue, increment)",
+			"returns": "f32",
+			"params": [
+				{ "name": "valueValue", "type": "f32" },
+				{ "name": "increment", "type": "f32" }
+			],
+			"csharp": { "member": "SnapToIncrement", "kind": "method" }
+		},
+		{
+			"id": "SnapChangedComponents",
+			"cpp": "::Shalltear::EditorGizmoOps::SnapChangedComponents(valueValue, reference, increment)",
+			"returns": "Vec3",
+			"params": [
+				{ "name": "valueValue", "type": "Vec3" },
+				{ "name": "reference", "type": "Vec3" },
+				{ "name": "increment", "type": "f32" }
+			],
+			"csharp": { "member": "SnapChangedComponents", "kind": "method" }
+		},
+		{
+			"id": "HandleScaleAt",
+			"cpp": "::Shalltear::EditorGizmoOps::HandleScaleAt(viewpoint, origin)",
+			"returns": "f32",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "origin", "type": "Vec3" }
+			],
+			"csharp": { "member": "HandleScaleAt", "kind": "method" }
+		},
+		{
+			"id": "WorldRadiusForPixels",
+			"cpp": "::Shalltear::EditorGizmoOps::WorldRadiusForPixels(viewpoint, point, viewportHeightPx, pixels)",
+			"returns": "f32",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "point", "type": "Vec3" },
+				{ "name": "viewportHeightPx", "type": "f32" },
+				{ "name": "pixels", "type": "f32" }
+			],
+			"csharp": { "member": "WorldRadiusForPixels", "kind": "method" }
+		},
+		{
+			"id": "AppendGizmo",
+			"cpp": "::Shalltear::EditorGizmoOps::AppendGizmo(outValue, desc, hovered, dragged)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "desc", "type": "EditorGizmoOpsGizmoDesc" },
+				{ "name": "hovered", "type": "EditorGizmoOpsGizmoHandle" },
+				{ "name": "dragged", "type": "EditorGizmoOpsGizmoHandle" }
+			],
+			"csharp": { "member": "AppendGizmo", "kind": "method" }
+		},
+		{
+			"id": "AppendVertexMarker",
+			"cpp": "::Shalltear::EditorGizmoOps::AppendVertexMarker(outValue, world, cameraRotation, halfSize, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "world", "type": "Vec3" },
+				{ "name": "cameraRotation", "type": "Quat" },
+				{ "name": "halfSize", "type": "f32" },
+				{ "name": "color", "type": "Color32" }
+			],
+			"csharp": { "member": "AppendVertexMarker", "kind": "method" }
+		},
+		{
+			"id": "HitTest",
+			"cpp": "::Shalltear::EditorGizmoOps::HitTest(desc, ray)",
+			"returns": "EditorGizmoOpsGizmoHit",
+			"params": [
+				{ "name": "desc", "type": "EditorGizmoOpsGizmoDesc" },
+				{ "name": "ray", "type": "Ray" }
+			],
+			"csharp": { "member": "HitTest", "kind": "method" }
+		},
+		{
+			"id": "BeginDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::BeginDrag(desc, handle, ray, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "desc", "type": "EditorGizmoOpsGizmoDesc" },
+				{ "name": "handle", "type": "EditorGizmoOpsGizmoHandle" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outValue", "type": "EditorGizmoOpsDragState", "out": true }
+			],
+			"csharp": { "member": "BeginDrag", "kind": "method" }
+		},
+		{
+			"id": "UpdateDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::UpdateDrag(desc, state, ray, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "desc", "type": "EditorGizmoOpsGizmoDesc" },
+				{ "name": "state", "type": "EditorGizmoOpsDragState", "out": true },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outValue", "type": "EditorGizmoOpsDragValue", "out": true }
+			],
+			"csharp": { "member": "UpdateDrag", "kind": "method" }
+		},
+		{
+			"id": "PivotFor",
+			"cpp": "::Shalltear::EditorGizmoOps::PivotFor(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(targets)))",
+			"returns": "Vec3",
+			"params": [{ "name": "targets", "type": "list<SceneObject>" }],
+			"csharp": { "member": "PivotFor", "kind": "method" }
+		},
+		{
+			"id": "SnapshotTargets",
+			"cpp": "::Shalltear::EditorGizmoOps::SnapshotTargets(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(targets)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "targets", "type": "list<SceneObject>" },
+				{
+					"name": "outValue",
+					"type": "list<EditorGizmoOpsDragSnapshot>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::EditorGizmoOps::DragSnapshot>"
+				}
+			],
+			"csharp": { "member": "SnapshotTargets", "kind": "method" }
+		},
+		{
+			"id": "SolveDragTargets",
+			"cpp": "::Shalltear::EditorGizmoOps::SolveDragTargets(std::span<const ::Shalltear::EditorGizmoOps::DragSnapshot>(Slots::Copies<::Shalltear::Vector<::Shalltear::EditorGizmoOps::DragSnapshot>>(starts)), mode, drag, valueValue, pivot, gizmoOrientation, snap, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "starts", "type": "list<EditorGizmoOpsDragSnapshot>" },
+				{ "name": "mode", "type": "GizmoMode" },
+				{ "name": "drag", "type": "EditorGizmoOpsDragState" },
+				{ "name": "valueValue", "type": "EditorGizmoOpsDragValue" },
+				{ "name": "pivot", "type": "Vec3" },
+				{ "name": "gizmoOrientation", "type": "Quat" },
+				{ "name": "snap", "type": "EditorGizmoOpsSnapSettings" },
+				{ "name": "outValue", "type": "list<EditorGizmoOpsDragOutcome>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::EditorGizmoOps::DragOutcome>" }
+			],
+			"csharp": { "member": "SolveDragTargets", "kind": "method" }
+		},
+		{
+			"id": "RadiusDots",
+			"cpp": "::Shalltear::EditorGizmoOps::RadiusDots(viewpoint, center, rotation, radius, *reinterpret_cast<::Shalltear::EditorGizmoOps::RadiusDot (*)[6]>(outValue.data()))",
+			"returns": "u32",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "center", "type": "Vec3" },
+				{ "name": "rotation", "type": "Quat" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "outValue", "type": "list<EditorGizmoOpsRadiusDot>", "out": true, "cpp": "std::array<::Shalltear::EditorGizmoOps::RadiusDot, 6>" }
+			],
+			"csharp": { "member": "RadiusDots", "kind": "method" }
+		},
+		{
+			"id": "HitRadiusDots",
+			"cpp": "::Shalltear::EditorGizmoOps::HitRadiusDots(dots, viewpoint, viewportHeightPx, ray, outRayT)",
+			"returns": "i32",
+			"params": [
+				{ "name": "dots", "type": "list<EditorGizmoOpsRadiusDot>" },
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "viewportHeightPx", "type": "f32" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outRayT", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "HitRadiusDots", "kind": "method" }
+		},
+		{
+			"id": "AppendRadiusDots",
+			"cpp": "::Shalltear::EditorGizmoOps::AppendRadiusDots(outValue, dots, viewpoint, color, highlighted)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<DebugLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::DebugLine>" },
+				{ "name": "dots", "type": "list<EditorGizmoOpsRadiusDot>" },
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "color", "type": "Color32" },
+				{ "name": "highlighted", "type": "i32" }
+			],
+			"csharp": { "member": "AppendRadiusDots", "kind": "method" }
+		},
+		{
+			"id": "BeginRadiusDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::BeginRadiusDrag(viewpoint, center, dot, radius, ray, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "center", "type": "Vec3" },
+				{ "name": "dot", "type": "EditorGizmoOpsRadiusDot" },
+				{ "name": "radius", "type": "f32" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outValue", "type": "EditorGizmoOpsRadiusDrag", "out": true }
+			],
+			"csharp": { "member": "BeginRadiusDrag", "kind": "method" }
+		},
+		{
+			"id": "UpdateRadiusDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::UpdateRadiusDrag(drag, ray, outRadius)",
+			"returns": "bool",
+			"params": [
+				{ "name": "drag", "type": "EditorGizmoOpsRadiusDrag" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outRadius", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "UpdateRadiusDrag", "kind": "method" }
+		},
+		{
+			"id": "SceneHandleMode",
+			"cpp": "::Shalltear::EditorGizmoOps::SceneHandleMode(kind, tool, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "kind", "type": "SceneHandleKind" },
+				{ "name": "tool", "type": "GizmoMode" },
+				{ "name": "outValue", "type": "GizmoMode", "out": true }
+			],
+			"csharp": { "member": "SceneHandleMode", "kind": "method" }
+		},
+		{
+			"id": "SceneHandleOrigin",
+			"cpp": "::Shalltear::EditorGizmoOps::SceneHandleOrigin(*handle)",
+			"returns": "Vec3",
+			"params": [{ "name": "handle", "type": "SceneHandle" }],
+			"csharp": { "member": "SceneHandleOrigin", "kind": "method" }
+		},
+		{
+			"id": "SceneHandleRotation",
+			"cpp": "::Shalltear::EditorGizmoOps::SceneHandleRotation(*handle)",
+			"returns": "Quat",
+			"params": [{ "name": "handle", "type": "SceneHandle" }],
+			"csharp": { "member": "SceneHandleRotation", "kind": "method" }
+		},
+		{
+			"id": "SolveSceneHandleDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::SolveSceneHandleDrag(*start, mode, drag, valueValue, gizmoOrientation, snap)",
+			"returns": "SceneHandle",
+			"params": [
+				{ "name": "start", "type": "SceneHandle" },
+				{ "name": "mode", "type": "GizmoMode" },
+				{ "name": "drag", "type": "EditorGizmoOpsDragState" },
+				{ "name": "valueValue", "type": "EditorGizmoOpsDragValue" },
+				{ "name": "gizmoOrientation", "type": "Quat" },
+				{ "name": "snap", "type": "EditorGizmoOpsSnapSettings" }
+			],
+			"csharp": { "member": "SolveSceneHandleDrag", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SliderDot",
+			"cpp": "::Shalltear::EditorGizmoOps::SliderDot(*handle)",
+			"returns": "EditorGizmoOpsRadiusDot",
+			"params": [{ "name": "handle", "type": "SceneHandle" }],
+			"csharp": { "member": "SliderDot", "kind": "method" }
+		},
+		{
+			"id": "BeginSliderDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::BeginSliderDrag(viewpoint, *handle, ray, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "viewpoint", "type": "EditorViewportOpsViewpoint" },
+				{ "name": "handle", "type": "SceneHandle" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outValue", "type": "EditorGizmoOpsRadiusDrag", "out": true }
+			],
+			"csharp": { "member": "BeginSliderDrag", "kind": "method" }
+		},
+		{
+			"id": "UpdateSliderDrag",
+			"cpp": "::Shalltear::EditorGizmoOps::UpdateSliderDrag(drag, *start, ray, outDistance)",
+			"returns": "bool",
+			"params": [
+				{ "name": "drag", "type": "EditorGizmoOpsRadiusDrag" },
+				{ "name": "start", "type": "SceneHandle" },
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "outDistance", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "UpdateSliderDrag", "kind": "method" }
+		}
+	]
+}

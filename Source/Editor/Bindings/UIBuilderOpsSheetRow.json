@@ -1,0 +1,81 @@
+{
+	"area": "UIBuilderOpsSheetRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIBuilderOps.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderOpsSheetRow",
+	"instance": "UIBuilderOpsSheetRow",
+	"functions": [
+		{
+			"id": "GetSheet",
+			"cpp": "self->sheet",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Sheet", "kind": "getter" }
+		},
+		{
+			"id": "SetSheet",
+			"cpp": "self->sheet = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Sheet", "kind": "setter" }
+		},
+		{
+			"id": "GetRule",
+			"cpp": "self->rule",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Rule", "kind": "getter" }
+		},
+		{
+			"id": "SetRule",
+			"cpp": "self->rule = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Rule", "kind": "setter" }
+		},
+		{
+			"id": "GetPath",
+			"cpp": "self->path",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Path", "kind": "getter" }
+		},
+		{
+			"id": "SetPath",
+			"cpp": "self->path = Slots::KeepFieldText(self, 0x1b0f72bc5cd31114ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Path", "kind": "setter" }
+		},
+		{
+			"id": "GetSelector",
+			"cpp": "self->selector",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Selector", "kind": "getter" }
+		},
+		{
+			"id": "SetSelector",
+			"cpp": "self->selector = Slots::KeepFieldText(self, 0x2dc06fcd1f8edc42ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Selector", "kind": "setter" }
+		},
+		{
+			"id": "GetPseudo",
+			"cpp": "self->pseudo",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Pseudo", "kind": "getter" }
+		},
+		{
+			"id": "SetPseudo",
+			"cpp": "self->pseudo = Slots::KeepFieldText(self, 0x87ec84f836568ec5ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Pseudo", "kind": "setter" }
+		}
+	]
+}

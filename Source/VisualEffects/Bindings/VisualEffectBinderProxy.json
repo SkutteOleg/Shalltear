@@ -1,0 +1,72 @@
+{
+	"area": "VisualEffectBinderProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffectBinder.h",
+		"DerivedTypes.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/VisualEffects/VisualEffect.h"
+	],
+	"class": "Shalltear.VisualEffectBinderProxy",
+	"instance": "VisualEffectBinderProxy",
+	"prelude": [
+		"class VisualEffectBinderProxy final : public ::Shalltear::VisualEffectBinder {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::VisualEffectBinder::GetType(); }",
+		"\t~VisualEffectBinderProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<bool(const Shalltear::VisualEffect &)> isValid;",
+		"\tbool IsValid(const Shalltear::VisualEffect & a0) const override {",
+		"\t\treturn isValid ? isValid(a0) : Slots::ResultOf<decltype(isValid)>();",
+		"\t}",
+		"\tstd::function<void(Shalltear::VisualEffect &, float)> updateBinding;",
+		"\tvoid UpdateBinding(Shalltear::VisualEffect & a0, float a1) override {",
+		"\t\tif (updateBinding) {",
+		"\t\t\tupdateBinding(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "VisualEffectBinderProxy", "cpp": "VisualEffectBinderProxy" }],
+	"functions": [
+		{
+			"id": "SetIsValid",
+			"cpp": "self->isValid = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;VisualEffect>", "optional": true, "cpp": "std::function<bool(const Shalltear::VisualEffect &)>" }
+			],
+			"csharp": { "member": "SetIsValid", "kind": "method" }
+		},
+		{
+			"id": "SetUpdateBinding",
+			"cpp": "self->updateBinding = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;VisualEffect;f32>", "optional": true, "cpp": "std::function<void(Shalltear::VisualEffect &, float)>" }
+			],
+			"csharp": { "member": "SetUpdateBinding", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::VisualEffectBinder*>(self)",
+			"returns": "VisualEffectBinder",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<VisualEffectBinderProxy, ::Shalltear::VisualEffectBinder>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;VisualEffectBinderProxy>", "cpp": "std::function<void(VisualEffectBinderProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

@@ -9,8 +9,10 @@
 #include "Shalltear/Core/Types.h"
 
 #include <functional>
+#include <memory>
 #include <span>
 #include <string_view>
+#include <vector>
 
 namespace Shalltear::CSharpImpl::SlotProbe {
 
@@ -115,5 +117,16 @@ namespace Shalltear::CSharpImpl::SlotProbe {
 	void KeepAction(std::function<void(const Recipe&, Vec3)> action);
 	bool RunKept(const Recipe& recipe, const Vec3& at);
 	void DropKept();
+
+	i32 Tally(const std::function<void(i32&, Shape&, Tone&, Vec3&, str&)>& fill);
+	f32 Scale(const std::function<void(std::span<f32>)>& scale);
+	i32 Pass(const std::function<i32(const Vector<i32>&, std::span<const std::string_view>)>& count);
+	Shape Shaped(const std::function<Shape(i32)>& make);
+	i32 Cook(const std::function<Recipe*(std::string_view)>& make);
+	i32 Peek(const std::function<const Recipe*()>& find);
+	str Named(const std::function<Recipe(i32)>& make);
+	i32 Gather(const std::function<Vector<i32>()>& numbers, const std::function<std::vector<Recipe>()>& recipes);
+	std::shared_ptr<Recipe> ShareRecipe(std::string_view name);
+	i32 CountShared(const std::shared_ptr<Recipe>& recipe);
 
 } // namespace Shalltear::CSharpImpl::SlotProbe

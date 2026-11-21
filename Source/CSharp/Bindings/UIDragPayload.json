@@ -1,0 +1,57 @@
+{
+	"area": "UIDragPayload",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.UIDragPayload",
+	"instance": "UIDragPayload",
+	"natives": [{ "name": "UIDragPayload", "cpp": "::Shalltear::UI::DragPayload", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "&self->data",
+			"returns": "Variant",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetData",
+			"cpp": "self->data = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Variant" }],
+			"csharp": { "member": "Data", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplay",
+			"cpp": "self->display",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Display", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplay",
+			"cpp": "self->display = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Display", "kind": "setter" }
+		}
+	]
+}

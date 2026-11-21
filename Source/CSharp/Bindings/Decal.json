@@ -1,0 +1,167 @@
+{
+	"area": "Decal",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/Decal.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h"
+	],
+	"class": "Shalltear.Decal",
+	"instance": "Decal",
+	"types": [{ "name": "Decal", "cpp": "::Shalltear::Decal", "engine": "Decal", "base": "Component" }],
+	"functions": [
+		{
+			"id": "GetMaterial",
+			"cpp": "self->GetMaterial()",
+			"returns": "Material",
+			"params": [],
+			"csharp": { "member": "Material", "kind": "getter" }
+		},
+		{
+			"id": "SetMaterial",
+			"cpp": "self->SetMaterial(::Shalltear::Handle<::Shalltear::MaterialAsset>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Material", "optional": true }],
+			"csharp": { "member": "Material", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->GetSize()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->SetSize(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetPivot",
+			"cpp": "self->GetPivot()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Pivot", "kind": "getter" }
+		},
+		{
+			"id": "SetPivot",
+			"cpp": "self->SetPivot(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Pivot", "kind": "setter" }
+		},
+		{
+			"id": "GetTiling",
+			"cpp": "self->GetTiling()",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Tiling", "kind": "getter" }
+		},
+		{
+			"id": "SetTiling",
+			"cpp": "self->SetTiling(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Tiling", "kind": "setter" }
+		},
+		{
+			"id": "GetOffset",
+			"cpp": "self->GetOffset()",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Offset", "kind": "getter" }
+		},
+		{
+			"id": "SetOffset",
+			"cpp": "self->SetOffset(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Offset", "kind": "setter" }
+		},
+		{
+			"id": "GetOpacity",
+			"cpp": "self->GetOpacity()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Opacity", "kind": "getter" }
+		},
+		{
+			"id": "SetOpacity",
+			"cpp": "self->SetOpacity(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Opacity", "kind": "setter" }
+		},
+		{
+			"id": "GetDrawDistance",
+			"cpp": "self->GetDrawDistance()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DrawDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetDrawDistance",
+			"cpp": "self->SetDrawDistance(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DrawDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetStartFade",
+			"cpp": "self->GetStartFade()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "StartFade", "kind": "getter" }
+		},
+		{
+			"id": "SetStartFade",
+			"cpp": "self->SetStartFade(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "StartFade", "kind": "setter" }
+		},
+		{
+			"id": "GetAngleFade",
+			"cpp": "self->GetAngleFade()",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "AngleFade", "kind": "getter" }
+		},
+		{
+			"id": "SetAngleFade",
+			"cpp": "self->SetAngleFade(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "AngleFade", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->GetPriority()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Priority", "kind": "getter" }
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->SetPriority(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetRenderingLayerMask",
+			"cpp": "self->GetRenderingLayerMask()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RenderingLayerMask", "kind": "getter" }
+		},
+		{
+			"id": "SetRenderingLayerMask",
+			"cpp": "self->SetRenderingLayerMask(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "RenderingLayerMask", "kind": "setter" }
+		}
+	]
+}

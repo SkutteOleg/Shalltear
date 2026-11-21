@@ -1,0 +1,59 @@
+{
+	"area": "EditorThemeThemeDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorTheme.h"
+	],
+	"class": "Shalltear.Editor.EditorThemeThemeDesc",
+	"instance": "EditorThemeThemeDesc",
+	"functions": [
+		{
+			"id": "Set",
+			"cpp": "self->Set(token, cssValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "token", "type": "EditorThemeColorToken" },
+				{ "name": "cssValue", "type": "string" }
+			],
+			"csharp": { "member": "Set", "kind": "method" }
+		},
+		{
+			"id": "Set2",
+			"cpp": "self->Set(token, cssValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "token", "type": "EditorThemeMetricToken" },
+				{ "name": "cssValue", "type": "string" }
+			],
+			"csharp": { "member": "Set", "kind": "method" }
+		},
+		{
+			"id": "GetColors",
+			"cpp": "self->colors",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Colors", "kind": "getter" }
+		},
+		{
+			"id": "SetColors",
+			"cpp": "Slots::AssignAll(self->colors, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Colors", "kind": "setter" }
+		},
+		{
+			"id": "GetMetrics",
+			"cpp": "self->metrics",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Metrics", "kind": "getter" }
+		},
+		{
+			"id": "SetMetrics",
+			"cpp": "Slots::AssignAll(self->metrics, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Metrics", "kind": "setter" }
+		}
+	]
+}

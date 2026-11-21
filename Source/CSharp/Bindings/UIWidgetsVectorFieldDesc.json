@@ -1,0 +1,161 @@
+{
+	"area": "UIWidgetsVectorFieldDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIWidgetsVectorFieldDesc",
+	"instance": "UIWidgetsVectorFieldDesc",
+	"functions": [
+		{
+			"id": "GetComponentCount",
+			"cpp": "self->componentCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ComponentCount", "kind": "getter" }
+		},
+		{
+			"id": "SetComponentCount",
+			"cpp": "self->componentCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ComponentCount", "kind": "setter" }
+		},
+		{
+			"id": "GetValues",
+			"cpp": "self->values",
+			"returns": "list<f64>",
+			"params": [],
+			"csharp": { "member": "Values", "kind": "getter" }
+		},
+		{
+			"id": "SetValues",
+			"cpp": "Slots::Assign(self->values, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f64>" }],
+			"csharp": { "member": "Values", "kind": "setter" }
+		},
+		{
+			"id": "GetLabels",
+			"cpp": "self->labels",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Labels", "kind": "getter" }
+		},
+		{
+			"id": "SetLabels",
+			"cpp": "Slots::AssignFieldTexts(self, 0x7550d86cba73913full, self->labels, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Labels", "kind": "setter" }
+		},
+		{
+			"id": "GetMinValue",
+			"cpp": "self->minValue",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "MinValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMinValue",
+			"cpp": "self->minValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "MinValue", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxValue",
+			"cpp": "self->maxValue",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "MaxValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxValue",
+			"cpp": "self->maxValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "MaxValue", "kind": "setter" }
+		},
+		{
+			"id": "GetDragScale",
+			"cpp": "self->dragScale",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "DragScale", "kind": "getter" }
+		},
+		{
+			"id": "SetDragScale",
+			"cpp": "self->dragScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "DragScale", "kind": "setter" }
+		},
+		{
+			"id": "GetDecimals",
+			"cpp": "self->decimals",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Decimals", "kind": "getter" }
+		},
+		{
+			"id": "SetDecimals",
+			"cpp": "self->decimals = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Decimals", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnChange",
+			"cpp": "self->onChange = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;u32;f64>", "optional": true, "cpp": "std::function<void (unsigned int, double)>" }
+			],
+			"csharp": { "member": "SetOnChange", "kind": "method" }
+		},
+		{
+			"id": "SetOnEditBegin",
+			"cpp": "self->onEditBegin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnEditBegin", "kind": "method" }
+		},
+		{
+			"id": "SetOnEditEnd",
+			"cpp": "self->onEditEnd = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnEditEnd", "kind": "method" }
+		}
+	]
+}

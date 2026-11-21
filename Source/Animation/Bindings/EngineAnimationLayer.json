@@ -1,0 +1,80 @@
+{
+	"area": "EngineAnimationLayer",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimationLayer.h"
+	],
+	"class": "Shalltear.EngineAnimationLayer",
+	"instance": "EngineAnimationLayer",
+	"natives": [
+		{ "name": "EngineAnimationLayer", "cpp": "::Shalltear::AnimationLayer", "owned": true, "create": true },
+		{ "name": "AnimationLayerMotion", "cpp": "::Shalltear::AnimationLayer::Motion", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetMotion",
+			"cpp": "self->GetMotion(index)",
+			"returns": "AnimationLayerMotion",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetMotion", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->weight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->weight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "self->speed",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Speed", "kind": "getter" }
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "self->speed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Speed", "kind": "setter" }
+		},
+		{
+			"id": "GetBlend",
+			"cpp": "self->blend",
+			"returns": "AnimationBlendMode",
+			"params": [],
+			"csharp": { "member": "Blend", "kind": "getter" }
+		},
+		{
+			"id": "SetBlend",
+			"cpp": "self->blend = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationBlendMode" }],
+			"csharp": { "member": "Blend", "kind": "setter" }
+		},
+		{
+			"id": "GetMask",
+			"cpp": "self->mask",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Mask", "kind": "getter" }
+		},
+		{
+			"id": "SetMask",
+			"cpp": "self->mask = Slots::ToVector<f32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Mask", "kind": "setter" }
+		}
+	]
+}

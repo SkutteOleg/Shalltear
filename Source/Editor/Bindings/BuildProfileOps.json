@@ -1,0 +1,232 @@
+{
+	"area": "BuildProfileOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildProfileOps",
+	"functions": [
+		{
+			"id": "GetCoreSettings",
+			"cpp": "::Shalltear::BuildProfileOps::GetCoreSettings(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<BuildSettingDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildSettingDesc>" }
+			],
+			"csharp": { "member": "GetCoreSettings", "kind": "method" }
+		},
+		{
+			"id": "GetProfilesDirectory",
+			"cpp": "::Shalltear::BuildProfileOps::GetProfilesDirectory(str(projectPath))",
+			"returns": "string",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "GetProfilesDirectory", "kind": "method" }
+		},
+		{
+			"id": "GetProfilePath",
+			"cpp": "::Shalltear::BuildProfileOps::GetProfilePath(str(projectPath), str(name))",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "GetProfilePath", "kind": "method" }
+		},
+		{
+			"id": "IsValidProfileName",
+			"cpp": "::Shalltear::BuildProfileOps::IsValidProfileName(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "IsValidProfileName", "kind": "method" }
+		},
+		{
+			"id": "LoadProfile",
+			"cpp": "::Shalltear::BuildProfileOps::LoadProfile(str(filePath), *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "filePath", "type": "string" },
+				{ "name": "outValue", "type": "BuildProfile" }
+			],
+			"csharp": { "member": "LoadProfile", "kind": "method" }
+		},
+		{
+			"id": "SaveProfile",
+			"cpp": "::Shalltear::BuildProfileOps::SaveProfile(str(filePath), *profile)",
+			"returns": "bool",
+			"params": [
+				{ "name": "filePath", "type": "string" },
+				{ "name": "profile", "type": "BuildProfile" }
+			],
+			"csharp": { "member": "SaveProfile", "kind": "method" }
+		},
+		{
+			"id": "ListProfiles",
+			"cpp": "::Shalltear::BuildProfileOps::ListProfiles(str(projectPath), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "ListProfiles", "kind": "method" }
+		},
+		{
+			"id": "WriteProfileRoster",
+			"cpp": "::Shalltear::BuildProfileOps::WriteProfileRoster(str(projectPath), Slots::ToVector<str>(names))",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "names", "type": "list<string>" }
+			],
+			"csharp": { "member": "WriteProfileRoster", "kind": "method" }
+		},
+		{
+			"id": "ListBuildAllProfiles",
+			"cpp": "::Shalltear::BuildProfileOps::ListBuildAllProfiles(str(projectPath), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "ListBuildAllProfiles", "kind": "method" }
+		},
+		{
+			"id": "GetProjectScenes",
+			"cpp": "::Shalltear::BuildProfileOps::GetProjectScenes(str(projectPath), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "GetProjectScenes", "kind": "method" }
+		},
+		{
+			"id": "ResolveProfile",
+			"cpp": "::Shalltear::BuildProfileOps::ResolveProfile(str(projectPath), str(name), Slots::Copies<::Shalltear::Vector<::Shalltear::BuildSettingDesc>>(schema), *outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "schema", "type": "list<BuildSettingDesc>" },
+				{ "name": "outValue", "type": "ResolvedProfile" }
+			],
+			"csharp": { "member": "ResolveProfile", "kind": "method" }
+		},
+		{
+			"id": "ValidateProfile",
+			"cpp": "::Shalltear::BuildProfileOps::ValidateProfile(str(projectPath), *profile, Slots::Copies<::Shalltear::Vector<::Shalltear::BuildSettingDesc>>(schema), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "profile", "type": "ResolvedProfile" },
+				{ "name": "schema", "type": "list<BuildSettingDesc>" },
+				{ "name": "outValue", "type": "list<BuildIssue>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildIssue>" }
+			],
+			"csharp": { "member": "ValidateProfile", "kind": "method" }
+		},
+		{
+			"id": "FindStaticSDKRoot",
+			"cpp": "::Shalltear::BuildProfileOps::FindStaticSDKRoot(*outValue, targetTriple)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "BuildProfileOpsStaticSDKProbe" },
+				{ "name": "targetTriple", "type": "string" }
+			],
+			"csharp": { "member": "FindStaticSDKRoot", "kind": "method" }
+		},
+		{
+			"id": "MigrateStaticSDKRootToUserScope",
+			"cpp": "::Shalltear::BuildProfileOps::MigrateStaticSDKRootToUserScope(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "MigrateStaticSDKRootToUserScope", "kind": "method" }
+		},
+		{
+			"id": "NextBuildNumber",
+			"cpp": "::Shalltear::BuildProfileOps::NextBuildNumber(str(projectPath), targetId)",
+			"returns": "u32",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "targetId", "type": "string" }
+			],
+			"csharp": { "member": "NextBuildNumber", "kind": "method" }
+		},
+		{
+			"id": "CreateProfile",
+			"cpp": "::Shalltear::BuildProfileOps::CreateProfile(str(projectPath), str(name), inherits)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "inherits", "type": "string" }
+			],
+			"csharp": { "member": "CreateProfile", "kind": "method" }
+		},
+		{
+			"id": "DuplicateProfile",
+			"cpp": "::Shalltear::BuildProfileOps::DuplicateProfile(str(projectPath), str(source), str(newName))",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "source", "type": "string" },
+				{ "name": "newName", "type": "string" }
+			],
+			"csharp": { "member": "DuplicateProfile", "kind": "method" }
+		},
+		{
+			"id": "DeleteProfile",
+			"cpp": "::Shalltear::BuildProfileOps::DeleteProfile(str(projectPath), str(name), &outReparented)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "outReparented", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "DeleteProfile", "kind": "method" }
+		},
+		{
+			"id": "GetProfileChildren",
+			"cpp": "::Shalltear::BuildProfileOps::GetProfileChildren(str(projectPath), str(name), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "GetProfileChildren", "kind": "method" }
+		},
+		{
+			"id": "RenameProfile",
+			"cpp": "::Shalltear::BuildProfileOps::RenameProfile(str(projectPath), str(oldName), str(newName))",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "oldName", "type": "string" },
+				{ "name": "newName", "type": "string" }
+			],
+			"csharp": { "member": "RenameProfile", "kind": "method" }
+		},
+		{
+			"id": "ExportProfile",
+			"cpp": "::Shalltear::BuildProfileOps::ExportProfile(str(projectPath), str(name), str(destinationPath))",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "destinationPath", "type": "string" }
+			],
+			"csharp": { "member": "ExportProfile", "kind": "method" }
+		},
+		{
+			"id": "ImportProfile",
+			"cpp": "::Shalltear::BuildProfileOps::ImportProfile(str(projectPath), str(sourcePath), outName, outIssues)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "sourcePath", "type": "string" },
+				{ "name": "outName", "type": "string", "out": true },
+				{ "name": "outIssues", "type": "list<BuildIssue>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildIssue>" }
+			],
+			"csharp": { "member": "ImportProfile", "kind": "method" }
+		}
+	]
+}

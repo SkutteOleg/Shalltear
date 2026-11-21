@@ -1,0 +1,29 @@
+{
+	"area": "EventBus",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Event.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.EventBus",
+	"instance": "EventBus",
+	"functions": [
+		{
+			"id": "Unsubscribe",
+			"cpp": "self->Unsubscribe(eventId, objectId)",
+			"returns": "void",
+			"params": [
+				{ "name": "eventId", "type": "StringHash" },
+				{ "name": "objectId", "type": "u64" }
+			],
+			"csharp": { "member": "Unsubscribe", "kind": "method" }
+		},
+		{
+			"id": "UnsubscribeAll",
+			"cpp": "self->UnsubscribeAll(objectId)",
+			"returns": "void",
+			"params": [{ "name": "objectId", "type": "u64" }],
+			"csharp": { "member": "UnsubscribeAll", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,35 @@
+{
+	"area": "Sphere",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.Sphere",
+	"instance": "Sphere",
+	"functions": [
+		{
+			"id": "Contains",
+			"cpp": "self->Contains(point)",
+			"returns": "bool",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "Contains", "kind": "method" }
+		},
+		{
+			"id": "Intersects",
+			"cpp": "self->Intersects(other)",
+			"returns": "bool",
+			"params": [{ "name": "other", "type": "Sphere" }],
+			"csharp": { "member": "Intersects", "kind": "method" }
+		},
+		{
+			"id": "Raycast",
+			"cpp": "self->Raycast(ray, enter)",
+			"returns": "bool",
+			"params": [
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "enter", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "Raycast", "kind": "method" }
+		}
+	]
+}

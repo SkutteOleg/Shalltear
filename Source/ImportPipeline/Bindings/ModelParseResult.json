@@ -1,0 +1,137 @@
+{
+	"area": "ModelParseResult",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelParseResult",
+	"instance": "ModelParseResult",
+	"functions": [
+		{
+			"id": "GetSuccess",
+			"cpp": "self->success",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Success", "kind": "getter" }
+		},
+		{
+			"id": "SetSuccess",
+			"cpp": "self->success = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Success", "kind": "setter" }
+		},
+		{
+			"id": "GetError",
+			"cpp": "self->error",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Error", "kind": "getter" }
+		},
+		{
+			"id": "SetError",
+			"cpp": "self->error = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Error", "kind": "setter" }
+		},
+		{
+			"id": "GetNodes",
+			"cpp": "self->nodes",
+			"returns": "list<ModelNode>",
+			"params": [],
+			"csharp": { "member": "Nodes", "kind": "getter" }
+		},
+		{
+			"id": "SetNodes",
+			"cpp": "self->nodes = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelNode>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelNode>" }],
+			"csharp": { "member": "Nodes", "kind": "setter" }
+		},
+		{
+			"id": "GetMeshes",
+			"cpp": "self->meshes",
+			"returns": "list<ModelMesh>",
+			"params": [],
+			"csharp": { "member": "Meshes", "kind": "getter" }
+		},
+		{
+			"id": "SetMeshes",
+			"cpp": "self->meshes = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelMesh>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelMesh>" }],
+			"csharp": { "member": "Meshes", "kind": "setter" }
+		},
+		{
+			"id": "GetMaterials",
+			"cpp": "self->materials",
+			"returns": "list<ModelMaterial>",
+			"params": [],
+			"csharp": { "member": "Materials", "kind": "getter" }
+		},
+		{
+			"id": "SetMaterials",
+			"cpp": "self->materials = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelMaterial>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelMaterial>" }],
+			"csharp": { "member": "Materials", "kind": "setter" }
+		},
+		{
+			"id": "GetImages",
+			"cpp": "self->images",
+			"returns": "list<ModelImage>",
+			"params": [],
+			"csharp": { "member": "Images", "kind": "getter" }
+		},
+		{
+			"id": "SetImages",
+			"cpp": "self->images = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelImage>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelImage>" }],
+			"csharp": { "member": "Images", "kind": "setter" }
+		},
+		{
+			"id": "GetSkins",
+			"cpp": "self->skins",
+			"returns": "list<ModelSkin>",
+			"params": [],
+			"csharp": { "member": "Skins", "kind": "getter" }
+		},
+		{
+			"id": "SetSkins",
+			"cpp": "self->skins = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelSkin>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelSkin>" }],
+			"csharp": { "member": "Skins", "kind": "setter" }
+		},
+		{
+			"id": "GetTracks",
+			"cpp": "self->tracks",
+			"returns": "list<ModelTrack>",
+			"params": [],
+			"csharp": { "member": "Tracks", "kind": "getter" }
+		},
+		{
+			"id": "SetTracks",
+			"cpp": "self->tracks = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelTrack>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelTrack>" }],
+			"csharp": { "member": "Tracks", "kind": "setter" }
+		},
+		{
+			"id": "GetTakes",
+			"cpp": "self->takes",
+			"returns": "list<ModelTakeRange>",
+			"params": [],
+			"csharp": { "member": "Takes", "kind": "getter" }
+		},
+		{
+			"id": "SetTakes",
+			"cpp": "self->takes = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelTakeRange>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelTakeRange>" }],
+			"csharp": { "member": "Takes", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,655 @@
+{
+	"area": "LensFlareElement",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/LensFlareAsset.h",
+		"Shalltear/Core/Math/AnimationCurve.h",
+		"Shalltear/Core/Math/Gradient.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.LensFlareElement",
+	"instance": "LensFlareElement",
+	"types": [
+		{ "name": "LensFlareAsset", "cpp": "::Shalltear::LensFlareAsset", "engine": "LensFlareAsset", "base": "Asset" }
+	],
+	"enums": [
+		{
+			"name": "LensFlareShape",
+			"cpp": "::Shalltear::LensFlareShape",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Image", "value": 0 },
+				{ "name": "Circle", "value": 1 },
+				{ "name": "Polygon", "value": 2 },
+				{ "name": "Ring", "value": 3 }
+			]
+		},
+		{
+			"name": "LensFlareColorMode",
+			"cpp": "::Shalltear::LensFlareColorMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Constant", "value": 0 },
+				{ "name": "Radial", "value": 1 },
+				{ "name": "Angular", "value": 2 }
+			]
+		},
+		{
+			"name": "LensFlareBlend",
+			"cpp": "::Shalltear::LensFlareBlend",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Additive", "value": 0 },
+				{ "name": "Premultiplied", "value": 1 },
+				{ "name": "Lerp", "value": 2 }
+			]
+		},
+		{
+			"name": "LensFlareDistribution",
+			"cpp": "::Shalltear::LensFlareDistribution",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Uniform", "value": 0 },
+				{ "name": "Curve", "value": 1 },
+				{ "name": "Random", "value": 2 }
+			]
+		}
+	],
+	"natives": [{ "name": "LensFlareElement", "cpp": "::Shalltear::LensFlareElement", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetEnabledField",
+			"cpp": "self->enabled",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnabledField", "kind": "getter" }
+		},
+		{
+			"id": "SetEnabledField",
+			"cpp": "self->enabled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnabledField", "kind": "setter" }
+		},
+		{
+			"id": "GetShape",
+			"cpp": "self->shape",
+			"returns": "LensFlareShape",
+			"params": [],
+			"csharp": { "member": "Shape", "kind": "getter" }
+		},
+		{
+			"id": "SetShape",
+			"cpp": "self->shape = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LensFlareShape" }],
+			"csharp": { "member": "Shape", "kind": "setter" }
+		},
+		{
+			"id": "GetTexture",
+			"cpp": "self->texture",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "self->texture = ::Shalltear::Handle<::Shalltear::TextureAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Texture", "optional": true }],
+			"csharp": { "member": "Texture", "kind": "setter" }
+		},
+		{
+			"id": "GetPreserveAspectRatio",
+			"cpp": "self->preserveAspectRatio",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "PreserveAspectRatio", "kind": "getter" }
+		},
+		{
+			"id": "SetPreserveAspectRatio",
+			"cpp": "self->preserveAspectRatio = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "PreserveAspectRatio", "kind": "setter" }
+		},
+		{
+			"id": "GetGradient",
+			"cpp": "self->gradient",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Gradient", "kind": "getter" }
+		},
+		{
+			"id": "SetGradient",
+			"cpp": "self->gradient = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Gradient", "kind": "setter" }
+		},
+		{
+			"id": "GetFalloff",
+			"cpp": "self->falloff",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Falloff", "kind": "getter" }
+		},
+		{
+			"id": "SetFalloff",
+			"cpp": "self->falloff = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Falloff", "kind": "setter" }
+		},
+		{
+			"id": "GetInverse",
+			"cpp": "self->inverse",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Inverse", "kind": "getter" }
+		},
+		{
+			"id": "SetInverse",
+			"cpp": "self->inverse = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Inverse", "kind": "setter" }
+		},
+		{
+			"id": "GetSideCount",
+			"cpp": "self->sideCount",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "SideCount", "kind": "getter" }
+		},
+		{
+			"id": "SetSideCount",
+			"cpp": "self->sideCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SideCount", "kind": "setter" }
+		},
+		{
+			"id": "GetRoundness",
+			"cpp": "self->roundness",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Roundness", "kind": "getter" }
+		},
+		{
+			"id": "SetRoundness",
+			"cpp": "self->roundness = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Roundness", "kind": "setter" }
+		},
+		{
+			"id": "GetRingThickness",
+			"cpp": "self->ringThickness",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RingThickness", "kind": "getter" }
+		},
+		{
+			"id": "SetRingThickness",
+			"cpp": "self->ringThickness = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RingThickness", "kind": "setter" }
+		},
+		{
+			"id": "GetColorMode",
+			"cpp": "self->colorMode",
+			"returns": "LensFlareColorMode",
+			"params": [],
+			"csharp": { "member": "ColorMode", "kind": "getter" }
+		},
+		{
+			"id": "SetColorMode",
+			"cpp": "self->colorMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LensFlareColorMode" }],
+			"csharp": { "member": "ColorMode", "kind": "setter" }
+		},
+		{
+			"id": "GetTint",
+			"cpp": "self->tint",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "Tint", "kind": "getter" }
+		},
+		{
+			"id": "SetTint",
+			"cpp": "self->tint = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "Tint", "kind": "setter" }
+		},
+		{
+			"id": "GetTintGradient",
+			"cpp": "&self->tintGradient",
+			"returns": "Gradient",
+			"params": [],
+			"csharp": { "member": "TintGradient", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetTintGradient",
+			"cpp": "self->tintGradient = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Gradient" }],
+			"csharp": { "member": "TintGradient", "kind": "setter" }
+		},
+		{
+			"id": "GetModulateByLightColor",
+			"cpp": "self->modulateByLightColor",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ModulateByLightColor", "kind": "getter" }
+		},
+		{
+			"id": "SetModulateByLightColor",
+			"cpp": "self->modulateByLightColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ModulateByLightColor", "kind": "setter" }
+		},
+		{
+			"id": "GetIntensity",
+			"cpp": "self->intensity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Intensity", "kind": "getter" }
+		},
+		{
+			"id": "SetIntensity",
+			"cpp": "self->intensity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Intensity", "kind": "setter" }
+		},
+		{
+			"id": "GetBlend",
+			"cpp": "self->blend",
+			"returns": "LensFlareBlend",
+			"params": [],
+			"csharp": { "member": "Blend", "kind": "getter" }
+		},
+		{
+			"id": "SetBlend",
+			"cpp": "self->blend = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LensFlareBlend" }],
+			"csharp": { "member": "Blend", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetPositionOffset",
+			"cpp": "self->positionOffset",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "PositionOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetPositionOffset",
+			"cpp": "self->positionOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "PositionOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetAngularOffset",
+			"cpp": "self->angularOffset",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "AngularOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetAngularOffset",
+			"cpp": "self->angularOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "AngularOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetTranslationScale",
+			"cpp": "self->translationScale",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "TranslationScale", "kind": "getter" }
+		},
+		{
+			"id": "SetTranslationScale",
+			"cpp": "self->translationScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "TranslationScale", "kind": "setter" }
+		},
+		{
+			"id": "GetRotation",
+			"cpp": "self->rotation",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Rotation", "kind": "getter" }
+		},
+		{
+			"id": "SetRotation",
+			"cpp": "self->rotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Rotation", "kind": "setter" }
+		},
+		{
+			"id": "GetAutoRotate",
+			"cpp": "self->autoRotate",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AutoRotate", "kind": "getter" }
+		},
+		{
+			"id": "SetAutoRotate",
+			"cpp": "self->autoRotate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "AutoRotate", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "getter" }
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetMultiple",
+			"cpp": "self->multiple",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Multiple", "kind": "getter" }
+		},
+		{
+			"id": "SetMultiple",
+			"cpp": "self->multiple = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Multiple", "kind": "setter" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->count",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "SetCount",
+			"cpp": "self->count = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Count", "kind": "setter" }
+		},
+		{
+			"id": "GetDistribution",
+			"cpp": "self->distribution",
+			"returns": "LensFlareDistribution",
+			"params": [],
+			"csharp": { "member": "Distribution", "kind": "getter" }
+		},
+		{
+			"id": "SetDistribution",
+			"cpp": "self->distribution = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LensFlareDistribution" }],
+			"csharp": { "member": "Distribution", "kind": "setter" }
+		},
+		{
+			"id": "GetLengthSpread",
+			"cpp": "self->lengthSpread",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LengthSpread", "kind": "getter" }
+		},
+		{
+			"id": "SetLengthSpread",
+			"cpp": "self->lengthSpread = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LengthSpread", "kind": "setter" }
+		},
+		{
+			"id": "GetColors",
+			"cpp": "&self->colors",
+			"returns": "Gradient",
+			"params": [],
+			"csharp": { "member": "Colors", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetColors",
+			"cpp": "self->colors = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Gradient" }],
+			"csharp": { "member": "Colors", "kind": "setter" }
+		},
+		{
+			"id": "GetRotationStep",
+			"cpp": "self->rotationStep",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RotationStep", "kind": "getter" }
+		},
+		{
+			"id": "SetRotationStep",
+			"cpp": "self->rotationStep = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RotationStep", "kind": "setter" }
+		},
+		{
+			"id": "GetPositionCurve",
+			"cpp": "&self->positionCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "PositionCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetPositionCurve",
+			"cpp": "self->positionCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "PositionCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetScaleCurve",
+			"cpp": "&self->scaleCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "ScaleCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetScaleCurve",
+			"cpp": "self->scaleCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "ScaleCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetRotationCurve",
+			"cpp": "&self->rotationCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "RotationCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetRotationCurve",
+			"cpp": "self->rotationCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "RotationCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetSeed",
+			"cpp": "self->seed",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Seed", "kind": "getter" }
+		},
+		{
+			"id": "SetSeed",
+			"cpp": "self->seed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Seed", "kind": "setter" }
+		},
+		{
+			"id": "GetIntensityVariation",
+			"cpp": "self->intensityVariation",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "IntensityVariation", "kind": "getter" }
+		},
+		{
+			"id": "SetIntensityVariation",
+			"cpp": "self->intensityVariation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "IntensityVariation", "kind": "setter" }
+		},
+		{
+			"id": "GetPositionVariation",
+			"cpp": "self->positionVariation",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "PositionVariation", "kind": "getter" }
+		},
+		{
+			"id": "SetPositionVariation",
+			"cpp": "self->positionVariation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "PositionVariation", "kind": "setter" }
+		},
+		{
+			"id": "GetRotationVariation",
+			"cpp": "self->rotationVariation",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RotationVariation", "kind": "getter" }
+		},
+		{
+			"id": "SetRotationVariation",
+			"cpp": "self->rotationVariation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RotationVariation", "kind": "setter" }
+		},
+		{
+			"id": "GetScaleVariation",
+			"cpp": "self->scaleVariation",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ScaleVariation", "kind": "getter" }
+		},
+		{
+			"id": "SetScaleVariation",
+			"cpp": "self->scaleVariation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ScaleVariation", "kind": "setter" }
+		},
+		{
+			"id": "GetRadialDistortion",
+			"cpp": "self->radialDistortion",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "RadialDistortion", "kind": "getter" }
+		},
+		{
+			"id": "SetRadialDistortion",
+			"cpp": "self->radialDistortion = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "RadialDistortion", "kind": "setter" }
+		},
+		{
+			"id": "GetDistortionTargetSize",
+			"cpp": "self->distortionTargetSize",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "DistortionTargetSize", "kind": "getter" }
+		},
+		{
+			"id": "SetDistortionTargetSize",
+			"cpp": "self->distortionTargetSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "DistortionTargetSize", "kind": "setter" }
+		},
+		{
+			"id": "GetDistortionCurve",
+			"cpp": "&self->distortionCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "DistortionCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetDistortionCurve",
+			"cpp": "self->distortionCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "DistortionCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetDistortionRelativeToCenter",
+			"cpp": "self->distortionRelativeToCenter",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "DistortionRelativeToCenter", "kind": "getter" }
+		},
+		{
+			"id": "SetDistortionRelativeToCenter",
+			"cpp": "self->distortionRelativeToCenter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "DistortionRelativeToCenter", "kind": "setter" }
+		}
+	]
+}

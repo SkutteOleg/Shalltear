@@ -1,0 +1,97 @@
+{
+	"area": "RadiusHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.RadiusHandle",
+	"instance": "RadiusHandle",
+	"functions": [
+		{
+			"id": "GetCenter",
+			"cpp": "self->center",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Center", "kind": "getter" }
+		},
+		{
+			"id": "SetCenter",
+			"cpp": "self->center = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Center", "kind": "setter" }
+		},
+		{
+			"id": "GetRotation",
+			"cpp": "self->rotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "Rotation", "kind": "getter" }
+		},
+		{
+			"id": "SetRotation",
+			"cpp": "self->rotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "Rotation", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->radius",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Radius", "kind": "getter" }
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->radius = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetField",
+			"cpp": "self->field",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Field", "kind": "getter" }
+		},
+		{
+			"id": "SetField",
+			"cpp": "self->field = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Field", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->color",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color32" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		}
+	]
+}

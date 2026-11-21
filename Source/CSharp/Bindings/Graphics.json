@@ -1,0 +1,41 @@
+{
+	"area": "Graphics",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/Graphics.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Graphics",
+	"functions": [
+		{
+			"id": "GetQualityLevelCount",
+			"cpp": "::Shalltear::Graphics::GetQualityLevelCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "QualityLevelCount", "kind": "getter" }
+		},
+		{
+			"id": "GetQualityLevel",
+			"cpp": "::Shalltear::Graphics::GetQualityLevel()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "QualityLevel", "kind": "getter" }
+		},
+		{
+			"id": "SetQualityLevel",
+			"cpp": "::Shalltear::Graphics::SetQualityLevel(level)",
+			"returns": "bool",
+			"params": [{ "name": "level", "type": "i32" }],
+			"csharp": { "member": "SetQualityLevel", "kind": "method" }
+		},
+		{
+			"id": "GetQualityProfileIds",
+			"cpp": "::Shalltear::Graphics::GetQualityProfileIds(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<EngineGuid>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Guid>" }
+			],
+			"csharp": { "member": "GetQualityProfileIds", "kind": "method" }
+		}
+	]
+}

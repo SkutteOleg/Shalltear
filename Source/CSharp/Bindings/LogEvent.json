@@ -1,0 +1,123 @@
+{
+	"area": "LogEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.LogEvent",
+	"instance": "LogEvent",
+	"functions": [
+		{
+			"id": "GetLevel",
+			"cpp": "self->level",
+			"returns": "LogLevel",
+			"params": [],
+			"csharp": { "member": "Level", "kind": "getter" }
+		},
+		{
+			"id": "SetLevel",
+			"cpp": "self->level = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LogLevel" }],
+			"csharp": { "member": "Level", "kind": "setter" }
+		},
+		{
+			"id": "GetCategory",
+			"cpp": "self->category",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Category", "kind": "getter" }
+		},
+		{
+			"id": "SetCategory",
+			"cpp": "self->category = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Category", "kind": "setter" }
+		},
+		{
+			"id": "GetMessage",
+			"cpp": "self->message",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Message", "kind": "getter" }
+		},
+		{
+			"id": "SetMessage",
+			"cpp": "self->message = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Message", "kind": "setter" }
+		},
+		{
+			"id": "GetTimestamp",
+			"cpp": "static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>((self->timestamp).time_since_epoch()).count())",
+			"returns": "i64",
+			"params": [],
+			"csharp": { "member": "Timestamp", "kind": "getter" }
+		},
+		{
+			"id": "SetTimestamp",
+			"cpp": "self->timestamp = std::chrono::system_clock::time_point(std::chrono::milliseconds(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i64" }],
+			"csharp": { "member": "Timestamp", "kind": "setter" }
+		},
+		{
+			"id": "GetThreadId",
+			"cpp": "static_cast<uint64_t>(std::hash<std::thread::id>{}(self->threadId))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ThreadId", "kind": "getter" }
+		},
+		{
+			"id": "SetThreadIdToCurrent",
+			"cpp": "self->threadId = std::this_thread::get_id()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "SetThreadIdToCurrent", "kind": "method" }
+		},
+		{
+			"id": "GetFile",
+			"cpp": "self->file",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "File", "kind": "getter" }
+		},
+		{
+			"id": "SetFile",
+			"cpp": "self->file = Slots::KeepFieldText(self, 0x86225c2297fe1841ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "File", "kind": "setter" }
+		},
+		{
+			"id": "GetLine",
+			"cpp": "self->line",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Line", "kind": "getter" }
+		},
+		{
+			"id": "SetLine",
+			"cpp": "self->line = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Line", "kind": "setter" }
+		},
+		{
+			"id": "GetFunction",
+			"cpp": "self->function",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Function", "kind": "getter" }
+		},
+		{
+			"id": "SetFunction",
+			"cpp": "self->function = Slots::KeepFieldText(self, 0x211e31a82dae9cefull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Function", "kind": "setter" }
+		}
+	]
+}

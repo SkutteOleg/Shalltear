@@ -1,0 +1,35 @@
+{
+	"area": "UISystemFloatingDockWindowPolicy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UISystem.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.UISystemFloatingDockWindowPolicy",
+	"instance": "UISystemFloatingDockWindowPolicy",
+	"functions": [
+		{
+			"id": "GetExtraFlags",
+			"cpp": "self->extraFlags",
+			"returns": "WindowFlags",
+			"params": [],
+			"csharp": { "member": "ExtraFlags", "kind": "getter" }
+		},
+		{
+			"id": "SetExtraFlags",
+			"cpp": "self->extraFlags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "WindowFlags" }],
+			"csharp": { "member": "ExtraFlags", "kind": "setter" }
+		},
+		{
+			"id": "SetOnCreated",
+			"cpp": "self->onCreated = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;Window>", "optional": true, "cpp": "std::function<void (Shalltear::Handle<Shalltear::Window>)>" }
+			],
+			"csharp": { "member": "SetOnCreated", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,61 @@
+{
+	"area": "AssetPreviewPaneDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Editor/SceneViewOverlays.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.AssetPreviewPaneDesc",
+	"instance": "AssetPreviewPaneDesc",
+	"functions": [
+		{
+			"id": "SetOnShow",
+			"cpp": "self->onShow = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;EngineGuid>", "optional": true, "cpp": "std::function<void (const Shalltear::Guid &)>" }
+			],
+			"csharp": { "member": "SetOnShow", "kind": "method" }
+		},
+		{
+			"id": "SetOnHide",
+			"cpp": "self->onHide = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;EngineGuid>", "optional": true, "cpp": "std::function<void (const Shalltear::Guid &)>" }
+			],
+			"csharp": { "member": "SetOnHide", "kind": "method" }
+		},
+		{
+			"id": "SetBuildHeader",
+			"cpp": "self->buildHeader = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<copy:ActionUIContextFn;UIContext;UIElementHandle;EngineGuid>",
+					"optional": true,
+					"cpp": "std::function<std::function<void (Shalltear::UI::Context &)> (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &)>"
+				}
+			],
+			"csharp": { "member": "SetBuildHeader", "kind": "method" }
+		},
+		{
+			"id": "SetBuildBody",
+			"cpp": "self->buildBody = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<copy:ActionUIContextFn;UIContext;UIElementHandle;EngineGuid>",
+					"optional": true,
+					"cpp": "std::function<std::function<void (Shalltear::UI::Context &)> (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &)>"
+				}
+			],
+			"csharp": { "member": "SetBuildBody", "kind": "method" }
+		}
+	]
+}

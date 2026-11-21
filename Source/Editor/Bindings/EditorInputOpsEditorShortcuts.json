@@ -1,0 +1,47 @@
+{
+	"area": "EditorInputOpsEditorShortcuts",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorInputOps.h"
+	],
+	"class": "Shalltear.Editor.EditorInputOpsEditorShortcuts",
+	"instance": "EditorInputOpsEditorShortcuts",
+	"functions": [
+		{
+			"id": "Build",
+			"cpp": "self->Build()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Build", "kind": "method" }
+		},
+		{
+			"id": "Route",
+			"cpp": "self->Route(facts)",
+			"returns": "void",
+			"params": [{ "name": "facts", "type": "EditorInputOpsRouteFacts" }],
+			"csharp": { "member": "Route", "kind": "method" }
+		},
+		{
+			"id": "Evaluate",
+			"cpp": "self->Evaluate()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Evaluate", "kind": "method" }
+		},
+		{
+			"id": "WasPerformed",
+			"cpp": "self->WasPerformed(shortcut)",
+			"returns": "bool",
+			"params": [{ "name": "shortcut", "type": "EditorInputOpsShortcut" }],
+			"csharp": { "member": "WasPerformed", "kind": "method" }
+		},
+		{
+			"id": "RouteFor",
+			"cpp": "::Shalltear::EditorInputOps::EditorShortcuts::RouteFor(shortcut)",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [{ "name": "shortcut", "type": "EditorInputOpsShortcut" }],
+			"csharp": { "member": "RouteFor", "kind": "method" },
+			"static": true
+		}
+	]
+}

@@ -1,0 +1,158 @@
+{
+	"area": "EditorLayoutOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorLayoutOps.h",
+		"Shalltear/Core/Window/Monitor.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.Editor.EditorLayoutOps",
+	"constants": [
+		{ "name": "DefaultLayoutName", "cpp": "::Shalltear::EditorLayoutOps::DefaultLayoutName", "type": "string", "value": "Default" }
+	],
+	"functions": [
+		{
+			"id": "IsPlacementVisible",
+			"cpp": "::Shalltear::EditorLayoutOps::IsPlacementVisible(placement, std::span<const ::Shalltear::MonitorInfo>(Slots::Copies<::Shalltear::Vector<::Shalltear::MonitorInfo>>(monitors)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "placement", "type": "WindowPlacement" },
+				{ "name": "monitors", "type": "list<MonitorInfo>" }
+			],
+			"csharp": { "member": "IsPlacementVisible", "kind": "method" }
+		},
+		{
+			"id": "ResolvePlacement",
+			"cpp": "::Shalltear::EditorLayoutOps::ResolvePlacement(saved, std::span<const ::Shalltear::MonitorInfo>(Slots::Copies<::Shalltear::Vector<::Shalltear::MonitorInfo>>(monitors)), minClientSize)",
+			"returns": "WindowPlacement",
+			"params": [
+				{ "name": "saved", "type": "WindowPlacement" },
+				{ "name": "monitors", "type": "list<MonitorInfo>" },
+				{ "name": "minClientSize", "type": "Vec2I" }
+			],
+			"csharp": { "member": "ResolvePlacement", "kind": "method" }
+		},
+		{
+			"id": "BuildDefaultLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::BuildDefaultLayout(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "void",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "BuildDefaultLayout", "kind": "method" }
+		},
+		{
+			"id": "ResetLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::ResetLayout(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "void",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "ResetLayout", "kind": "method" }
+		},
+		{
+			"id": "CaptureLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::CaptureLayout(::Shalltear::Handle<::Shalltear::Window>(mainWindow))",
+			"returns": "string",
+			"params": [{ "name": "mainWindow", "type": "Window", "optional": true }],
+			"csharp": { "member": "CaptureLayout", "kind": "method" }
+		},
+		{
+			"id": "ApplyLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::ApplyLayout(::Shalltear::Handle<::Shalltear::Window>(mainWindow), document)",
+			"returns": "bool",
+			"params": [
+				{ "name": "mainWindow", "type": "Window", "optional": true },
+				{ "name": "document", "type": "string" }
+			],
+			"csharp": { "member": "ApplyLayout", "kind": "method" }
+		},
+		{
+			"id": "GetLayoutNames",
+			"cpp": "::Shalltear::EditorLayoutOps::GetLayoutNames(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetLayoutNames", "kind": "method" }
+		},
+		{
+			"id": "GetActiveLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::GetActiveLayout()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ActiveLayout", "kind": "getter" }
+		},
+		{
+			"id": "SaveActiveLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::SaveActiveLayout(::Shalltear::Handle<::Shalltear::Window>(mainWindow))",
+			"returns": "void",
+			"params": [{ "name": "mainWindow", "type": "Window", "optional": true }],
+			"csharp": { "member": "SaveActiveLayout", "kind": "method" }
+		},
+		{
+			"id": "SwitchLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::SwitchLayout(::Shalltear::Handle<::Shalltear::Window>(mainWindow), name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "mainWindow", "type": "Window", "optional": true },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "SwitchLayout", "kind": "method" }
+		},
+		{
+			"id": "SaveLayoutAs",
+			"cpp": "::Shalltear::EditorLayoutOps::SaveLayoutAs(::Shalltear::Handle<::Shalltear::Window>(mainWindow), name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "mainWindow", "type": "Window", "optional": true },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "SaveLayoutAs", "kind": "method" }
+		},
+		{
+			"id": "RenameLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::RenameLayout(from, to)",
+			"returns": "bool",
+			"params": [
+				{ "name": "from", "type": "string" },
+				{ "name": "to", "type": "string" }
+			],
+			"csharp": { "member": "RenameLayout", "kind": "method" }
+		},
+		{
+			"id": "DeleteLayout",
+			"cpp": "::Shalltear::EditorLayoutOps::DeleteLayout(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "DeleteLayout", "kind": "method" }
+		},
+		{
+			"id": "BringPanelsForward",
+			"cpp": "::Shalltear::EditorLayoutOps::BringPanelsForward(panelType, outPrevious)",
+			"returns": "void",
+			"params": [
+				{ "name": "panelType", "type": "TypeInfo", "optional": true },
+				{ "name": "outPrevious", "type": "list<StringHash>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::StringHash>" }
+			],
+			"csharp": { "member": "BringPanelsForward", "kind": "method" }
+		},
+		{
+			"id": "RestoreForwardPanels",
+			"cpp": "::Shalltear::EditorLayoutOps::RestoreForwardPanels(panels)",
+			"returns": "void",
+			"params": [{ "name": "panels", "type": "list<StringHash>" }],
+			"csharp": { "member": "RestoreForwardPanels", "kind": "method" }
+		},
+		{
+			"id": "GetMinRestoredClientSize",
+			"cpp": "::Shalltear::EditorLayoutOps::MinRestoredClientSize",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "MinRestoredClientSize", "kind": "getter" }
+		},
+		{
+			"id": "GetMinVisiblePx",
+			"cpp": "::Shalltear::EditorLayoutOps::MinVisiblePx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "MinVisiblePx", "kind": "getter" }
+		}
+	]
+}

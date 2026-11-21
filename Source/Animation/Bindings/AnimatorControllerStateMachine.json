@@ -1,0 +1,123 @@
+{
+	"area": "AnimatorControllerStateMachine",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerStateMachine",
+	"instance": "AnimatorControllerStateMachine",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultState",
+			"cpp": "self->defaultState",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "DefaultState", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultState",
+			"cpp": "self->defaultState = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "DefaultState", "kind": "setter" }
+		},
+		{
+			"id": "GetAnyState",
+			"cpp": "self->anyState",
+			"returns": "list<AnimatorControllerTransition>",
+			"params": [],
+			"csharp": { "member": "AnyState", "kind": "getter" }
+		},
+		{
+			"id": "SetAnyState",
+			"cpp": "self->anyState = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::Transition>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerTransition>" }],
+			"csharp": { "member": "AnyState", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetEntryPosition",
+			"cpp": "self->entryPosition",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "EntryPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetEntryPosition",
+			"cpp": "self->entryPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "EntryPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetAnyStatePosition",
+			"cpp": "self->anyStatePosition",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "AnyStatePosition", "kind": "getter" }
+		},
+		{
+			"id": "SetAnyStatePosition",
+			"cpp": "self->anyStatePosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "AnyStatePosition", "kind": "setter" }
+		},
+		{
+			"id": "GetUpPosition",
+			"cpp": "self->upPosition",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "UpPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetUpPosition",
+			"cpp": "self->upPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "UpPosition", "kind": "setter" }
+		}
+	]
+}

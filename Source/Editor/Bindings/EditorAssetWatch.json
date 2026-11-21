@@ -1,0 +1,38 @@
+{
+	"area": "EditorAssetWatch",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorAssetWatch.h"
+	],
+	"class": "Shalltear.Editor.EditorAssetWatch",
+	"functions": [
+		{
+			"id": "PollChanges",
+			"cpp": "::Shalltear::EditorAssetWatch::PollChanges()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "PollChanges", "kind": "method" }
+		},
+		{
+			"id": "GetChangedThisFrame",
+			"cpp": "::Shalltear::EditorAssetWatch::GetChangedThisFrame()",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "ChangedThisFrame", "kind": "getter" }
+		},
+		{
+			"id": "DidOverflowThisFrame",
+			"cpp": "::Shalltear::EditorAssetWatch::DidOverflowThisFrame()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "DidOverflowThisFrame", "kind": "method" }
+		},
+		{
+			"id": "NotifyChanged",
+			"cpp": "::Shalltear::EditorAssetWatch::NotifyChanged(::Shalltear::Path(str(path)))",
+			"returns": "void",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "NotifyChanged", "kind": "method" }
+		}
+	]
+}

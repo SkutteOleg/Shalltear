@@ -1,0 +1,532 @@
+{
+	"area": "UIWidgets",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.UIWidgets",
+	"enums": [
+		{
+			"name": "UIWidgetsSplitSizing",
+			"cpp": "::Shalltear::UI::Widgets::SplitSizing",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Ratio", "value": 0 },
+				{ "name": "FirstFixed", "value": 1 },
+				{ "name": "SecondFixed", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "UIWidgetsCheckboxParts",
+			"cpp": "::Shalltear::UI::Widgets::CheckboxParts",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "box", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "mark", "type": "UIElementHandle", "offset": 12 }
+			]
+		},
+		{
+			"name": "UIWidgetsToggleParts",
+			"cpp": "::Shalltear::UI::Widgets::ToggleParts",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "track", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "knob", "type": "UIElementHandle", "offset": 12 }
+			]
+		},
+		{
+			"name": "UIWidgetsNumberFieldParts",
+			"cpp": "::Shalltear::UI::Widgets::NumberFieldParts",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "labelElement", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "field", "type": "UIElementHandle", "offset": 24 }
+			]
+		},
+		{
+			"name": "UIWidgetsSliderParts",
+			"cpp": "::Shalltear::UI::Widgets::SliderParts",
+			"size": 88,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "track", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "fill", "type": "UIElementHandle", "offset": 24 },
+				{ "name": "knob", "type": "UIElementHandle", "offset": 36 },
+				{ "name": "value", "type": "UIWidgetsNumberFieldParts", "offset": 48 },
+				{ "name": "decimals", "type": "i32", "offset": 84 }
+			]
+		},
+		{
+			"name": "UIWidgetsDropdownParts",
+			"cpp": "::Shalltear::UI::Widgets::DropdownParts",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "label", "type": "UIElementHandle", "offset": 12 }
+			]
+		},
+		{
+			"name": "UIWidgetsScrollViewParts",
+			"cpp": "::Shalltear::UI::Widgets::ScrollViewParts",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "viewport", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "track", "type": "UIElementHandle", "offset": 24 }
+			]
+		},
+		{
+			"name": "UIWidgetsSplitParts",
+			"cpp": "::Shalltear::UI::Widgets::SplitParts",
+			"size": 48,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "first", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "second", "type": "UIElementHandle", "offset": 24 },
+				{ "name": "splitter", "type": "UIElementHandle", "offset": 36 }
+			]
+		},
+		{
+			"name": "UIWidgetsTreeRowParts",
+			"cpp": "::Shalltear::UI::Widgets::TreeRowParts",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "row", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "arrow", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "labelElement", "type": "UIElementHandle", "offset": 24 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIWidgetsButtonDesc", "cpp": "::Shalltear::UI::Widgets::ButtonDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsTextFieldDesc", "cpp": "::Shalltear::UI::Widgets::TextFieldDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsNumberFieldDesc", "cpp": "::Shalltear::UI::Widgets::NumberFieldDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsSliderDesc", "cpp": "::Shalltear::UI::Widgets::SliderDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsVectorFieldDesc", "cpp": "::Shalltear::UI::Widgets::VectorFieldDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsVectorFieldParts", "cpp": "::Shalltear::UI::Widgets::VectorFieldParts", "owned": true, "create": true },
+		{ "name": "UIWidgetsColorFieldParts", "cpp": "::Shalltear::UI::Widgets::ColorFieldParts", "owned": true, "create": true },
+		{ "name": "UIWidgetsDropdownDesc", "cpp": "::Shalltear::UI::Widgets::DropdownDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsMaskDropdownDesc", "cpp": "::Shalltear::UI::Widgets::MaskDropdownDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsSplitDesc", "cpp": "::Shalltear::UI::Widgets::SplitDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsTreeRowDesc", "cpp": "::Shalltear::UI::Widgets::TreeRowDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsMenuItem", "cpp": "::Shalltear::UI::Widgets::MenuItem", "owned": true, "create": true },
+		{ "name": "UIWidgetsMenuBarItemDesc", "cpp": "::Shalltear::UI::Widgets::MenuBarItemDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetsMenuItemList", "cpp": "::Shalltear::Vector<::Shalltear::UI::Widgets::MenuItem>" }
+	],
+	"constants": [
+		{ "name": "DEFAULT_DECIMALS", "cpp": "::Shalltear::UI::Widgets::DEFAULT_DECIMALS", "type": "i32", "value": 5 },
+		{ "name": "EdgeControlClass", "cpp": "::Shalltear::UI::Widgets::EdgeControlClass", "type": "string", "value": "slt-edge-control" }
+	],
+	"functions": [
+		{
+			"id": "EnsureSkin",
+			"cpp": "::Shalltear::UI::Widgets::EnsureSkin(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "EnsureSkin", "kind": "method" }
+		},
+		{
+			"id": "GetDefaultSkinSource",
+			"cpp": "::Shalltear::UI::Widgets::GetDefaultSkinSource()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultSkinSource", "kind": "getter" }
+		},
+		{
+			"id": "Button",
+			"cpp": "::Shalltear::UI::Widgets::Button(*context, parent, *desc)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsButtonDesc" }
+			],
+			"csharp": { "member": "Button", "kind": "method" }
+		},
+		{
+			"id": "Checkbox",
+			"cpp": "::Shalltear::UI::Widgets::Checkbox(*context, parent, valueValue, onChange)",
+			"returns": "UIWidgetsCheckboxParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "valueValue", "type": "bool" },
+				{ "name": "onChange", "type": "fn<void;bool>", "optional": true, "cpp": "std::function<void (bool)>" }
+			],
+			"csharp": { "member": "Checkbox", "kind": "method" }
+		},
+		{
+			"id": "SetCheckboxValue",
+			"cpp": "::Shalltear::UI::Widgets::SetCheckboxValue(*context, parts, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsCheckboxParts" },
+				{ "name": "valueValue", "type": "bool" }
+			],
+			"csharp": { "member": "SetCheckboxValue", "kind": "method" }
+		},
+		{
+			"id": "Toggle",
+			"cpp": "::Shalltear::UI::Widgets::Toggle(*context, parent, valueValue, onChange)",
+			"returns": "UIWidgetsToggleParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "valueValue", "type": "bool" },
+				{ "name": "onChange", "type": "fn<void;bool>", "optional": true, "cpp": "std::function<void (bool)>" }
+			],
+			"csharp": { "member": "Toggle", "kind": "method" }
+		},
+		{
+			"id": "SetToggleValue",
+			"cpp": "::Shalltear::UI::Widgets::SetToggleValue(*context, parts, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsToggleParts" },
+				{ "name": "valueValue", "type": "bool" }
+			],
+			"csharp": { "member": "SetToggleValue", "kind": "method" }
+		},
+		{
+			"id": "GetToggleValue",
+			"cpp": "::Shalltear::UI::Widgets::GetToggleValue(*context, parts)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsToggleParts" }
+			],
+			"csharp": { "member": "GetToggleValue", "kind": "method" }
+		},
+		{
+			"id": "Separator",
+			"cpp": "::Shalltear::UI::Widgets::Separator(*context, parent)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "Separator", "kind": "method" }
+		},
+		{
+			"id": "Spacer",
+			"cpp": "::Shalltear::UI::Widgets::Spacer(*context, parent, grow)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "grow", "type": "f32" }
+			],
+			"csharp": { "member": "Spacer", "kind": "method" }
+		},
+		{
+			"id": "TextField",
+			"cpp": "::Shalltear::UI::Widgets::TextField(*context, parent, *desc)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsTextFieldDesc" }
+			],
+			"csharp": { "member": "TextField", "kind": "method" }
+		},
+		{
+			"id": "NumberField",
+			"cpp": "::Shalltear::UI::Widgets::NumberField(*context, parent, *desc)",
+			"returns": "UIWidgetsNumberFieldParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsNumberFieldDesc" }
+			],
+			"csharp": { "member": "NumberField", "kind": "method" }
+		},
+		{
+			"id": "SetNumberFieldValue",
+			"cpp": "::Shalltear::UI::Widgets::SetNumberFieldValue(*context, parts, valueValue, decimals)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsNumberFieldParts" },
+				{ "name": "valueValue", "type": "f64" },
+				{ "name": "decimals", "type": "i32" }
+			],
+			"csharp": { "member": "SetNumberFieldValue", "kind": "method" }
+		},
+		{
+			"id": "GetNumberFieldValue",
+			"cpp": "::Shalltear::UI::Widgets::GetNumberFieldValue(*context, parts)",
+			"returns": "f64",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsNumberFieldParts" }
+			],
+			"csharp": { "member": "GetNumberFieldValue", "kind": "method" }
+		},
+		{
+			"id": "Slider",
+			"cpp": "::Shalltear::UI::Widgets::Slider(*context, parent, *desc)",
+			"returns": "UIWidgetsSliderParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsSliderDesc" }
+			],
+			"csharp": { "member": "Slider", "kind": "method" }
+		},
+		{
+			"id": "SetSliderValue",
+			"cpp": "::Shalltear::UI::Widgets::SetSliderValue(*context, parts, minValue, maxValue, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsSliderParts" },
+				{ "name": "minValue", "type": "f32" },
+				{ "name": "maxValue", "type": "f32" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "SetSliderValue", "kind": "method" }
+		},
+		{
+			"id": "VectorField",
+			"cpp": "::Shalltear::UI::Widgets::VectorField(*context, parent, *desc)",
+			"returns": "UIWidgetsVectorFieldParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsVectorFieldDesc" }
+			],
+			"csharp": { "member": "VectorField", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetVectorFieldValues",
+			"cpp": "::Shalltear::UI::Widgets::SetVectorFieldValues(*context, *parts, componentCount, reinterpret_cast<const f64*>(static_cast<uintptr_t>(values)), decimals)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsVectorFieldParts" },
+				{ "name": "componentCount", "type": "u32" },
+				{ "name": "values", "type": "u64" },
+				{ "name": "decimals", "type": "i32" }
+			],
+			"csharp": { "member": "SetVectorFieldValues", "kind": "method" }
+		},
+		{
+			"id": "ColorSwatchField",
+			"cpp": "::Shalltear::UI::Widgets::ColorSwatchField(*context, parent, valueValue, ::Shalltear::Handle<::Shalltear::FontAsset>(font), fontSizePx, onChange, onEditBegin, onEditEnd)",
+			"returns": "UIWidgetsColorFieldParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "valueValue", "type": "Color" },
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "fontSizePx", "type": "f32" },
+				{ "name": "onChange", "type": "fn<void;Color>", "optional": true, "cpp": "std::function<void (Shalltear::Color)>" },
+				{ "name": "onEditBegin", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" },
+				{ "name": "onEditEnd", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "ColorSwatchField", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetColorSwatchFieldValue",
+			"cpp": "::Shalltear::UI::Widgets::SetColorSwatchFieldValue(*context, *parts, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsColorFieldParts" },
+				{ "name": "valueValue", "type": "Color" }
+			],
+			"csharp": { "member": "SetColorSwatchFieldValue", "kind": "method" }
+		},
+		{
+			"id": "OpenColorPicker",
+			"cpp": "::Shalltear::UI::Widgets::OpenColorPicker(*context, anchor, valueValue, ::Shalltear::Handle<::Shalltear::FontAsset>(font), fontSizePx, onChange, onEditBegin, onEditEnd)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "anchor", "type": "UIElementHandle" },
+				{ "name": "valueValue", "type": "Color" },
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "fontSizePx", "type": "f32" },
+				{ "name": "onChange", "type": "fn<void;Color>", "optional": true, "cpp": "std::function<void (Shalltear::Color)>" },
+				{ "name": "onEditBegin", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" },
+				{ "name": "onEditEnd", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "OpenColorPicker", "kind": "method" }
+		},
+		{
+			"id": "Dropdown",
+			"cpp": "::Shalltear::UI::Widgets::Dropdown(*context, parent, *desc)",
+			"returns": "UIWidgetsDropdownParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsDropdownDesc" }
+			],
+			"csharp": { "member": "Dropdown", "kind": "method" }
+		},
+		{
+			"id": "SetDropdownMark",
+			"cpp": "::Shalltear::UI::Widgets::SetDropdownMark(::Shalltear::Handle<::Shalltear::VectorAsset>(mark), sizeScale)",
+			"returns": "void",
+			"params": [
+				{ "name": "mark", "type": "VectorAsset", "optional": true },
+				{ "name": "sizeScale", "type": "f32" }
+			],
+			"csharp": { "member": "SetDropdownMark", "kind": "method" }
+		},
+		{
+			"id": "SetDropdownSelection",
+			"cpp": "::Shalltear::UI::Widgets::SetDropdownSelection(*context, parts, std::span<const std::string_view>(items), selected)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsDropdownParts" },
+				{ "name": "items", "type": "list<string>" },
+				{ "name": "selected", "type": "u32" }
+			],
+			"csharp": { "member": "SetDropdownSelection", "kind": "method" }
+		},
+		{
+			"id": "SetDropdownOptions",
+			"cpp": "::Shalltear::UI::Widgets::SetDropdownOptions(*context, root, std::span<const std::string_view>(items), selected)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "root", "type": "UIElementHandle" },
+				{ "name": "items", "type": "list<string>" },
+				{ "name": "selected", "type": "u32" }
+			],
+			"csharp": { "member": "SetDropdownOptions", "kind": "method" }
+		},
+		{
+			"id": "GetDropdownSelection",
+			"cpp": "::Shalltear::UI::Widgets::GetDropdownSelection(*context, root)",
+			"returns": "u32",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "root", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "GetDropdownSelection", "kind": "method" }
+		},
+		{
+			"id": "MaskDropdown",
+			"cpp": "::Shalltear::UI::Widgets::MaskDropdown(*context, parent, *desc)",
+			"returns": "UIWidgetsDropdownParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsMaskDropdownDesc" }
+			],
+			"csharp": { "member": "MaskDropdown", "kind": "method" }
+		},
+		{
+			"id": "SetMaskDropdownValue",
+			"cpp": "::Shalltear::UI::Widgets::SetMaskDropdownValue(*context, parts, std::span<const std::string_view>(items), mask)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "UIWidgetsDropdownParts" },
+				{ "name": "items", "type": "list<string>" },
+				{ "name": "mask", "type": "u64" }
+			],
+			"csharp": { "member": "SetMaskDropdownValue", "kind": "method" }
+		},
+		{
+			"id": "ScrollView",
+			"cpp": "::Shalltear::UI::Widgets::ScrollView(*context, parent)",
+			"returns": "UIWidgetsScrollViewParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "ScrollView", "kind": "method" }
+		},
+		{
+			"id": "Split",
+			"cpp": "::Shalltear::UI::Widgets::Split(*context, parent, *desc)",
+			"returns": "UIWidgetsSplitParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsSplitDesc" }
+			],
+			"csharp": { "member": "Split", "kind": "method" }
+		},
+		{
+			"id": "GetSplitterThickness",
+			"cpp": "::Shalltear::UI::Widgets::GetSplitterThickness()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SplitterThickness", "kind": "getter" }
+		},
+		{
+			"id": "TreeRow",
+			"cpp": "::Shalltear::UI::Widgets::TreeRow(*context, parent, *desc)",
+			"returns": "UIWidgetsTreeRowParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "UIWidgetsTreeRowDesc" }
+			],
+			"csharp": { "member": "TreeRow", "kind": "method" }
+		},
+		{
+			"id": "SetTreeSelection",
+			"cpp": "::Shalltear::UI::Widgets::SetTreeSelection(*context, rowsParent, selectedTags)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "rowsParent", "type": "UIElementHandle" },
+				{ "name": "selectedTags", "type": "list<u64>" }
+			],
+			"csharp": { "member": "SetTreeSelection", "kind": "method" }
+		},
+		{
+			"id": "OpenMenu",
+			"cpp": "::Shalltear::UI::Widgets::OpenMenu(*context, anchorPx, std::span<const ::Shalltear::UI::Widgets::MenuItem>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::Widgets::MenuItem>>(items)), ::Shalltear::Handle<::Shalltear::FontAsset>(font), fontSizePx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "anchorPx", "type": "Vec2" },
+				{ "name": "items", "type": "list<UIWidgetsMenuItem>" },
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "fontSizePx", "type": "f32" }
+			],
+			"csharp": { "member": "OpenMenu", "kind": "method" }
+		},
+		{
+			"id": "MenuBar",
+			"cpp": "::Shalltear::UI::Widgets::MenuBar(*context, parent, std::span<const ::Shalltear::UI::Widgets::MenuBarItemDesc>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::Widgets::MenuBarItemDesc>>(menus)), ::Shalltear::Handle<::Shalltear::FontAsset>(font), fontSizePx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "menus", "type": "list<UIWidgetsMenuBarItemDesc>" },
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "fontSizePx", "type": "f32" }
+			],
+			"csharp": { "member": "MenuBar", "kind": "method" }
+		}
+	]
+}

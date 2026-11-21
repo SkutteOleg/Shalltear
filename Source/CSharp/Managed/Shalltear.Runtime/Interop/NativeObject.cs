@@ -11,6 +11,7 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 	readonly int _createdEpoch = _epoch;
 	nint _pointer;
 	delegate* unmanaged<ulong*, ulong*, int> _release;
+	bool _shared;
 	internal object? _owner;
 
 	private protected NativeObject(nint pointer, delegate* unmanaged<ulong*, ulong*, int> release) {
@@ -34,8 +35,37 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 		}
 	}
 
+	internal ulong Give(string member) {
+		ulong pointer = Pointer;
+		NativeObject holder = this;
+		while (holder._release == null && holder._owner is NativeObject owner) {
+			holder = owner;
+		}
+		if (holder._release == null || holder._shared) {
+			throw new InvalidOperationException(member + " takes ownership of an object C# doesn't own");
+		}
+		holder._release = null;
+		return pointer;
+	}
+
+	internal ulong Share(bool take) {
+		ulong pointer = Pointer;
+		NativeObject holder = this;
+		while (holder._release == null && holder._owner is NativeObject owner) {
+			holder = owner;
+		}
+		if (!take || holder._release == null || holder._shared) {
+			return pointer;
+		}
+		holder._release = null;
+		return pointer | 1UL;
+	}
+
 	/// <summary>False once disposed.</summary>
 	public bool IsAlive => _pointer != 0 && _createdEpoch == _epoch;
+
+	/// <summary>Address of the C++ object (0 once disposed).</summary>
+	public ulong Address => _createdEpoch == _epoch ? (ulong)_pointer : 0;
 
 	internal static T? Wrap<T>(ulong pointer, bool owned, Func<nint, bool, T> make, object? owner)
 		where T : NativeObject {
@@ -44,6 +74,17 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 		}
 		T made = make((nint)pointer, owned);
 		made._owner = owner;
+		return made;
+	}
+
+	internal static T? WrapShared<T>(ulong pointer, Func<nint, bool, T> make)
+		where T : NativeObject {
+		if (pointer == 0) {
+			return null;
+		}
+		T made = make((nint)pointer, false);
+		made._release = Bindings.table.addressesReleaseShared;
+		made._shared = true;
 		return made;
 	}
 

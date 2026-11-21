@@ -1,0 +1,40 @@
+{
+	"area": "SceneLoadedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneEvents.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.SceneLoadedEvent",
+	"instance": "SceneLoadedEvent",
+	"structs": [
+		{
+			"name": "SceneUnloadedEvent",
+			"cpp": "::Shalltear::SceneUnloadedEvent",
+			"size": 8,
+			"align": 8,
+			"fields": [{ "name": "sceneId", "type": "u64", "offset": 0 }]
+		}
+	],
+	"natives": [
+		{ "name": "SceneLoadedEvent", "cpp": "::Shalltear::SceneLoadedEvent", "owned": true, "create": true },
+		{ "name": "SceneUnloadingEvent", "cpp": "::Shalltear::SceneUnloadingEvent", "owned": true, "create": true },
+		{ "name": "SceneLoadCompletedEvent", "cpp": "::Shalltear::SceneLoadCompletedEvent", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetScene",
+			"cpp": "self->scene",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Scene", "kind": "getter" }
+		},
+		{
+			"id": "SetScene",
+			"cpp": "self->scene = ::Shalltear::Handle<::Shalltear::Scene>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Scene", "optional": true }],
+			"csharp": { "member": "Scene", "kind": "setter" }
+		}
+	]
+}

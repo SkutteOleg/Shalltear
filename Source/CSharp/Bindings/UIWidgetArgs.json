@@ -1,0 +1,130 @@
+{
+	"area": "UIWidgetArgs",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/WidgetRegistry.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.UIWidgetArgs",
+	"instance": "UIWidgetArgs",
+	"enums": [
+		{
+			"name": "UIWidgetAttributeType",
+			"cpp": "::Shalltear::UI::WidgetAttributeType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "String", "value": 0 },
+				{ "name": "Bool", "value": 1 },
+				{ "name": "Number", "value": 2 },
+				{ "name": "Choice", "value": 3 },
+				{ "name": "Color", "value": 4 },
+				{ "name": "Asset", "value": 5 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "UIWidgetResult",
+			"cpp": "::Shalltear::UI::WidgetResult",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "element", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "contentParent", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "textElement", "type": "UIElementHandle", "offset": 24 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIWidgetArgs", "cpp": "::Shalltear::UI::WidgetArgs" },
+		{ "name": "UIWidgetDesc", "cpp": "::Shalltear::UI::WidgetDesc", "owned": true, "create": true },
+		{ "name": "UIWidgetAttribute", "cpp": "::Shalltear::UI::WidgetAttribute", "owned": true, "create": true },
+		{ "name": "UIWidgetAttributeValue", "cpp": "::Shalltear::UI::WidgetAttributeValue", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Get",
+			"cpp": "self->Get(name, fallback)",
+			"returns": "string",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "fallback", "type": "string" }
+			],
+			"csharp": { "member": "Get", "kind": "method" }
+		},
+		{
+			"id": "GetBool",
+			"cpp": "self->GetBool(name, fallback)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "fallback", "type": "bool" }
+			],
+			"csharp": { "member": "GetBool", "kind": "method" }
+		},
+		{
+			"id": "GetNumber",
+			"cpp": "self->GetNumber(name, fallback)",
+			"returns": "f64",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "fallback", "type": "f64" }
+			],
+			"csharp": { "member": "GetNumber", "kind": "method" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->GetColor(name, fallback)",
+			"returns": "Color",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "fallback", "type": "Color" }
+			],
+			"csharp": { "member": "GetColor", "kind": "method" }
+		},
+		{
+			"id": "GetAsset",
+			"cpp": "self->GetAsset(name)",
+			"returns": "Asset",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "GetAsset", "kind": "method" }
+		},
+		{
+			"id": "GetDesc",
+			"cpp": "self->desc",
+			"returns": "UIInstantiateDesc",
+			"params": [],
+			"csharp": { "member": "Desc", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetAttributes",
+			"cpp": "self->attributes",
+			"returns": "list<UIWidgetAttributeValue>",
+			"params": [],
+			"csharp": { "member": "Attributes", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributes",
+			"cpp": "self->attributes = Slots::KeepFieldCopies(self, 0x98ff21ceab4ad39bull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIWidgetAttributeValue>" }],
+			"csharp": { "member": "Attributes", "kind": "setter" }
+		},
+		{
+			"id": "GetRichText",
+			"cpp": "self->richText",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "RichText", "kind": "getter" }
+		},
+		{
+			"id": "SetRichText",
+			"cpp": "self->richText = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "RichText", "kind": "setter" }
+		}
+	]
+}

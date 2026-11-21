@@ -1,0 +1,39 @@
+{
+	"area": "UIBuilderOpsCodeSpan",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIBuilderOps.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderOpsCodeSpan",
+	"instance": "UIBuilderOpsCodeSpan",
+	"functions": [
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = Slots::KeepFieldText(self, 0x3118b6e3ff10722cull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "UIBuilderOpsCodeToken",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIBuilderOpsCodeToken" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,435 @@
+{
+	"area": "ShaderAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderAsset.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/ShaderReflection.h",
+		"Shalltear/Core/Math/Vector.h"
+	],
+	"class": "Shalltear.ShaderAsset",
+	"instance": "ShaderAsset",
+	"constants": [
+		{ "name": "MATERIAL_DESCRIPTOR_SET", "cpp": "::Shalltear::MATERIAL_DESCRIPTOR_SET", "type": "u32", "value": 1 },
+		{ "name": "MAX_MATERIAL_SET_RESOURCES", "cpp": "::Shalltear::MAX_MATERIAL_SET_RESOURCES", "type": "u32", "value": 15 },
+		{ "name": "ShaderAlphaClipKeyword", "cpp": "::Shalltear::ShaderAlphaClipKeyword", "type": "string", "value": "SHALLTEAR_ALPHA_CLIP" },
+		{ "name": "SHADER_BASE_VARIANT", "cpp": "::Shalltear::SHADER_BASE_VARIANT", "type": "u32", "value": 0 }
+	],
+	"functions": [
+		{
+			"id": "IsKernel",
+			"cpp": "self->IsKernel()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsKernel", "kind": "getter" }
+		},
+		{
+			"id": "GetVariant",
+			"cpp": "self->GetVariant(index)",
+			"returns": "ShaderVariant",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetVariant", "kind": "method" }
+		},
+		{
+			"id": "FindVariant",
+			"cpp": "self->FindVariant(keywordHash)",
+			"returns": "u32",
+			"params": [{ "name": "keywordHash", "type": "u64" }],
+			"csharp": { "member": "FindVariant", "kind": "method" }
+		},
+		{
+			"id": "GetOrCompileVariant",
+			"cpp": "self->GetOrCompileVariant(std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(enabled)))",
+			"returns": "u32",
+			"params": [{ "name": "enabled", "type": "list<string>" }],
+			"csharp": { "member": "GetOrCompileVariant", "kind": "method" }
+		},
+		{
+			"id": "KeywordSetHash",
+			"cpp": "::Shalltear::ShaderAsset::KeywordSetHash(std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(enabled)))",
+			"returns": "u64",
+			"params": [{ "name": "enabled", "type": "list<string>" }],
+			"csharp": { "member": "KeywordSetHash", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetMaterialParamLayout",
+			"cpp": "self->GetMaterialParamLayout()",
+			"returns": "UniformBlockLayout",
+			"params": [],
+			"csharp": { "member": "MaterialParamLayout", "kind": "getter" }
+		},
+		{
+			"id": "GetMaterialTextureSlots",
+			"cpp": "self->GetMaterialTextureSlots(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetMaterialTextureSlots", "kind": "method" }
+		},
+		{
+			"id": "GetTextureSlotDimension",
+			"cpp": "self->GetTextureSlotDimension(slotName)",
+			"returns": "RHITextureDimension",
+			"params": [{ "name": "slotName", "type": "string" }],
+			"csharp": { "member": "GetTextureSlotDimension", "kind": "method" }
+		},
+		{
+			"id": "FindMemberRange",
+			"cpp": "self->FindMemberRange(memberName)",
+			"returns": "ShaderMemberRange",
+			"params": [{ "name": "memberName", "type": "string" }],
+			"csharp": { "member": "FindMemberRange", "kind": "method" }
+		},
+		{
+			"id": "FindMemberHint",
+			"cpp": "self->FindMemberHint(memberName)",
+			"returns": "ShaderHint",
+			"params": [{ "name": "memberName", "type": "string" }],
+			"csharp": { "member": "FindMemberHint", "kind": "method" }
+		},
+		{
+			"id": "FindKeywordMember",
+			"cpp": "self->FindKeywordMember(keyword)",
+			"returns": "string",
+			"params": [{ "name": "keyword", "type": "string" }],
+			"csharp": { "member": "FindKeywordMember", "kind": "method" }
+		},
+		{
+			"id": "FindMemberLabel",
+			"cpp": "self->FindMemberLabel(memberName)",
+			"returns": "string",
+			"params": [{ "name": "memberName", "type": "string" }],
+			"csharp": { "member": "FindMemberLabel", "kind": "method" }
+		},
+		{
+			"id": "GetTextureFallback",
+			"cpp": "self->GetTextureFallback(slotName)",
+			"returns": "ShaderTextureFallback",
+			"params": [{ "name": "slotName", "type": "string" }],
+			"csharp": { "member": "GetTextureFallback", "kind": "method" }
+		},
+		{
+			"id": "AdoptImportedPayload",
+			"cpp": "self->AdoptImportedPayload(*imported)",
+			"returns": "void",
+			"params": [{ "name": "imported", "type": "ShaderAsset" }],
+			"csharp": { "member": "AdoptImportedPayload", "kind": "method" }
+		},
+		{
+			"id": "AdoptVariant",
+			"cpp": "self->AdoptVariant(*compiled, keywordHash)",
+			"returns": "bool",
+			"params": [
+				{ "name": "compiled", "type": "ShaderAsset" },
+				{ "name": "keywordHash", "type": "u64" }
+			],
+			"csharp": { "member": "AdoptVariant", "kind": "method" }
+		},
+		{
+			"id": "ParsePragmas",
+			"cpp": "::Shalltear::ShaderAsset::ParsePragmas(source, ::Shalltear::Path(str(sourcePath)), *outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "sourcePath", "type": "string" },
+				{ "name": "outValue", "type": "ShaderPragmas" }
+			],
+			"csharp": { "member": "ParsePragmas", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetVariants",
+			"cpp": "self->variants",
+			"returns": "list<ShaderVariant>",
+			"params": [],
+			"csharp": { "member": "Variants", "kind": "getter" }
+		},
+		{
+			"id": "SetVariants",
+			"cpp": "self->variants = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderVariant>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderVariant>" }],
+			"csharp": { "member": "Variants", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywords",
+			"cpp": "self->keywords",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Keywords", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywords",
+			"cpp": "self->keywords = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Keywords", "kind": "setter" }
+		},
+		{
+			"id": "GetBindingsField",
+			"cpp": "self->bindings",
+			"returns": "list<RHIDescriptorBindingDesc>",
+			"params": [],
+			"csharp": { "member": "BindingsField", "kind": "getter" }
+		},
+		{
+			"id": "SetBindingsField",
+			"cpp": "self->bindings = Slots::ToVector<::Shalltear::RHI::DescriptorBindingDesc>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIDescriptorBindingDesc>" }],
+			"csharp": { "member": "BindingsField", "kind": "setter" }
+		},
+		{
+			"id": "GetPushConstantSize",
+			"cpp": "self->pushConstantSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PushConstantSize", "kind": "getter" }
+		},
+		{
+			"id": "SetPushConstantSize",
+			"cpp": "self->pushConstantSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PushConstantSize", "kind": "setter" }
+		},
+		{
+			"id": "GetThreadGroupSize",
+			"cpp": "self->threadGroupSize",
+			"returns": "Vec3I",
+			"params": [],
+			"csharp": { "member": "ThreadGroupSize", "kind": "getter" }
+		},
+		{
+			"id": "SetThreadGroupSize",
+			"cpp": "self->threadGroupSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3I" }],
+			"csharp": { "member": "ThreadGroupSize", "kind": "setter" }
+		},
+		{
+			"id": "GetUniformBlocks",
+			"cpp": "self->uniformBlocks",
+			"returns": "list<UniformBlockLayout>",
+			"params": [],
+			"csharp": { "member": "UniformBlocks", "kind": "getter" }
+		},
+		{
+			"id": "SetUniformBlocks",
+			"cpp": "self->uniformBlocks = Slots::Copies<::Shalltear::Vector<::Shalltear::UniformBlockLayout>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UniformBlockLayout>" }],
+			"csharp": { "member": "UniformBlocks", "kind": "setter" }
+		},
+		{
+			"id": "GetResources",
+			"cpp": "self->resources",
+			"returns": "list<ShaderResourceInfo>",
+			"params": [],
+			"csharp": { "member": "Resources", "kind": "getter" }
+		},
+		{
+			"id": "SetResources",
+			"cpp": "self->resources = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderResourceInfo>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderResourceInfo>" }],
+			"csharp": { "member": "Resources", "kind": "setter" }
+		},
+		{
+			"id": "GetRenderState",
+			"cpp": "self->renderState",
+			"returns": "RHIShaderRenderState",
+			"params": [],
+			"csharp": { "member": "RenderState", "kind": "getter" }
+		},
+		{
+			"id": "SetRenderState",
+			"cpp": "self->renderState = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIShaderRenderState" }],
+			"csharp": { "member": "RenderState", "kind": "setter" }
+		},
+		{
+			"id": "GetMemberDefaults",
+			"cpp": "self->memberDefaults",
+			"returns": "list<ShaderMemberDefault>",
+			"params": [],
+			"csharp": { "member": "MemberDefaults", "kind": "getter" }
+		},
+		{
+			"id": "SetMemberDefaults",
+			"cpp": "self->memberDefaults = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberDefault>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderMemberDefault>" }],
+			"csharp": { "member": "MemberDefaults", "kind": "setter" }
+		},
+		{
+			"id": "GetTextureDefaults",
+			"cpp": "self->textureDefaults",
+			"returns": "list<ShaderTextureDefault>",
+			"params": [],
+			"csharp": { "member": "TextureDefaults", "kind": "getter" }
+		},
+		{
+			"id": "SetTextureDefaults",
+			"cpp": "self->textureDefaults = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderTextureDefault>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderTextureDefault>" }],
+			"csharp": { "member": "TextureDefaults", "kind": "setter" }
+		},
+		{
+			"id": "GetMemberRanges",
+			"cpp": "self->memberRanges",
+			"returns": "list<ShaderMemberRange>",
+			"params": [],
+			"csharp": { "member": "MemberRanges", "kind": "getter" }
+		},
+		{
+			"id": "SetMemberRanges",
+			"cpp": "self->memberRanges = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberRange>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderMemberRange>" }],
+			"csharp": { "member": "MemberRanges", "kind": "setter" }
+		},
+		{
+			"id": "GetMemberHints",
+			"cpp": "self->memberHints",
+			"returns": "list<ShaderMemberHint>",
+			"params": [],
+			"csharp": { "member": "MemberHints", "kind": "getter" }
+		},
+		{
+			"id": "SetMemberHints",
+			"cpp": "self->memberHints = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberHint>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderMemberHint>" }],
+			"csharp": { "member": "MemberHints", "kind": "setter" }
+		},
+		{
+			"id": "GetMemberGroups",
+			"cpp": "self->memberGroups",
+			"returns": "list<ShaderMemberGroup>",
+			"params": [],
+			"csharp": { "member": "MemberGroups", "kind": "getter" }
+		},
+		{
+			"id": "SetMemberGroups",
+			"cpp": "self->memberGroups = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberGroup>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderMemberGroup>" }],
+			"csharp": { "member": "MemberGroups", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywordBindings",
+			"cpp": "self->keywordBindings",
+			"returns": "list<ShaderKeywordBinding>",
+			"params": [],
+			"csharp": { "member": "KeywordBindings", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywordBindings",
+			"cpp": "self->keywordBindings = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderKeywordBinding>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderKeywordBinding>" }],
+			"csharp": { "member": "KeywordBindings", "kind": "setter" }
+		},
+		{
+			"id": "GetMemberLabels",
+			"cpp": "self->memberLabels",
+			"returns": "list<ShaderMemberLabel>",
+			"params": [],
+			"csharp": { "member": "MemberLabels", "kind": "getter" }
+		},
+		{
+			"id": "SetMemberLabels",
+			"cpp": "self->memberLabels = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberLabel>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderMemberLabel>" }],
+			"csharp": { "member": "MemberLabels", "kind": "setter" }
+		},
+		{
+			"id": "GetIntegrator",
+			"cpp": "self->integrator",
+			"returns": "ShaderTemplate",
+			"params": [],
+			"csharp": { "member": "Integrator", "kind": "getter" }
+		},
+		{
+			"id": "SetIntegrator",
+			"cpp": "self->integrator = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShaderTemplate" }],
+			"csharp": { "member": "Integrator", "kind": "setter" }
+		},
+		{
+			"id": "GetSkipOptimizations",
+			"cpp": "self->skipOptimizations",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SkipOptimizations", "kind": "getter" }
+		},
+		{
+			"id": "SetSkipOptimizations",
+			"cpp": "self->skipOptimizations = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SkipOptimizations", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthProgram",
+			"cpp": "self->depthProgram",
+			"returns": "ShaderDepthProgram",
+			"params": [],
+			"csharp": { "member": "DepthProgram", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthProgram",
+			"cpp": "self->depthProgram = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShaderDepthProgram" }],
+			"csharp": { "member": "DepthProgram", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthValue",
+			"cpp": "self->depthValue",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "DepthValue", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthValue",
+			"cpp": "self->depthValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "DepthValue", "kind": "setter" }
+		},
+		{
+			"id": "GetDependencies",
+			"cpp": "self->dependencies",
+			"returns": "list<ShaderAssetDependency>",
+			"params": [],
+			"csharp": { "member": "Dependencies", "kind": "getter" }
+		},
+		{
+			"id": "SetDependencies",
+			"cpp": "self->dependencies = Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderAsset::Dependency>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ShaderAssetDependency>" }],
+			"csharp": { "member": "Dependencies", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		}
+	]
+}

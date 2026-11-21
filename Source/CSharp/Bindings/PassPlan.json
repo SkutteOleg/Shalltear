@@ -1,0 +1,145 @@
+{
+	"area": "PassPlan",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Math/Vector.h"
+	],
+	"class": "Shalltear.PassPlan",
+	"instance": "PassPlan",
+	"constants": [
+		{ "name": "MAX_TARGETS", "cpp": "::Shalltear::PassPlan::MAX_TARGETS", "type": "u32", "value": 24 },
+		{ "name": "MAX_STEPS", "cpp": "::Shalltear::PassPlan::MAX_STEPS", "type": "u32", "value": 48 }
+	],
+	"functions": [
+		{
+			"id": "GetExtent",
+			"cpp": "self->GetExtent()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Extent", "kind": "getter" }
+		},
+		{
+			"id": "GetCameraPosition",
+			"cpp": "self->GetCameraPosition()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "CameraPosition", "kind": "getter" }
+		},
+		{
+			"id": "AddTarget",
+			"cpp": "self->AddTarget(format, divisor)",
+			"returns": "u8",
+			"params": [
+				{ "name": "format", "type": "RHIFormat" },
+				{ "name": "divisor", "type": "u16" }
+			],
+			"csharp": { "member": "AddTarget", "kind": "method" }
+		},
+		{
+			"id": "AddStep",
+			"cpp": "self->AddStep(target, readA, readB)",
+			"returns": "bool",
+			"params": [
+				{ "name": "target", "type": "u8" },
+				{ "name": "readA", "type": "u8" },
+				{ "name": "readB", "type": "u8" }
+			],
+			"csharp": { "member": "AddStep", "kind": "method" }
+		},
+		{
+			"id": "Produce",
+			"cpp": "self->Produce(kind, target)",
+			"returns": "bool",
+			"params": [
+				{ "name": "kind", "type": "PassProduces" },
+				{ "name": "target", "type": "u8" }
+			],
+			"csharp": { "member": "Produce", "kind": "method" }
+		},
+		{
+			"id": "DeclareVolume",
+			"cpp": "self->DeclareVolume(format, size, contents, revision)",
+			"returns": "bool",
+			"params": [
+				{ "name": "format", "type": "RHIFormat" },
+				{ "name": "size", "type": "Vec3I" },
+				{ "name": "contents", "type": "list<u8>" },
+				{ "name": "revision", "type": "u64" }
+			],
+			"csharp": { "member": "DeclareVolume", "kind": "method" }
+		},
+		{
+			"id": "GetProduced",
+			"cpp": "self->GetProduced()",
+			"returns": "PassProduces",
+			"params": [],
+			"csharp": { "member": "Produced", "kind": "getter" }
+		},
+		{
+			"id": "GetProducedTarget",
+			"cpp": "self->GetProducedTarget(kind)",
+			"returns": "u8",
+			"params": [{ "name": "kind", "type": "PassProduces" }],
+			"csharp": { "member": "GetProducedTarget", "kind": "method" }
+		},
+		{
+			"id": "HasVolume",
+			"cpp": "self->HasVolume()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasVolume", "kind": "getter" }
+		},
+		{
+			"id": "GetVolume",
+			"cpp": "self->GetVolume()",
+			"returns": "PassVolume",
+			"params": [],
+			"csharp": { "member": "Volume", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetTargetCount",
+			"cpp": "self->GetTargetCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TargetCount", "kind": "getter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->GetTarget(index)",
+			"returns": "PassTarget",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetTarget", "kind": "method" }
+		},
+		{
+			"id": "GetStepCount",
+			"cpp": "self->GetStepCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "StepCount", "kind": "getter" }
+		},
+		{
+			"id": "GetStep",
+			"cpp": "self->GetStep(index)",
+			"returns": "PassStep",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetStep", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::PassPlan(extent, cameraPosition)",
+			"returns": "PassPlan",
+			"params": [
+				{ "name": "extent", "type": "Vec2I" },
+				{ "name": "cameraPosition", "type": "Vec3" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

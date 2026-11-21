@@ -1,0 +1,40 @@
+{
+	"area": "EditorSceneOpsPreservedRowSurvey",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorSceneOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.EditorSceneOpsPreservedRowSurvey",
+	"instance": "EditorSceneOpsPreservedRowSurvey",
+	"functions": [
+		{
+			"id": "GetRows",
+			"cpp": "self->rows",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Rows", "kind": "getter" }
+		},
+		{
+			"id": "SetRows",
+			"cpp": "self->rows = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Rows", "kind": "setter" }
+		},
+		{
+			"id": "GetTypes",
+			"cpp": "self->types",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "Types", "kind": "getter" }
+		},
+		{
+			"id": "SetTypes",
+			"cpp": "self->types = Slots::ToVector<::Shalltear::StringHash>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "Types", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,72 @@
+{
+	"area": "UIPaintScope",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/RenderList.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIPaintScope",
+	"instance": "UIPaintScope",
+	"functions": [
+		{
+			"id": "EmitQuad",
+			"cpp": "self->EmitQuad(rect, colorSRGB, radii, softness)",
+			"returns": "void",
+			"params": [
+				{ "name": "rect", "type": "UIRect" },
+				{ "name": "colorSRGB", "type": "Color" },
+				{ "name": "radii", "type": "UIRadii" },
+				{ "name": "softness", "type": "f32" }
+			],
+			"csharp": { "member": "EmitQuad", "kind": "method" }
+		},
+		{
+			"id": "EmitTexturedQuad",
+			"cpp": "self->EmitTexturedQuad(rect, texture, uv, tintSRGB, sampler, radii, encoding)",
+			"returns": "void",
+			"params": [
+				{ "name": "rect", "type": "UIRect" },
+				{ "name": "texture", "type": "RHITextureHandle" },
+				{ "name": "uv", "type": "UIRect" },
+				{ "name": "tintSRGB", "type": "Color" },
+				{ "name": "sampler", "type": "UISamplerKind" },
+				{ "name": "radii", "type": "UIRadii" },
+				{ "name": "encoding", "type": "UITexelEncoding" }
+			],
+			"csharp": { "member": "EmitTexturedQuad", "kind": "method" }
+		},
+		{
+			"id": "EmitRing",
+			"cpp": "self->EmitRing(rect, widthsPx, colorSRGB, radii)",
+			"returns": "void",
+			"params": [
+				{ "name": "rect", "type": "UIRect" },
+				{ "name": "widthsPx", "type": "UIEdges" },
+				{ "name": "colorSRGB", "type": "Color" },
+				{ "name": "radii", "type": "UIRadii" }
+			],
+			"csharp": { "member": "EmitRing", "kind": "method" }
+		},
+		{
+			"id": "EmitLine",
+			"cpp": "self->EmitLine(a, b, widthPx, colorSRGB, cap)",
+			"returns": "void",
+			"params": [
+				{ "name": "a", "type": "Vec2" },
+				{ "name": "b", "type": "Vec2" },
+				{ "name": "widthPx", "type": "f32" },
+				{ "name": "colorSRGB", "type": "Color" },
+				{ "name": "cap", "type": "UILineCap" }
+			],
+			"csharp": { "member": "EmitLine", "kind": "method" }
+		},
+		{
+			"id": "SetSnapToPixels",
+			"cpp": "self->SetSnapToPixels(snap)",
+			"returns": "void",
+			"params": [{ "name": "snap", "type": "bool" }],
+			"csharp": { "member": "SetSnapToPixels", "kind": "method" }
+		}
+	]
+}

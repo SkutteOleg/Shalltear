@@ -1,0 +1,88 @@
+{
+	"area": "OverrideLayer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h"
+	],
+	"class": "Shalltear.OverrideLayer",
+	"instance": "OverrideLayer",
+	"functions": [
+		{
+			"id": "IsEmpty",
+			"cpp": "self->IsEmpty()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsEmpty", "kind": "getter" }
+		},
+		{
+			"id": "GetProperties",
+			"cpp": "self->properties",
+			"returns": "list<PropertyOverrideOp>",
+			"params": [],
+			"csharp": { "member": "Properties", "kind": "getter" }
+		},
+		{
+			"id": "SetProperties",
+			"cpp": "self->properties = Slots::Copies<::Shalltear::Vector<::Shalltear::PropertyOverrideOp>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PropertyOverrideOp>" }],
+			"csharp": { "member": "Properties", "kind": "setter" }
+		},
+		{
+			"id": "GetAddedObjects",
+			"cpp": "self->addedObjects",
+			"returns": "list<AddedObjectOp>",
+			"params": [],
+			"csharp": { "member": "AddedObjects", "kind": "getter" }
+		},
+		{
+			"id": "SetAddedObjects",
+			"cpp": "self->addedObjects = Slots::Copies<::Shalltear::Vector<::Shalltear::AddedObjectOp>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AddedObjectOp>" }],
+			"csharp": { "member": "AddedObjects", "kind": "setter" }
+		},
+		{
+			"id": "GetRemovedObjects",
+			"cpp": "self->removedObjects",
+			"returns": "list<RemovedObjectOp>",
+			"params": [],
+			"csharp": { "member": "RemovedObjects", "kind": "getter" }
+		},
+		{
+			"id": "SetRemovedObjects",
+			"cpp": "self->removedObjects = Slots::Copies<::Shalltear::Vector<::Shalltear::RemovedObjectOp>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RemovedObjectOp>" }],
+			"csharp": { "member": "RemovedObjects", "kind": "setter" }
+		},
+		{
+			"id": "GetAddedComponents",
+			"cpp": "self->addedComponents",
+			"returns": "list<AddedComponentOp>",
+			"params": [],
+			"csharp": { "member": "AddedComponents", "kind": "getter" }
+		},
+		{
+			"id": "SetAddedComponents",
+			"cpp": "self->addedComponents = Slots::Copies<::Shalltear::Vector<::Shalltear::AddedComponentOp>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AddedComponentOp>" }],
+			"csharp": { "member": "AddedComponents", "kind": "setter" }
+		},
+		{
+			"id": "GetRemovedComponents",
+			"cpp": "self->removedComponents",
+			"returns": "list<RemovedComponentOp>",
+			"params": [],
+			"csharp": { "member": "RemovedComponents", "kind": "getter" }
+		},
+		{
+			"id": "SetRemovedComponents",
+			"cpp": "self->removedComponents = Slots::Copies<::Shalltear::Vector<::Shalltear::RemovedComponentOp>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RemovedComponentOp>" }],
+			"csharp": { "member": "RemovedComponents", "kind": "setter" }
+		}
+	]
+}

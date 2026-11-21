@@ -1,0 +1,919 @@
+{
+	"area": "UIContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/Window/Window.h",
+		"Shalltear/Core/Input/InputEvent.h",
+		"Shalltear/Core/UI/Element.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/Input/InputCodes.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Graphics/TextureAsset.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/UI/RenderList.h",
+		"Shalltear/Core/UI/Style.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.UIContext",
+	"instance": "UIContext",
+	"functions": [
+		{
+			"id": "GetRoot",
+			"cpp": "self->GetRoot()",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" }
+		},
+		{
+			"id": "CreateElement",
+			"cpp": "self->CreateElement()",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "CreateElement", "kind": "method" }
+		},
+		{
+			"id": "DestroyElement",
+			"cpp": "self->DestroyElement(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "DestroyElement", "kind": "method" }
+		},
+		{
+			"id": "DestroyElementNextUpdate",
+			"cpp": "self->DestroyElementNextUpdate(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "DestroyElementNextUpdate", "kind": "method" }
+		},
+		{
+			"id": "ClearChildren",
+			"cpp": "self->ClearChildren(parent)",
+			"returns": "void",
+			"params": [{ "name": "parent", "type": "UIElementHandle" }],
+			"csharp": { "member": "ClearChildren", "kind": "method" }
+		},
+		{
+			"id": "AppendChild",
+			"cpp": "self->AppendChild(parent, child)",
+			"returns": "void",
+			"params": [
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "child", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "AppendChild", "kind": "method" }
+		},
+		{
+			"id": "GetLiveCount",
+			"cpp": "self->GetLiveCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LiveCount", "kind": "getter" }
+		},
+		{
+			"id": "GetElement",
+			"cpp": "self->GetElement(handle)",
+			"returns": "EngineUIElement",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetElement", "kind": "method" }
+		},
+		{
+			"id": "MakeHandle",
+			"cpp": "self->MakeHandle(elementIndex)",
+			"returns": "UIElementHandle",
+			"params": [{ "name": "elementIndex", "type": "u32" }],
+			"csharp": { "member": "MakeHandle", "kind": "method" }
+		},
+		{
+			"id": "GetTreeRevision",
+			"cpp": "self->GetTreeRevision()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TreeRevision", "kind": "getter" }
+		},
+		{
+			"id": "SetVisible",
+			"cpp": "self->SetVisible(handle, visible)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "visible", "type": "bool" }
+			],
+			"csharp": { "member": "SetVisible", "kind": "method" }
+		},
+		{
+			"id": "SetHoverable",
+			"cpp": "self->SetHoverable(handle, hoverable)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "hoverable", "type": "bool" }
+			],
+			"csharp": { "member": "SetHoverable", "kind": "method" }
+		},
+		{
+			"id": "SetInheritsPointerState",
+			"cpp": "self->SetInheritsPointerState(handle, inherits)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "inherits", "type": "bool" }
+			],
+			"csharp": { "member": "SetInheritsPointerState", "kind": "method" }
+		},
+		{
+			"id": "SetFocusable",
+			"cpp": "self->SetFocusable(handle, focusable)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "focusable", "type": "bool" }
+			],
+			"csharp": { "member": "SetFocusable", "kind": "method" }
+		},
+		{
+			"id": "SetTint",
+			"cpp": "self->SetTint(handle, tint)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "tint", "type": "Color" }
+			],
+			"csharp": { "member": "SetTint", "kind": "method" }
+		},
+		{
+			"id": "SetUserTag",
+			"cpp": "self->SetUserTag(handle, tag)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "tag", "type": "u64" }
+			],
+			"csharp": { "member": "SetUserTag", "kind": "method" }
+		},
+		{
+			"id": "SetScrollOffset",
+			"cpp": "self->SetScrollOffset(handle, offset)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "offset", "type": "Vec2" }
+			],
+			"csharp": { "member": "SetScrollOffset", "kind": "method" }
+		},
+		{
+			"id": "ScrollIntoView",
+			"cpp": "self->ScrollIntoView(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "ScrollIntoView", "kind": "method" }
+		},
+		{
+			"id": "ScrollRangeIntoView",
+			"cpp": "self->ScrollRangeIntoView(scroller, startY, endY)",
+			"returns": "void",
+			"params": [
+				{ "name": "scroller", "type": "UIElementHandle" },
+				{ "name": "startY", "type": "f32" },
+				{ "name": "endY", "type": "f32" }
+			],
+			"csharp": { "member": "ScrollRangeIntoView", "kind": "method" }
+		},
+		{
+			"id": "SetStyle",
+			"cpp": "self->SetStyle(handle, *style)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "style", "type": "UIStyle" }
+			],
+			"csharp": { "member": "SetStyle", "kind": "method" }
+		},
+		{
+			"id": "GetStyle",
+			"cpp": "self->GetStyle(handle)",
+			"returns": "UIStyle",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetStyle", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "GetComputedStyle",
+			"cpp": "self->GetComputedStyle(handle)",
+			"returns": "UIStyle",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetComputedStyle", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "SetStyleVar",
+			"cpp": "self->SetStyleVar(name, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "valueValue", "type": "string" }
+			],
+			"csharp": { "member": "SetStyleVar", "kind": "method" }
+		},
+		{
+			"id": "SetStyleVars",
+			"cpp": "self->SetStyleVars(std::span<const ::Shalltear::UI::StyleVarDesc>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::StyleVarDesc>>(descs)))",
+			"returns": "void",
+			"params": [{ "name": "descs", "type": "list<UIStyleVarDesc>" }],
+			"csharp": { "member": "SetStyleVars", "kind": "method" }
+		},
+		{
+			"id": "SetStyleFont",
+			"cpp": "self->SetStyleFont(name, ::Shalltear::Handle<::Shalltear::FontAsset>(font))",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "font", "type": "FontAsset", "optional": true }
+			],
+			"csharp": { "member": "SetStyleFont", "kind": "method" }
+		},
+		{
+			"id": "GetStyleVars",
+			"cpp": "self->GetStyleVars()",
+			"returns": "UIStyleVars",
+			"params": [],
+			"csharp": { "member": "StyleVars", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetStyleVarColor",
+			"cpp": "self->GetStyleVarColor(name, fallback)",
+			"returns": "Color",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "fallback", "type": "Color" }
+			],
+			"csharp": { "member": "GetStyleVarColor", "kind": "method" }
+		},
+		{
+			"id": "GetStyleVarFloat",
+			"cpp": "self->GetStyleVarFloat(name, fallback)",
+			"returns": "f32",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "fallback", "type": "f32" }
+			],
+			"csharp": { "member": "GetStyleVarFloat", "kind": "method" }
+		},
+		{
+			"id": "LoadStyleSheet",
+			"cpp": "self->LoadStyleSheet(cssSource)",
+			"returns": "void",
+			"params": [{ "name": "cssSource", "type": "string" }],
+			"csharp": { "member": "LoadStyleSheet", "kind": "method" }
+		},
+		{
+			"id": "LoadStyleSheetOnce",
+			"cpp": "self->LoadStyleSheetOnce(tag, cssSource)",
+			"returns": "bool",
+			"params": [
+				{ "name": "tag", "type": "StringHash" },
+				{ "name": "cssSource", "type": "string" }
+			],
+			"csharp": { "member": "LoadStyleSheetOnce", "kind": "method" }
+		},
+		{
+			"id": "ClearStyleSheets",
+			"cpp": "self->ClearStyleSheets()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearStyleSheets", "kind": "method" }
+		},
+		{
+			"id": "GetLoadedSheetTags",
+			"cpp": "self->GetLoadedSheetTags()",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "LoadedSheetTags", "kind": "getter" }
+		},
+		{
+			"id": "AddClass",
+			"cpp": "self->AddClass(handle, klass)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "klass", "type": "StringHash" }
+			],
+			"csharp": { "member": "AddClass", "kind": "method" }
+		},
+		{
+			"id": "RemoveClass",
+			"cpp": "self->RemoveClass(handle, klass)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "klass", "type": "StringHash" }
+			],
+			"csharp": { "member": "RemoveClass", "kind": "method" }
+		},
+		{
+			"id": "HasClass",
+			"cpp": "self->HasClass(handle, klass)",
+			"returns": "bool",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "klass", "type": "StringHash" }
+			],
+			"csharp": { "member": "HasClass", "kind": "method" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->SetId(handle, id)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "id", "type": "StringHash" }
+			],
+			"csharp": { "member": "SetId", "kind": "method" }
+		},
+		{
+			"id": "SetTypeTag",
+			"cpp": "self->SetTypeTag(handle, tag)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "tag", "type": "StringHash" }
+			],
+			"csharp": { "member": "SetTypeTag", "kind": "method" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->SetText(handle, ::Shalltear::Handle<::Shalltear::FontAsset>(font), sizePx, color, utf8)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "utf8", "type": "string" }
+			],
+			"csharp": { "member": "SetText", "kind": "method" }
+		},
+		{
+			"id": "SetTextString",
+			"cpp": "self->SetTextString(handle, utf8)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "utf8", "type": "string" }
+			],
+			"csharp": { "member": "SetTextString", "kind": "method" }
+		},
+		{
+			"id": "SetRichText",
+			"cpp": "self->SetRichText(handle, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetRichText", "kind": "method" }
+		},
+		{
+			"id": "GetTextString",
+			"cpp": "self->GetTextString(handle)",
+			"returns": "string",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetTextString", "kind": "method" }
+		},
+		{
+			"id": "SetTextKey",
+			"cpp": "self->SetTextKey(handle, key, fallback)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "string" }
+			],
+			"csharp": { "member": "SetTextKey", "kind": "method" }
+		},
+		{
+			"id": "GetTextKey",
+			"cpp": "self->GetTextKey(handle)",
+			"returns": "string",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetTextKey", "kind": "method" }
+		},
+		{
+			"id": "ClearText",
+			"cpp": "self->ClearText(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "ClearText", "kind": "method" }
+		},
+		{
+			"id": "SetTextInput",
+			"cpp": "self->SetTextInput(handle, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetTextInput", "kind": "method" }
+		},
+		{
+			"id": "HasTextInput",
+			"cpp": "self->HasTextInput(handle)",
+			"returns": "bool",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "HasTextInput", "kind": "method" }
+		},
+		{
+			"id": "SetTextInputMultiline",
+			"cpp": "self->SetTextInputMultiline(handle, multiline)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "multiline", "type": "bool" }
+			],
+			"csharp": { "member": "SetTextInputMultiline", "kind": "method" }
+		},
+		{
+			"id": "SetTextInputCompletion",
+			"cpp": "self->SetTextInputCompletion(handle, suffix, color)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "suffix", "type": "string" },
+				{ "name": "color", "type": "Color" }
+			],
+			"csharp": { "member": "SetTextInputCompletion", "kind": "method" }
+		},
+		{
+			"id": "GetShapedText",
+			"cpp": "self->GetShapedText(handle)",
+			"returns": "UIContextShapedTextView",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetShapedText", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetIcon",
+			"cpp": "self->SetIcon(handle, ::Shalltear::Handle<::Shalltear::VectorAsset>(asset), sizePx, *palette)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "asset", "type": "VectorAsset", "optional": true },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "palette", "type": "UIIconPalette" }
+			],
+			"csharp": { "member": "SetIcon", "kind": "method" }
+		},
+		{
+			"id": "SetIconPalette",
+			"cpp": "self->SetIconPalette(handle, *palette)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "palette", "type": "UIIconPalette" }
+			],
+			"csharp": { "member": "SetIconPalette", "kind": "method" }
+		},
+		{
+			"id": "ClearIcon",
+			"cpp": "self->ClearIcon(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "ClearIcon", "kind": "method" }
+		},
+		{
+			"id": "HasIcon",
+			"cpp": "self->HasIcon(handle)",
+			"returns": "bool",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "HasIcon", "kind": "method" }
+		},
+		{
+			"id": "GetIconAsset",
+			"cpp": "self->GetIconAsset(handle)",
+			"returns": "VectorAsset",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetIconAsset", "kind": "method" }
+		},
+		{
+			"id": "SetImage",
+			"cpp": "self->SetImage(handle, ::Shalltear::Handle<::Shalltear::TextureAsset>(asset), sizePx)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "asset", "type": "Texture", "optional": true },
+				{ "name": "sizePx", "type": "f32" }
+			],
+			"csharp": { "member": "SetImage", "kind": "method" }
+		},
+		{
+			"id": "SetImage2",
+			"cpp": "self->SetImage(handle, *image)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "image", "type": "UIImageDesc" }
+			],
+			"csharp": { "member": "SetImage", "kind": "method" }
+		},
+		{
+			"id": "GetImage",
+			"cpp": "self->GetImage(handle)",
+			"returns": "UIImageDesc",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetImage", "kind": "method" }
+		},
+		{
+			"id": "ClearImage",
+			"cpp": "self->ClearImage(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "ClearImage", "kind": "method" }
+		},
+		{
+			"id": "HasImage",
+			"cpp": "self->HasImage(handle)",
+			"returns": "bool",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "HasImage", "kind": "method" }
+		},
+		{
+			"id": "GetImageAsset",
+			"cpp": "self->GetImageAsset(handle)",
+			"returns": "Texture",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetImageAsset", "kind": "method" }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "self->SetTooltip(handle, text)",
+			"returns": "void",
+			"params": [
+				{ "name": "handle", "type": "UIElementHandle" },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "SetTooltip", "kind": "method" }
+		},
+		{
+			"id": "Events",
+			"cpp": "self->Events(handle)",
+			"returns": "UIElementEvents",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "Events", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "HasEvents",
+			"cpp": "self->HasEvents(handle)",
+			"returns": "bool",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "HasEvents", "kind": "method" }
+		},
+		{
+			"id": "OpenPopup",
+			"cpp": "self->OpenPopup(content, anchorPx, flags, excludePx)",
+			"returns": "void",
+			"params": [
+				{ "name": "content", "type": "UIElementHandle" },
+				{ "name": "anchorPx", "type": "Vec2" },
+				{ "name": "flags", "type": "UIPopupFlags" },
+				{ "name": "excludePx", "type": "UIRect" }
+			],
+			"csharp": { "member": "OpenPopup", "kind": "method" }
+		},
+		{
+			"id": "ClosePopup",
+			"cpp": "self->ClosePopup(content)",
+			"returns": "void",
+			"params": [{ "name": "content", "type": "UIElementHandle" }],
+			"csharp": { "member": "ClosePopup", "kind": "method" }
+		},
+		{
+			"id": "CloseAllPopups",
+			"cpp": "self->CloseAllPopups()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "CloseAllPopups", "kind": "method" }
+		},
+		{
+			"id": "IsPopupOpen",
+			"cpp": "self->IsPopupOpen(content)",
+			"returns": "bool",
+			"params": [{ "name": "content", "type": "UIElementHandle" }],
+			"csharp": { "member": "IsPopupOpen", "kind": "method" }
+		},
+		{
+			"id": "GetOpenPopupCount",
+			"cpp": "self->GetOpenPopupCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "OpenPopupCount", "kind": "getter" }
+		},
+		{
+			"id": "GetOpenPopup",
+			"cpp": "self->GetOpenPopup(index)",
+			"returns": "UIElementHandle",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetOpenPopup", "kind": "method" }
+		},
+		{
+			"id": "SetPopupDefaultButton",
+			"cpp": "self->SetPopupDefaultButton(content, button)",
+			"returns": "void",
+			"params": [
+				{ "name": "content", "type": "UIElementHandle" },
+				{ "name": "button", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "SetPopupDefaultButton", "kind": "method" }
+		},
+		{
+			"id": "InjectInput",
+			"cpp": "self->InjectInput(*eventValue)",
+			"returns": "void",
+			"params": [{ "name": "eventValue", "type": "EngineInputEvent" }],
+			"csharp": { "member": "InjectInput", "kind": "method" }
+		},
+		{
+			"id": "GetFocused",
+			"cpp": "self->GetFocused()",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Focused", "kind": "getter" }
+		},
+		{
+			"id": "GetHovered",
+			"cpp": "self->GetHovered()",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Hovered", "kind": "getter" }
+		},
+		{
+			"id": "ClearFocus",
+			"cpp": "self->ClearFocus()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFocus", "kind": "method" }
+		},
+		{
+			"id": "SetFocus",
+			"cpp": "self->SetFocus(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "SetFocus", "kind": "method" }
+		},
+		{
+			"id": "SetHoverSuppressed",
+			"cpp": "self->SetHoverSuppressed(suppressed)",
+			"returns": "void",
+			"params": [{ "name": "suppressed", "type": "bool" }],
+			"csharp": { "member": "SetHoverSuppressed", "kind": "method" }
+		},
+		{
+			"id": "IsHoverSuppressed",
+			"cpp": "self->IsHoverSuppressed()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsHoverSuppressed", "kind": "getter" }
+		},
+		{
+			"id": "ClaimPointer",
+			"cpp": "self->ClaimPointer(owner, mode)",
+			"returns": "u32",
+			"params": [
+				{ "name": "owner", "type": "UIElementHandle" },
+				{ "name": "mode", "type": "CursorMode" }
+			],
+			"csharp": { "member": "ClaimPointer", "kind": "method" }
+		},
+		{
+			"id": "ReleasePointer",
+			"cpp": "self->ReleasePointer(claim)",
+			"returns": "void",
+			"params": [{ "name": "claim", "type": "u32" }],
+			"csharp": { "member": "ReleasePointer", "kind": "method" }
+		},
+		{
+			"id": "GetPointerClaimMode",
+			"cpp": "self->GetPointerClaimMode()",
+			"returns": "CursorMode",
+			"params": [],
+			"csharp": { "member": "PointerClaimMode", "kind": "getter" }
+		},
+		{
+			"id": "GetPointerMods",
+			"cpp": "self->GetPointerMods()",
+			"returns": "KeyMod",
+			"params": [],
+			"csharp": { "member": "PointerMods", "kind": "getter" }
+		},
+		{
+			"id": "GetPressMods",
+			"cpp": "self->GetPressMods()",
+			"returns": "KeyMod",
+			"params": [],
+			"csharp": { "member": "PressMods", "kind": "getter" }
+		},
+		{
+			"id": "GetPointerPosition",
+			"cpp": "self->GetPointerPosition()",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "PointerPosition", "kind": "getter" }
+		},
+		{
+			"id": "GetPointerPosition2",
+			"cpp": "self->GetPointerPosition(element)",
+			"returns": "Vec2",
+			"params": [{ "name": "element", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetPointerPosition", "kind": "method" }
+		},
+		{
+			"id": "WantsMouse",
+			"cpp": "self->WantsMouse()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WantsMouse", "kind": "method" }
+		},
+		{
+			"id": "WantsKeyboard",
+			"cpp": "self->WantsKeyboard()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WantsKeyboard", "kind": "method" }
+		},
+		{
+			"id": "GetDesiredCursor",
+			"cpp": "self->GetDesiredCursor()",
+			"returns": "SystemCursor",
+			"params": [],
+			"csharp": { "member": "DesiredCursor", "kind": "getter" }
+		},
+		{
+			"id": "Update",
+			"cpp": "self->Update()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Update", "kind": "method" }
+		},
+		{
+			"id": "BuildRenderList",
+			"cpp": "self->BuildRenderList(*outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "UIRenderList" }],
+			"csharp": { "member": "BuildRenderList", "kind": "method" }
+		},
+		{
+			"id": "HitTest",
+			"cpp": "self->HitTest(point, mode)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "point", "type": "Vec2" },
+				{ "name": "mode", "type": "UIHitTestMode" }
+			],
+			"csharp": { "member": "HitTest", "kind": "method" }
+		},
+		{
+			"id": "UpdateDragTarget",
+			"cpp": "self->UpdateDragTarget(*payload, point)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "point", "type": "Vec2" }
+			],
+			"csharp": { "member": "UpdateDragTarget", "kind": "method" }
+		},
+		{
+			"id": "ClearDragTarget",
+			"cpp": "self->ClearDragTarget()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearDragTarget", "kind": "method" }
+		},
+		{
+			"id": "DeliverDrop",
+			"cpp": "self->DeliverDrop(*payload, point)",
+			"returns": "bool",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "point", "type": "Vec2" }
+			],
+			"csharp": { "member": "DeliverDrop", "kind": "method" }
+		},
+		{
+			"id": "Resize",
+			"cpp": "self->Resize(sizePx)",
+			"returns": "void",
+			"params": [{ "name": "sizePx", "type": "Vec2I" }],
+			"csharp": { "member": "Resize", "kind": "method" }
+		},
+		{
+			"id": "SetContentScale",
+			"cpp": "self->SetContentScale(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ContentScale", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->GetSize()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "GetContentScale",
+			"cpp": "self->GetContentScale()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ContentScale", "kind": "getter" }
+		},
+		{
+			"id": "GetLayout",
+			"cpp": "self->GetLayout(handle)",
+			"returns": "UILayoutData",
+			"params": [{ "name": "handle", "type": "UIElementHandle" }],
+			"csharp": { "member": "GetLayout", "kind": "method" }
+		},
+		{
+			"id": "GetLayoutStats",
+			"cpp": "self->GetLayoutStats()",
+			"returns": "UILayoutStats",
+			"params": [],
+			"csharp": { "member": "LayoutStats", "kind": "getter" }
+		},
+		{
+			"id": "ResetLayoutStats",
+			"cpp": "self->ResetLayoutStats()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetLayoutStats", "kind": "method" }
+		},
+		{
+			"id": "GetPaintStats",
+			"cpp": "self->GetPaintStats()",
+			"returns": "UIPaintStats",
+			"params": [],
+			"csharp": { "member": "PaintStats", "kind": "getter" }
+		},
+		{
+			"id": "ResetPaintStats",
+			"cpp": "self->ResetPaintStats()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetPaintStats", "kind": "method" }
+		},
+		{
+			"id": "GetTreeStats",
+			"cpp": "self->GetTreeStats()",
+			"returns": "UITreeStats",
+			"params": [],
+			"csharp": { "member": "TreeStats", "kind": "getter" }
+		},
+		{
+			"id": "ResetTreeStats",
+			"cpp": "self->ResetTreeStats()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetTreeStats", "kind": "method" }
+		},
+		{
+			"id": "GetStyleStats",
+			"cpp": "self->GetStyleStats()",
+			"returns": "UIStyleStats",
+			"params": [],
+			"csharp": { "member": "StyleStats", "kind": "getter" }
+		},
+		{
+			"id": "ResetStyleStats",
+			"cpp": "self->ResetStyleStats()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetStyleStats", "kind": "method" }
+		},
+		{
+			"id": "GetFontSystem",
+			"cpp": "self->GetFontSystem()",
+			"returns": "UIFontSystem",
+			"params": [],
+			"csharp": { "member": "FontSystem", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::UI::Context(*desc, fontSystem, iconSystem)",
+			"returns": "UIContext",
+			"params": [
+				{ "name": "desc", "type": "UIContextDesc" },
+				{ "name": "fontSystem", "type": "UIFontSystem", "optional": true },
+				{ "name": "iconSystem", "type": "UIVectorIconSystem", "optional": true }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

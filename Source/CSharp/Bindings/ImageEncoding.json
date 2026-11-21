@@ -1,0 +1,21 @@
+{
+	"area": "ImageEncoding",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ImageEncoding.h"
+	],
+	"class": "Shalltear.ImageEncoding",
+	"functions": [
+		{
+			"id": "EncodePNG",
+			"cpp": "::Shalltear::ImageEncoding::EncodePNG(rgba8, size, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "rgba8", "type": "list<u8>" },
+				{ "name": "size", "type": "Vec2I" },
+				{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" }
+			],
+			"csharp": { "member": "EncodePNG", "kind": "method" }
+		}
+	]
+}

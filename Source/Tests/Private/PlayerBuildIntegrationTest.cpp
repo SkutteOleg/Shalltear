@@ -1295,9 +1295,11 @@ TEST_F(PlayerBuildIntegrationTest, ProjectWithoutCSharpShipsNoCSharp) {
 	constexpr const char* PACKAGE_ARCHIVE = "CSharp.a";
 	constexpr const char* PACKAGE_OBJECT = "ScriptRuntime.cpp.o";
 	constexpr const char* PACKAGE_SYMBOL = "Shalltear::CSharpImpl::";
-	constexpr const char* BRIDGED_PACKAGES = "dev.shalltear.animation;dev.shalltear.audio;dev.shalltear.physics3d";
-	constexpr const char* BRIDGED_OBJECTS[] = {"Animator.cpp.o", "AudioSystem.cpp.o", "PhysicsWorld.cpp.o"};
-	constexpr const char* BRIDGE_OBJECTS[] = {"AnimationBindings.cpp.o", "AudioBindings.cpp.o", "PhysicsBindings.cpp.o"};
+	constexpr const char* BRIDGED_PACKAGES = "dev.shalltear.animation;dev.shalltear.audio;dev.shalltear.physics3d;dev.shalltear.network;"
+											 "dev.shalltear.postprocessing;dev.shalltear.visualeffects";
+	constexpr const char* BRIDGED_OBJECTS[] = {"Animator.cpp.o", "AudioSystem.cpp.o", "PhysicsWorld.cpp.o", "Network.cpp.o", "PostProcessing.cpp.o", "VisualEffects.cpp.o"};
+	constexpr const char* BRIDGE_OBJECTS[] = {"AnimationBindings.cpp.o", "AudioBindings.cpp.o", "PhysicsBindings.cpp.o",
+											  "NetworkCSharpPackage.cpp.o", "PostProcessingCSharpPackage.cpp.o", "VisualEffectsCSharpPackage.cpp.o"};
 
 	std::filesystem::path project = _root / "ScriptlessProject";
 	std::filesystem::create_directories(project / "Assets");

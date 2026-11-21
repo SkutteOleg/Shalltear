@@ -1,0 +1,20 @@
+{
+	"area": "EditTargets",
+	"slots": true,
+	"include": ["Shalltear/Core/Handle.h", "Shalltear/Core/Object.h", "Shalltear/Editor/EditTarget.h"],
+	"class": "Shalltear.Editor.EditTarget",
+	"instance": "EditTarget",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::EditTarget(::Shalltear::Handle<::Shalltear::Object>(target))",
+			"returns": "EditTarget",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [{ "name": "target", "type": "EngineObject" }],
+			"csharp": { "member": "Create", "kind": "method" },
+			"doc": "Target for a live object."
+		}
+	]
+}

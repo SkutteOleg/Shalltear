@@ -1,0 +1,168 @@
+{
+	"area": "SceneHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.Editor.SceneHandle",
+	"instance": "SceneHandle",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "SceneHandleKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneHandleKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetParentToWorld",
+			"cpp": "&self->parentToWorld",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "ParentToWorld", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetParentToWorld",
+			"cpp": "self->parentToWorld = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "ParentToWorld", "kind": "setter" }
+		},
+		{
+			"id": "GetParentRotation",
+			"cpp": "self->parentRotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "ParentRotation", "kind": "getter" }
+		},
+		{
+			"id": "SetParentRotation",
+			"cpp": "self->parentRotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "ParentRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetRotation",
+			"cpp": "self->rotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "Rotation", "kind": "getter" }
+		},
+		{
+			"id": "SetRotation",
+			"cpp": "self->rotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "Rotation", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "getter" }
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetDirection",
+			"cpp": "self->direction",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Direction", "kind": "getter" }
+		},
+		{
+			"id": "SetDirection",
+			"cpp": "self->direction = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Direction", "kind": "setter" }
+		},
+		{
+			"id": "GetDistance",
+			"cpp": "self->distance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Distance", "kind": "getter" }
+		},
+		{
+			"id": "SetDistance",
+			"cpp": "self->distance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Distance", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->color",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color32" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		}
+	]
+}

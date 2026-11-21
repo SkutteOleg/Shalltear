@@ -1,0 +1,103 @@
+{
+	"area": "WindowSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowSystem.h",
+		"Shalltear/Core/Window/Monitor.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowSystem",
+	"functions": [
+		{
+			"id": "IsInitialized",
+			"cpp": "::Shalltear::WindowSystem::IsInitialized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInitialized", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "(::Shalltear::WindowSystem::Create(*desc)).Get()",
+			"returns": "Window",
+			"params": [{ "name": "desc", "type": "WindowDesc" }],
+			"csharp": { "member": "Create", "kind": "method" }
+		},
+		{
+			"id": "RequestDestroy",
+			"cpp": "::Shalltear::WindowSystem::RequestDestroy(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "void",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "RequestDestroy", "kind": "method" }
+		},
+		{
+			"id": "WaitEvents",
+			"cpp": "::Shalltear::WindowSystem::WaitEvents(timeoutSeconds)",
+			"returns": "void",
+			"params": [{ "name": "timeoutSeconds", "type": "f64" }],
+			"csharp": { "member": "WaitEvents", "kind": "method" }
+		},
+		{
+			"id": "GetMonitors",
+			"cpp": "::Shalltear::WindowSystem::GetMonitors()",
+			"returns": "list<MonitorInfo>",
+			"params": [],
+			"csharp": { "member": "Monitors", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "GetFocusedWindow",
+			"cpp": "(::Shalltear::WindowSystem::GetFocusedWindow()).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "FocusedWindow", "kind": "getter" }
+		},
+		{
+			"id": "GetPrimaryWindow",
+			"cpp": "(::Shalltear::WindowSystem::GetPrimaryWindow()).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "PrimaryWindow", "kind": "getter" }
+		},
+		{
+			"id": "GetWindowAtPoint",
+			"cpp": "(::Shalltear::WindowSystem::GetWindowAtPoint(screenPx, ::Shalltear::Handle<::Shalltear::Window>(ignore))).Get()",
+			"returns": "Window",
+			"params": [
+				{ "name": "screenPx", "type": "Vec2I" },
+				{ "name": "ignore", "type": "Window", "optional": true }
+			],
+			"csharp": { "member": "GetWindowAtPoint", "kind": "method" }
+		},
+		{
+			"id": "GetWindowCount",
+			"cpp": "::Shalltear::WindowSystem::GetWindowCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "WindowCount", "kind": "getter" }
+		},
+		{
+			"id": "SetClipboardText",
+			"cpp": "::Shalltear::WindowSystem::SetClipboardText(utf8)",
+			"returns": "bool",
+			"params": [{ "name": "utf8", "type": "string" }],
+			"csharp": { "member": "SetClipboardText", "kind": "method" }
+		},
+		{
+			"id": "GetClipboardText",
+			"cpp": "::Shalltear::WindowSystem::GetClipboardText()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ClipboardText", "kind": "getter" }
+		},
+		{
+			"id": "SetModalTickCallback",
+			"cpp": "::Shalltear::WindowSystem::SetModalTickCallback(Slots::FromBits<void (*)(void *)>(tick), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "void",
+			"params": [
+				{ "name": "tick", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "SetModalTickCallback", "kind": "method" }
+		}
+	]
+}

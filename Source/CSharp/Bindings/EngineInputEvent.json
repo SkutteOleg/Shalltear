@@ -1,0 +1,168 @@
+{
+	"area": "EngineInputEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Input/InputEvent.h",
+		"Shalltear/Core/Input/InputCodes.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.EngineInputEvent",
+	"instance": "EngineInputEvent",
+	"natives": [{ "name": "EngineInputEvent", "cpp": "::Shalltear::InputEvent", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "InputEventType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "InputEventType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetWindow",
+			"cpp": "(self->window).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		},
+		{
+			"id": "GetMods",
+			"cpp": "self->mods",
+			"returns": "KeyMod",
+			"params": [],
+			"csharp": { "member": "Mods", "kind": "getter" }
+		},
+		{
+			"id": "SetMods",
+			"cpp": "self->mods = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "KeyMod" }],
+			"csharp": { "member": "Mods", "kind": "setter" }
+		},
+		{
+			"id": "GetMousePosPx",
+			"cpp": "self->mousePosPx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "MousePosPx", "kind": "getter" }
+		},
+		{
+			"id": "SetMousePosPx",
+			"cpp": "self->mousePosPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "MousePosPx", "kind": "setter" }
+		},
+		{
+			"id": "GetWheel",
+			"cpp": "self->wheel",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Wheel", "kind": "getter" }
+		},
+		{
+			"id": "SetWheel",
+			"cpp": "self->wheel = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Wheel", "kind": "setter" }
+		},
+		{
+			"id": "GetButton",
+			"cpp": "self->button",
+			"returns": "MouseButton",
+			"params": [],
+			"csharp": { "member": "Button", "kind": "getter" }
+		},
+		{
+			"id": "SetButton",
+			"cpp": "self->button = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "MouseButton" }],
+			"csharp": { "member": "Button", "kind": "setter" }
+		},
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "Key",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Key" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetScancode",
+			"cpp": "self->scancode",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "Scancode", "kind": "getter" }
+		},
+		{
+			"id": "SetScancode",
+			"cpp": "self->scancode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "Scancode", "kind": "setter" }
+		},
+		{
+			"id": "GetRepeat",
+			"cpp": "self->repeat",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Repeat", "kind": "getter" }
+		},
+		{
+			"id": "SetRepeat",
+			"cpp": "self->repeat = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Repeat", "kind": "setter" }
+		},
+		{
+			"id": "GetCodepoint",
+			"cpp": "self->codepoint",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Codepoint", "kind": "getter" }
+		},
+		{
+			"id": "SetCodepoint",
+			"cpp": "self->codepoint = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Codepoint", "kind": "setter" }
+		},
+		{
+			"id": "GetGamepadIndex",
+			"cpp": "self->gamepadIndex",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "GamepadIndex", "kind": "getter" }
+		},
+		{
+			"id": "SetGamepadIndex",
+			"cpp": "self->gamepadIndex = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "GamepadIndex", "kind": "setter" }
+		}
+	]
+}

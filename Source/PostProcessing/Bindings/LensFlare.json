@@ -1,0 +1,229 @@
+{
+	"area": "LensFlare",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/LensFlare.h",
+		"Shalltear/Core/Math/AnimationCurve.h",
+		"Shalltear/PostProcessing/LensFlareAsset.h"
+	],
+	"class": "Shalltear.LensFlare",
+	"instance": "LensFlare",
+	"types": [{ "name": "LensFlare", "cpp": "::Shalltear::LensFlare", "engine": "LensFlare", "base": "Component" }],
+	"functions": [
+		{
+			"id": "GetEnabledCount",
+			"cpp": "::Shalltear::LensFlare::GetEnabledCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "EnabledCount", "kind": "getter" },
+			"static": true
+		},
+		{
+			"id": "GetEnabled",
+			"cpp": "::Shalltear::LensFlare::GetEnabled(index)",
+			"returns": "LensFlare",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetEnabled", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetFlare",
+			"cpp": "self->flare",
+			"returns": "LensFlareAsset",
+			"params": [],
+			"csharp": { "member": "Flare", "kind": "getter" }
+		},
+		{
+			"id": "SetFlare",
+			"cpp": "self->flare = ::Shalltear::Handle<::Shalltear::LensFlareAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LensFlareAsset", "optional": true }],
+			"csharp": { "member": "Flare", "kind": "setter" }
+		},
+		{
+			"id": "GetIntensity",
+			"cpp": "self->intensity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Intensity", "kind": "getter" }
+		},
+		{
+			"id": "SetIntensity",
+			"cpp": "self->intensity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Intensity", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "getter" }
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetAttenuationByLightShape",
+			"cpp": "self->attenuationByLightShape",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AttenuationByLightShape", "kind": "getter" }
+		},
+		{
+			"id": "SetAttenuationByLightShape",
+			"cpp": "self->attenuationByLightShape = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "AttenuationByLightShape", "kind": "setter" }
+		},
+		{
+			"id": "GetAttenuationDistance",
+			"cpp": "self->attenuationDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "AttenuationDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetAttenuationDistance",
+			"cpp": "self->attenuationDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "AttenuationDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetAttenuationDistanceCurve",
+			"cpp": "&self->attenuationDistanceCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "AttenuationDistanceCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetAttenuationDistanceCurve",
+			"cpp": "self->attenuationDistanceCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "AttenuationDistanceCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetScaleDistance",
+			"cpp": "self->scaleDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ScaleDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetScaleDistance",
+			"cpp": "self->scaleDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ScaleDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetScaleDistanceCurve",
+			"cpp": "&self->scaleDistanceCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "ScaleDistanceCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetScaleDistanceCurve",
+			"cpp": "self->scaleDistanceCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "ScaleDistanceCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetScreenAttenuationCurve",
+			"cpp": "&self->screenAttenuationCurve",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "ScreenAttenuationCurve", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetScreenAttenuationCurve",
+			"cpp": "self->screenAttenuationCurve = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "ScreenAttenuationCurve", "kind": "setter" }
+		},
+		{
+			"id": "GetOcclusion",
+			"cpp": "self->occlusion",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Occlusion", "kind": "getter" }
+		},
+		{
+			"id": "SetOcclusion",
+			"cpp": "self->occlusion = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Occlusion", "kind": "setter" }
+		},
+		{
+			"id": "GetOcclusionRadius",
+			"cpp": "self->occlusionRadius",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "OcclusionRadius", "kind": "getter" }
+		},
+		{
+			"id": "SetOcclusionRadius",
+			"cpp": "self->occlusionRadius = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "OcclusionRadius", "kind": "setter" }
+		},
+		{
+			"id": "GetSampleCount",
+			"cpp": "self->sampleCount",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "SampleCount", "kind": "getter" }
+		},
+		{
+			"id": "SetSampleCount",
+			"cpp": "self->sampleCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SampleCount", "kind": "setter" }
+		},
+		{
+			"id": "GetOcclusionOffset",
+			"cpp": "self->occlusionOffset",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "OcclusionOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetOcclusionOffset",
+			"cpp": "self->occlusionOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "OcclusionOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetAllowOffScreen",
+			"cpp": "self->allowOffScreen",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AllowOffScreen", "kind": "getter" }
+		},
+		{
+			"id": "SetAllowOffScreen",
+			"cpp": "self->allowOffScreen = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "AllowOffScreen", "kind": "setter" }
+		}
+	]
+}

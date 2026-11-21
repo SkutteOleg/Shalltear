@@ -1,0 +1,117 @@
+{
+	"area": "EditorSelection",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorSelection.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Object.h"
+	],
+	"class": "Shalltear.Editor.EditorSelection",
+	"functions": [
+		{
+			"id": "Select",
+			"cpp": "::Shalltear::EditorSelection::Select(::Shalltear::Handle<::Shalltear::Object>(objectValue))",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "Select", "kind": "method" }
+		},
+		{
+			"id": "AddToSelection",
+			"cpp": "::Shalltear::EditorSelection::AddToSelection(::Shalltear::Handle<::Shalltear::Object>(objectValue))",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "AddToSelection", "kind": "method" }
+		},
+		{
+			"id": "RemoveFromSelection",
+			"cpp": "::Shalltear::EditorSelection::RemoveFromSelection(::Shalltear::Handle<::Shalltear::Object>(objectValue))",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "RemoveFromSelection", "kind": "method" }
+		},
+		{
+			"id": "ToggleInSelection",
+			"cpp": "::Shalltear::EditorSelection::ToggleInSelection(::Shalltear::Handle<::Shalltear::Object>(objectValue))",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "ToggleInSelection", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "::Shalltear::EditorSelection::Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "GetSelection",
+			"cpp": "::Shalltear::EditorSelection::GetSelection()",
+			"returns": "list<EngineObject>",
+			"params": [],
+			"csharp": { "member": "Selection", "kind": "getter" }
+		},
+		{
+			"id": "GetActive",
+			"cpp": "::Shalltear::EditorSelection::GetActive()",
+			"returns": "EngineObject",
+			"params": [],
+			"csharp": { "member": "Active", "kind": "getter" }
+		},
+		{
+			"id": "IsSelected",
+			"cpp": "::Shalltear::EditorSelection::IsSelected(::Shalltear::Handle<::Shalltear::Object>(objectValue))",
+			"returns": "bool",
+			"params": [{ "name": "objectValue", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "IsSelected", "kind": "method" }
+		},
+		{
+			"id": "GetSelectionCount",
+			"cpp": "::Shalltear::EditorSelection::GetSelectionCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SelectionCount", "kind": "getter" }
+		},
+		{
+			"id": "SelectAsset",
+			"cpp": "::Shalltear::EditorSelection::SelectAsset(assetGuid)",
+			"returns": "void",
+			"params": [{ "name": "assetGuid", "type": "EngineGuid" }],
+			"csharp": { "member": "SelectAsset", "kind": "method" }
+		},
+		{
+			"id": "SelectAssets",
+			"cpp": "::Shalltear::EditorSelection::SelectAssets(assetGuids)",
+			"returns": "void",
+			"params": [{ "name": "assetGuids", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "SelectAssets", "kind": "method" }
+		},
+		{
+			"id": "GetSelectedAssets",
+			"cpp": "::Shalltear::EditorSelection::GetSelectedAssets()",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "SelectedAssets", "kind": "getter" }
+		},
+		{
+			"id": "GetSelectedAsset",
+			"cpp": "::Shalltear::EditorSelection::GetSelectedAsset()",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "SelectedAsset", "kind": "getter" }
+		},
+		{
+			"id": "HasAssetSelection",
+			"cpp": "::Shalltear::EditorSelection::HasAssetSelection()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasAssetSelection", "kind": "getter" }
+		},
+		{
+			"id": "GetAssetSelectionCount",
+			"cpp": "::Shalltear::EditorSelection::GetAssetSelectionCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AssetSelectionCount", "kind": "getter" }
+		}
+	]
+}

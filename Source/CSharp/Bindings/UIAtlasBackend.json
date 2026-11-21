@@ -1,0 +1,34 @@
+{
+	"area": "UIAtlasBackend",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIAtlas.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.UIAtlasBackend",
+	"instance": "UIAtlasBackend",
+	"functions": [
+		{
+			"id": "CreateAtlas",
+			"cpp": "self->CreateAtlas(size, format)",
+			"returns": "RHITextureHandle",
+			"params": [
+				{ "name": "size", "type": "Vec2I" },
+				{ "name": "format", "type": "UIAtlasFormat" }
+			],
+			"csharp": { "member": "CreateAtlas", "kind": "method" }
+		},
+		{
+			"id": "UpdateAtlas",
+			"cpp": "self->UpdateAtlas(atlas, region, pixels)",
+			"returns": "void",
+			"params": [
+				{ "name": "atlas", "type": "RHITextureHandle" },
+				{ "name": "region", "type": "RectI" },
+				{ "name": "pixels", "type": "list<u8>" }
+			],
+			"csharp": { "member": "UpdateAtlas", "kind": "method" }
+		}
+	]
+}

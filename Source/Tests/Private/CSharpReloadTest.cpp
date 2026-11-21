@@ -8,6 +8,7 @@
 #include "EditorTestHooks.h"
 #include "ScopedSettingsStore.h"
 #include "TestPlatform.h"
+#include "UITestUtil.h"
 
 #include "Shalltear/Core/Event.h"
 #include "Shalltear/Core/FileSystem.h"
@@ -26,6 +27,9 @@
 #include "Shalltear/Editor/EditTarget.h"
 #include "Shalltear/Editor/EditorConsole.h"
 #include "Shalltear/Editor/EditorEvents.h"
+#include "Shalltear/Editor/EditorMenus.h"
+#include "Shalltear/Editor/EditorPanel.h"
+#include "Shalltear/Editor/PanelManager.h"
 #include "Shalltear/Editor/SettingsPresentation.h"
 #include "Shalltear/Editor/TypeNameOps.h"
 #include "Shalltear/Editor/UndoSystem.h"
@@ -1047,6 +1051,76 @@ TEST_F(CSharpReloadTest, UIHandlersDropAtUnload) {
 		SceneSystem::UnloadScene(scene);
 	}
 	SceneSystem::EndFrame();
+}
+
+TEST_F(CSharpReloadTest, EditorRegistrationsEndAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.Editor.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	_editor->registerEditorBindings();
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"editor load"}));
+	str message;
+	ASSERT_EQ(Run("EditorProbe.AddsAMenuItem", message), SLT_OK) << message;
+
+	UITest::MockFontSystem fonts;
+	UI::Context context(UI::ContextDesc{}, &fonts);
+	Vector<UI::Widgets::MenuItem> items{GetMemoryResource(MemTag::Editor)};
+	EditorMenus::AppendContributed("Probe", context, items);
+	ASSERT_EQ(items.size(), 1u);
+	EXPECT_EQ(items[0].label, "Probe Item");
+	EXPECT_EQ(items[0].shortcut, "Ctrl+9");
+	EXPECT_TRUE(items[0].enabled);
+	items[0].onSelect();
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"probe item selected"}));
+	items.clear();
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"editor load"}));
+	EditorMenus::AppendContributed("Probe", context, items);
+	EXPECT_TRUE(items.empty());
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
+	EditorMenus::Terminate();
+}
+
+TEST_F(CSharpReloadTest, PanelTypesEndAtUnload) {
+	const fs::path conformance = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp" / "Shalltear.Conformance.Editor.dll";
+	ASSERT_TRUE(fs::is_regular_file(conformance));
+	_editor->registerEditorBindings();
+	fs::copy_file(conformance, _live, fs::copy_options::overwrite_existing);
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"editor load"}));
+	str message;
+	ASSERT_EQ(Run("EditorProbe.RegistersAPanel", message), SLT_OK) << message;
+
+	const TypeInfo* type = TypeRegistry::FindType(StringHash("Conformance.ProbePanel"));
+	ASSERT_NE(type, nullptr);
+	EXPECT_TRUE(TypeRegistry::IsDerivedFrom(type, EditorPanel::GetReflectType()));
+	EXPECT_EQ(PanelManager::GetPanelTypeName(type), "Probe Panel");
+	Object* const made = TypeRegistry::CreateObjectInstance(type, MemTag::Editor);
+	ASSERT_NE(made, nullptr);
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"panel wired"}));
+	EditorPanel* const panel = static_cast<EditorPanel*>(made);
+	EXPECT_EQ(panel->GetType(), type);
+	EXPECT_EQ(panel->GetTitleBase(), "Probe");
+	UITest::MockFontSystem fonts;
+	UI::Context context(UI::ContextDesc{}, &fonts);
+	panel->BuildContent(context, context.GetRoot());
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"panel built"}));
+	TypeRegistry::DestroyObjectInstance(made);
+
+	_editor->requestReload();
+	_editor->pumpReload();
+	ASSERT_EQ(_editor->getReloadOutcome(), CSharpReload::Outcome::Loaded);
+	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"editor load"}));
+	EXPECT_EQ(TypeRegistry::FindType(StringHash("Conformance.ProbePanel")), nullptr);
+	EXPECT_EQ(_log.Delivered().Count("still referenced after unload"), 0u);
 }
 
 TEST_F(CSharpReloadTest, InputMapsEndAtUnload) {

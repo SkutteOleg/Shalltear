@@ -1,0 +1,122 @@
+{
+	"area": "NetTCPSocket",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/Socket.h",
+		"Shalltear/Network/Address.h"
+	],
+	"class": "Shalltear.NetTCPSocket",
+	"instance": "NetTCPSocket",
+	"enums": [
+		{
+			"name": "NetSocketState",
+			"cpp": "::Shalltear::Net::SocketState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Connecting", "value": 0 },
+				{ "name": "Open", "value": 1 },
+				{ "name": "Closed", "value": 2 },
+				{ "name": "Failed", "value": 3 }
+			]
+		},
+		{
+			"name": "NetSocketEvent",
+			"cpp": "::Shalltear::Net::SocketEvent",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Opened", "value": 0 },
+				{ "name": "Readable", "value": 1 },
+				{ "name": "Closed", "value": 2 },
+				{ "name": "Failed", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "NetTCPSocket", "cpp": "::Shalltear::Net::TCPSocket", "owned": true },
+		{ "name": "NetTCPListener", "cpp": "::Shalltear::Net::TCPListener", "owned": true },
+		{ "name": "NetUDPSocket", "cpp": "::Shalltear::Net::UDPSocket", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "Connect",
+			"cpp": "(::Shalltear::Net::TCPSocket::Connect(host, port)).release()",
+			"returns": "NetTCPSocket",
+			"params": [
+				{ "name": "host", "type": "string" },
+				{ "name": "port", "type": "u16" }
+			],
+			"csharp": { "member": "Connect", "kind": "method" },
+			"adopts": true,
+			"static": true
+		},
+		{
+			"id": "Connect2",
+			"cpp": "(::Shalltear::Net::TCPSocket::Connect(*address)).release()",
+			"returns": "NetTCPSocket",
+			"params": [{ "name": "address", "type": "NetAddress" }],
+			"csharp": { "member": "Connect", "kind": "method" },
+			"adopts": true,
+			"static": true
+		},
+		{
+			"id": "GetState",
+			"cpp": "self->GetState()",
+			"returns": "NetSocketState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" }
+		},
+		{
+			"id": "Send",
+			"cpp": "self->Send(data)",
+			"returns": "u64",
+			"params": [{ "name": "data", "type": "list<u8>" }],
+			"csharp": { "member": "Send", "kind": "method" }
+		},
+		{
+			"id": "Receive",
+			"cpp": "self->Receive(outValue)",
+			"returns": "u64",
+			"params": [{ "name": "outValue", "type": "span<u8>", "out": true }],
+			"csharp": { "member": "Receive", "kind": "method" }
+		},
+		{
+			"id": "Close",
+			"cpp": "self->Close()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Close", "kind": "method" }
+		},
+		{
+			"id": "GetError",
+			"cpp": "self->GetError()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Error", "kind": "getter" }
+		},
+		{
+			"id": "GetPeerAddress",
+			"cpp": "self->GetPeerAddress()",
+			"returns": "NetAddress",
+			"params": [],
+			"csharp": { "member": "PeerAddress", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetNoDelay",
+			"cpp": "self->SetNoDelay(noDelay)",
+			"returns": "void",
+			"params": [{ "name": "noDelay", "type": "bool" }],
+			"csharp": { "member": "SetNoDelay", "kind": "method" }
+		},
+		{
+			"id": "SetCallback",
+			"cpp": "self->SetCallback(callback)",
+			"returns": "void",
+			"params": [
+				{ "name": "callback", "type": "fn<void;NetSocketEvent>", "optional": true, "cpp": "std::function<void (Shalltear::Net::SocketEvent)>" }
+			],
+			"csharp": { "member": "SetCallback", "kind": "method" }
+		}
+	]
+}

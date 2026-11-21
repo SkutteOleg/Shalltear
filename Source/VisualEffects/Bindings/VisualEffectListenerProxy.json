@@ -1,0 +1,48 @@
+{
+	"area": "VisualEffectListenerProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffectListener.h",
+		"Shalltear/VisualEffects/VisualEffect.h"
+	],
+	"class": "Shalltear.VisualEffectListenerProxy",
+	"instance": "VisualEffectListenerProxy",
+	"prelude": [
+		"class VisualEffectListenerProxy final : public ::Shalltear::VisualEffectListener {",
+		"public:",
+		"\tstd::function<void(Shalltear::VisualEffect &, std::basic_string_view<char>, const Shalltear::VisualEffectEventAttributes &)> onVisualEffectOutputEvent;",
+		"\tvoid OnVisualEffectOutputEvent(Shalltear::VisualEffect & a0, std::basic_string_view<char> a1, const Shalltear::VisualEffectEventAttributes & a2) override {",
+		"\t\tif (onVisualEffectOutputEvent) {",
+		"\t\t\tonVisualEffectOutputEvent(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::VisualEffectListener::OnVisualEffectOutputEvent(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "VisualEffectListenerProxy", "cpp": "VisualEffectListenerProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetOnVisualEffectOutputEvent",
+			"cpp": "self->onVisualEffectOutputEvent = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;VisualEffect;string;VisualEffectEventAttributes>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::VisualEffect &, std::basic_string_view<char>, const Shalltear::VisualEffectEventAttributes &)>"
+				}
+			],
+			"csharp": { "member": "SetOnVisualEffectOutputEvent", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::VisualEffectListener*>(self)",
+			"returns": "VisualEffectListener",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

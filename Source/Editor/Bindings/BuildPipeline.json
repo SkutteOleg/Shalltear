@@ -1,0 +1,162 @@
+{
+	"area": "BuildPipeline",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h",
+		"Shalltear/Editor/CompileService.h",
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildPipeline",
+	"instance": "BuildPipeline",
+	"functions": [
+		{
+			"id": "GetActive",
+			"cpp": "::Shalltear::BuildPipeline::GetActive()",
+			"returns": "BuildPipeline",
+			"params": [],
+			"csharp": { "member": "Active", "kind": "getter" },
+			"static": true
+		},
+		{
+			"id": "Request",
+			"cpp": "self->Request(*request, outRefusal)",
+			"returns": "bool",
+			"params": [
+				{ "name": "request", "type": "BuildRequest" },
+				{ "name": "outRefusal", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Request", "kind": "method" }
+		},
+		{
+			"id": "Cancel",
+			"cpp": "self->Cancel()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Cancel", "kind": "method" }
+		},
+		{
+			"id": "PumpMainThread",
+			"cpp": "self->PumpMainThread()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "PumpMainThread", "kind": "method" }
+		},
+		{
+			"id": "GetState",
+			"cpp": "self->GetState()",
+			"returns": "BuildState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" }
+		},
+		{
+			"id": "IsBusy",
+			"cpp": "self->IsBusy()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsBusy", "kind": "getter" }
+		},
+		{
+			"id": "GetStatusLabel",
+			"cpp": "self->GetStatusLabel()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "StatusLabel", "kind": "getter" }
+		},
+		{
+			"id": "GetStepIndex",
+			"cpp": "self->GetStepIndex()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "StepIndex", "kind": "getter" }
+		},
+		{
+			"id": "GetStepCount",
+			"cpp": "self->GetStepCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "StepCount", "kind": "getter" }
+		},
+		{
+			"id": "GetStepName",
+			"cpp": "self->GetStepName()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "StepName", "kind": "getter" }
+		},
+		{
+			"id": "GetCurrentProfileName",
+			"cpp": "self->GetCurrentProfileName()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CurrentProfileName", "kind": "getter" }
+		},
+		{
+			"id": "GetResult",
+			"cpp": "self->GetResult()",
+			"returns": "BuildResult",
+			"params": [],
+			"csharp": { "member": "Result", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetDiagnostics",
+			"cpp": "self->GetDiagnostics()",
+			"returns": "list<CompilerDiagnostic>",
+			"params": [],
+			"csharp": { "member": "Diagnostics", "kind": "getter" }
+		},
+		{
+			"id": "GetStagingDirectory",
+			"cpp": "::Shalltear::BuildPipeline::GetStagingDirectory(str(projectPath), *resolved, str(outputOverride))",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "resolved", "type": "ResolvedProfile" },
+				{ "name": "outputOverride", "type": "string" }
+			],
+			"csharp": { "member": "GetStagingDirectory", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetIntermediateDirectory",
+			"cpp": "::Shalltear::BuildPipeline::GetIntermediateDirectory(str(projectPath), str(profileName))",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "profileName", "type": "string" }
+			],
+			"csharp": { "member": "GetIntermediateDirectory", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetCookReportPath",
+			"cpp": "::Shalltear::BuildPipeline::GetCookReportPath(str(projectPath), str(profileName))",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "profileName", "type": "string" }
+			],
+			"csharp": { "member": "GetCookReportPath", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetStagedScenes",
+			"cpp": "::Shalltear::BuildPipeline::GetStagedScenes(*resolved, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "resolved", "type": "ResolvedProfile" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "GetStagedScenes", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "IsEditorOnlyEngineAsset",
+			"cpp": "::Shalltear::BuildPipeline::IsEditorOnlyEngineAsset(engineRelativePath)",
+			"returns": "bool",
+			"params": [{ "name": "engineRelativePath", "type": "string" }],
+			"csharp": { "member": "IsEditorOnlyEngineAsset", "kind": "method" },
+			"static": true
+		}
+	]
+}

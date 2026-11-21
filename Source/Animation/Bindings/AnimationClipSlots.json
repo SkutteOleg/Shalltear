@@ -1,0 +1,183 @@
+{
+	"area": "AnimationClipSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimationClip.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Graphics/SkeletonAsset.h"
+	],
+	"class": "Shalltear.AnimationClip",
+	"instance": "AnimationClip",
+	"enums": [
+		{
+			"name": "AnimationInterpolation",
+			"cpp": "::Shalltear::AnimationInterpolation",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Step", "value": 0 },
+				{ "name": "Linear", "value": 1 },
+				{ "name": "CubicSpline", "value": 2 }
+			]
+		},
+		{
+			"name": "AnimationTrackKind",
+			"cpp": "::Shalltear::AnimationTrackKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "BonePosition", "value": 0 },
+				{ "name": "BoneRotation", "value": 1 },
+				{ "name": "BoneScale", "value": 2 },
+				{ "name": "Property", "value": 3 },
+				{ "name": "Event", "value": 4 },
+				{ "name": "Method", "value": 5 },
+				{ "name": "BlendShape", "value": 6 },
+				{ "name": "Audio", "value": 7 }
+			]
+		}
+	],
+	"natives": [{ "name": "AnimationClipTrack", "cpp": "::Shalltear::AnimationClip::Track", "owned": true, "create": true }],
+	"constants": [{ "name": "ANIMATION_WHOLE_VALUE", "cpp": "::Shalltear::ANIMATION_WHOLE_VALUE", "type": "u8", "value": 255 }],
+	"functions": [
+		{
+			"id": "AnimationValuesPerKey",
+			"cpp": "::Shalltear::AnimationValuesPerKey(interp)",
+			"returns": "u32",
+			"params": [{ "name": "interp", "type": "AnimationInterpolation" }],
+			"csharp": { "member": "AnimationValuesPerKey", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HoldCueAssets",
+			"cpp": "self->HoldCueAssets()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "HoldCueAssets", "kind": "method" }
+		},
+		{
+			"id": "GetTracks",
+			"cpp": "self->tracks",
+			"returns": "list<AnimationClipTrack>",
+			"params": [],
+			"csharp": { "member": "Tracks", "kind": "getter" }
+		},
+		{
+			"id": "SetTracks",
+			"cpp": "self->tracks = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimationClip::Track>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimationClipTrack>" }],
+			"csharp": { "member": "Tracks", "kind": "setter" }
+		},
+		{
+			"id": "GetLengthField",
+			"cpp": "self->length",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LengthField", "kind": "getter" }
+		},
+		{
+			"id": "SetLengthField",
+			"cpp": "self->length = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LengthField", "kind": "setter" }
+		},
+		{
+			"id": "GetFrameRateField",
+			"cpp": "self->frameRate",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FrameRateField", "kind": "getter" }
+		},
+		{
+			"id": "SetFrameRateField",
+			"cpp": "self->frameRate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FrameRateField", "kind": "setter" }
+		},
+		{
+			"id": "GetLoopField",
+			"cpp": "self->loop",
+			"returns": "AnimationLoopMode",
+			"params": [],
+			"csharp": { "member": "LoopField", "kind": "getter" }
+		},
+		{
+			"id": "SetLoopField",
+			"cpp": "self->loop = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationLoopMode" }],
+			"csharp": { "member": "LoopField", "kind": "setter" }
+		},
+		{
+			"id": "GetAdditiveReferenceTimeField",
+			"cpp": "self->additiveReferenceTime",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "AdditiveReferenceTimeField", "kind": "getter" }
+		},
+		{
+			"id": "SetAdditiveReferenceTimeField",
+			"cpp": "self->additiveReferenceTime = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "AdditiveReferenceTimeField", "kind": "setter" }
+		},
+		{
+			"id": "GetBakeRootMotionIntoPoseField",
+			"cpp": "self->bakeRootMotionIntoPose",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BakeRootMotionIntoPoseField", "kind": "getter" }
+		},
+		{
+			"id": "SetBakeRootMotionIntoPoseField",
+			"cpp": "self->bakeRootMotionIntoPose = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BakeRootMotionIntoPoseField", "kind": "setter" }
+		},
+		{
+			"id": "GetSkeletonGuid",
+			"cpp": "self->skeletonGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "SkeletonGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetSkeletonGuid",
+			"cpp": "self->skeletonGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "SkeletonGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetSkeletonField",
+			"cpp": "self->skeleton",
+			"returns": "SkeletonAsset",
+			"params": [],
+			"csharp": { "member": "SkeletonField", "kind": "getter" }
+		},
+		{
+			"id": "SetSkeletonField",
+			"cpp": "self->skeleton = ::Shalltear::Handle<::Shalltear::SkeletonAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SkeletonAsset", "optional": true }],
+			"csharp": { "member": "SkeletonField", "kind": "setter" }
+		},
+		{
+			"id": "GetGeneration",
+			"cpp": "self->generation",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Generation", "kind": "getter" }
+		},
+		{
+			"id": "SetGeneration",
+			"cpp": "self->generation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Generation", "kind": "setter" }
+		}
+	]
+}

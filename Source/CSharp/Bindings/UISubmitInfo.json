@@ -1,0 +1,55 @@
+{
+	"area": "UISubmitInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/RenderList.h",
+		"Shalltear/Core/Graphics/RHICommandList.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.UISubmitInfo",
+	"instance": "UISubmitInfo",
+	"functions": [
+		{
+			"id": "GetCommandList",
+			"cpp": "self->commandList",
+			"returns": "RHICommandList",
+			"params": [],
+			"csharp": { "member": "CommandList", "kind": "getter" }
+		},
+		{
+			"id": "SetCommandList",
+			"cpp": "self->commandList = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHICommandList", "optional": true }],
+			"csharp": { "member": "CommandList", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureHandle" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetSizePx",
+			"cpp": "self->targetSizePx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "TargetSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetSizePx",
+			"cpp": "self->targetSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "TargetSizePx", "kind": "setter" }
+		}
+	]
+}

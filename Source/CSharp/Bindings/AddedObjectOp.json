@@ -1,0 +1,69 @@
+{
+	"area": "AddedObjectOp",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.AddedObjectOp",
+	"instance": "AddedObjectOp",
+	"functions": [
+		{
+			"id": "GetParent",
+			"cpp": "&self->parent",
+			"returns": "PrefabTargetPath",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabTargetPath" }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetInsertIndex",
+			"cpp": "self->insertIndex",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "InsertIndex", "kind": "getter" }
+		},
+		{
+			"id": "SetInsertIndex",
+			"cpp": "self->insertIndex = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "InsertIndex", "kind": "setter" }
+		},
+		{
+			"id": "GetRootRowId",
+			"cpp": "self->rootRowId",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "RootRowId", "kind": "getter" }
+		},
+		{
+			"id": "SetRootRowId",
+			"cpp": "self->rootRowId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "RootRowId", "kind": "setter" }
+		},
+		{
+			"id": "GetLiveRoot",
+			"cpp": "self->liveRoot",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "LiveRoot", "kind": "getter" }
+		},
+		{
+			"id": "SetLiveRoot",
+			"cpp": "self->liveRoot = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "LiveRoot", "kind": "setter" }
+		}
+	]
+}

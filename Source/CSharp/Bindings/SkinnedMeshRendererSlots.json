@@ -1,0 +1,36 @@
+{
+	"area": "SkinnedMeshRendererSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/SkinnedMeshRenderer.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h"
+	],
+	"class": "Shalltear.SkinnedMeshRenderer",
+	"instance": "SkinnedMeshRenderer",
+	"functions": [
+		{
+			"id": "SetMaterial",
+			"cpp": "self->SetMaterial(slot, ::Shalltear::Handle<::Shalltear::MaterialAsset>(material))",
+			"returns": "void",
+			"params": [
+				{ "name": "slot", "type": "u32" },
+				{ "name": "material", "type": "Material", "optional": true }
+			],
+			"csharp": { "member": "SetMaterial", "kind": "method" }
+		},
+		{
+			"id": "GetMaterialInstance",
+			"cpp": "self->GetMaterialInstance(slot)",
+			"returns": "Material",
+			"params": [{ "name": "slot", "type": "u32" }],
+			"csharp": { "member": "GetMaterialInstance", "kind": "method" }
+		},
+		{
+			"id": "GetBlendShapeWeights",
+			"cpp": "self->GetBlendShapeWeights()",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "BlendShapeWeights", "kind": "getter" }
+		}
+	]
+}

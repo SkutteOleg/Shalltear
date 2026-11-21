@@ -1,0 +1,231 @@
+{
+	"area": "UIDebugOpsNameDictionary",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsNameDictionary",
+	"instance": "UIDebugOpsNameDictionary",
+	"enums": [
+		{
+			"name": "UIDebugOpsTargetKind",
+			"cpp": "::Shalltear::UIDebugOps::Target::Kind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Window", "value": 0 },
+				{ "name": "Surface", "value": 1 }
+			]
+		},
+		{
+			"name": "UIDebugOpsTextBoxKinds",
+			"cpp": "::Shalltear::UIDebugOps::TextBoxKinds",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Characters", "value": 1 },
+				{ "name": "Words", "value": 2 },
+				{ "name": "Lines", "value": 4 }
+			]
+		},
+		{
+			"name": "UIDebugOpsAttributeRowEdit",
+			"cpp": "::Shalltear::UIDebugOps::AttributeRow::Edit",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Id", "value": 1 },
+				{ "name": "TypeTag", "value": 2 },
+				{ "name": "Classes", "value": 3 },
+				{ "name": "Visible", "value": 4 },
+				{ "name": "Hoverable", "value": 5 },
+				{ "name": "Focusable", "value": 6 },
+				{ "name": "Tint", "value": 7 },
+				{ "name": "UserTag", "value": 8 },
+				{ "name": "ScrollOffset", "value": 9 },
+				{ "name": "Text", "value": 10 }
+			]
+		},
+		{
+			"name": "UIDebugOpsValueSource",
+			"cpp": "::Shalltear::UIDebugOps::ValueSource",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Default", "value": 0 },
+				{ "name": "Sheet", "value": 1 },
+				{ "name": "Inline", "value": 2 },
+				{ "name": "Inherited", "value": 3 },
+				{ "name": "Text", "value": 4 }
+			]
+		},
+		{
+			"name": "UIDebugOpsHighlightRing",
+			"cpp": "::Shalltear::UIDebugOps::HighlightRing",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Margin", "value": 0 },
+				{ "name": "Border", "value": 1 },
+				{ "name": "Padding", "value": 2 },
+				{ "name": "Content", "value": 3 },
+				{ "name": "Count", "value": 4 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "UIDebugOpsNameDictionaryResidue",
+			"cpp": "::Shalltear::UIDebugOps::NameDictionary::Residue",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "total", "type": "u32", "offset": 0 },
+				{ "name": "unresolved", "type": "u32", "offset": 4 },
+				{ "name": "ids", "type": "u32", "offset": 8 },
+				{ "name": "idsUnresolved", "type": "u32", "offset": 12 },
+				{ "name": "tags", "type": "u32", "offset": 16 },
+				{ "name": "tagsUnresolved", "type": "u32", "offset": 20 },
+				{ "name": "classes", "type": "u32", "offset": 24 },
+				{ "name": "classesUnresolved", "type": "u32", "offset": 28 }
+			]
+		},
+		{
+			"name": "UIDebugOpsGeometry",
+			"cpp": "::Shalltear::UIDebugOps::Geometry",
+			"size": 116,
+			"align": 4,
+			"fields": [
+				{ "name": "worldBound", "type": "UIRect", "offset": 0 },
+				{ "name": "worldClip", "type": "UIRect", "offset": 16 },
+				{ "name": "contentRect", "type": "UIRect", "offset": 32 },
+				{ "name": "layout", "type": "UIRect", "offset": 48 },
+				{ "name": "margin", "type": "UIEdges", "offset": 64 },
+				{ "name": "border", "type": "UIEdges", "offset": 80 },
+				{ "name": "padding", "type": "UIEdges", "offset": 96 },
+				{ "name": "clipped", "type": "bool", "offset": 112 }
+			]
+		},
+		{
+			"name": "UIDebugOpsTextBox",
+			"cpp": "::Shalltear::UIDebugOps::TextBox",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "box", "type": "UIRect", "offset": 0 },
+				{ "name": "kind", "type": "UIDebugOpsTextBoxKinds", "offset": 16 }
+			]
+		},
+		{
+			"name": "UIDebugOpsTextOverlayStats",
+			"cpp": "::Shalltear::UIDebugOps::TextOverlayStats",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "runs", "type": "u32", "offset": 0 },
+				{ "name": "boxes", "type": "u32", "offset": 4 },
+				{ "name": "wordlessRuns", "type": "u32", "offset": 8 }
+			]
+		},
+		{
+			"name": "UIDebugOpsRow",
+			"cpp": "::Shalltear::UIDebugOps::Row",
+			"size": 32,
+			"align": 8,
+			"fields": [
+				{ "name": "element", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "depth", "type": "u32", "offset": 12 },
+				{ "name": "childCount", "type": "u32", "offset": 16 },
+				{ "name": "key", "type": "u64", "offset": 24 }
+			]
+		},
+		{
+			"name": "UIDebugOpsHighlightBand",
+			"cpp": "::Shalltear::UIDebugOps::HighlightBand",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "box", "type": "UIRect", "offset": 0 },
+				{ "name": "ring", "type": "UIEdges", "offset": 16 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIDebugOpsNameDictionary", "cpp": "::Shalltear::UIDebugOps::NameDictionary", "owned": true, "create": true },
+		{ "name": "UIDebugOpsNameDictionarySheet", "cpp": "::Shalltear::UIDebugOps::NameDictionary::Sheet", "owned": true, "create": true },
+		{ "name": "UIDebugOpsTarget", "cpp": "::Shalltear::UIDebugOps::Target", "owned": true, "create": true },
+		{ "name": "UIDebugOpsSnapshot", "cpp": "::Shalltear::UIDebugOps::Snapshot", "owned": true, "create": true },
+		{ "name": "UIDebugOpsElementIdentity", "cpp": "::Shalltear::UIDebugOps::ElementIdentity", "owned": true, "create": true },
+		{ "name": "UIDebugOpsTreeViewDesc", "cpp": "::Shalltear::UIDebugOps::TreeViewDesc", "owned": true, "create": true },
+		{ "name": "UIDebugOpsTreeRow", "cpp": "::Shalltear::UIDebugOps::TreeRow", "owned": true, "create": true },
+		{ "name": "UIDebugOpsHighlight", "cpp": "::Shalltear::UIDebugOps::Highlight", "owned": true, "create": true },
+		{ "name": "UIDebugOpsAtlasPageRow", "cpp": "::Shalltear::UIDebugOps::AtlasPageRow", "owned": true, "create": true },
+		{ "name": "UIDebugOpsAttributeRow", "cpp": "::Shalltear::UIDebugOps::AttributeRow", "owned": true, "create": true },
+		{ "name": "UIDebugOpsSheetRow", "cpp": "::Shalltear::UIDebugOps::SheetRow", "owned": true, "create": true },
+		{ "name": "UIDebugOpsMatch", "cpp": "::Shalltear::UIDebugOps::Match", "owned": true, "create": true },
+		{ "name": "UIDebugOpsPropertyRow", "cpp": "::Shalltear::UIDebugOps::PropertyRow", "owned": true, "create": true },
+		{ "name": "UIDebugOpsStyleEdits", "cpp": "::Shalltear::UIDebugOps::StyleEdits", "owned": true, "create": true },
+		{ "name": "UIDebugOpsStyleEditsDeclaration", "cpp": "::Shalltear::UIDebugOps::StyleEdits::Declaration", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "AddCandidateSheet",
+			"cpp": "self->AddCandidateSheet(name, source)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "source", "type": "string" }
+			],
+			"csharp": { "member": "AddCandidateSheet", "kind": "method" }
+		},
+		{
+			"id": "Rebuild",
+			"cpp": "self->Rebuild(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "Rebuild", "kind": "method" }
+		},
+		{
+			"id": "Lookup",
+			"cpp": "self->Lookup(hash)",
+			"returns": "string",
+			"params": [{ "name": "hash", "type": "StringHash" }],
+			"csharp": { "member": "Lookup", "kind": "method" }
+		},
+		{
+			"id": "Render",
+			"cpp": "self->Render(hash)",
+			"returns": "string",
+			"params": [{ "name": "hash", "type": "StringHash" }],
+			"csharp": { "member": "Render", "kind": "method" }
+		},
+		{
+			"id": "AddName",
+			"cpp": "self->AddName(name)",
+			"returns": "void",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "AddName", "kind": "method" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->GetCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "GetSheets",
+			"cpp": "self->GetSheets()",
+			"returns": "list<UIDebugOpsNameDictionarySheet>",
+			"params": [],
+			"csharp": { "member": "Sheets", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "MeasureResidue",
+			"cpp": "self->MeasureResidue(*context)",
+			"returns": "UIDebugOpsNameDictionaryResidue",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "MeasureResidue", "kind": "method" }
+		}
+	]
+}

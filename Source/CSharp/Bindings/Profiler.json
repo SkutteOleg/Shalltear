@@ -1,0 +1,66 @@
+{
+	"area": "Profiler",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Profiler.h"
+	],
+	"class": "Shalltear.Profiler",
+	"natives": [
+		{ "name": "ProfilerFrameResults", "cpp": "::Shalltear::Profiler::FrameResults", "owned": true, "create": true },
+		{ "name": "ProfilerZoneResult", "cpp": "::Shalltear::Profiler::ZoneResult", "owned": true, "create": true },
+		{ "name": "ProfilerScopedZone", "cpp": "::Shalltear::Profiler::ScopedZone", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "RegisterSite",
+			"cpp": "::Shalltear::Profiler::RegisterSite(str(name).c_str())",
+			"returns": "u32",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "RegisterSite", "kind": "method" }
+		},
+		{
+			"id": "Enter",
+			"cpp": "::Shalltear::Profiler::Enter(site)",
+			"returns": "void",
+			"params": [{ "name": "site", "type": "u32" }],
+			"csharp": { "member": "Enter", "kind": "method" }
+		},
+		{
+			"id": "Leave",
+			"cpp": "::Shalltear::Profiler::Leave()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Leave", "kind": "method" }
+		},
+		{
+			"id": "NextFrame",
+			"cpp": "::Shalltear::Profiler::NextFrame()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NextFrame", "kind": "method" }
+		},
+		{
+			"id": "SetEnabled",
+			"cpp": "::Shalltear::Profiler::SetEnabled(enabled)",
+			"returns": "void",
+			"params": [{ "name": "enabled", "type": "bool" }],
+			"csharp": { "member": "SetEnabled", "kind": "method" }
+		},
+		{
+			"id": "IsEnabled",
+			"cpp": "::Shalltear::Profiler::IsEnabled()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsEnabled", "kind": "getter" }
+		},
+		{
+			"id": "GetFrameResults",
+			"cpp": "::Shalltear::Profiler::GetFrameResults()",
+			"returns": "ProfilerFrameResults",
+			"params": [],
+			"csharp": { "member": "FrameResults", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

@@ -1,0 +1,94 @@
+{
+	"area": "IAudioSpatializer",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.IAudioSpatializer",
+	"instance": "IAudioSpatializer",
+	"enums": [
+		{
+			"name": "AudioSpeaker",
+			"cpp": "::Shalltear::AudioSpeaker",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Mono", "value": 1 },
+				{ "name": "FrontLeft", "value": 2 },
+				{ "name": "FrontRight", "value": 3 },
+				{ "name": "FrontCenter", "value": 4 },
+				{ "name": "LowFrequency", "value": 5 },
+				{ "name": "BackLeft", "value": 6 },
+				{ "name": "BackRight", "value": 7 },
+				{ "name": "BackCenter", "value": 8 },
+				{ "name": "SideLeft", "value": 9 },
+				{ "name": "SideRight", "value": 10 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "AudioSpatialParams",
+			"cpp": "::Shalltear::AudioSpatialParams",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "position", "type": "Vec3", "offset": 0 },
+				{ "name": "spread", "type": "f32", "offset": 12 },
+				{ "name": "occlusion", "type": "f32", "offset": 16 },
+				{ "name": "distanceAttenuation", "type": "f32", "offset": 20 }
+			]
+		},
+		{
+			"name": "AudioBlock",
+			"cpp": "::Shalltear::AudioBlock",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "data", "type": "u64", "offset": 0 },
+				{ "name": "channels", "type": "u32", "offset": 8 },
+				{ "name": "frames", "type": "u32", "offset": 12 },
+				{ "name": "stride", "type": "u32", "offset": 16 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "IAudioSpatializer", "cpp": "::Shalltear::IAudioSpatializer" },
+		{ "name": "AudioSpatializerContext", "cpp": "::Shalltear::AudioSpatializerContext", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "AppliesDistanceAttenuation",
+			"cpp": "self->AppliesDistanceAttenuation()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AppliesDistanceAttenuation", "kind": "method" }
+		},
+		{
+			"id": "CreateVoiceState",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->CreateVoiceState(*context)))",
+			"returns": "u64",
+			"params": [{ "name": "context", "type": "AudioSpatializerContext" }],
+			"csharp": { "member": "CreateVoiceState", "kind": "method" }
+		},
+		{
+			"id": "DestroyVoiceState",
+			"cpp": "self->DestroyVoiceState(reinterpret_cast<void*>(static_cast<uintptr_t>(state)))",
+			"returns": "void",
+			"params": [{ "name": "state", "type": "u64" }],
+			"csharp": { "member": "DestroyVoiceState", "kind": "method" }
+		},
+		{
+			"id": "Process",
+			"cpp": "[&] { ::Shalltear::AudioBlock target = outValue; self->Process(reinterpret_cast<void*>(static_cast<uintptr_t>(state)), paramsValue, inValue, target); }()",
+			"returns": "void",
+			"params": [
+				{ "name": "state", "type": "u64" },
+				{ "name": "paramsValue", "type": "AudioSpatialParams" },
+				{ "name": "inValue", "type": "AudioBlock" },
+				{ "name": "outValue", "type": "AudioBlock" }
+			],
+			"csharp": { "member": "Process", "kind": "method" }
+		}
+	]
+}

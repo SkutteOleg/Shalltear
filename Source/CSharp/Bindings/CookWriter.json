@@ -1,0 +1,91 @@
+{
+	"area": "CookWriter",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.CookWriter",
+	"instance": "CookWriter",
+	"functions": [
+		{
+			"id": "WriteBytes",
+			"cpp": "self->WriteBytes(reinterpret_cast<const void*>(static_cast<uintptr_t>(data)), size)",
+			"returns": "void",
+			"params": [
+				{ "name": "data", "type": "u64" },
+				{ "name": "size", "type": "u64" }
+			],
+			"csharp": { "member": "WriteBytes", "kind": "method" }
+		},
+		{
+			"id": "AlignTo",
+			"cpp": "self->AlignTo(alignment)",
+			"returns": "void",
+			"params": [{ "name": "alignment", "type": "u64" }],
+			"csharp": { "member": "AlignTo", "kind": "method" }
+		},
+		{
+			"id": "WriteString",
+			"cpp": "self->WriteString(text)",
+			"returns": "void",
+			"params": [{ "name": "text", "type": "string" }],
+			"csharp": { "member": "WriteString", "kind": "method" }
+		},
+		{
+			"id": "WriteAssetRef",
+			"cpp": "self->WriteAssetRef(guid)",
+			"returns": "void",
+			"params": [{ "name": "guid", "type": "EngineGuid" }],
+			"csharp": { "member": "WriteAssetRef", "kind": "method" }
+		},
+		{
+			"id": "NoteAssetRef",
+			"cpp": "self->NoteAssetRef(guid)",
+			"returns": "void",
+			"params": [{ "name": "guid", "type": "EngineGuid" }],
+			"csharp": { "member": "NoteAssetRef", "kind": "method" }
+		},
+		{
+			"id": "GetReferences",
+			"cpp": "self->GetReferences()",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "References", "kind": "getter" }
+		},
+		{
+			"id": "SetResidency",
+			"cpp": "self->SetResidency(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PakResidency" }],
+			"csharp": { "member": "Residency", "kind": "setter" }
+		},
+		{
+			"id": "GetResidency",
+			"cpp": "self->GetResidency()",
+			"returns": "PakResidency",
+			"params": [],
+			"csharp": { "member": "Residency", "kind": "getter" }
+		},
+		{
+			"id": "Size",
+			"cpp": "self->Size()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::CookWriter(*argument0, *strings)",
+			"returns": "CookWriter",
+			"params": [
+				{ "name": "argument0", "type": "U8List" },
+				{ "name": "strings", "type": "PakStringPool" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

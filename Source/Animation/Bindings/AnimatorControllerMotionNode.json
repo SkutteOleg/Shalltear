@@ -1,0 +1,97 @@
+{
+	"area": "AnimatorControllerMotionNode",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h",
+		"Shalltear/Animation/AnimationClip.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.AnimatorControllerMotionNode",
+	"instance": "AnimatorControllerMotionNode",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "AnimatorBlendKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimatorBlendKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetClipGuid",
+			"cpp": "self->clipGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "ClipGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetClipGuid",
+			"cpp": "self->clipGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "ClipGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetClip",
+			"cpp": "self->clip",
+			"returns": "AnimationClip",
+			"params": [],
+			"csharp": { "member": "Clip", "kind": "getter" }
+		},
+		{
+			"id": "SetClip",
+			"cpp": "self->clip = ::Shalltear::Handle<::Shalltear::AnimationClip>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationClip", "optional": true }],
+			"csharp": { "member": "Clip", "kind": "setter" }
+		},
+		{
+			"id": "GetParameterX",
+			"cpp": "self->parameterX",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ParameterX", "kind": "getter" }
+		},
+		{
+			"id": "SetParameterX",
+			"cpp": "self->parameterX = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ParameterX", "kind": "setter" }
+		},
+		{
+			"id": "GetParameterY",
+			"cpp": "self->parameterY",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ParameterY", "kind": "getter" }
+		},
+		{
+			"id": "SetParameterY",
+			"cpp": "self->parameterY = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ParameterY", "kind": "setter" }
+		},
+		{
+			"id": "GetChildren",
+			"cpp": "self->children",
+			"returns": "list<AnimatorControllerMotionChild>",
+			"params": [],
+			"csharp": { "member": "Children", "kind": "getter" }
+		},
+		{
+			"id": "SetChildren",
+			"cpp": "self->children = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::MotionChild>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerMotionChild>" }],
+			"csharp": { "member": "Children", "kind": "setter" }
+		}
+	]
+}

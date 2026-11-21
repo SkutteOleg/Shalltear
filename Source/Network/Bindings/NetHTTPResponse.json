@@ -1,0 +1,133 @@
+{
+	"area": "NetHTTPResponse",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/HTTP.h"
+	],
+	"class": "Shalltear.NetHTTPResponse",
+	"instance": "NetHTTPResponse",
+	"enums": [
+		{
+			"name": "NetHTTPResult",
+			"cpp": "::Shalltear::Net::HTTP::Result",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Ok", "value": 0 },
+				{ "name": "Cancelled", "value": 1 },
+				{ "name": "TimedOut", "value": 2 },
+				{ "name": "Failed", "value": 3 }
+			]
+		},
+		{
+			"name": "NetHTTPMethod",
+			"cpp": "::Shalltear::Net::HTTP::Method",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Get", "value": 0 },
+				{ "name": "Post", "value": 1 },
+				{ "name": "Put", "value": 2 },
+				{ "name": "Delete", "value": 3 },
+				{ "name": "Patch", "value": 4 },
+				{ "name": "Head", "value": 5 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "NetHTTPResponse", "cpp": "::Shalltear::Net::HTTP::Response", "owned": true, "create": true },
+		{ "name": "NetHTTPRequest", "cpp": "::Shalltear::Net::HTTP::Request", "owned": true, "create": true },
+		{ "name": "NetHTTPHeader", "cpp": "::Shalltear::Net::HTTP::Header", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "FindHeader",
+			"cpp": "self->FindHeader(name)",
+			"returns": "string",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "FindHeader", "kind": "method" }
+		},
+		{
+			"id": "GetResult",
+			"cpp": "self->result",
+			"returns": "NetHTTPResult",
+			"params": [],
+			"csharp": { "member": "Result", "kind": "getter" }
+		},
+		{
+			"id": "SetResult",
+			"cpp": "self->result = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "NetHTTPResult" }],
+			"csharp": { "member": "Result", "kind": "setter" }
+		},
+		{
+			"id": "GetStatus",
+			"cpp": "self->status",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Status", "kind": "getter" }
+		},
+		{
+			"id": "SetStatus",
+			"cpp": "self->status = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Status", "kind": "setter" }
+		},
+		{
+			"id": "GetHeaders",
+			"cpp": "self->headers",
+			"returns": "list<NetHTTPHeader>",
+			"params": [],
+			"csharp": { "member": "Headers", "kind": "getter" }
+		},
+		{
+			"id": "SetHeaders",
+			"cpp": "self->headers = Slots::Copies<::Shalltear::Vector<::Shalltear::Net::HTTP::Header>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<NetHTTPHeader>" }],
+			"csharp": { "member": "Headers", "kind": "setter" }
+		},
+		{
+			"id": "GetBody",
+			"cpp": "self->body",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Body", "kind": "getter" }
+		},
+		{
+			"id": "SetBody",
+			"cpp": "self->body = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Body", "kind": "setter" }
+		},
+		{
+			"id": "GetURL",
+			"cpp": "self->url",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "URL", "kind": "getter" }
+		},
+		{
+			"id": "SetURL",
+			"cpp": "self->url = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "URL", "kind": "setter" }
+		},
+		{
+			"id": "GetError",
+			"cpp": "self->error",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Error", "kind": "getter" }
+		},
+		{
+			"id": "SetError",
+			"cpp": "self->error = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Error", "kind": "setter" }
+		}
+	]
+}

@@ -22,6 +22,7 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 	const string SHADOW = "global::Shalltear.Interop.ShadowFields";
 	const string TYPES = "global::Shalltear.Interop.ScriptTypes";
 	const string PACKAGE_PREFIX = "Shalltear.";
+	const string EDITOR_LOAD = "Shalltear.Editor.EditorLoadAttribute";
 
 	// must match SLT_FIELD_* + SLT_FIELD_SLOT_LIMIT in ScriptBridge.h
 	const uint FIELD_HIDDEN = 1;
@@ -157,10 +158,11 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		public bool player;
 		public bool hashedNames;
 		public bool hasParts;
+		public string editorLoads = "";
 
 		public bool Equals(Target? other) =>
 			other != null && scriptRoot == other.scriptRoot && packages == other.packages && player == other.player && hashedNames == other.hashedNames &&
-			hasParts == other.hasParts;
+			hasParts == other.hasParts && editorLoads == other.editorLoads;
 
 		public override bool Equals(object? other) => Equals(other as Target);
 
@@ -221,12 +223,17 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		IncrementalValueProvider<bool> written =
 			context.CompilationProvider.Select(static (compilation, _) => compilation.Assembly.GetTypeByMetadataName("Shalltear.Generated.TypeTable") != null);
 		IncrementalValueProvider<bool> parts = natives.Collect().Combine(exports.Collect()).Combine(written).Select(static (pair, _) => !pair.Left.Left.IsEmpty || !pair.Left.Right.IsEmpty || pair.Right);
-		target = target.Combine(packages).Combine(parts).Select(static (pair, _) => new Target {
-			scriptRoot = pair.Left.Left.scriptRoot,
-			packages = pair.Left.Right,
-			player = pair.Left.Left.player,
-			hashedNames = pair.Left.Left.hashedNames,
-			hasParts = pair.Right,
+		IncrementalValuesProvider<string> loads = context.SyntaxProvider.ForAttributeWithMetadataName(
+			EDITOR_LOAD, static (node, _) => node is MethodDeclarationSyntax, static (found, _) => EditorLoadName(found.TargetSymbol));
+		IncrementalValueProvider<string> loaded =
+			loads.Collect().Select(static (found, _) => string.Join(";", found.Where(static name => name.Length != 0).OrderBy(static name => name, StringComparer.Ordinal)));
+		target = target.Combine(packages).Combine(parts).Combine(loaded).Select(static (pair, _) => new Target {
+			scriptRoot = pair.Left.Left.Left.scriptRoot,
+			packages = pair.Left.Left.Right,
+			player = pair.Left.Left.Left.player,
+			hashedNames = pair.Left.Left.Left.hashedNames,
+			hasParts = pair.Left.Right || pair.Right.Length != 0,
+			editorLoads = pair.Right,
 		});
 		context.RegisterSourceOutput(components.Collect().Combine(target), static (output, pair) => {
 			ImmutableArray<Component> found = pair.Left.IsDefault ? ImmutableArray<Component>.Empty : pair.Left;
@@ -252,6 +259,13 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 			}
 			output.AddSource("TypeTable.g.cs", SourceText.From(Render(ordered, pair.Right), Encoding.UTF8));
 		});
+	}
+
+	static string EditorLoadName(ISymbol symbol) {
+		if (symbol is not IMethodSymbol method || !method.IsStatic || !method.ReturnsVoid || method.Parameters.Length != 0 || method.IsGenericMethod) {
+			return "";
+		}
+		return method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) + "." + method.Name;
 	}
 
 	static IEnumerable<string> PackageBindings(Compilation compilation) {
@@ -885,6 +899,9 @@ public sealed class ComponentGenerator : IIncrementalGenerator {
 		}
 		text.Append(calls);
 		text.Append("\t\tRegisterFunctions();\n");
+		foreach (string load in target.editorLoads.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+			text.Append("\t\t").Append(load).Append("();\n");
+		}
 		text.Append("\t}\n}\n");
 		return text.ToString();
 	}

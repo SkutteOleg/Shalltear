@@ -1,0 +1,313 @@
+{
+	"area": "JSONValue",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/JSON.h"
+	],
+	"class": "Shalltear.JSONValue",
+	"instance": "JSONValue",
+	"enums": [
+		{
+			"name": "JSONValueType",
+			"cpp": "::Shalltear::JSONValue::Type",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Null", "value": 0 },
+				{ "name": "Bool", "value": 1 },
+				{ "name": "Number", "value": 2 },
+				{ "name": "String", "value": 3 },
+				{ "name": "Array", "value": 4 },
+				{ "name": "Object", "value": 5 }
+			]
+		}
+	],
+	"natives": [{ "name": "JSONValue", "cpp": "::Shalltear::JSONValue", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "IsNull",
+			"cpp": "self->IsNull()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsNull", "kind": "getter" }
+		},
+		{
+			"id": "IsBool",
+			"cpp": "self->IsBool()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsBool", "kind": "getter" }
+		},
+		{
+			"id": "IsNumber",
+			"cpp": "self->IsNumber()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsNumber", "kind": "getter" }
+		},
+		{
+			"id": "IsString",
+			"cpp": "self->IsString()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsString", "kind": "getter" }
+		},
+		{
+			"id": "IsArray",
+			"cpp": "self->IsArray()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsArray", "kind": "getter" }
+		},
+		{
+			"id": "IsObject",
+			"cpp": "self->IsObject()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsObject", "kind": "getter" }
+		},
+		{
+			"id": "AsBool",
+			"cpp": "self->AsBool(fallback)",
+			"returns": "bool",
+			"params": [{ "name": "fallback", "type": "bool" }],
+			"csharp": { "member": "AsBool", "kind": "method" }
+		},
+		{
+			"id": "AsNumber",
+			"cpp": "self->AsNumber(fallback)",
+			"returns": "f64",
+			"params": [{ "name": "fallback", "type": "f64" }],
+			"csharp": { "member": "AsNumber", "kind": "method" }
+		},
+		{
+			"id": "AsInt",
+			"cpp": "self->AsInt(fallback)",
+			"returns": "i64",
+			"params": [{ "name": "fallback", "type": "i64" }],
+			"csharp": { "member": "AsInt", "kind": "method" }
+		},
+		{
+			"id": "AsString",
+			"cpp": "self->AsString(fallback)",
+			"returns": "string",
+			"params": [{ "name": "fallback", "type": "string" }],
+			"csharp": { "member": "AsString", "kind": "method" }
+		},
+		{
+			"id": "HasKey",
+			"cpp": "self->HasKey(key)",
+			"returns": "bool",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "HasKey", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "self->Find(key)",
+			"returns": "JSONValue",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "At",
+			"cpp": "self->operator[](key)",
+			"returns": "JSONValue",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "At", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "Size",
+			"cpp": "self->Size()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "method" }
+		},
+		{
+			"id": "At2",
+			"cpp": "self->operator[](index)",
+			"returns": "JSONValue",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "At", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "MemberCount",
+			"cpp": "self->MemberCount()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MemberCount", "kind": "method" }
+		},
+		{
+			"id": "KeyAt",
+			"cpp": "self->KeyAt(index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "KeyAt", "kind": "method" }
+		},
+		{
+			"id": "ChildAt",
+			"cpp": "self->ChildAt(index)",
+			"returns": "JSONValue",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "ChildAt", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "MakeNull",
+			"cpp": "::Shalltear::JSONValue::MakeNull()",
+			"returns": "JSONValue",
+			"params": [],
+			"csharp": { "member": "MakeNull", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeBool",
+			"cpp": "::Shalltear::JSONValue::MakeBool(valueValue)",
+			"returns": "JSONValue",
+			"params": [{ "name": "valueValue", "type": "bool" }],
+			"csharp": { "member": "MakeBool", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeNumber",
+			"cpp": "::Shalltear::JSONValue::MakeNumber(valueValue)",
+			"returns": "JSONValue",
+			"params": [{ "name": "valueValue", "type": "f64" }],
+			"csharp": { "member": "MakeNumber", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeFloat",
+			"cpp": "::Shalltear::JSONValue::MakeFloat(valueValue)",
+			"returns": "JSONValue",
+			"params": [{ "name": "valueValue", "type": "f32" }],
+			"csharp": { "member": "MakeFloat", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeString",
+			"cpp": "::Shalltear::JSONValue::MakeString(valueValue)",
+			"returns": "JSONValue",
+			"params": [{ "name": "valueValue", "type": "string" }],
+			"csharp": { "member": "MakeString", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeArray",
+			"cpp": "::Shalltear::JSONValue::MakeArray()",
+			"returns": "JSONValue",
+			"params": [],
+			"csharp": { "member": "MakeArray", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeObject",
+			"cpp": "::Shalltear::JSONValue::MakeObject()",
+			"returns": "JSONValue",
+			"params": [],
+			"csharp": { "member": "MakeObject", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Push",
+			"cpp": "self->Push(*valueValue)",
+			"returns": "void",
+			"params": [{ "name": "valueValue", "type": "JSONValue" }],
+			"csharp": { "member": "Push", "kind": "method" }
+		},
+		{
+			"id": "AddMember",
+			"cpp": "self->AddMember(key, *valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "valueValue", "type": "JSONValue" }
+			],
+			"csharp": { "member": "AddMember", "kind": "method" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "JSONValueType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "JSONValueType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetBoolValue",
+			"cpp": "self->boolValue",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BoolValue", "kind": "getter" }
+		},
+		{
+			"id": "SetBoolValue",
+			"cpp": "self->boolValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BoolValue", "kind": "setter" }
+		},
+		{
+			"id": "GetSinglePrecision",
+			"cpp": "self->singlePrecision",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SinglePrecision", "kind": "getter" }
+		},
+		{
+			"id": "SetSinglePrecision",
+			"cpp": "self->singlePrecision = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SinglePrecision", "kind": "setter" }
+		},
+		{
+			"id": "GetNumberValue",
+			"cpp": "self->numberValue",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "NumberValue", "kind": "getter" }
+		},
+		{
+			"id": "SetNumberValue",
+			"cpp": "self->numberValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "NumberValue", "kind": "setter" }
+		},
+		{
+			"id": "GetStringValue",
+			"cpp": "self->stringValue",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "StringValue", "kind": "getter" }
+		},
+		{
+			"id": "SetStringValue",
+			"cpp": "self->stringValue = Slots::KeepFieldText(self, 0x3e71359d7bdbce3eull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "StringValue", "kind": "setter" }
+		}
+	]
+}

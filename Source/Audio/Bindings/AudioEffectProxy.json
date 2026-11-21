@@ -1,0 +1,88 @@
+{
+	"area": "AudioEffectProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioEffect.h",
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.AudioEffectProxy",
+	"instance": "AudioEffectProxy",
+	"prelude": [
+		"class AudioEffectProxy final : public ::Shalltear::IAudioEffect {",
+		"public:",
+		"\tstd::function<void(Shalltear::AudioBlock &, const Shalltear::AudioBlock *)> process;",
+		"\tvoid Process(Shalltear::AudioBlock & a0, const Shalltear::AudioBlock * a1) override {",
+		"\t\tif (process) {",
+		"\t\t\tprocess(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(unsigned int, float)> setParameter;",
+		"\tvoid SetParameter(unsigned int a0, float a1) override {",
+		"\t\tif (setParameter) {",
+		"\t\t\tsetParameter(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::IAudioEffect::SetParameter(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool()> isQuiet;",
+		"\tbool IsQuiet() const override {",
+		"\t\treturn isQuiet ? isQuiet() : ::Shalltear::IAudioEffect::IsQuiet();",
+		"\t}",
+		"\tstd::function<void()> release;",
+		"\tvoid Release() override {",
+		"\t\tif (release) {",
+		"\t\t\trelease();",
+		"\t\t}",
+		"\t\tdelete this;",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "AudioEffectProxy", "cpp": "AudioEffectProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetProcess",
+			"cpp": "self->process = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;AudioBlock;AudioBlock>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::AudioBlock &, const Shalltear::AudioBlock *)>"
+				}
+			],
+			"csharp": { "member": "SetProcess", "kind": "method" }
+		},
+		{
+			"id": "SetSetParameter",
+			"cpp": "self->setParameter = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u32;f32>", "optional": true, "cpp": "std::function<void(unsigned int, float)>" }
+			],
+			"csharp": { "member": "SetSetParameter", "kind": "method" }
+		},
+		{
+			"id": "SetIsQuiet",
+			"cpp": "self->isQuiet = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetIsQuiet", "kind": "method" }
+		},
+		{
+			"id": "SetRelease",
+			"cpp": "self->release = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetRelease", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IAudioEffect*>(self)",
+			"returns": "IAudioEffect",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

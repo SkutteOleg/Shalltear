@@ -1,0 +1,109 @@
+{
+	"area": "EditorFrameCostModalPeriod",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostModalPeriod",
+	"instance": "EditorFrameCostModalPeriod",
+	"functions": [
+		{
+			"id": "GetIndex",
+			"cpp": "self->index",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Index", "kind": "getter" }
+		},
+		{
+			"id": "SetIndex",
+			"cpp": "self->index = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Index", "kind": "setter" }
+		},
+		{
+			"id": "GetSpanTicks",
+			"cpp": "self->spanTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SpanTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetSpanTicks",
+			"cpp": "self->spanTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "SpanTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetFrames",
+			"cpp": "self->frames",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Frames", "kind": "getter" }
+		},
+		{
+			"id": "SetFrames",
+			"cpp": "self->frames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Frames", "kind": "setter" }
+		},
+		{
+			"id": "GetInsideTicks",
+			"cpp": "self->insideTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "InsideTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetInsideTicks",
+			"cpp": "self->insideTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "InsideTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetMoves",
+			"cpp": "self->moves",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Moves", "kind": "getter" }
+		},
+		{
+			"id": "SetMoves",
+			"cpp": "self->moves = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Moves", "kind": "setter" }
+		},
+		{
+			"id": "GetResizes",
+			"cpp": "self->resizes",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Resizes", "kind": "getter" }
+		},
+		{
+			"id": "SetResizes",
+			"cpp": "self->resizes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Resizes", "kind": "setter" }
+		},
+		{
+			"id": "GetStages",
+			"cpp": "self->stages",
+			"returns": "list<EditorFrameCostDistribution>",
+			"params": [],
+			"csharp": { "member": "Stages", "kind": "getter" }
+		},
+		{
+			"id": "SetStages",
+			"cpp": "Slots::AssignAll(self->stages, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EditorFrameCostDistribution>" }],
+			"csharp": { "member": "Stages", "kind": "setter" }
+		}
+	]
+}

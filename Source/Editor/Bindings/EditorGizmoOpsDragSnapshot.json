@@ -1,0 +1,141 @@
+{
+	"area": "EditorGizmoOpsDragSnapshot",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmoOps.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.EditorGizmoOpsDragSnapshot",
+	"instance": "EditorGizmoOpsDragSnapshot",
+	"functions": [
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalPosition",
+			"cpp": "self->localPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "LocalPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetLocalPosition",
+			"cpp": "self->localPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "LocalPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalRotation",
+			"cpp": "self->localRotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "LocalRotation", "kind": "getter" }
+		},
+		{
+			"id": "SetLocalRotation",
+			"cpp": "self->localRotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "LocalRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalScale",
+			"cpp": "self->localScale",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "LocalScale", "kind": "getter" }
+		},
+		{
+			"id": "SetLocalScale",
+			"cpp": "self->localScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "LocalScale", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldPosition",
+			"cpp": "self->worldPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "WorldPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetWorldPosition",
+			"cpp": "self->worldPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "WorldPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldRotation",
+			"cpp": "self->worldRotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "WorldRotation", "kind": "getter" }
+		},
+		{
+			"id": "SetWorldRotation",
+			"cpp": "self->worldRotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "WorldRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetParentToWorld",
+			"cpp": "&self->parentToWorld",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "ParentToWorld", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetParentToWorld",
+			"cpp": "self->parentToWorld = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "ParentToWorld", "kind": "setter" }
+		},
+		{
+			"id": "GetWorldToParent",
+			"cpp": "&self->worldToParent",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "WorldToParent", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetWorldToParent",
+			"cpp": "self->worldToParent = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "WorldToParent", "kind": "setter" }
+		},
+		{
+			"id": "GetParentWorldRotation",
+			"cpp": "self->parentWorldRotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "ParentWorldRotation", "kind": "getter" }
+		},
+		{
+			"id": "SetParentWorldRotation",
+			"cpp": "self->parentWorldRotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "ParentWorldRotation", "kind": "setter" }
+		}
+	]
+}

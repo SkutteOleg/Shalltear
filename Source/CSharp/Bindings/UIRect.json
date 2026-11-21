@@ -1,0 +1,18 @@
+{
+	"area": "UIRect",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIRect",
+	"instance": "UIRect",
+	"functions": [
+		{
+			"id": "Contains",
+			"cpp": "self->Contains(p)",
+			"returns": "bool",
+			"params": [{ "name": "p", "type": "Vec2" }],
+			"csharp": { "member": "Contains", "kind": "method" }
+		}
+	]
+}

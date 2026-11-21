@@ -1,0 +1,39 @@
+{
+	"area": "TextureCodec",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/TextureCodecs.h"
+	],
+	"class": "Shalltear.TextureCodec",
+	"instance": "TextureCodec",
+	"functions": [
+		{
+			"id": "GetEncode",
+			"cpp": "Slots::Bits(self->encode)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Encode", "kind": "getter" }
+		},
+		{
+			"id": "SetEncode",
+			"cpp": "self->encode = Slots::FromBits<bool (*)(Shalltear::RHI::Format, const Shalltear::TextureEncodeInput &, std::vector<unsigned char, std::pmr::polymorphic_allocator<unsigned char>> &)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Encode", "kind": "setter" }
+		},
+		{
+			"id": "GetDecode",
+			"cpp": "Slots::Bits(self->decode)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Decode", "kind": "getter" }
+		},
+		{
+			"id": "SetDecode",
+			"cpp": "self->decode = Slots::FromBits<bool (*)(Shalltear::RHI::Format, std::span<const unsigned char>, Shalltear::Vec2Generic<int>, std::span<unsigned char>)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Decode", "kind": "setter" }
+		}
+	]
+}

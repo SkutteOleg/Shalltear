@@ -1,0 +1,72 @@
+{
+	"area": "AudioDistanceCurves",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/Audio.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.AudioDistanceCurves",
+	"instance": "AudioDistanceCurves",
+	"functions": [
+		{
+			"id": "GetCustomRolloff",
+			"cpp": "&self->customRolloff",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "CustomRolloff", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetCustomRolloff",
+			"cpp": "self->customRolloff = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "CustomRolloff", "kind": "setter" }
+		},
+		{
+			"id": "GetSpatialBlend",
+			"cpp": "&self->spatialBlend",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "SpatialBlend", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetSpatialBlend",
+			"cpp": "self->spatialBlend = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "SpatialBlend", "kind": "setter" }
+		},
+		{
+			"id": "GetSpread",
+			"cpp": "&self->spread",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "Spread", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetSpread",
+			"cpp": "self->spread = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "Spread", "kind": "setter" }
+		},
+		{
+			"id": "GetReverbZoneMix",
+			"cpp": "&self->reverbZoneMix",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "ReverbZoneMix", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetReverbZoneMix",
+			"cpp": "self->reverbZoneMix = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "ReverbZoneMix", "kind": "setter" }
+		}
+	]
+}

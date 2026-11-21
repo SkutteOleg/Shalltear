@@ -1,0 +1,81 @@
+{
+	"area": "GraphInput",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphInput",
+	"instance": "GraphInput",
+	"functions": [
+		{
+			"id": "GetPort",
+			"cpp": "self->port",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Port", "kind": "getter" }
+		},
+		{
+			"id": "SetPort",
+			"cpp": "self->port = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Port", "kind": "setter" }
+		},
+		{
+			"id": "GetFromNode",
+			"cpp": "self->fromNode",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "FromNode", "kind": "getter" }
+		},
+		{
+			"id": "SetFromNode",
+			"cpp": "self->fromNode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "FromNode", "kind": "setter" }
+		},
+		{
+			"id": "GetFromPort",
+			"cpp": "self->fromPort",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FromPort", "kind": "getter" }
+		},
+		{
+			"id": "SetFromPort",
+			"cpp": "self->fromPort = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FromPort", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetSpace",
+			"cpp": "self->space",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Space", "kind": "getter" }
+		},
+		{
+			"id": "SetSpace",
+			"cpp": "self->space = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Space", "kind": "setter" }
+		}
+	]
+}

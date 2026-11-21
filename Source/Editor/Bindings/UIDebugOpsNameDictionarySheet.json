@@ -1,0 +1,54 @@
+{
+	"area": "UIDebugOpsNameDictionarySheet",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsNameDictionarySheet",
+	"instance": "UIDebugOpsNameDictionarySheet",
+	"functions": [
+		{
+			"id": "GetTag",
+			"cpp": "self->tag",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "SetTag",
+			"cpp": "self->tag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Tag", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetSource",
+			"cpp": "self->source",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Source", "kind": "getter" }
+		},
+		{
+			"id": "SetSource",
+			"cpp": "self->source = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Source", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,78 @@
+{
+	"area": "SceneLoadOperation",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneLoadOperation.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.SceneLoadOperation",
+	"instance": "SceneLoadOperation",
+	"enums": [
+		{
+			"name": "SceneLoadState",
+			"cpp": "::Shalltear::SceneLoadState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Pending", "value": 0 },
+				{ "name": "Reading", "value": 1 },
+				{ "name": "Parsing", "value": 2 },
+				{ "name": "Integrating", "value": 3 },
+				{ "name": "AwaitingActivation", "value": 4 },
+				{ "name": "Done", "value": 5 },
+				{ "name": "Failed", "value": 6 }
+			]
+		}
+	],
+	"natives": [{ "name": "SceneLoadOperation", "cpp": "::Shalltear::SceneLoadOperation" }],
+	"functions": [
+		{
+			"id": "GetState",
+			"cpp": "self->GetState()",
+			"returns": "SceneLoadState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" }
+		},
+		{
+			"id": "GetProgress",
+			"cpp": "self->GetProgress()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Progress", "kind": "getter" }
+		},
+		{
+			"id": "IsDone",
+			"cpp": "self->IsDone()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsDone", "kind": "getter" }
+		},
+		{
+			"id": "GetScene",
+			"cpp": "self->GetScene()",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Scene", "kind": "getter" }
+		},
+		{
+			"id": "GetError",
+			"cpp": "self->GetError()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Error", "kind": "getter" }
+		},
+		{
+			"id": "SetActivationAllowed",
+			"cpp": "self->SetActivationAllowed(allowed)",
+			"returns": "void",
+			"params": [{ "name": "allowed", "type": "bool" }],
+			"csharp": { "member": "SetActivationAllowed", "kind": "method" }
+		},
+		{
+			"id": "WaitForCompletion",
+			"cpp": "self->WaitForCompletion()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "WaitForCompletion", "kind": "method" }
+		}
+	]
+}

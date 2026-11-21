@@ -1,0 +1,21 @@
+{
+	"area": "TimeFrameScope",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Time.h"
+	],
+	"class": "Shalltear.TimeFrameScope",
+	"instance": "TimeFrameScope",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::Time::FrameScope(frame)",
+			"returns": "TimeFrameScope",
+			"params": [{ "name": "frame", "type": "FrameTime" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,26 @@
+{
+	"area": "ImageUnloadingEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ModuleEvents.h"
+	],
+	"class": "Shalltear.ImageUnloadingEvent",
+	"instance": "ImageUnloadingEvent",
+	"natives": [{ "name": "ImageUnloadingEvent", "cpp": "::Shalltear::ImageUnloadingEvent", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetImage",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->image))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Image", "kind": "getter" }
+		},
+		{
+			"id": "SetImage",
+			"cpp": "self->image = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Image", "kind": "setter" }
+		}
+	]
+}

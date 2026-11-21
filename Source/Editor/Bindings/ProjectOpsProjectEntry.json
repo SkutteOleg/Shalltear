@@ -1,0 +1,118 @@
+{
+	"area": "ProjectOpsProjectEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ProjectOpsProjectEntry",
+	"instance": "ProjectOpsProjectEntry",
+	"enums": [
+		{
+			"name": "ProjectOpsProjectStatus",
+			"cpp": "::Shalltear::ProjectOps::ProjectStatus",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Ok", "value": 0 },
+				{ "name": "Missing", "value": 1 },
+				{ "name": "Invalid", "value": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ProjectOpsProjectEntry", "cpp": "::Shalltear::ProjectOps::ProjectEntry", "owned": true, "create": true },
+		{ "name": "ProjectOpsCreateOptions", "cpp": "::Shalltear::ProjectOps::CreateOptions", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsOpenable",
+			"cpp": "self->IsOpenable()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsOpenable", "kind": "getter" }
+		},
+		{
+			"id": "GetPath",
+			"cpp": "self->path",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Path", "kind": "getter" }
+		},
+		{
+			"id": "SetPath",
+			"cpp": "self->path = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Path", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetCreatedUnix",
+			"cpp": "self->createdUnix",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "CreatedUnix", "kind": "getter" }
+		},
+		{
+			"id": "SetCreatedUnix",
+			"cpp": "self->createdUnix = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "CreatedUnix", "kind": "setter" }
+		},
+		{
+			"id": "GetModifiedUnix",
+			"cpp": "self->modifiedUnix",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ModifiedUnix", "kind": "getter" }
+		},
+		{
+			"id": "SetModifiedUnix",
+			"cpp": "self->modifiedUnix = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ModifiedUnix", "kind": "setter" }
+		},
+		{
+			"id": "GetLastOpenedUnix",
+			"cpp": "self->lastOpenedUnix",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LastOpenedUnix", "kind": "getter" }
+		},
+		{
+			"id": "SetLastOpenedUnix",
+			"cpp": "self->lastOpenedUnix = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "LastOpenedUnix", "kind": "setter" }
+		},
+		{
+			"id": "GetStatus",
+			"cpp": "self->status",
+			"returns": "ProjectOpsProjectStatus",
+			"params": [],
+			"csharp": { "member": "Status", "kind": "getter" }
+		},
+		{
+			"id": "SetStatus",
+			"cpp": "self->status = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ProjectOpsProjectStatus" }],
+			"csharp": { "member": "Status", "kind": "setter" }
+		}
+	]
+}

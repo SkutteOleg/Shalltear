@@ -1,0 +1,183 @@
+{
+	"area": "ShaderVariant",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.ShaderVariant",
+	"instance": "ShaderVariant",
+	"types": [{ "name": "ShaderAsset", "cpp": "::Shalltear::ShaderAsset", "engine": "ShaderAsset", "base": "Asset" }],
+	"enums": [
+		{
+			"name": "ShaderProgramKind",
+			"cpp": "::Shalltear::ShaderProgramKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Forward", "value": 0 },
+				{ "name": "Depth", "value": 1 },
+				{ "name": "Compute", "value": 2 }
+			]
+		},
+		{
+			"name": "ShaderTemplate",
+			"cpp": "::Shalltear::ShaderTemplate",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Lit", "value": 1 },
+				{ "name": "Unlit", "value": 2 },
+				{ "name": "Sky", "value": 3 }
+			]
+		},
+		{
+			"name": "ShaderDepthProgram",
+			"cpp": "::Shalltear::ShaderDepthProgram",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Declared", "value": 1 },
+				{ "name": "Clipping", "value": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ShaderVariant", "cpp": "::Shalltear::ShaderVariant", "owned": true, "create": true },
+		{ "name": "ShaderPragmas", "cpp": "::Shalltear::ShaderPragmas", "owned": true, "create": true },
+		{ "name": "ShaderAssetDependency", "cpp": "::Shalltear::ShaderAsset::Dependency", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "HasProgram",
+			"cpp": "self->HasProgram(kind)",
+			"returns": "bool",
+			"params": [{ "name": "kind", "type": "ShaderProgramKind" }],
+			"csharp": { "member": "HasProgram", "kind": "method" }
+		},
+		{
+			"id": "GetKeywordHash",
+			"cpp": "self->keywordHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "KeywordHash", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywordHash",
+			"cpp": "self->keywordHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "KeywordHash", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywords",
+			"cpp": "self->keywords",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Keywords", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywords",
+			"cpp": "self->keywords = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Keywords", "kind": "setter" }
+		},
+		{
+			"id": "GetVertexSpirv",
+			"cpp": "self->vertexSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "VertexSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetVertexSpirv",
+			"cpp": "self->vertexSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "VertexSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetPixelSpirv",
+			"cpp": "self->pixelSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "PixelSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetPixelSpirv",
+			"cpp": "self->pixelSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "PixelSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthVertexSpirv",
+			"cpp": "self->depthVertexSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "DepthVertexSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthVertexSpirv",
+			"cpp": "self->depthVertexSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "DepthVertexSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthPixelSpirv",
+			"cpp": "self->depthPixelSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "DepthPixelSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthPixelSpirv",
+			"cpp": "self->depthPixelSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "DepthPixelSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthClipPixelSpirv",
+			"cpp": "self->depthClipPixelSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "DepthClipPixelSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthClipPixelSpirv",
+			"cpp": "self->depthClipPixelSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "DepthClipPixelSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthValuePixelSpirv",
+			"cpp": "self->depthValuePixelSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "DepthValuePixelSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthValuePixelSpirv",
+			"cpp": "self->depthValuePixelSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "DepthValuePixelSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetComputeSpirv",
+			"cpp": "self->computeSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "ComputeSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetComputeSpirv",
+			"cpp": "self->computeSpirv = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "ComputeSpirv", "kind": "setter" }
+		}
+	]
+}

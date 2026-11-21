@@ -1,0 +1,77 @@
+{
+	"area": "AudioEffectDefinitionProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioEffect.h"
+	],
+	"class": "Shalltear.AudioEffectDefinitionProxy",
+	"instance": "AudioEffectDefinitionProxy",
+	"prelude": [
+		"class AudioEffectDefinitionProxy final : public ::Shalltear::IAudioEffectDefinition {",
+		"public:",
+		"\tmutable std::vector<::Shalltear::AudioParameterDefinition> getParametersKept;",
+		"\tstd::function<std::vector<::Shalltear::AudioParameterDefinition>()> getParameters;",
+		"\tstd::span<const Shalltear::AudioParameterDefinition> GetParameters() const override {",
+		"\t\tif (!getParameters) {",
+		"\t\t\treturn ::Shalltear::IAudioEffectDefinition::GetParameters();",
+		"\t\t}",
+		"\t\tgetParametersKept = getParameters();",
+		"\t\treturn getParametersKept;",
+		"\t}",
+		"\tstd::function<bool()> isSidechainTarget;",
+		"\tbool IsSidechainTarget() const override {",
+		"\t\treturn isSidechainTarget ? isSidechainTarget() : ::Shalltear::IAudioEffectDefinition::IsSidechainTarget();",
+		"\t}",
+		"\tstd::function<Shalltear::IAudioEffect *(const Shalltear::AudioEffectContext &)> createEffect;",
+		"\tShalltear::IAudioEffect * CreateEffect(const Shalltear::AudioEffectContext & a0) override {",
+		"\t\treturn createEffect ? createEffect(a0) : Slots::ResultOf<decltype(createEffect)>();",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "AudioEffectDefinitionProxy", "cpp": "AudioEffectDefinitionProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetGetParameters",
+			"cpp": "self->getParameters = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<list<AudioParameterDefinition>>",
+					"optional": true,
+					"cpp": "std::function<std::vector<::Shalltear::AudioParameterDefinition>()>"
+				}
+			],
+			"csharp": { "member": "SetGetParameters", "kind": "method" }
+		},
+		{
+			"id": "SetIsSidechainTarget",
+			"cpp": "self->isSidechainTarget = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetIsSidechainTarget", "kind": "method" }
+		},
+		{
+			"id": "SetCreateEffect",
+			"cpp": "self->createEffect = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<give:IAudioEffect;AudioEffectContext>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::IAudioEffect *(const Shalltear::AudioEffectContext &)>"
+				}
+			],
+			"csharp": { "member": "SetCreateEffect", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IAudioEffectDefinition*>(self)",
+			"returns": "IAudioEffectDefinition",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

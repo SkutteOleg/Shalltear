@@ -1,0 +1,71 @@
+{
+	"area": "MemoryUtility",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.MemoryUtility",
+	"enums": [
+		{
+			"name": "MemTag",
+			"cpp": "::Shalltear::MemTag",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Unknown", "value": 0 },
+				{ "name": "Core", "value": 1 },
+				{ "name": "Editor", "value": 2 },
+				{ "name": "Graphics", "value": 3 },
+				{ "name": "UI", "value": 4 },
+				{ "name": "Physics", "value": 5 },
+				{ "name": "Audio", "value": 6 },
+				{ "name": "Scripting", "value": 7 },
+				{ "name": "Game", "value": 8 },
+				{ "name": "Scene", "value": 9 },
+				{ "name": "Platform", "value": 10 },
+				{ "name": "String", "value": 11 },
+				{ "name": "Container", "value": 12 },
+				{ "name": "Asset", "value": 13 },
+				{ "name": "Debug", "value": 14 },
+				{ "name": "Count", "value": 15 }
+			]
+		}
+	],
+	"natives": [{ "name": "LinearAllocator", "cpp": "::Shalltear::LinearAllocator", "owned": true }],
+	"functions": [
+		{
+			"id": "AlignForward",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::AlignForward(reinterpret_cast<void*>(static_cast<uintptr_t>(ptr)), alignment)))",
+			"returns": "u64",
+			"params": [
+				{ "name": "ptr", "type": "u64" },
+				{ "name": "alignment", "type": "u64" }
+			],
+			"csharp": { "member": "AlignForward", "kind": "method" }
+		},
+		{
+			"id": "IsPowerOfTwo",
+			"cpp": "::Shalltear::IsPowerOfTwo(x)",
+			"returns": "bool",
+			"params": [{ "name": "x", "type": "u64" }],
+			"csharp": { "member": "IsPowerOfTwo", "kind": "method" }
+		},
+		{
+			"id": "Allocate",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::Allocate(size, tag, alignment)))",
+			"returns": "u64",
+			"params": [
+				{ "name": "size", "type": "u64" },
+				{ "name": "tag", "type": "MemTag" },
+				{ "name": "alignment", "type": "u64" }
+			],
+			"csharp": { "member": "Allocate", "kind": "method" }
+		},
+		{
+			"id": "Free",
+			"cpp": "::Shalltear::Free(reinterpret_cast<void*>(static_cast<uintptr_t>(p)))",
+			"returns": "void",
+			"params": [{ "name": "p", "type": "u64" }],
+			"csharp": { "member": "Free", "kind": "method" }
+		}
+	]
+}

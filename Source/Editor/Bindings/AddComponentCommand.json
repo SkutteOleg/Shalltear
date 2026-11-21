@@ -1,0 +1,44 @@
+{
+	"area": "AddComponentCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.AddComponentCommand",
+	"instance": "AddComponentCommand",
+	"functions": [
+		{
+			"id": "GetCreated",
+			"cpp": "self->GetCreated()",
+			"returns": "Component",
+			"params": [],
+			"csharp": { "member": "Created", "kind": "getter" }
+		},
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::AddComponentCommand(::Shalltear::Handle<::Shalltear::SceneObject>(argument0), componentType, str(stateJSON))",
+			"returns": "AddComponentCommand",
+			"params": [
+				{ "name": "argument0", "type": "SceneObject", "optional": true },
+				{ "name": "componentType", "type": "StringHash" },
+				{ "name": "stateJSON", "type": "string" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

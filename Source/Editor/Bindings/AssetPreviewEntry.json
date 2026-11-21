@@ -1,0 +1,83 @@
+{
+	"area": "AssetPreviewEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.AssetPreviewEntry",
+	"instance": "AssetPreviewEntry",
+	"functions": [
+		{
+			"id": "GetTexture",
+			"cpp": "self->texture",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "self->texture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureHandle" }],
+			"csharp": { "member": "Texture", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetSampler",
+			"cpp": "self->sampler",
+			"returns": "UISamplerKind",
+			"params": [],
+			"csharp": { "member": "Sampler", "kind": "getter" }
+		},
+		{
+			"id": "SetSampler",
+			"cpp": "self->sampler = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UISamplerKind" }],
+			"csharp": { "member": "Sampler", "kind": "setter" }
+		},
+		{
+			"id": "GetDetail",
+			"cpp": "self->detail",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Detail", "kind": "getter" }
+		},
+		{
+			"id": "SetDetail",
+			"cpp": "self->detail = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Detail", "kind": "setter" }
+		},
+		{
+			"id": "GetRevision",
+			"cpp": "self->revision",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Revision", "kind": "getter" }
+		},
+		{
+			"id": "SetRevision",
+			"cpp": "self->revision = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Revision", "kind": "setter" }
+		}
+	]
+}

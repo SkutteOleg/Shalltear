@@ -1,0 +1,41 @@
+{
+	"area": "FontInspectorOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/FontInspectorOps.h",
+		"Shalltear/Editor/AssetBrowserOps.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.Editor.FontInspectorOps",
+	"functions": [
+		{
+			"id": "Apply",
+			"cpp": "::Shalltear::FontInspectorOps::Apply(::Shalltear::Path(str(fontPath)), faces, fallbacks, boldSpacing)",
+			"returns": "bool",
+			"params": [
+				{ "name": "fontPath", "type": "string" },
+				{ "name": "faces", "type": "list<EngineGuid>" },
+				{ "name": "fallbacks", "type": "list<EngineGuid>" },
+				{ "name": "boldSpacing", "type": "SyntheticBoldSpacing" }
+			],
+			"csharp": { "member": "Apply", "kind": "method" }
+		},
+		{
+			"id": "CollectCandidates",
+			"cpp": "::Shalltear::FontInspectorOps::CollectCandidates(font, listed, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "font", "type": "EngineGuid" },
+				{ "name": "listed", "type": "list<EngineGuid>" },
+				{
+					"name": "outValue",
+					"type": "list<AssetBrowserOpsAssignableAsset>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::AssignableAsset>"
+				}
+			],
+			"csharp": { "member": "CollectCandidates", "kind": "method" }
+		}
+	]
+}

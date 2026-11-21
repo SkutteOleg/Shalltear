@@ -1,0 +1,87 @@
+{
+	"area": "EngineContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/EngineContext.h"
+	],
+	"class": "Shalltear.EngineContext",
+	"instance": "EngineContext",
+	"natives": [{ "name": "EngineContext", "cpp": "::Shalltear::EngineContext", "owned": true, "create": true }],
+	"constants": [
+		{ "name": "SLT_ENGINE_CONTEXT_VERSION", "cpp": "::Shalltear::SLT_ENGINE_CONTEXT_VERSION", "type": "u32", "value": 5 }
+	],
+	"functions": [
+		{
+			"id": "BindEngineContext",
+			"cpp": "::Shalltear::BindEngineContext(context)",
+			"returns": "bool",
+			"params": [{ "name": "context", "type": "EngineContext", "optional": true }],
+			"csharp": { "member": "BindEngineContext", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "CaptureEngineContext",
+			"cpp": "::Shalltear::CaptureEngineContext(*outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "EngineContext" }],
+			"csharp": { "member": "CaptureEngineContext", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetEngineHash",
+			"cpp": "self->engineHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "EngineHash", "kind": "getter" }
+		},
+		{
+			"id": "SetEngineHash",
+			"cpp": "self->engineHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "EngineHash", "kind": "setter" }
+		},
+		{
+			"id": "GetStateTable",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->stateTable))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "StateTable", "kind": "getter" }
+		},
+		{
+			"id": "SetStateTable",
+			"cpp": "self->stateTable = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "StateTable", "kind": "setter" }
+		}
+	]
+}

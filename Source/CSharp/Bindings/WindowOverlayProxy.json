@@ -1,0 +1,90 @@
+{
+	"area": "WindowOverlayProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Graphics/RHICommandList.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowOverlayProxy",
+	"instance": "WindowOverlayProxy",
+	"prelude": [
+		"class WindowOverlayProxy final : public ::Shalltear::IWindowOverlay {",
+		"public:",
+		"\tstd::function<void(std::vector<Shalltear::Handle<Shalltear::Window>, std::pmr::polymorphic_allocator<Shalltear::Handle<Shalltear::Window>>> &)> collectOverlayWindows;",
+		"\tvoid CollectOverlayWindows(std::vector<Shalltear::Handle<Shalltear::Window>, std::pmr::polymorphic_allocator<Shalltear::Handle<Shalltear::Window>>> & a0) override {",
+		"\t\tif (collectOverlayWindows) {",
+		"\t\t\tcollectOverlayWindows(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<unsigned int(Shalltear::Handle<Shalltear::Window>, Shalltear::RHI::CommandList &, Shalltear::RHI::TextureHandle, Shalltear::Vec2Generic<int>)> recordOverlay;",
+		"\tunsigned int RecordOverlay(Shalltear::Handle<Shalltear::Window> a0, Shalltear::RHI::CommandList & a1, Shalltear::RHI::TextureHandle a2, Shalltear::Vec2Generic<int> a3) override {",
+		"\t\treturn recordOverlay ? recordOverlay(a0, a1, a2, a3) : Slots::ResultOf<decltype(recordOverlay)>();",
+		"\t}",
+		"\tstd::function<bool()> hasOffscreenWork;",
+		"\tbool HasOffscreenWork() override {",
+		"\t\treturn hasOffscreenWork ? hasOffscreenWork() : ::Shalltear::IWindowOverlay::HasOffscreenWork();",
+		"\t}",
+		"\tstd::function<unsigned int(Shalltear::RHI::CommandList &)> recordOffscreen;",
+		"\tunsigned int RecordOffscreen(Shalltear::RHI::CommandList & a0) override {",
+		"\t\treturn recordOffscreen ? recordOffscreen(a0) : ::Shalltear::IWindowOverlay::RecordOffscreen(a0);",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "WindowOverlayProxy", "cpp": "WindowOverlayProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetCollectOverlayWindows",
+			"cpp": "self->collectOverlayWindows = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;WindowList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::Handle<Shalltear::Window>, std::pmr::polymorphic_allocator<Shalltear::Handle<Shalltear::Window>>> &)>"
+				}
+			],
+			"csharp": { "member": "SetCollectOverlayWindows", "kind": "method" }
+		},
+		{
+			"id": "SetRecordOverlay",
+			"cpp": "self->recordOverlay = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<u32;Window;RHICommandList;RHITextureHandle;Vec2I>",
+					"optional": true,
+					"cpp": "std::function<unsigned int(Shalltear::Handle<Shalltear::Window>, Shalltear::RHI::CommandList &, Shalltear::RHI::TextureHandle, Shalltear::Vec2Generic<int>)>"
+				}
+			],
+			"csharp": { "member": "SetRecordOverlay", "kind": "method" }
+		},
+		{
+			"id": "SetHasOffscreenWork",
+			"cpp": "self->hasOffscreenWork = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetHasOffscreenWork", "kind": "method" }
+		},
+		{
+			"id": "SetRecordOffscreen",
+			"cpp": "self->recordOffscreen = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<u32;RHICommandList>", "optional": true, "cpp": "std::function<unsigned int(Shalltear::RHI::CommandList &)>" }
+			],
+			"csharp": { "member": "SetRecordOffscreen", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IWindowOverlay*>(self)",
+			"returns": "IWindowOverlay",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

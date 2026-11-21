@@ -1,0 +1,69 @@
+{
+	"area": "RuntimeViewToggle",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/RuntimeViewToolbar.h",
+		"Shalltear/Editor/EditorIcons.h"
+	],
+	"class": "Shalltear.Editor.RuntimeViewToggle",
+	"instance": "RuntimeViewToggle",
+	"functions": [
+		{
+			"id": "GetIcon",
+			"cpp": "&self->icon",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Icon", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetIcon",
+			"cpp": "self->icon = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorIconsIcon" }],
+			"csharp": { "member": "Icon", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltip",
+			"cpp": "self->tooltip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tooltip", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "self->tooltip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tooltip", "kind": "setter" }
+		},
+		{
+			"id": "SetIsOn",
+			"cpp": "self->isOn = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool ()>" }],
+			"csharp": { "member": "SetIsOn", "kind": "method" }
+		},
+		{
+			"id": "SetSet",
+			"cpp": "self->set = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;bool>", "optional": true, "cpp": "std::function<void (bool)>" }],
+			"csharp": { "member": "SetSet", "kind": "method" }
+		}
+	]
+}

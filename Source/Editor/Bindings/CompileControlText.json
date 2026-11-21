@@ -1,0 +1,39 @@
+{
+	"area": "CompileControlText",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileService.h"
+	],
+	"class": "Shalltear.Editor.CompileControlText",
+	"instance": "CompileControlText",
+	"functions": [
+		{
+			"id": "GetStatus",
+			"cpp": "self->status",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Status", "kind": "getter" }
+		},
+		{
+			"id": "SetStatus",
+			"cpp": "self->status = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Status", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltip",
+			"cpp": "self->tooltip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tooltip", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "self->tooltip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tooltip", "kind": "setter" }
+		}
+	]
+}

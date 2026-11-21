@@ -509,4 +509,137 @@ static class AudioTests {
 		Retire(speaker);
 		Frames(1);
 	}
+
+	static AudioEffectDefinitionProxy? _registeredEffect;
+	static AudioSpatializerProxy? _registeredSpatializer;
+
+	static AudioEffectDefinitionProxy Halving(Action? released) {
+		AudioEffectDefinitionProxy definition = new();
+		definition.SetCreateEffect(context => {
+			AudioEffectProxy effect = new();
+			effect.SetProcess((block, sidechain) => {
+				for (int channel = 0; channel < block.channels; ++channel) {
+					Span<float> samples = block.Channel(channel);
+					for (int index = 0; index < samples.Length; ++index) {
+						samples[index] *= 0.5f;
+					}
+				}
+			});
+			if (released != null) {
+				effect.SetRelease(released);
+			}
+			return effect.Base;
+		});
+		return definition;
+	}
+
+	[ConformanceTest]
+	internal static void EffectRunsOnAudioThread() {
+		int main = Environment.CurrentManagedThreadId;
+		int calls = 0;
+		int offMain = 0;
+		int released = 0;
+		float side = -1f;
+		long first = 0;
+		long last = 0;
+		using AudioEffectDefinitionProxy definition = new();
+		definition.SetCreateEffect(context => {
+			Check.Equal(64u, context.BlockFrames);
+			AudioEffectProxy effect = new();
+			effect.SetProcess((block, sidechain) => {
+				if (calls++ == 1) {
+					first = GC.GetAllocatedBytesForCurrentThread();
+				}
+				offMain += Environment.CurrentManagedThreadId != main ? 1 : 0;
+				for (int channel = 0; channel < block.channels; ++channel) {
+					Span<float> samples = block.Channel(channel);
+					for (int index = 0; index < samples.Length; ++index) {
+						samples[index] *= 0.5f;
+					}
+				}
+				side = sidechain.channels == 0 ? 0f : sidechain.Channel(1)[63];
+				last = GC.GetAllocatedBytesForCurrentThread();
+			});
+			effect.SetRelease(() => ++released);
+			return effect.Base;
+		});
+		int kept = SlotCallbacks.Count;
+		Check.Equal(0.5f, AudioProbe.RunEffect(definition.Base, 2, 64, 200, true));
+		Check.Equal(200, calls);
+		Check.Equal(200, offMain);
+		Check.Equal(0.25f, side);
+		Check.Equal(0L, last - first);
+		Check.Equal(1, released);
+		Check.Equal(0.5f, AudioProbe.RunEffect(definition.Base, 1, 64, 1, false));
+		Check.Equal(0f, side);
+		Check.Equal(2, released);
+		Check.Equal(kept, SlotCallbacks.Count);
+	}
+
+	[ConformanceTest]
+	internal static void GeneratorRunsOnAudioThread() {
+		int main = Environment.CurrentManagedThreadId;
+		int offMain = 0;
+		ulong lastFrom = ulong.MaxValue;
+		using AudioGeneratorInstanceProxy instance = new();
+		instance.SetProcess((block, fromFrame) => {
+			offMain += Environment.CurrentManagedThreadId != main ? 1 : 0;
+			lastFrom = fromFrame;
+			block.Channel(0).Fill(0.75f);
+			return block.frames;
+		});
+		Check.Equal(0.75f, AudioProbe.RunGenerator(instance.Base, 48, 10));
+		Check.Equal(10, offMain);
+		Check.Equal(432UL, lastFrom);
+	}
+
+	[ConformanceTest]
+	internal static void SpatializerRunsOnAudioThread() {
+		int main = Environment.CurrentManagedThreadId;
+		int offMain = 0;
+		int destroyed = 0;
+		using AudioSpatializerProxy spatializer = new();
+		spatializer.SetCreateVoiceState(context => context.OutputChannels == 2 ? 7UL : 0UL);
+		spatializer.SetDestroyVoiceState(state => destroyed += state == 7UL ? 1 : 0);
+		spatializer.SetProcess((state, parameters, input, output) => {
+			offMain += Environment.CurrentManagedThreadId != main && state == 7UL ? 1 : 0;
+			Span<float> source = input.Channel(0);
+			for (int channel = 0; channel < output.channels; ++channel) {
+				Span<float> target = output.Channel(channel);
+				for (int index = 0; index < target.Length; ++index) {
+					target[index] = source[index] * parameters.distanceAttenuation;
+				}
+			}
+		});
+		Check.Equal(0.25f, AudioProbe.RunSpatializer(spatializer.Base, 0.25f, 32, 5));
+		Check.Equal(5, offMain);
+		Check.Equal(1, destroyed);
+	}
+
+	[ConformanceTest]
+	internal static void EffectRunsWhileMainThreadCollects() {
+		int released = 0;
+		using AudioEffectDefinitionProxy definition = Halving(() => ++released);
+		Check.True(AudioProbe.StartEffectLoop(definition.Base, 64), "loop started");
+		for (int round = 0; round < 10; ++round) {
+			byte[][] garbage = new byte[64][];
+			for (int index = 0; index < garbage.Length; ++index) {
+				garbage[index] = new byte[16384];
+			}
+			GC.Collect(2, GCCollectionMode.Forced, true);
+		}
+		ulong[] stats = new ulong[3];
+		AudioProbe.StopEffectLoop(stats);
+		Check.True(stats[0] > 0UL, "effect called while collecting");
+		Check.Equal(1, released);
+	}
+
+	[ConformanceTest]
+	internal static void RegistrationsHoldUntilUnload() {
+		_registeredEffect = Halving(null);
+		_registeredSpatializer = new AudioSpatializerProxy();
+		Check.True(AudioEffects.Register("ScriptHalf", _registeredEffect.Base), "effect name free");
+		Check.True(AudioSpatializers.Register("ScriptPan", _registeredSpatializer.Base), "spatializer name free");
+		Check.True(!AudioEffects.Register("ScriptHalf", _registeredEffect.Base), "effect name taken");
+	}
 }

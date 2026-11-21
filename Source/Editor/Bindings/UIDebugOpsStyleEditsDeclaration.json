@@ -1,0 +1,40 @@
+{
+	"area": "UIDebugOpsStyleEditsDeclaration",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsStyleEditsDeclaration",
+	"instance": "UIDebugOpsStyleEditsDeclaration",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

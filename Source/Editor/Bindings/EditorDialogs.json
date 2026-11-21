@@ -1,0 +1,80 @@
+{
+	"area": "EditorDialogs",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDialogs.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorDialogs",
+	"natives": [
+		{ "name": "EditorDialogsFileDialogDesc", "cpp": "::Shalltear::EditorDialogs::FileDialogDesc", "owned": true, "create": true },
+		{ "name": "TextList", "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+	],
+	"functions": [
+		{
+			"id": "OpenConfirm",
+			"cpp": "::Shalltear::EditorDialogs::OpenConfirm(*context, str(message), str(acceptLabel), onAccept)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "message", "type": "string" },
+				{ "name": "acceptLabel", "type": "string" },
+				{ "name": "onAccept", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "OpenConfirm", "kind": "method" }
+		},
+		{
+			"id": "OpenTextInput",
+			"cpp": "::Shalltear::EditorDialogs::OpenTextInput(*context, str(title), str(initialText), str(acceptLabel), onAccept)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "title", "type": "string" },
+				{ "name": "initialText", "type": "string" },
+				{ "name": "acceptLabel", "type": "string" },
+				{ "name": "onAccept", "type": "fn<void;string>", "optional": true, "cpp": "std::function<void (const std::basic_string<char> &)>" }
+			],
+			"csharp": { "member": "OpenTextInput", "kind": "method" }
+		},
+		{
+			"id": "PickFiles",
+			"cpp": "::Shalltear::EditorDialogs::PickFiles(*context, *desc, onPicked)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "desc", "type": "EditorDialogsFileDialogDesc" },
+				{ "name": "onPicked", "type": "fn<void;list<string>>", "optional": true, "cpp": "std::function<void (std::span<const std::basic_string<char>>)>" }
+			],
+			"csharp": { "member": "PickFiles", "kind": "method" }
+		},
+		{
+			"id": "Drain",
+			"cpp": "::Shalltear::EditorDialogs::Drain()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Drain", "kind": "method" }
+		},
+		{
+			"id": "GetPendingPickCount",
+			"cpp": "::Shalltear::EditorDialogs::GetPendingPickCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PendingPickCount", "kind": "getter" }
+		},
+		{
+			"id": "SetFileDialog",
+			"cpp": "::Shalltear::EditorDialogs::SetFileDialog(dialog)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "dialog",
+					"type": "fn<bool;EditorDialogsFileDialogDesc;TextList;TextRef>",
+					"optional": true,
+					"cpp": "std::function<bool (const Shalltear::EditorDialogs::FileDialogDesc &, std::vector<std::basic_string<char>, std::pmr::polymorphic_allocator<std::basic_string<char>>> &, std::basic_string<char> &)>"
+				}
+			],
+			"csharp": { "member": "SetFileDialog", "kind": "method" }
+		}
+	]
+}

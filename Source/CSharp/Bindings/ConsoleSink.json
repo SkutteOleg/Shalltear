@@ -1,0 +1,19 @@
+{
+	"area": "ConsoleSink",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.ConsoleSink",
+	"instance": "ConsoleSink",
+	"functions": [
+		{
+			"id": "GetAsILogSink",
+			"cpp": "static_cast<::Shalltear::ILogSink*>(self)",
+			"returns": "ILogSink",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsILogSink", "kind": "getter" }
+		}
+	]
+}

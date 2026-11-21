@@ -1,0 +1,41 @@
+{
+	"area": "ComponentRadius",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Scene/Component.h"
+	],
+	"class": "Shalltear.Editor.ComponentRadius",
+	"instance": "ComponentRadius",
+	"functions": [
+		{
+			"id": "GetComponent",
+			"cpp": "self->component",
+			"returns": "Component",
+			"params": [],
+			"csharp": { "member": "Component", "kind": "getter" }
+		},
+		{
+			"id": "SetComponent",
+			"cpp": "self->component = ::Shalltear::Handle<::Shalltear::Component>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Component", "optional": true }],
+			"csharp": { "member": "Component", "kind": "setter" }
+		},
+		{
+			"id": "GetHandle",
+			"cpp": "&self->handle",
+			"returns": "RadiusHandle",
+			"params": [],
+			"csharp": { "member": "Handle", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetHandle",
+			"cpp": "self->handle = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RadiusHandle" }],
+			"csharp": { "member": "Handle", "kind": "setter" }
+		}
+	]
+}

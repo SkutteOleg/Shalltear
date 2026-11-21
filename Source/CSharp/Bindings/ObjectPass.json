@@ -1,0 +1,83 @@
+{
+	"area": "ObjectPass",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ObjectPass.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h"
+	],
+	"class": "Shalltear.ObjectPass",
+	"instance": "ObjectPass",
+	"types": [{ "name": "ObjectPass", "cpp": "::Shalltear::ObjectPass", "engine": "ObjectPass", "base": "Asset" }],
+	"functions": [
+		{
+			"id": "GetRenderingLayerMask",
+			"cpp": "self->renderingLayerMask",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RenderingLayerMask", "kind": "getter" }
+		},
+		{
+			"id": "SetRenderingLayerMask",
+			"cpp": "self->renderingLayerMask = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "RenderingLayerMask", "kind": "setter" }
+		},
+		{
+			"id": "GetOverrideMaterial",
+			"cpp": "self->overrideMaterial",
+			"returns": "Material",
+			"params": [],
+			"csharp": { "member": "OverrideMaterial", "kind": "getter" }
+		},
+		{
+			"id": "SetOverrideMaterial",
+			"cpp": "self->overrideMaterial = ::Shalltear::Handle<::Shalltear::MaterialAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Material", "optional": true }],
+			"csharp": { "member": "OverrideMaterial", "kind": "setter" }
+		},
+		{
+			"id": "GetOverrideCamera",
+			"cpp": "self->overrideCamera",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "OverrideCamera", "kind": "getter" }
+		},
+		{
+			"id": "SetOverrideCamera",
+			"cpp": "self->overrideCamera = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "OverrideCamera", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldOfViewDeg",
+			"cpp": "self->fieldOfViewDeg",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FieldOfViewDeg", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldOfViewDeg",
+			"cpp": "self->fieldOfViewDeg = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FieldOfViewDeg", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthScale",
+			"cpp": "self->depthScale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DepthScale", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthScale",
+			"cpp": "self->depthScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DepthScale", "kind": "setter" }
+		}
+	]
+}

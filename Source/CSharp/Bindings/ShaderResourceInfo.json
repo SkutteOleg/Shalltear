@@ -1,0 +1,82 @@
+{
+	"area": "ShaderResourceInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.ShaderResourceInfo",
+	"instance": "ShaderResourceInfo",
+	"functions": [
+		{
+			"id": "GetSet",
+			"cpp": "self->set",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Set", "kind": "getter" }
+		},
+		{
+			"id": "SetSet",
+			"cpp": "self->set = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Set", "kind": "setter" }
+		},
+		{
+			"id": "GetBinding",
+			"cpp": "self->binding",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Binding", "kind": "getter" }
+		},
+		{
+			"id": "SetBinding",
+			"cpp": "self->binding = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Binding", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "RHIDescriptorType",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIDescriptorType" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetDimension",
+			"cpp": "self->dimension",
+			"returns": "RHITextureDimension",
+			"params": [],
+			"csharp": { "member": "Dimension", "kind": "getter" }
+		},
+		{
+			"id": "SetDimension",
+			"cpp": "self->dimension = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureDimension" }],
+			"csharp": { "member": "Dimension", "kind": "setter" }
+		}
+	]
+}

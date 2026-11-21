@@ -1,0 +1,61 @@
+{
+	"area": "SceneObjectDragData",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDragData.h"
+	],
+	"class": "Shalltear.Editor.SceneObjectDragData",
+	"instance": "SceneObjectDragData",
+	"structs": [
+		{
+			"name": "AssetDragData",
+			"cpp": "::Shalltear::AssetDragData",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "guid", "type": "EngineGuid", "offset": 0 },
+				{ "name": "assetTypeHash", "type": "u64", "offset": 16 }
+			]
+		},
+		{
+			"name": "SceneFolderDragData",
+			"cpp": "::Shalltear::SceneFolderDragData",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "sceneId", "type": "u64", "offset": 0 },
+				{ "name": "folderId", "type": "u64", "offset": 8 }
+			]
+		},
+		{
+			"name": "GraphBlackboardDragData",
+			"cpp": "::Shalltear::GraphBlackboardDragData",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "board", "type": "u64", "offset": 0 },
+				{ "name": "item", "type": "u64", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "SceneObjectDragData", "cpp": "::Shalltear::SceneObjectDragData", "owned": true, "create": true },
+		{ "name": "UIBuilderNodeDragData", "cpp": "::Shalltear::UIBuilderNodeDragData", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetObjects",
+			"cpp": "self->objects",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Objects", "kind": "getter" }
+		},
+		{
+			"id": "SetObjects",
+			"cpp": "self->objects = Slots::ToVector<u64>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u64>" }],
+			"csharp": { "member": "Objects", "kind": "setter" }
+		}
+	]
+}

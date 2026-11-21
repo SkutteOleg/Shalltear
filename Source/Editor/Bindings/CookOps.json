@@ -1,0 +1,123 @@
+{
+	"area": "CookOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.Editor.CookOps",
+	"enums": [
+		{
+			"name": "CookOpsCookCompression",
+			"cpp": "::Shalltear::CookOps::CookCompression",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "LZ4", "value": 1 },
+				{ "name": "LZ4HC", "value": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "CookOpsCookReport", "cpp": "::Shalltear::CookOps::CookReport", "owned": true, "create": true },
+		{ "name": "CookOpsPakAssetSource", "cpp": "::Shalltear::CookOps::PakAssetSource", "owned": true, "create": true },
+		{ "name": "CookOpsPakWriteDesc", "cpp": "::Shalltear::CookOps::PakWriteDesc", "owned": true, "create": true },
+		{ "name": "CookOpsCookClosure", "cpp": "::Shalltear::CookOps::CookClosure", "owned": true, "create": true },
+		{ "name": "CookOpsPakDocumentSource", "cpp": "::Shalltear::CookOps::PakDocumentSource", "owned": true, "create": true },
+		{ "name": "CookOpsCookReportAsset", "cpp": "::Shalltear::CookOps::CookReportAsset", "owned": true, "create": true },
+		{ "name": "CookOpsCookClosureShaderVariantRequest", "cpp": "::Shalltear::CookOps::CookClosure::ShaderVariantRequest", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "WriteReportJSON",
+			"cpp": "::Shalltear::CookOps::WriteReportJSON(*report)",
+			"returns": "string",
+			"params": [{ "name": "report", "type": "CookOpsCookReport" }],
+			"csharp": { "member": "WriteReportJSON", "kind": "method" }
+		},
+		{
+			"id": "ReadReportJSON",
+			"cpp": "::Shalltear::CookOps::ReadReportJSON(json, *outValue, outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "json", "type": "string" },
+				{ "name": "outValue", "type": "CookOpsCookReport" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "ReadReportJSON", "kind": "method" }
+		},
+		{
+			"id": "WritePackage",
+			"cpp": "::Shalltear::CookOps::WritePackage(::Shalltear::Path(str(outputPath)), Slots::Copies<::Shalltear::Vector<::Shalltear::CookOps::PakAssetSource>>(assets), *desc, outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "outputPath", "type": "string" },
+				{ "name": "assets", "type": "list<CookOpsPakAssetSource>" },
+				{ "name": "desc", "type": "CookOpsPakWriteDesc" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "WritePackage", "kind": "method" }
+		},
+		{
+			"id": "BuildPackage",
+			"cpp": "::Shalltear::CookOps::BuildPackage(Slots::Copies<::Shalltear::Vector<::Shalltear::CookOps::PakAssetSource>>(assets), *desc, outValue, outError, outReport)",
+			"returns": "bool",
+			"params": [
+				{ "name": "assets", "type": "list<CookOpsPakAssetSource>" },
+				{ "name": "desc", "type": "CookOpsPakWriteDesc" },
+				{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" },
+				{ "name": "outError", "type": "string", "out": true },
+				{ "name": "outReport", "type": "CookOpsCookReport", "optional": true }
+			],
+			"csharp": { "member": "BuildPackage", "kind": "method" }
+		},
+		{
+			"id": "CookAsset",
+			"cpp": "::Shalltear::CookOps::CookAsset(*asset, *strings, *outValue, outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "asset", "type": "Asset" },
+				{ "name": "strings", "type": "PakStringPool" },
+				{ "name": "outValue", "type": "CookOpsPakAssetSource" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CookAsset", "kind": "method" }
+		},
+		{
+			"id": "ComputeClosure",
+			"cpp": "::Shalltear::CookOps::ComputeClosure(Slots::ToVector<::Shalltear::Guid>(sceneRoots), *outValue, outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "sceneRoots", "type": "list<EngineGuid>" },
+				{ "name": "outValue", "type": "CookOpsCookClosure" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "ComputeClosure", "kind": "method" }
+		},
+		{
+			"id": "CollectAlwaysCookedRoots",
+			"cpp": "::Shalltear::CookOps::CollectAlwaysCookedRoots(outValue, &failedImports)",
+			"returns": "u32",
+			"params": [
+				{ "name": "outValue", "type": "list<EngineGuid>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Guid>" },
+				{ "name": "failedImports", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "CollectAlwaysCookedRoots", "kind": "method" }
+		},
+		{
+			"id": "CookPackage",
+			"cpp": "::Shalltear::CookOps::CookPackage(*closure, *desc, outValue, outError, outReport)",
+			"returns": "bool",
+			"params": [
+				{ "name": "closure", "type": "CookOpsCookClosure" },
+				{ "name": "desc", "type": "CookOpsPakWriteDesc" },
+				{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" },
+				{ "name": "outError", "type": "string", "out": true },
+				{ "name": "outReport", "type": "CookOpsCookReport", "optional": true }
+			],
+			"csharp": { "member": "CookPackage", "kind": "method" }
+		}
+	]
+}

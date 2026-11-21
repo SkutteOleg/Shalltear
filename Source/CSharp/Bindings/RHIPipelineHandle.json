@@ -1,0 +1,18 @@
+{
+	"area": "RHIPipelineHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHIPipelineHandle",
+	"instance": "RHIPipelineHandle",
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

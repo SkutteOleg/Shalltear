@@ -1,0 +1,42 @@
+{
+	"area": "NetHTTPSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/HTTP.h"
+	],
+	"class": "Shalltear.NetHTTP",
+	"functions": [
+		{
+			"id": "Send",
+			"cpp": "::Shalltear::Net::HTTP::Send(*request, onDone, onProgress)",
+			"returns": "u64",
+			"params": [
+				{ "name": "request", "type": "NetHTTPRequest" },
+				{ "name": "onDone", "type": "fn<void;NetHTTPResponse>", "optional": true, "cpp": "std::function<void (const Shalltear::Net::HTTP::Response &)>" },
+				{ "name": "onProgress", "type": "fn<void;u64;u64>", "optional": true, "cpp": "std::function<void (uint64_t, uint64_t)>" }
+			],
+			"csharp": { "member": "Send", "kind": "method" }
+		},
+		{
+			"id": "Cancel",
+			"cpp": "::Shalltear::Net::HTTP::Cancel(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "Cancel", "kind": "method" }
+		},
+		{
+			"id": "IsAvailable",
+			"cpp": "::Shalltear::Net::HTTP::IsAvailable()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsAvailable", "kind": "getter" }
+		},
+		{
+			"id": "GetMethodName",
+			"cpp": "::Shalltear::Net::HTTP::GetMethodName(method)",
+			"returns": "string",
+			"params": [{ "name": "method", "type": "NetHTTPMethod" }],
+			"csharp": { "member": "GetMethodName", "kind": "method" }
+		}
+	]
+}

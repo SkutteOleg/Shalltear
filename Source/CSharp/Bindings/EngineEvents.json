@@ -1,0 +1,17 @@
+{
+	"area": "EngineEvents",
+	"slots": true,
+	"include": ["EventBridge.h"],
+	"class": "Shalltear.EngineEvents",
+	"doc": "Subscriptions to engine events.",
+	"functions": [
+		{
+			"id": "Unsubscribe",
+			"cpp": "EventBridge::Unsubscribe(subscription)",
+			"returns": "void",
+			"params": [{ "name": "subscription", "type": "u64" }],
+			"csharp": { "member": "Unsubscribe", "kind": "method" },
+			"doc": "Ends a subscription made by a Subscribe call (0 ignored)."
+		}
+	]
+}

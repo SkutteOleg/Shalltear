@@ -1,0 +1,97 @@
+{
+	"area": "GraphPortDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Editor/EditorTheme.h"
+	],
+	"class": "Shalltear.Editor.GraphPortDesc",
+	"instance": "GraphPortDesc",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->color",
+			"returns": "EditorThemeColorToken",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorThemeColorToken" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		},
+		{
+			"id": "GetConnected",
+			"cpp": "self->connected",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Connected", "kind": "getter" }
+		},
+		{
+			"id": "SetConnected",
+			"cpp": "self->connected = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Connected", "kind": "setter" }
+		},
+		{
+			"id": "GetInlineValue",
+			"cpp": "&self->inlineValue",
+			"returns": "GraphInlineValue",
+			"params": [],
+			"csharp": { "member": "InlineValue", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetInlineValue",
+			"cpp": "self->inlineValue = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphInlineValue" }],
+			"csharp": { "member": "InlineValue", "kind": "setter" }
+		},
+		{
+			"id": "GetDim",
+			"cpp": "self->dim",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Dim", "kind": "getter" }
+		},
+		{
+			"id": "SetDim",
+			"cpp": "self->dim = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Dim", "kind": "setter" }
+		},
+		{
+			"id": "GetSpace",
+			"cpp": "self->space",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Space", "kind": "getter" }
+		},
+		{
+			"id": "SetSpace",
+			"cpp": "self->space = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Space", "kind": "setter" }
+		}
+	]
+}

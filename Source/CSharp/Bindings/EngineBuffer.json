@@ -1,0 +1,112 @@
+{
+	"area": "EngineBuffer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/FileSystem.h",
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.EngineBuffer",
+	"instance": "EngineBuffer",
+	"enums": [
+		{
+			"name": "FileSharing",
+			"cpp": "::Shalltear::FileSharing",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Read", "value": 0 },
+				{ "name": "ReadDelete", "value": 1 }
+			]
+		},
+		{
+			"name": "FileAction",
+			"cpp": "::Shalltear::FileAction",
+			"underlying": "i32",
+			"values": [
+				{ "name": "Added", "value": 0 },
+				{ "name": "Modified", "value": 1 },
+				{ "name": "Removed", "value": 2 },
+				{ "name": "Renamed", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EngineBuffer", "cpp": "::Shalltear::Buffer", "owned": true, "create": true },
+		{ "name": "FileReader", "cpp": "::Shalltear::FileReader", "owned": true, "create": true },
+		{ "name": "EnginePath", "cpp": "::Shalltear::Path", "owned": true, "create": true },
+		{ "name": "FileWatcher", "cpp": "::Shalltear::FileWatcher", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "Allocate",
+			"cpp": "self->Allocate(byteCount, memTag)",
+			"returns": "void",
+			"params": [
+				{ "name": "byteCount", "type": "u64" },
+				{ "name": "memTag", "type": "MemTag" }
+			],
+			"csharp": { "member": "Allocate", "kind": "method" }
+		},
+		{
+			"id": "Release",
+			"cpp": "self->Release()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Release", "kind": "method" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->data))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" }
+		},
+		{
+			"id": "SetData",
+			"cpp": "self->data = reinterpret_cast<::Shalltear::u8*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Data", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetTag",
+			"cpp": "self->tag",
+			"returns": "MemTag",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "SetTag",
+			"cpp": "self->tag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "MemTag" }],
+			"csharp": { "member": "Tag", "kind": "setter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::Buffer(byteCount, memTag)",
+			"returns": "EngineBuffer",
+			"params": [
+				{ "name": "byteCount", "type": "u64" },
+				{ "name": "memTag", "type": "MemTag" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

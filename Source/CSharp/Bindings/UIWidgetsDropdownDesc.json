@@ -1,0 +1,75 @@
+{
+	"area": "UIWidgetsDropdownDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIWidgetsDropdownDesc",
+	"instance": "UIWidgetsDropdownDesc",
+	"functions": [
+		{
+			"id": "GetItems",
+			"cpp": "self->items",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Items", "kind": "getter" }
+		},
+		{
+			"id": "SetItems",
+			"cpp": "self->items = Slots::KeepFieldTexts(self, 0x509ec4035cd4e338ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Items", "kind": "setter" }
+		},
+		{
+			"id": "GetSelected",
+			"cpp": "self->selected",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Selected", "kind": "getter" }
+		},
+		{
+			"id": "SetSelected",
+			"cpp": "self->selected = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Selected", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnSelect",
+			"cpp": "self->onSelect = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;u32>", "optional": true, "cpp": "std::function<void (unsigned int)>" }],
+			"csharp": { "member": "SetOnSelect", "kind": "method" }
+		}
+	]
+}

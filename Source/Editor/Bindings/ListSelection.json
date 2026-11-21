@@ -1,0 +1,131 @@
+{
+	"area": "ListSelection",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorListModel.h",
+		"Shalltear/Core/Input/InputCodes.h"
+	],
+	"class": "Shalltear.Editor.ListSelection",
+	"instance": "ListSelection",
+	"enums": [
+		{
+			"name": "ListNavigation",
+			"cpp": "::Shalltear::ListNavigation",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Prev", "value": 1 },
+				{ "name": "Next", "value": 2 },
+				{ "name": "First", "value": 3 },
+				{ "name": "Last", "value": 4 },
+				{ "name": "PageUp", "value": 5 },
+				{ "name": "PageDown", "value": 6 },
+				{ "name": "Expand", "value": 7 },
+				{ "name": "Collapse", "value": 8 },
+				{ "name": "Activate", "value": 9 }
+			]
+		},
+		{
+			"name": "ListSelectionMode",
+			"cpp": "::Shalltear::ListSelectionMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Single", "value": 0 },
+				{ "name": "Multiple", "value": 1 }
+			]
+		}
+	],
+	"natives": [{ "name": "ListSelection", "cpp": "::Shalltear::ListSelection", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetRows",
+			"cpp": "self->SetRows(orderedSelectableRows)",
+			"returns": "void",
+			"params": [{ "name": "orderedSelectableRows", "type": "list<u64>" }],
+			"csharp": { "member": "SetRows", "kind": "method" }
+		},
+		{
+			"id": "ApplyClick",
+			"cpp": "self->ApplyClick(row, mods)",
+			"returns": "bool",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "mods", "type": "KeyMod" }
+			],
+			"csharp": { "member": "ApplyClick", "kind": "method" }
+		},
+		{
+			"id": "SelectOnly",
+			"cpp": "self->SelectOnly(row)",
+			"returns": "bool",
+			"params": [{ "name": "row", "type": "u64" }],
+			"csharp": { "member": "SelectOnly", "kind": "method" }
+		},
+		{
+			"id": "SelectAll",
+			"cpp": "self->SelectAll()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SelectAll", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "SetSelection",
+			"cpp": "self->SetSelection(ids)",
+			"returns": "bool",
+			"params": [{ "name": "ids", "type": "list<u64>" }],
+			"csharp": { "member": "SetSelection", "kind": "method" }
+		},
+		{
+			"id": "MoveCursor",
+			"cpp": "self->MoveCursor(delta, mods)",
+			"returns": "bool",
+			"params": [
+				{ "name": "delta", "type": "i32" },
+				{ "name": "mods", "type": "KeyMod" }
+			],
+			"csharp": { "member": "MoveCursor", "kind": "method" }
+		},
+		{
+			"id": "GetSelected",
+			"cpp": "self->GetSelected()",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Selected", "kind": "getter" }
+		},
+		{
+			"id": "GetActive",
+			"cpp": "self->GetActive()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Active", "kind": "getter" }
+		},
+		{
+			"id": "GetCursor",
+			"cpp": "self->GetCursor()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Cursor", "kind": "getter" }
+		},
+		{
+			"id": "IsSelected",
+			"cpp": "self->IsSelected(row)",
+			"returns": "bool",
+			"params": [{ "name": "row", "type": "u64" }],
+			"csharp": { "member": "IsSelected", "kind": "method" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->GetCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		}
+	]
+}

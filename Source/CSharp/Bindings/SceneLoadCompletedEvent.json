@@ -1,0 +1,41 @@
+{
+	"area": "SceneLoadCompletedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneEvents.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneLoadOperation.h"
+	],
+	"class": "Shalltear.SceneLoadCompletedEvent",
+	"instance": "SceneLoadCompletedEvent",
+	"functions": [
+		{
+			"id": "GetOperation",
+			"cpp": "(self->operation).Get()",
+			"returns": "SceneLoadOperation",
+			"params": [],
+			"csharp": { "member": "Operation", "kind": "getter" }
+		},
+		{
+			"id": "SetOperation",
+			"cpp": "self->operation = ::Shalltear::Handle<::Shalltear::SceneLoadOperation>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneLoadOperation", "optional": true }],
+			"csharp": { "member": "Operation", "kind": "setter" }
+		},
+		{
+			"id": "GetScene",
+			"cpp": "self->scene",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Scene", "kind": "getter" }
+		},
+		{
+			"id": "SetScene",
+			"cpp": "self->scene = ::Shalltear::Handle<::Shalltear::Scene>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Scene", "optional": true }],
+			"csharp": { "member": "Scene", "kind": "setter" }
+		}
+	]
+}

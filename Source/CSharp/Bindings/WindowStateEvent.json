@@ -1,0 +1,40 @@
+{
+	"area": "WindowStateEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowEvents.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowStateEvent",
+	"instance": "WindowStateEvent",
+	"functions": [
+		{
+			"id": "GetWindow",
+			"cpp": "(self->window).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		},
+		{
+			"id": "GetState",
+			"cpp": "self->state",
+			"returns": "WindowState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" }
+		},
+		{
+			"id": "SetState",
+			"cpp": "self->state = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "WindowState" }],
+			"csharp": { "member": "State", "kind": "setter" }
+		}
+	]
+}

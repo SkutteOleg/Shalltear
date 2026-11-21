@@ -1,0 +1,39 @@
+{
+	"area": "ShaderTextureDefault",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.ShaderTextureDefault",
+	"instance": "ShaderTextureDefault",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetFallback",
+			"cpp": "self->fallback",
+			"returns": "ShaderTextureFallback",
+			"params": [],
+			"csharp": { "member": "Fallback", "kind": "getter" }
+		},
+		{
+			"id": "SetFallback",
+			"cpp": "self->fallback = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShaderTextureFallback" }],
+			"csharp": { "member": "Fallback", "kind": "setter" }
+		}
+	]
+}

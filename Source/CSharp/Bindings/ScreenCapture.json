@@ -1,0 +1,34 @@
+{
+	"area": "ScreenCapture",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ScreenCapture.h",
+		"Shalltear/Core/Graphics/Camera.h"
+	],
+	"class": "Shalltear.ScreenCapture",
+	"natives": [{ "name": "ScreenCaptureResult", "cpp": "::Shalltear::ScreenCaptureResult", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "CaptureScreenshot",
+			"cpp": "::Shalltear::ScreenCapture::CaptureScreenshot(filePath, onDone)",
+			"returns": "bool",
+			"params": [
+				{ "name": "filePath", "type": "string" },
+				{ "name": "onDone", "type": "fn<void;ScreenCaptureResult>", "optional": true, "cpp": "std::function<void (const Shalltear::ScreenCaptureResult &)>" }
+			],
+			"csharp": { "member": "CaptureScreenshot", "kind": "method" }
+		},
+		{
+			"id": "CaptureCamera",
+			"cpp": "::Shalltear::ScreenCapture::CaptureCamera(::Shalltear::Handle<::Shalltear::Camera>(camera), sizePx, filePath, onDone)",
+			"returns": "bool",
+			"params": [
+				{ "name": "camera", "type": "Camera", "optional": true },
+				{ "name": "sizePx", "type": "Vec2I" },
+				{ "name": "filePath", "type": "string" },
+				{ "name": "onDone", "type": "fn<void;ScreenCaptureResult>", "optional": true, "cpp": "std::function<void (const Shalltear::ScreenCaptureResult &)>" }
+			],
+			"csharp": { "member": "CaptureCamera", "kind": "method" }
+		}
+	]
+}

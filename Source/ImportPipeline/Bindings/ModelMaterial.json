@@ -1,0 +1,179 @@
+{
+	"area": "ModelMaterial",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelMaterial",
+	"instance": "ModelMaterial",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetBaseColorFactor",
+			"cpp": "self->baseColorFactor",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "BaseColorFactor", "kind": "getter" }
+		},
+		{
+			"id": "SetBaseColorFactor",
+			"cpp": "self->baseColorFactor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "BaseColorFactor", "kind": "setter" }
+		},
+		{
+			"id": "GetBaseColorImage",
+			"cpp": "self->baseColorImage",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "BaseColorImage", "kind": "getter" }
+		},
+		{
+			"id": "SetBaseColorImage",
+			"cpp": "self->baseColorImage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "BaseColorImage", "kind": "setter" }
+		},
+		{
+			"id": "GetMetallicFactor",
+			"cpp": "self->metallicFactor",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MetallicFactor", "kind": "getter" }
+		},
+		{
+			"id": "SetMetallicFactor",
+			"cpp": "self->metallicFactor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MetallicFactor", "kind": "setter" }
+		},
+		{
+			"id": "GetRoughnessFactor",
+			"cpp": "self->roughnessFactor",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RoughnessFactor", "kind": "getter" }
+		},
+		{
+			"id": "SetRoughnessFactor",
+			"cpp": "self->roughnessFactor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RoughnessFactor", "kind": "setter" }
+		},
+		{
+			"id": "GetMetallicRoughnessImage",
+			"cpp": "self->metallicRoughnessImage",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "MetallicRoughnessImage", "kind": "getter" }
+		},
+		{
+			"id": "SetMetallicRoughnessImage",
+			"cpp": "self->metallicRoughnessImage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "MetallicRoughnessImage", "kind": "setter" }
+		},
+		{
+			"id": "GetNormalImage",
+			"cpp": "self->normalImage",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "NormalImage", "kind": "getter" }
+		},
+		{
+			"id": "SetNormalImage",
+			"cpp": "self->normalImage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "NormalImage", "kind": "setter" }
+		},
+		{
+			"id": "GetOcclusionImage",
+			"cpp": "self->occlusionImage",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "OcclusionImage", "kind": "getter" }
+		},
+		{
+			"id": "SetOcclusionImage",
+			"cpp": "self->occlusionImage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "OcclusionImage", "kind": "setter" }
+		},
+		{
+			"id": "GetEmissiveImage",
+			"cpp": "self->emissiveImage",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "EmissiveImage", "kind": "getter" }
+		},
+		{
+			"id": "SetEmissiveImage",
+			"cpp": "self->emissiveImage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "EmissiveImage", "kind": "setter" }
+		},
+		{
+			"id": "GetEmissiveFactor",
+			"cpp": "self->emissiveFactor",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "EmissiveFactor", "kind": "getter" }
+		},
+		{
+			"id": "SetEmissiveFactor",
+			"cpp": "self->emissiveFactor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "EmissiveFactor", "kind": "setter" }
+		},
+		{
+			"id": "GetNormalScale",
+			"cpp": "self->normalScale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "NormalScale", "kind": "getter" }
+		},
+		{
+			"id": "SetNormalScale",
+			"cpp": "self->normalScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "NormalScale", "kind": "setter" }
+		},
+		{
+			"id": "GetOcclusionStrength",
+			"cpp": "self->occlusionStrength",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "OcclusionStrength", "kind": "getter" }
+		},
+		{
+			"id": "SetOcclusionStrength",
+			"cpp": "self->occlusionStrength = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "OcclusionStrength", "kind": "setter" }
+		}
+	]
+}

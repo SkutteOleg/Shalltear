@@ -1,0 +1,43 @@
+{
+	"area": "UIBrush",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.UIBrush",
+	"instance": "UIBrush",
+	"functions": [
+		{
+			"id": "SolidColor",
+			"cpp": "::Shalltear::UI::Brush::SolidColor(color)",
+			"returns": "UIBrush",
+			"params": [{ "name": "color", "type": "Color" }],
+			"csharp": { "member": "SolidColor", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "ImageBrush",
+			"cpp": "::Shalltear::UI::Brush::ImageBrush(texture, sampler)",
+			"returns": "UIBrush",
+			"params": [
+				{ "name": "texture", "type": "RHITextureHandle" },
+				{ "name": "sampler", "type": "UISamplerKind" }
+			],
+			"csharp": { "member": "ImageBrush", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Gradient",
+			"cpp": "::Shalltear::UI::Brush::Gradient(from, to, direction)",
+			"returns": "UIBrush",
+			"params": [
+				{ "name": "from", "type": "Color" },
+				{ "name": "to", "type": "Color" },
+				{ "name": "direction", "type": "Vec2" }
+			],
+			"csharp": { "member": "Gradient", "kind": "method" },
+			"static": true
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"area": "AudioGenerator",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioGenerator.h"
+	],
+	"class": "Shalltear.AudioGenerator",
+	"instance": "AudioGenerator",
+	"functions": [
+		{
+			"id": "CreateInstance",
+			"cpp": "self->CreateInstance(suggested, chosen)",
+			"returns": "IAudioGeneratorInstance",
+			"params": [
+				{ "name": "suggested", "type": "AudioGeneratorFormat" },
+				{ "name": "chosen", "type": "AudioGeneratorFormat", "out": true }
+			],
+			"csharp": { "member": "CreateInstance", "kind": "method" }
+		},
+		{
+			"id": "Update",
+			"cpp": "self->Update(*control)",
+			"returns": "void",
+			"params": [{ "name": "control", "type": "AudioGeneratorControl" }],
+			"csharp": { "member": "Update", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,113 @@
+{
+	"area": "UIStyleVars",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Style.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.UIStyleVars",
+	"instance": "UIStyleVars",
+	"constants": [
+		{ "name": "MAX_EXPANSION", "cpp": "::Shalltear::UI::StyleVars::MAX_EXPANSION", "type": "u64", "value": 512 },
+		{ "name": "MAX_DEPTH", "cpp": "::Shalltear::UI::StyleVars::MAX_DEPTH", "type": "u32", "value": 4 }
+	],
+	"functions": [
+		{
+			"id": "Set",
+			"cpp": "self->Set(name, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "valueValue", "type": "string" }
+			],
+			"csharp": { "member": "Set", "kind": "method" }
+		},
+		{
+			"id": "Set2",
+			"cpp": "self->Set(std::span<const ::Shalltear::UI::StyleVarDesc>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::StyleVarDesc>>(descs)))",
+			"returns": "void",
+			"params": [{ "name": "descs", "type": "list<UIStyleVarDesc>" }],
+			"csharp": { "member": "Set", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "Has",
+			"cpp": "self->Has(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "Has", "kind": "method" }
+		},
+		{
+			"id": "Get",
+			"cpp": "self->Get(name)",
+			"returns": "string",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "Get", "kind": "method" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->GetCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "Expand",
+			"cpp": "self->Expand(valueValue, reinterpret_cast<char*>(static_cast<uintptr_t>(buffer)), capacity)",
+			"returns": "string",
+			"params": [
+				{ "name": "valueValue", "type": "string" },
+				{ "name": "buffer", "type": "u64" },
+				{ "name": "capacity", "type": "u64" }
+			],
+			"csharp": { "member": "Expand", "kind": "method" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->GetColor(name, fallback)",
+			"returns": "Color",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "fallback", "type": "Color" }
+			],
+			"csharp": { "member": "GetColor", "kind": "method" }
+		},
+		{
+			"id": "GetFloat",
+			"cpp": "self->GetFloat(name, fallback)",
+			"returns": "f32",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "fallback", "type": "f32" }
+			],
+			"csharp": { "member": "GetFloat", "kind": "method" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->SetFont(name, ::Shalltear::Handle<::Shalltear::FontAsset>(font))",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "font", "type": "FontAsset", "optional": true }
+			],
+			"csharp": { "member": "SetFont", "kind": "method" }
+		},
+		{
+			"id": "FindFont",
+			"cpp": "self->FindFont(name, Slots::HandleOut<::Shalltear::FontAsset>(outValue))",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "FontAsset", "out": true }
+			],
+			"csharp": { "member": "FindFont", "kind": "method" }
+		}
+	]
+}

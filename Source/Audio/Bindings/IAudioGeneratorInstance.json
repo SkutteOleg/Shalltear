@@ -1,0 +1,58 @@
+{
+	"area": "IAudioGeneratorInstance",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioGenerator.h",
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.IAudioGeneratorInstance",
+	"instance": "IAudioGeneratorInstance",
+	"types": [
+		{ "name": "AudioGenerator", "cpp": "::Shalltear::AudioGenerator", "engine": "AudioGenerator", "base": "Asset", "abstract": true }
+	],
+	"structs": [
+		{
+			"name": "AudioGeneratorFormat",
+			"cpp": "::Shalltear::AudioGeneratorFormat",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "sampleRate", "type": "u32", "offset": 0 },
+				{ "name": "channels", "type": "u32", "offset": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "IAudioGeneratorInstance", "cpp": "::Shalltear::IAudioGeneratorInstance" },
+		{ "name": "AudioGeneratorControl", "cpp": "::Shalltear::AudioGeneratorControl", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Process",
+			"cpp": "[&] { ::Shalltear::AudioBlock target = outValue; return self->Process(target, fromFrame); }()",
+			"returns": "u32",
+			"params": [
+				{ "name": "outValue", "type": "AudioBlock" },
+				{ "name": "fromFrame", "type": "u64" }
+			],
+			"csharp": { "member": "Process", "kind": "method" }
+		},
+		{
+			"id": "SetParameter",
+			"cpp": "self->SetParameter(index, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "index", "type": "u32" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "SetParameter", "kind": "method" }
+		},
+		{
+			"id": "Release",
+			"cpp": "self->Release()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Release", "kind": "method" }
+		}
+	]
+}

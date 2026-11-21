@@ -1,0 +1,54 @@
+{
+	"area": "UIBuilderOpsRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIBuilderOps.h",
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderOpsRow",
+	"instance": "UIBuilderOpsRow",
+	"functions": [
+		{
+			"id": "GetIndex",
+			"cpp": "self->index",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Index", "kind": "getter" }
+		},
+		{
+			"id": "SetIndex",
+			"cpp": "self->index = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Index", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetNode",
+			"cpp": "self->node",
+			"returns": "UIDocumentNode",
+			"params": [],
+			"csharp": { "member": "Node", "kind": "getter" }
+		},
+		{
+			"id": "SetNode",
+			"cpp": "self->node = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDocumentNode", "optional": true }],
+			"csharp": { "member": "Node", "kind": "setter" }
+		}
+	]
+}

@@ -60,4 +60,20 @@ TEST_F(CSharpAudioFixture, ConformanceSuitePasses) {
 	EXPECT_EQ(managed.unloadUserAssemblies(), SLT_OK);
 }
 
+TEST_F(CSharpAudioFixture, ScriptRegistrationsEndAtUnload) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	std::optional<CSharpConformance::AudioRig> rig(std::in_place, _hooks->setDriver, _hooks->setAssetFinder);
+	ASSERT_TRUE(rig->IsStaged());
+	SceneSystem::CreateScene("World");
+	for (u32 round = 0; round < 2; ++round) {
+		ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+		str message;
+		EXPECT_EQ(Run("AudioTests.RegistrationsHoldUntilUnload", message), SLT_OK) << round << ": " << message;
+		EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK) << round;
+	}
+	SceneSystem::Terminate();
+	rig.reset();
+}
+
 #endif

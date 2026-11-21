@@ -1,0 +1,545 @@
+{
+	"area": "EngineEnvironment",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/Environment.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.EngineEnvironment",
+	"instance": "EngineEnvironment",
+	"types": [
+		{ "name": "EngineEnvironment", "cpp": "::Shalltear::Environment", "engine": "Environment", "base": "Component" }
+	],
+	"enums": [
+		{
+			"name": "SkyMode",
+			"cpp": "::Shalltear::SkyMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Cubemap", "value": 0 },
+				{ "name": "Gradient", "value": 1 },
+				{ "name": "Color", "value": 2 },
+				{ "name": "None", "value": 3 },
+				{ "name": "Material", "value": 4 }
+			]
+		},
+		{
+			"name": "SkyUpdateMode",
+			"cpp": "::Shalltear::SkyUpdateMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "OnChanged", "value": 0 },
+				{ "name": "OnDemand", "value": 1 },
+				{ "name": "Realtime", "value": 2 }
+			]
+		},
+		{
+			"name": "AmbientMode",
+			"cpp": "::Shalltear::AmbientMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Sky", "value": 0 },
+				{ "name": "Gradient", "value": 1 },
+				{ "name": "Color", "value": 2 }
+			]
+		},
+		{
+			"name": "FogMode",
+			"cpp": "::Shalltear::FogMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Linear", "value": 0 },
+				{ "name": "Exponential", "value": 1 },
+				{ "name": "ExponentialSquared", "value": 2 }
+			]
+		},
+		{
+			"name": "ExposureMode",
+			"cpp": "::Shalltear::ExposureMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Fixed", "value": 0 },
+				{ "name": "PhysicalCamera", "value": 1 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetIsGlobal",
+			"cpp": "self->GetIsGlobal()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsGlobal", "kind": "getter" }
+		},
+		{
+			"id": "SetIsGlobal",
+			"cpp": "self->SetIsGlobal(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IsGlobal", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->GetSize()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->SetSize(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetBlendDistance",
+			"cpp": "self->GetBlendDistance()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BlendDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetBlendDistance",
+			"cpp": "self->SetBlendDistance(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BlendDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->GetWeight()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->SetWeight(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->GetPriority()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Priority", "kind": "getter" }
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->SetPriority(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetSkyMode",
+			"cpp": "self->GetSkyMode()",
+			"returns": "SkyMode",
+			"params": [],
+			"csharp": { "member": "SkyMode", "kind": "getter" }
+		},
+		{
+			"id": "SetSkyMode",
+			"cpp": "self->SetSkyMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SkyMode" }],
+			"csharp": { "member": "SkyMode", "kind": "setter" }
+		},
+		{
+			"id": "GetSkyCubemap",
+			"cpp": "self->GetSkyCubemap()",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "SkyCubemap", "kind": "getter" }
+		},
+		{
+			"id": "SetSkyCubemap",
+			"cpp": "self->SetSkyCubemap(::Shalltear::Handle<::Shalltear::TextureAsset>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Texture", "optional": true }],
+			"csharp": { "member": "SkyCubemap", "kind": "setter" }
+		},
+		{
+			"id": "GetSkyMaterial",
+			"cpp": "self->GetSkyMaterial()",
+			"returns": "Material",
+			"params": [],
+			"csharp": { "member": "SkyMaterial", "kind": "getter" }
+		},
+		{
+			"id": "SetSkyMaterial",
+			"cpp": "self->SetSkyMaterial(::Shalltear::Handle<::Shalltear::MaterialAsset>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Material", "optional": true }],
+			"csharp": { "member": "SkyMaterial", "kind": "setter" }
+		},
+		{
+			"id": "GetSkyUpdateMode",
+			"cpp": "self->GetSkyUpdateMode()",
+			"returns": "SkyUpdateMode",
+			"params": [],
+			"csharp": { "member": "SkyUpdateMode", "kind": "getter" }
+		},
+		{
+			"id": "SetSkyUpdateMode",
+			"cpp": "self->SetSkyUpdateMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SkyUpdateMode" }],
+			"csharp": { "member": "SkyUpdateMode", "kind": "setter" }
+		},
+		{
+			"id": "RequestSkyUpdate",
+			"cpp": "self->RequestSkyUpdate()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RequestSkyUpdate", "kind": "method" }
+		},
+		{
+			"id": "GetSkyUpdateRequests",
+			"cpp": "self->GetSkyUpdateRequests()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SkyUpdateRequests", "kind": "getter" }
+		},
+		{
+			"id": "GetSkyIntensity",
+			"cpp": "self->GetSkyIntensity()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SkyIntensity", "kind": "getter" }
+		},
+		{
+			"id": "SetSkyIntensity",
+			"cpp": "self->SetSkyIntensity(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SkyIntensity", "kind": "setter" }
+		},
+		{
+			"id": "GetSkyColor",
+			"cpp": "self->GetSkyColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "SkyColor", "kind": "getter" }
+		},
+		{
+			"id": "SetSkyColor",
+			"cpp": "self->SetSkyColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "SkyColor", "kind": "setter" }
+		},
+		{
+			"id": "GetEquatorColor",
+			"cpp": "self->GetEquatorColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "EquatorColor", "kind": "getter" }
+		},
+		{
+			"id": "SetEquatorColor",
+			"cpp": "self->SetEquatorColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "EquatorColor", "kind": "setter" }
+		},
+		{
+			"id": "GetGroundColor",
+			"cpp": "self->GetGroundColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "GroundColor", "kind": "getter" }
+		},
+		{
+			"id": "SetGroundColor",
+			"cpp": "self->SetGroundColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "GroundColor", "kind": "setter" }
+		},
+		{
+			"id": "GetSunDiscSizeDeg",
+			"cpp": "self->GetSunDiscSizeDeg()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SunDiscSizeDeg", "kind": "getter" }
+		},
+		{
+			"id": "SetSunDiscSizeDeg",
+			"cpp": "self->SetSunDiscSizeDeg(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SunDiscSizeDeg", "kind": "setter" }
+		},
+		{
+			"id": "GetSunTint",
+			"cpp": "self->GetSunTint()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "SunTint", "kind": "getter" }
+		},
+		{
+			"id": "SetSunTint",
+			"cpp": "self->SetSunTint(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "SunTint", "kind": "setter" }
+		},
+		{
+			"id": "GetSunIntensityMultiplier",
+			"cpp": "self->GetSunIntensityMultiplier()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SunIntensityMultiplier", "kind": "getter" }
+		},
+		{
+			"id": "SetSunIntensityMultiplier",
+			"cpp": "self->SetSunIntensityMultiplier(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SunIntensityMultiplier", "kind": "setter" }
+		},
+		{
+			"id": "GetAmbientMode",
+			"cpp": "self->GetAmbientMode()",
+			"returns": "AmbientMode",
+			"params": [],
+			"csharp": { "member": "AmbientMode", "kind": "getter" }
+		},
+		{
+			"id": "SetAmbientMode",
+			"cpp": "self->SetAmbientMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AmbientMode" }],
+			"csharp": { "member": "AmbientMode", "kind": "setter" }
+		},
+		{
+			"id": "GetAmbientColor",
+			"cpp": "self->GetAmbientColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "AmbientColor", "kind": "getter" }
+		},
+		{
+			"id": "SetAmbientColor",
+			"cpp": "self->SetAmbientColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "AmbientColor", "kind": "setter" }
+		},
+		{
+			"id": "GetAmbientSkyColor",
+			"cpp": "self->GetAmbientSkyColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "AmbientSkyColor", "kind": "getter" }
+		},
+		{
+			"id": "SetAmbientSkyColor",
+			"cpp": "self->SetAmbientSkyColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "AmbientSkyColor", "kind": "setter" }
+		},
+		{
+			"id": "GetAmbientEquatorColor",
+			"cpp": "self->GetAmbientEquatorColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "AmbientEquatorColor", "kind": "getter" }
+		},
+		{
+			"id": "SetAmbientEquatorColor",
+			"cpp": "self->SetAmbientEquatorColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "AmbientEquatorColor", "kind": "setter" }
+		},
+		{
+			"id": "GetAmbientGroundColor",
+			"cpp": "self->GetAmbientGroundColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "AmbientGroundColor", "kind": "getter" }
+		},
+		{
+			"id": "SetAmbientGroundColor",
+			"cpp": "self->SetAmbientGroundColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "AmbientGroundColor", "kind": "setter" }
+		},
+		{
+			"id": "GetAmbientIntensity",
+			"cpp": "self->GetAmbientIntensity()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "AmbientIntensity", "kind": "getter" }
+		},
+		{
+			"id": "SetAmbientIntensity",
+			"cpp": "self->SetAmbientIntensity(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "AmbientIntensity", "kind": "setter" }
+		},
+		{
+			"id": "GetReflectionIntensity",
+			"cpp": "self->GetReflectionIntensity()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ReflectionIntensity", "kind": "getter" }
+		},
+		{
+			"id": "SetReflectionIntensity",
+			"cpp": "self->SetReflectionIntensity(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ReflectionIntensity", "kind": "setter" }
+		},
+		{
+			"id": "GetReflectionResolution",
+			"cpp": "self->GetReflectionResolution()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ReflectionResolution", "kind": "getter" }
+		},
+		{
+			"id": "SetReflectionResolution",
+			"cpp": "self->SetReflectionResolution(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "ReflectionResolution", "kind": "setter" }
+		},
+		{
+			"id": "GetFog",
+			"cpp": "self->GetFog()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Fog", "kind": "getter" }
+		},
+		{
+			"id": "SetFog",
+			"cpp": "self->SetFog(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Fog", "kind": "setter" }
+		},
+		{
+			"id": "GetFogColor",
+			"cpp": "self->GetFogColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "FogColor", "kind": "getter" }
+		},
+		{
+			"id": "SetFogColor",
+			"cpp": "self->SetFogColor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "FogColor", "kind": "setter" }
+		},
+		{
+			"id": "GetFogMode",
+			"cpp": "self->GetFogMode()",
+			"returns": "FogMode",
+			"params": [],
+			"csharp": { "member": "FogMode", "kind": "getter" }
+		},
+		{
+			"id": "SetFogMode",
+			"cpp": "self->SetFogMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FogMode" }],
+			"csharp": { "member": "FogMode", "kind": "setter" }
+		},
+		{
+			"id": "GetFogDensity",
+			"cpp": "self->GetFogDensity()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FogDensity", "kind": "getter" }
+		},
+		{
+			"id": "SetFogDensity",
+			"cpp": "self->SetFogDensity(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FogDensity", "kind": "setter" }
+		},
+		{
+			"id": "GetFogStart",
+			"cpp": "self->GetFogStart()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FogStart", "kind": "getter" }
+		},
+		{
+			"id": "SetFogStart",
+			"cpp": "self->SetFogStart(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FogStart", "kind": "setter" }
+		},
+		{
+			"id": "GetFogEnd",
+			"cpp": "self->GetFogEnd()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FogEnd", "kind": "getter" }
+		},
+		{
+			"id": "SetFogEnd",
+			"cpp": "self->SetFogEnd(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FogEnd", "kind": "setter" }
+		},
+		{
+			"id": "GetExposureMode",
+			"cpp": "self->GetExposureMode()",
+			"returns": "ExposureMode",
+			"params": [],
+			"csharp": { "member": "ExposureMode", "kind": "getter" }
+		},
+		{
+			"id": "SetExposureMode",
+			"cpp": "self->SetExposureMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ExposureMode" }],
+			"csharp": { "member": "ExposureMode", "kind": "setter" }
+		},
+		{
+			"id": "GetFixedExposure",
+			"cpp": "self->GetFixedExposure()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FixedExposure", "kind": "getter" }
+		},
+		{
+			"id": "SetFixedExposure",
+			"cpp": "self->SetFixedExposure(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FixedExposure", "kind": "setter" }
+		},
+		{
+			"id": "GetExposureCompensation",
+			"cpp": "self->GetExposureCompensation()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ExposureCompensation", "kind": "getter" }
+		},
+		{
+			"id": "SetExposureCompensation",
+			"cpp": "self->SetExposureCompensation(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ExposureCompensation", "kind": "setter" }
+		}
+	]
+}

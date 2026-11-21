@@ -1,0 +1,80 @@
+{
+	"area": "IBuildTarget",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildTarget.h",
+		"Shalltear/Editor/BuildPipeline.h",
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.IBuildTarget",
+	"instance": "IBuildTarget",
+	"natives": [
+		{ "name": "IBuildTarget", "cpp": "::Shalltear::IBuildTarget" },
+		{ "name": "BuildSettingDescList", "cpp": "::Shalltear::Vector<::Shalltear::BuildSettingDesc>" },
+		{ "name": "BuildIssueList", "cpp": "::Shalltear::Vector<::Shalltear::BuildIssue>" }
+	],
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->GetId()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->GetDisplayName()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "IsAvailable",
+			"cpp": "self->IsAvailable(outReason)",
+			"returns": "bool",
+			"params": [{ "name": "outReason", "type": "string", "out": true }],
+			"csharp": { "member": "IsAvailable", "kind": "method" }
+		},
+		{
+			"id": "RequiresMonotonicBuildNumber",
+			"cpp": "self->RequiresMonotonicBuildNumber()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "RequiresMonotonicBuildNumber", "kind": "method" }
+		},
+		{
+			"id": "DescribeSettings",
+			"cpp": "self->DescribeSettings(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<BuildSettingDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildSettingDesc>" }
+			],
+			"csharp": { "member": "DescribeSettings", "kind": "method" }
+		},
+		{
+			"id": "Validate",
+			"cpp": "self->Validate(str(projectPath), *profile, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "profile", "type": "ResolvedProfile" },
+				{ "name": "outValue", "type": "list<BuildIssue>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildIssue>" }
+			],
+			"csharp": { "member": "Validate", "kind": "method" }
+		},
+		{
+			"id": "ConfigurePipeline",
+			"cpp": "self->ConfigurePipeline(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "BuildContext" }],
+			"csharp": { "member": "ConfigurePipeline", "kind": "method" }
+		},
+		{
+			"id": "GetLaunchCommand",
+			"cpp": "self->GetLaunchCommand(*context)",
+			"returns": "string",
+			"params": [{ "name": "context", "type": "BuildContext" }],
+			"csharp": { "member": "GetLaunchCommand", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,100 @@
+{
+	"area": "PrefabInstanceDiffProperty",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.PrefabInstanceDiffProperty",
+	"instance": "PrefabInstanceDiffProperty",
+	"functions": [
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "EngineObject",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = ::Shalltear::Handle<::Shalltear::Object>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetRow",
+			"cpp": "&self->row",
+			"returns": "PrefabTargetPath",
+			"params": [],
+			"csharp": { "member": "Row", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetRow",
+			"cpp": "self->row = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabTargetPath" }],
+			"csharp": { "member": "Row", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldPath",
+			"cpp": "self->fieldPath",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "FieldPath", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldPath",
+			"cpp": "self->fieldPath = Slots::ToVector<::Shalltear::StringHash>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "FieldPath", "kind": "setter" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "&self->base",
+			"returns": "Variant",
+			"params": [],
+			"csharp": { "member": "Base", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetBase",
+			"cpp": "self->base = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Variant" }],
+			"csharp": { "member": "Base", "kind": "setter" }
+		},
+		{
+			"id": "GetBaseHandleId",
+			"cpp": "self->baseHandleId",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "BaseHandleId", "kind": "getter" }
+		},
+		{
+			"id": "SetBaseHandleId",
+			"cpp": "self->baseHandleId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "BaseHandleId", "kind": "setter" }
+		},
+		{
+			"id": "GetIsHandle",
+			"cpp": "self->isHandle",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsHandle", "kind": "getter" }
+		},
+		{
+			"id": "SetIsHandle",
+			"cpp": "self->isHandle = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IsHandle", "kind": "setter" }
+		}
+	]
+}

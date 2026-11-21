@@ -1,0 +1,39 @@
+{
+	"area": "PrefabTargetPath",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h"
+	],
+	"class": "Shalltear.PrefabTargetPath",
+	"instance": "PrefabTargetPath",
+	"functions": [
+		{
+			"id": "GetHops",
+			"cpp": "self->hops",
+			"returns": "list<PrefabFileRef>",
+			"params": [],
+			"csharp": { "member": "Hops", "kind": "getter" }
+		},
+		{
+			"id": "SetHops",
+			"cpp": "self->hops = Slots::ToVector<::Shalltear::PrefabFileRef>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<PrefabFileRef>" }],
+			"csharp": { "member": "Hops", "kind": "setter" }
+		},
+		{
+			"id": "GetLeaf",
+			"cpp": "self->leaf",
+			"returns": "PrefabFileRef",
+			"params": [],
+			"csharp": { "member": "Leaf", "kind": "getter" }
+		},
+		{
+			"id": "SetLeaf",
+			"cpp": "self->leaf = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabFileRef" }],
+			"csharp": { "member": "Leaf", "kind": "setter" }
+		}
+	]
+}

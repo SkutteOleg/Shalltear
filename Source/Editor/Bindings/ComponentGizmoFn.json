@@ -1,0 +1,45 @@
+{
+	"area": "ComponentGizmoFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Scene/Component.h"
+	],
+	"class": "Shalltear.Editor.ComponentGizmoFn",
+	"instance": "ComponentGizmoFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)(*argument0, ::Shalltear::Handle<::Shalltear::Component>(argument1))",
+			"returns": "void",
+			"params": [
+				{ "name": "argument0", "type": "GizmoDrawContext" },
+				{ "name": "argument1", "type": "Component", "optional": true }
+			],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void (Shalltear::GizmoDrawContext &, Shalltear::Handle<Shalltear::Component>)>(std::move(handler))",
+			"returns": "ComponentGizmoFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GizmoDrawContext;Component>",
+					"cpp": "std::function<void (Shalltear::GizmoDrawContext &, Shalltear::Handle<Shalltear::Component>)>"
+				}
+			],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

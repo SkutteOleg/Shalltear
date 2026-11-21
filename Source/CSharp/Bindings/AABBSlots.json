@@ -1,0 +1,135 @@
+{
+	"area": "AABBSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.AABB",
+	"instance": "AABB",
+	"functions": [
+		{
+			"id": "Empty",
+			"cpp": "::Shalltear::AABB::Empty()",
+			"returns": "AABB",
+			"params": [],
+			"csharp": { "member": "Empty", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "FromCenterExtents",
+			"cpp": "::Shalltear::AABB::FromCenterExtents(center, extents)",
+			"returns": "AABB",
+			"params": [
+				{ "name": "center", "type": "Vec3" },
+				{ "name": "extents", "type": "Vec3" }
+			],
+			"csharp": { "member": "FromCenterExtents", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Center",
+			"cpp": "self->Center()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Center", "kind": "method" }
+		},
+		{
+			"id": "Size",
+			"cpp": "self->Size()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "method" }
+		},
+		{
+			"id": "Extents",
+			"cpp": "self->Extents()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Extents", "kind": "method" }
+		},
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		},
+		{
+			"id": "Encapsulate",
+			"cpp": "self->Encapsulate(point)",
+			"returns": "void",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "Encapsulate", "kind": "method" },
+			"mutates": true
+		},
+		{
+			"id": "Encapsulate2",
+			"cpp": "self->Encapsulate(other)",
+			"returns": "void",
+			"params": [{ "name": "other", "type": "AABB" }],
+			"csharp": { "member": "Encapsulate", "kind": "method" },
+			"mutates": true
+		},
+		{
+			"id": "Expand",
+			"cpp": "self->Expand(amount)",
+			"returns": "void",
+			"params": [{ "name": "amount", "type": "f32" }],
+			"csharp": { "member": "Expand", "kind": "method" },
+			"mutates": true
+		},
+		{
+			"id": "Contains",
+			"cpp": "self->Contains(point)",
+			"returns": "bool",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "Contains", "kind": "method" }
+		},
+		{
+			"id": "Contains2",
+			"cpp": "self->Contains(other)",
+			"returns": "bool",
+			"params": [{ "name": "other", "type": "AABB" }],
+			"csharp": { "member": "Contains", "kind": "method" }
+		},
+		{
+			"id": "Intersects",
+			"cpp": "self->Intersects(other)",
+			"returns": "bool",
+			"params": [{ "name": "other", "type": "AABB" }],
+			"csharp": { "member": "Intersects", "kind": "method" }
+		},
+		{
+			"id": "Intersects2",
+			"cpp": "self->Intersects(sphere)",
+			"returns": "bool",
+			"params": [{ "name": "sphere", "type": "Sphere" }],
+			"csharp": { "member": "Intersects", "kind": "method" }
+		},
+		{
+			"id": "ClosestPoint",
+			"cpp": "self->ClosestPoint(point)",
+			"returns": "Vec3",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "ClosestPoint", "kind": "method" }
+		},
+		{
+			"id": "Raycast",
+			"cpp": "self->Raycast(ray, enter)",
+			"returns": "bool",
+			"params": [
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "enter", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "Raycast", "kind": "method" }
+		},
+		{
+			"id": "Transformed",
+			"cpp": "self->Transformed(*m)",
+			"returns": "AABB",
+			"params": [{ "name": "m", "type": "Mat4" }],
+			"csharp": { "member": "Transformed", "kind": "method" }
+		}
+	]
+}

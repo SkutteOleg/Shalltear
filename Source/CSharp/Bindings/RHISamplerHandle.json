@@ -1,0 +1,18 @@
+{
+	"area": "RHISamplerHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHISamplerHandle",
+	"instance": "RHISamplerHandle",
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

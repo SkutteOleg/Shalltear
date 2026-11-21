@@ -1,0 +1,32 @@
+{
+	"area": "PakStringPool",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.PakStringPool",
+	"instance": "PakStringPool",
+	"functions": [
+		{
+			"id": "Intern",
+			"cpp": "self->Intern(text)",
+			"returns": "u32",
+			"params": [{ "name": "text", "type": "string" }],
+			"csharp": { "member": "Intern", "kind": "method" }
+		},
+		{
+			"id": "Count",
+			"cpp": "self->Count()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "method" }
+		},
+		{
+			"id": "Texts",
+			"cpp": "self->Texts()",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Texts", "kind": "method" }
+		}
+	]
+}

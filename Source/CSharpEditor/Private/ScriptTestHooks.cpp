@@ -13,6 +13,7 @@
 #include "ManagedTypes.h"
 #include "ScriptLog.h"
 #include "ScriptRuntime.h"
+#include "SlotSupport.h"
 
 #include "Shalltear/Core/Export.h"
 
@@ -42,6 +43,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpEditor::ReleaseProfilerModule,
 		&CSharpEditor::PumpProfilerModule,
 		&CSharpImpl::ScriptProfile::Read,
+		&CSharpImpl::Slots::CountKeptFields,
 		CSharpEditor::DotNetPinData::RUNTIME_VERSION,
 	};
 	return &HOOKS;

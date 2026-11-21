@@ -1,0 +1,86 @@
+{
+	"area": "OverrideValue",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.OverrideValue",
+	"instance": "OverrideValue",
+	"functions": [
+		{
+			"id": "GetDirect",
+			"cpp": "&self->direct",
+			"returns": "Variant",
+			"params": [],
+			"csharp": { "member": "Direct", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetDirect",
+			"cpp": "self->direct = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Variant" }],
+			"csharp": { "member": "Direct", "kind": "setter" }
+		},
+		{
+			"id": "GetHandleGuid",
+			"cpp": "self->handleGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "HandleGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetHandleGuid",
+			"cpp": "self->handleGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "HandleGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetHandlePointee",
+			"cpp": "self->handlePointee",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "HandlePointee", "kind": "getter" }
+		},
+		{
+			"id": "SetHandlePointee",
+			"cpp": "self->handlePointee = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "HandlePointee", "kind": "setter" }
+		},
+		{
+			"id": "GetIsHandle",
+			"cpp": "self->isHandle",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsHandle", "kind": "getter" }
+		},
+		{
+			"id": "SetIsHandle",
+			"cpp": "self->isHandle = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IsHandle", "kind": "setter" }
+		},
+		{
+			"id": "GetLiveTarget",
+			"cpp": "self->liveTarget",
+			"returns": "EngineObject",
+			"params": [],
+			"csharp": { "member": "LiveTarget", "kind": "getter" }
+		},
+		{
+			"id": "SetLiveTarget",
+			"cpp": "self->liveTarget = ::Shalltear::Handle<::Shalltear::Object>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "LiveTarget", "kind": "setter" }
+		}
+	]
+}

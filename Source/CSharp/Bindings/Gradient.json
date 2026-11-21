@@ -1,0 +1,121 @@
+{
+	"area": "Gradient",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Gradient.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.Gradient",
+	"instance": "Gradient",
+	"enums": [
+		{
+			"name": "GradientMode",
+			"cpp": "::Shalltear::GradientMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Blend", "value": 0 },
+				{ "name": "Fixed", "value": 1 },
+				{ "name": "PerceptualBlend", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "GradientColorKey",
+			"cpp": "::Shalltear::GradientColorKey",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "color", "type": "Color", "offset": 0 },
+				{ "name": "time", "type": "f32", "offset": 16 }
+			]
+		},
+		{
+			"name": "GradientAlphaKey",
+			"cpp": "::Shalltear::GradientAlphaKey",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "alpha", "type": "f32", "offset": 0 },
+				{ "name": "time", "type": "f32", "offset": 4 }
+			]
+		}
+	],
+	"natives": [{ "name": "Gradient", "cpp": "::Shalltear::Gradient", "owned": true, "create": true }],
+	"constants": [{ "name": "MAX_KEYS", "cpp": "::Shalltear::Gradient::MAX_KEYS", "type": "u32", "value": 8 }],
+	"functions": [
+		{
+			"id": "Evaluate",
+			"cpp": "self->Evaluate(time)",
+			"returns": "Color",
+			"params": [{ "name": "time", "type": "f32" }],
+			"csharp": { "member": "Evaluate", "kind": "method" }
+		},
+		{
+			"id": "GetColorKeys",
+			"cpp": "self->colorKeys",
+			"returns": "list<GradientColorKey>",
+			"params": [],
+			"csharp": { "member": "ColorKeys", "kind": "getter" }
+		},
+		{
+			"id": "SetColorKeys",
+			"cpp": "self->colorKeys = Slots::ToVector<::Shalltear::GradientColorKey>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GradientColorKey>" }],
+			"csharp": { "member": "ColorKeys", "kind": "setter" }
+		},
+		{
+			"id": "GetAlphaKeys",
+			"cpp": "self->alphaKeys",
+			"returns": "list<GradientAlphaKey>",
+			"params": [],
+			"csharp": { "member": "AlphaKeys", "kind": "getter" }
+		},
+		{
+			"id": "SetAlphaKeys",
+			"cpp": "self->alphaKeys = Slots::ToVector<::Shalltear::GradientAlphaKey>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GradientAlphaKey>" }],
+			"csharp": { "member": "AlphaKeys", "kind": "setter" }
+		},
+		{
+			"id": "GetMode",
+			"cpp": "self->mode",
+			"returns": "GradientMode",
+			"params": [],
+			"csharp": { "member": "Mode", "kind": "getter" }
+		},
+		{
+			"id": "SetMode",
+			"cpp": "self->mode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GradientMode" }],
+			"csharp": { "member": "Mode", "kind": "setter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::Gradient(resource)",
+			"returns": "Gradient",
+			"params": [{ "name": "resource", "type": "MemoryResource", "optional": true }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		},
+		{
+			"id": "Create2",
+			"cpp": "Slots::WithInitializerList<::Shalltear::GradientAlphaKey>(alphas, [&](std::initializer_list<::Shalltear::GradientAlphaKey> alphasList) { return Slots::WithInitializerList<::Shalltear::GradientColorKey>(colors, [&](std::initializer_list<::Shalltear::GradientColorKey> colorsList) { return new ::Shalltear::Gradient(colorsList, alphasList, resource); }); })",
+			"returns": "Gradient",
+			"params": [
+				{ "name": "colors", "type": "list<GradientColorKey>" },
+				{ "name": "alphas", "type": "list<GradientAlphaKey>" },
+				{ "name": "resource", "type": "MemoryResource", "optional": true }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.postprocessing.csharp",
+	"version": "1.0.0",
+	"displayName": "Post Processing for C#",
+	"description": "The C# API of Post Processing.",
+	"kind": "engine",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.postprocessing": "1.0.0",
+		"dev.shalltear.csharp": "1.0.0"
+	}
+}

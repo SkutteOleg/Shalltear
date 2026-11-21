@@ -1,0 +1,25 @@
+{
+	"area": "EditorModuleReloadBeganEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorEvents.h"
+	],
+	"class": "Shalltear.Editor.EditorModuleReloadBeganEvent",
+	"instance": "EditorModuleReloadBeganEvent",
+	"functions": [
+		{
+			"id": "GetModuleBase",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->moduleBase))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ModuleBase", "kind": "getter" }
+		},
+		{
+			"id": "SetModuleBase",
+			"cpp": "self->moduleBase = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ModuleBase", "kind": "setter" }
+		}
+	]
+}

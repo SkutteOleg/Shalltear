@@ -1,0 +1,370 @@
+{
+	"area": "Window",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/Window.h",
+		"Shalltear/Core/Window/Monitor.h",
+		"Shalltear/Core/NativeWindow.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.Window",
+	"instance": "Window",
+	"enums": [
+		{
+			"name": "CursorMode",
+			"cpp": "::Shalltear::CursorMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Normal", "value": 0 },
+				{ "name": "Hidden", "value": 1 },
+				{ "name": "Locked", "value": 2 },
+				{ "name": "Wrapped", "value": 3 }
+			]
+		},
+		{
+			"name": "SystemCursor",
+			"cpp": "::Shalltear::SystemCursor",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Arrow", "value": 0 },
+				{ "name": "IBeam", "value": 1 },
+				{ "name": "Crosshair", "value": 2 },
+				{ "name": "Hand", "value": 3 },
+				{ "name": "ResizeEW", "value": 4 },
+				{ "name": "ResizeNS", "value": 5 },
+				{ "name": "ResizeNWSE", "value": 6 },
+				{ "name": "ResizeNESW", "value": 7 },
+				{ "name": "ResizeAll", "value": 8 },
+				{ "name": "NotAllowed", "value": 9 },
+				{ "name": "Count", "value": 10 }
+			]
+		},
+		{
+			"name": "WindowFlags",
+			"cpp": "::Shalltear::WindowFlags",
+			"underlying": "u32",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Resizable", "value": 1 },
+				{ "name": "Borderless", "value": 2 },
+				{ "name": "Hidden", "value": 4 },
+				{ "name": "AlwaysOnTop", "value": 8 },
+				{ "name": "NoTaskbarIcon", "value": 16 },
+				{ "name": "AcceptFileDrops", "value": 32 },
+				{ "name": "ScaleToMonitor", "value": 64 },
+				{ "name": "NoMaximize", "value": 128 }
+			]
+		},
+		{
+			"name": "WindowState",
+			"cpp": "::Shalltear::WindowState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Normal", "value": 0 },
+				{ "name": "Minimized", "value": 1 },
+				{ "name": "Maximized", "value": 2 },
+				{ "name": "Fullscreen", "value": 3 }
+			]
+		},
+		{
+			"name": "HitTestResult",
+			"cpp": "::Shalltear::HitTestResult",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Client", "value": 0 },
+				{ "name": "Caption", "value": 1 },
+				{ "name": "Left", "value": 2 },
+				{ "name": "Right", "value": 3 },
+				{ "name": "Top", "value": 4 },
+				{ "name": "Bottom", "value": 5 },
+				{ "name": "TopLeft", "value": 6 },
+				{ "name": "TopRight", "value": 7 },
+				{ "name": "BottomLeft", "value": 8 },
+				{ "name": "BottomRight", "value": 9 },
+				{ "name": "MinimizeButton", "value": 10 },
+				{ "name": "MaximizeButton", "value": 11 },
+				{ "name": "CloseButton", "value": 12 },
+				{ "name": "Content", "value": 13 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "WindowPlacement",
+			"cpp": "::Shalltear::WindowPlacement",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "position", "type": "Vec2I", "offset": 0 },
+				{ "name": "clientSize", "type": "Vec2I", "offset": 8 },
+				{ "name": "state", "type": "WindowState", "offset": 16 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "Window", "cpp": "::Shalltear::Window" },
+		{ "name": "WindowIconImage", "cpp": "::Shalltear::WindowIconImage", "owned": true, "create": true },
+		{ "name": "WindowDesc", "cpp": "::Shalltear::WindowDesc", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "WindowFlags" },
+				{ "name": "flags", "type": "WindowFlags" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "WindowFlags" },
+				{ "name": "flags", "type": "WindowFlags" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetClientSize",
+			"cpp": "self->GetClientSize()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "ClientSize", "kind": "getter" }
+		},
+		{
+			"id": "SetClientSize",
+			"cpp": "self->SetClientSize(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "ClientSize", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->GetPosition()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->SetPosition(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetRect",
+			"cpp": "self->GetRect()",
+			"returns": "RectI",
+			"params": [],
+			"csharp": { "member": "Rect", "kind": "getter" }
+		},
+		{
+			"id": "GetContentScale",
+			"cpp": "self->GetContentScale()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ContentScale", "kind": "getter" }
+		},
+		{
+			"id": "ClientToScreen",
+			"cpp": "self->ClientToScreen(clientPx)",
+			"returns": "Vec2I",
+			"params": [{ "name": "clientPx", "type": "Vec2I" }],
+			"csharp": { "member": "ClientToScreen", "kind": "method" }
+		},
+		{
+			"id": "ScreenToClient",
+			"cpp": "self->ScreenToClient(screenPx)",
+			"returns": "Vec2I",
+			"params": [{ "name": "screenPx", "type": "Vec2I" }],
+			"csharp": { "member": "ScreenToClient", "kind": "method" }
+		},
+		{
+			"id": "GetMonitor",
+			"cpp": "self->GetMonitor()",
+			"returns": "MonitorInfo",
+			"params": [],
+			"csharp": { "member": "Monitor", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetPlacement",
+			"cpp": "self->GetPlacement()",
+			"returns": "WindowPlacement",
+			"params": [],
+			"csharp": { "member": "Placement", "kind": "getter" }
+		},
+		{
+			"id": "SetPlacement",
+			"cpp": "self->SetPlacement(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "WindowPlacement" }],
+			"csharp": { "member": "Placement", "kind": "setter" }
+		},
+		{
+			"id": "Show",
+			"cpp": "self->Show()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Show", "kind": "method" }
+		},
+		{
+			"id": "Hide",
+			"cpp": "self->Hide()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Hide", "kind": "method" }
+		},
+		{
+			"id": "Minimize",
+			"cpp": "self->Minimize()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Minimize", "kind": "method" }
+		},
+		{
+			"id": "Maximize",
+			"cpp": "self->Maximize()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Maximize", "kind": "method" }
+		},
+		{
+			"id": "Restore",
+			"cpp": "self->Restore()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Restore", "kind": "method" }
+		},
+		{
+			"id": "Focus",
+			"cpp": "self->Focus()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Focus", "kind": "method" }
+		},
+		{
+			"id": "IsVisible",
+			"cpp": "self->IsVisible()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsVisible", "kind": "getter" }
+		},
+		{
+			"id": "IsFocused",
+			"cpp": "self->IsFocused()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsFocused", "kind": "getter" }
+		},
+		{
+			"id": "IsMinimized",
+			"cpp": "self->IsMinimized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsMinimized", "kind": "getter" }
+		},
+		{
+			"id": "IsMaximized",
+			"cpp": "self->IsMaximized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsMaximized", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->SetTitle(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetTitle",
+			"cpp": "self->GetTitle()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetIcon",
+			"cpp": "self->SetIcon(std::span<const ::Shalltear::WindowIconImage>(Slots::Copies<::Shalltear::Vector<::Shalltear::WindowIconImage>>(images)))",
+			"returns": "void",
+			"params": [{ "name": "images", "type": "list<WindowIconImage>" }],
+			"csharp": { "member": "SetIcon", "kind": "method" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->GetFlags()",
+			"returns": "WindowFlags",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetCursor",
+			"cpp": "self->SetCursor(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SystemCursor" }],
+			"csharp": { "member": "Cursor", "kind": "setter" }
+		},
+		{
+			"id": "GetCursor",
+			"cpp": "self->GetCursor()",
+			"returns": "SystemCursor",
+			"params": [],
+			"csharp": { "member": "Cursor", "kind": "getter" }
+		},
+		{
+			"id": "SetCursorMode",
+			"cpp": "self->SetCursorMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CursorMode" }],
+			"csharp": { "member": "CursorMode", "kind": "setter" }
+		},
+		{
+			"id": "GetCursorMode",
+			"cpp": "self->GetCursorMode()",
+			"returns": "CursorMode",
+			"params": [],
+			"csharp": { "member": "CursorMode", "kind": "getter" }
+		},
+		{
+			"id": "SetHitTestCallback",
+			"cpp": "self->SetHitTestCallback(Slots::FromBits<Shalltear::HitTestResult (*)(Shalltear::Window &, Shalltear::Vec2Generic<int>, void *)>(fn), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "void",
+			"params": [
+				{ "name": "fn", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "SetHitTestCallback", "kind": "method" }
+		},
+		{
+			"id": "GetNativeHandle",
+			"cpp": "self->GetNativeHandle()",
+			"returns": "NativeWindowHandle",
+			"params": [],
+			"csharp": { "member": "NativeHandle", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetVSyncHint",
+			"cpp": "self->SetVSyncHint(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "VSyncHint", "kind": "setter" }
+		},
+		{
+			"id": "GetVSyncHint",
+			"cpp": "self->GetVSyncHint()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "VSyncHint", "kind": "getter" }
+		}
+	]
+}

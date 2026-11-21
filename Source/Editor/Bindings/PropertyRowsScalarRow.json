@@ -1,0 +1,170 @@
+{
+	"area": "PropertyRowsScalarRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyRows.h",
+		"Shalltear/Core/Reflection/TypeRegistry.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/Widgets.h"
+	],
+	"class": "Shalltear.Editor.PropertyRowsScalarRow",
+	"instance": "PropertyRowsScalarRow",
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "PropertyRowsScalarRowKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PropertyRowsScalarRowKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetField",
+			"cpp": "&self->field",
+			"returns": "FieldRef",
+			"params": [],
+			"csharp": { "member": "Field", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetField",
+			"cpp": "self->field = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FieldRef" }],
+			"csharp": { "member": "Field", "kind": "setter" }
+		},
+		{
+			"id": "GetAccess",
+			"cpp": "self->access",
+			"returns": "PropertyRowsValueAccess",
+			"params": [],
+			"csharp": { "member": "Access", "kind": "getter" },
+			"shared": true
+		},
+		{
+			"id": "SetAccess",
+			"cpp": "self->access = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PropertyRowsValueAccess", "optional": true, "shared": "take" }],
+			"csharp": { "member": "Access", "kind": "setter" }
+		},
+		{
+			"id": "GetCheck",
+			"cpp": "self->check",
+			"returns": "UIWidgetsCheckboxParts",
+			"params": [],
+			"csharp": { "member": "Check", "kind": "getter" }
+		},
+		{
+			"id": "SetCheck",
+			"cpp": "self->check = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetsCheckboxParts" }],
+			"csharp": { "member": "Check", "kind": "setter" }
+		},
+		{
+			"id": "GetNumber",
+			"cpp": "self->number",
+			"returns": "UIWidgetsNumberFieldParts",
+			"params": [],
+			"csharp": { "member": "Number", "kind": "getter" }
+		},
+		{
+			"id": "SetNumber",
+			"cpp": "self->number = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetsNumberFieldParts" }],
+			"csharp": { "member": "Number", "kind": "setter" }
+		},
+		{
+			"id": "GetSlider",
+			"cpp": "self->slider",
+			"returns": "UIWidgetsSliderParts",
+			"params": [],
+			"csharp": { "member": "Slider", "kind": "getter" }
+		},
+		{
+			"id": "SetSlider",
+			"cpp": "self->slider = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetsSliderParts" }],
+			"csharp": { "member": "Slider", "kind": "setter" }
+		},
+		{
+			"id": "GetDropdown",
+			"cpp": "self->dropdown",
+			"returns": "UIWidgetsDropdownParts",
+			"params": [],
+			"csharp": { "member": "Dropdown", "kind": "getter" }
+		},
+		{
+			"id": "SetDropdown",
+			"cpp": "self->dropdown = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetsDropdownParts" }],
+			"csharp": { "member": "Dropdown", "kind": "setter" }
+		},
+		{
+			"id": "GetElement",
+			"cpp": "self->element",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Element", "kind": "getter" }
+		},
+		{
+			"id": "SetElement",
+			"cpp": "self->element = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementHandle" }],
+			"csharp": { "member": "Element", "kind": "setter" }
+		},
+		{
+			"id": "GetRangeMin",
+			"cpp": "self->rangeMin",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RangeMin", "kind": "getter" }
+		},
+		{
+			"id": "SetRangeMin",
+			"cpp": "self->rangeMin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RangeMin", "kind": "setter" }
+		},
+		{
+			"id": "GetRangeMax",
+			"cpp": "self->rangeMax",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RangeMax", "kind": "getter" }
+		},
+		{
+			"id": "SetRangeMax",
+			"cpp": "self->rangeMax = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RangeMax", "kind": "setter" }
+		},
+		{
+			"id": "GetDecimals",
+			"cpp": "self->decimals",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Decimals", "kind": "getter" }
+		},
+		{
+			"id": "SetDecimals",
+			"cpp": "self->decimals = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Decimals", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,53 @@
+{
+	"area": "RetargetProfileChain",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/RetargetProfile.h"
+	],
+	"class": "Shalltear.RetargetProfileChain",
+	"instance": "RetargetProfileChain",
+	"functions": [
+		{
+			"id": "GetRole",
+			"cpp": "self->role",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Role", "kind": "getter" }
+		},
+		{
+			"id": "SetRole",
+			"cpp": "self->role = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Role", "kind": "setter" }
+		},
+		{
+			"id": "GetMirror",
+			"cpp": "self->mirror",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Mirror", "kind": "getter" }
+		},
+		{
+			"id": "SetMirror",
+			"cpp": "self->mirror = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Mirror", "kind": "setter" }
+		},
+		{
+			"id": "GetBones",
+			"cpp": "self->bones",
+			"returns": "list<i16>",
+			"params": [],
+			"csharp": { "member": "Bones", "kind": "getter" }
+		},
+		{
+			"id": "SetBones",
+			"cpp": "self->bones = Slots::ToVector<i16>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i16>" }],
+			"csharp": { "member": "Bones", "kind": "setter" }
+		}
+	]
+}

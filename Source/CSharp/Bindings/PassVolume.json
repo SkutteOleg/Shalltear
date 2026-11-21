@@ -1,0 +1,69 @@
+{
+	"area": "PassVolume",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Math/Vector.h"
+	],
+	"class": "Shalltear.PassVolume",
+	"instance": "PassVolume",
+	"functions": [
+		{
+			"id": "GetFormat",
+			"cpp": "self->format",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "Format", "kind": "getter" }
+		},
+		{
+			"id": "SetFormat",
+			"cpp": "self->format = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFormat" }],
+			"csharp": { "member": "Format", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec3I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetContents",
+			"cpp": "self->contents",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Contents", "kind": "getter" }
+		},
+		{
+			"id": "SetContents",
+			"cpp": "self->contents = Slots::KeepFieldSpan(self, 0xc47023b1716d8798ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Contents", "kind": "setter" }
+		},
+		{
+			"id": "GetRevision",
+			"cpp": "self->revision",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Revision", "kind": "getter" }
+		},
+		{
+			"id": "SetRevision",
+			"cpp": "self->revision = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Revision", "kind": "setter" }
+		}
+	]
+}

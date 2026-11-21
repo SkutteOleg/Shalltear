@@ -1,0 +1,68 @@
+{
+	"area": "UIDebugOpsSheetRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsSheetRow",
+	"instance": "UIDebugOpsSheetRow",
+	"functions": [
+		{
+			"id": "GetTag",
+			"cpp": "self->tag",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "SetTag",
+			"cpp": "self->tag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Tag", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0xcacc8d310999f2b0ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetRuleCount",
+			"cpp": "self->ruleCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RuleCount", "kind": "getter" }
+		},
+		{
+			"id": "SetRuleCount",
+			"cpp": "self->ruleCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "RuleCount", "kind": "setter" }
+		},
+		{
+			"id": "GetReadable",
+			"cpp": "self->readable",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Readable", "kind": "getter" }
+		},
+		{
+			"id": "SetReadable",
+			"cpp": "self->readable = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Readable", "kind": "setter" }
+		}
+	]
+}

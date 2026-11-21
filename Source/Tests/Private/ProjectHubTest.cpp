@@ -272,7 +272,7 @@ TEST_F(ProjectHubFixture, NewProjectEnablesBuiltIns) {
 			EXPECT_FALSE(enabled);
 			break;
 		case PackageOps::PackageKind::Tool:
-			EXPECT_EQ(enabled, manifest.required || manifest.scaffold) << manifest.name;
+			EXPECT_EQ(enabled, manifest.bridge ? dependenciesEnabled : manifest.required || manifest.scaffold) << manifest.name;
 			break;
 		default:
 			break;

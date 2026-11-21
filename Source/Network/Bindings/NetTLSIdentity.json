@@ -1,0 +1,39 @@
+{
+	"area": "NetTLSIdentity",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/TLS.h"
+	],
+	"class": "Shalltear.NetTLSIdentity",
+	"instance": "NetTLSIdentity",
+	"functions": [
+		{
+			"id": "FromPKCS12",
+			"cpp": "::Shalltear::Net::TLSIdentity::FromPKCS12(pfx, password, &outError)",
+			"returns": "NetTLSIdentity",
+			"params": [
+				{ "name": "pfx", "type": "list<u8>" },
+				{ "name": "password", "type": "string" },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "FromPKCS12", "kind": "method" },
+			"shared": true,
+			"static": true
+		},
+		{
+			"id": "GetCertificateHash",
+			"cpp": "self->GetCertificateHash()",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "CertificateHash", "kind": "getter" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "self->GetData()",
+			"returns": "NetTLSIdentityData",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" },
+			"nullable": false
+		}
+	]
+}

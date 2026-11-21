@@ -36,6 +36,12 @@ public abstract partial class AudioResource : Asset {
 	private protected AudioResource() {}
 }
 
+internal sealed class OpaqueAudioResource : AudioResource {
+	internal OpaqueAudioResource(ulong id) {
+		_id = id;
+	}
+}
+
 /// <summary>Recorded sound.</summary>
 [EngineType(ENGINE_TYPE)]
 public sealed partial class AudioClip : AudioResource {
@@ -52,6 +58,12 @@ public abstract partial class AudioContainer : AudioResource {
 	internal new const string ENGINE_TYPE = "AudioContainer";
 
 	private protected AudioContainer() {}
+}
+
+internal sealed class OpaqueAudioContainer : AudioContainer {
+	internal OpaqueAudioContainer(ulong id) {
+		_id = id;
+	}
 }
 
 /// <summary>Plays 1 of its resources in turn or at random.</summary>

@@ -1,0 +1,55 @@
+{
+	"area": "AddedComponentOp",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/Component.h"
+	],
+	"class": "Shalltear.AddedComponentOp",
+	"instance": "AddedComponentOp",
+	"functions": [
+		{
+			"id": "GetOwnerField",
+			"cpp": "&self->owner",
+			"returns": "PrefabTargetPath",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabTargetPath" }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		},
+		{
+			"id": "GetComponentRowId",
+			"cpp": "self->componentRowId",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ComponentRowId", "kind": "getter" }
+		},
+		{
+			"id": "SetComponentRowId",
+			"cpp": "self->componentRowId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ComponentRowId", "kind": "setter" }
+		},
+		{
+			"id": "GetLiveComponent",
+			"cpp": "self->liveComponent",
+			"returns": "Component",
+			"params": [],
+			"csharp": { "member": "LiveComponent", "kind": "getter" }
+		},
+		{
+			"id": "SetLiveComponent",
+			"cpp": "self->liveComponent = ::Shalltear::Handle<::Shalltear::Component>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Component", "optional": true }],
+			"csharp": { "member": "LiveComponent", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,25 @@
+{
+	"area": "EditorWorldRemappedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorEvents.h"
+	],
+	"class": "Shalltear.Editor.EditorWorldRemappedEvent",
+	"instance": "EditorWorldRemappedEvent",
+	"functions": [
+		{
+			"id": "GetIds",
+			"cpp": "self->ids",
+			"returns": "list<EditorIdRemap>",
+			"params": [],
+			"csharp": { "member": "Ids", "kind": "getter" }
+		},
+		{
+			"id": "SetIds",
+			"cpp": "self->ids = Slots::KeepFieldSpan(self, 0x59e2c4a2bc6b0bb8ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EditorIdRemap>" }],
+			"csharp": { "member": "Ids", "kind": "setter" }
+		}
+	]
+}

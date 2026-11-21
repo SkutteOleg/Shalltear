@@ -1,0 +1,375 @@
+{
+	"area": "PakSuperblock",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.PakSuperblock",
+	"instance": "PakSuperblock",
+	"functions": [
+		{
+			"id": "GetMagic",
+			"cpp": "self->magic",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Magic", "kind": "getter" }
+		},
+		{
+			"id": "SetMagic",
+			"cpp": "Slots::Assign(self->magic, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Magic", "kind": "setter" }
+		},
+		{
+			"id": "GetVersionMajor",
+			"cpp": "self->versionMajor",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "VersionMajor", "kind": "getter" }
+		},
+		{
+			"id": "SetVersionMajor",
+			"cpp": "self->versionMajor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "VersionMajor", "kind": "setter" }
+		},
+		{
+			"id": "GetVersionMinor",
+			"cpp": "self->versionMinor",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "VersionMinor", "kind": "getter" }
+		},
+		{
+			"id": "SetVersionMinor",
+			"cpp": "self->versionMinor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "VersionMinor", "kind": "setter" }
+		},
+		{
+			"id": "GetHeaderSize",
+			"cpp": "self->headerSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "HeaderSize", "kind": "getter" }
+		},
+		{
+			"id": "SetHeaderSize",
+			"cpp": "self->headerSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "HeaderSize", "kind": "setter" }
+		},
+		{
+			"id": "GetFeaturesRequired",
+			"cpp": "self->featuresRequired",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "FeaturesRequired", "kind": "getter" }
+		},
+		{
+			"id": "SetFeaturesRequired",
+			"cpp": "self->featuresRequired = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "FeaturesRequired", "kind": "setter" }
+		},
+		{
+			"id": "GetFeaturesOptional",
+			"cpp": "self->featuresOptional",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "FeaturesOptional", "kind": "getter" }
+		},
+		{
+			"id": "SetFeaturesOptional",
+			"cpp": "self->featuresOptional = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "FeaturesOptional", "kind": "setter" }
+		},
+		{
+			"id": "GetFileSize",
+			"cpp": "self->fileSize",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "FileSize", "kind": "getter" }
+		},
+		{
+			"id": "SetFileSize",
+			"cpp": "self->fileSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "FileSize", "kind": "setter" }
+		},
+		{
+			"id": "GetTocOffset",
+			"cpp": "self->tocOffset",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TocOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetTocOffset",
+			"cpp": "self->tocOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "TocOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetTocSizeComp",
+			"cpp": "self->tocSizeComp",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TocSizeComp", "kind": "getter" }
+		},
+		{
+			"id": "SetTocSizeComp",
+			"cpp": "self->tocSizeComp = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TocSizeComp", "kind": "setter" }
+		},
+		{
+			"id": "GetTocSizeRaw",
+			"cpp": "self->tocSizeRaw",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TocSizeRaw", "kind": "getter" }
+		},
+		{
+			"id": "SetTocSizeRaw",
+			"cpp": "self->tocSizeRaw = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TocSizeRaw", "kind": "setter" }
+		},
+		{
+			"id": "GetTocCodec",
+			"cpp": "self->tocCodec",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "TocCodec", "kind": "getter" }
+		},
+		{
+			"id": "SetTocCodec",
+			"cpp": "self->tocCodec = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "TocCodec", "kind": "setter" }
+		},
+		{
+			"id": "GetTocFlags",
+			"cpp": "self->tocFlags",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "TocFlags", "kind": "getter" }
+		},
+		{
+			"id": "SetTocFlags",
+			"cpp": "self->tocFlags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "TocFlags", "kind": "setter" }
+		},
+		{
+			"id": "GetSectionCount",
+			"cpp": "self->sectionCount",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "SectionCount", "kind": "getter" }
+		},
+		{
+			"id": "SetSectionCount",
+			"cpp": "self->sectionCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "SectionCount", "kind": "setter" }
+		},
+		{
+			"id": "GetAssetCount",
+			"cpp": "self->assetCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AssetCount", "kind": "getter" }
+		},
+		{
+			"id": "SetAssetCount",
+			"cpp": "self->assetCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "AssetCount", "kind": "setter" }
+		},
+		{
+			"id": "GetPayloadOffset",
+			"cpp": "self->payloadOffset",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PayloadOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetPayloadOffset",
+			"cpp": "self->payloadOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PayloadOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetPayloadSize",
+			"cpp": "self->payloadSize",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PayloadSize", "kind": "getter" }
+		},
+		{
+			"id": "SetPayloadSize",
+			"cpp": "self->payloadSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PayloadSize", "kind": "setter" }
+		},
+		{
+			"id": "GetRegionCount",
+			"cpp": "self->regionCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RegionCount", "kind": "getter" }
+		},
+		{
+			"id": "SetRegionCount",
+			"cpp": "self->regionCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "RegionCount", "kind": "setter" }
+		},
+		{
+			"id": "GetPageCount",
+			"cpp": "self->pageCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PageCount", "kind": "getter" }
+		},
+		{
+			"id": "SetPageCount",
+			"cpp": "self->pageCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PageCount", "kind": "setter" }
+		},
+		{
+			"id": "GetSectorSize",
+			"cpp": "self->sectorSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SectorSize", "kind": "getter" }
+		},
+		{
+			"id": "SetSectorSize",
+			"cpp": "self->sectorSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SectorSize", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxAlignment",
+			"cpp": "self->maxAlignment",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MaxAlignment", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxAlignment",
+			"cpp": "self->maxAlignment = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "MaxAlignment", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetId",
+			"cpp": "self->targetId",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TargetId", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetId",
+			"cpp": "self->targetId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TargetId", "kind": "setter" }
+		},
+		{
+			"id": "GetLocaleId",
+			"cpp": "self->localeId",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LocaleId", "kind": "getter" }
+		},
+		{
+			"id": "SetLocaleId",
+			"cpp": "self->localeId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "LocaleId", "kind": "setter" }
+		},
+		{
+			"id": "GetEngineHash",
+			"cpp": "self->engineHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "EngineHash", "kind": "getter" }
+		},
+		{
+			"id": "SetEngineHash",
+			"cpp": "self->engineHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "EngineHash", "kind": "setter" }
+		},
+		{
+			"id": "GetContentHash",
+			"cpp": "self->contentHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ContentHash", "kind": "getter" }
+		},
+		{
+			"id": "SetContentHash",
+			"cpp": "self->contentHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ContentHash", "kind": "setter" }
+		},
+		{
+			"id": "GetReserved",
+			"cpp": "self->reserved",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Reserved", "kind": "getter" }
+		},
+		{
+			"id": "SetReserved",
+			"cpp": "Slots::Assign(self->reserved, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Reserved", "kind": "setter" }
+		},
+		{
+			"id": "GetCrc32c",
+			"cpp": "self->crc32c",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Crc32c", "kind": "getter" }
+		},
+		{
+			"id": "SetCrc32c",
+			"cpp": "self->crc32c = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Crc32c", "kind": "setter" }
+		}
+	]
+}

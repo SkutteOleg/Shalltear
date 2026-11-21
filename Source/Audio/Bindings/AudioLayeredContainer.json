@@ -1,0 +1,25 @@
+{
+	"area": "AudioLayeredContainer",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioContainer.h"
+	],
+	"class": "Shalltear.AudioLayeredContainer",
+	"instance": "AudioLayeredContainer",
+	"functions": [
+		{
+			"id": "GetLayers",
+			"cpp": "self->layers",
+			"returns": "list<AudioLayeredContainerLayer>",
+			"params": [],
+			"csharp": { "member": "Layers", "kind": "getter" }
+		},
+		{
+			"id": "SetLayers",
+			"cpp": "self->layers = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioLayeredContainerLayer>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioLayeredContainerLayer>" }],
+			"csharp": { "member": "Layers", "kind": "setter" }
+		}
+	]
+}

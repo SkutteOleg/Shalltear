@@ -1,0 +1,123 @@
+{
+	"area": "GraphDocument",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphDocument",
+	"instance": "GraphDocument",
+	"functions": [
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetNextId",
+			"cpp": "self->nextId",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "NextId", "kind": "getter" }
+		},
+		{
+			"id": "SetNextId",
+			"cpp": "self->nextId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "NextId", "kind": "setter" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "list<GraphSetting>",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphSetting>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphSetting>" }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		},
+		{
+			"id": "GetProperties",
+			"cpp": "self->properties",
+			"returns": "list<GraphProperty>",
+			"params": [],
+			"csharp": { "member": "Properties", "kind": "getter" }
+		},
+		{
+			"id": "SetProperties",
+			"cpp": "self->properties = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphProperty>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphProperty>" }],
+			"csharp": { "member": "Properties", "kind": "setter" }
+		},
+		{
+			"id": "GetNodes",
+			"cpp": "self->nodes",
+			"returns": "list<GraphNode>",
+			"params": [],
+			"csharp": { "member": "Nodes", "kind": "getter" }
+		},
+		{
+			"id": "SetNodes",
+			"cpp": "self->nodes = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphNode>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphNode>" }],
+			"csharp": { "member": "Nodes", "kind": "setter" }
+		},
+		{
+			"id": "GetContexts",
+			"cpp": "self->contexts",
+			"returns": "list<GraphContext>",
+			"params": [],
+			"csharp": { "member": "Contexts", "kind": "getter" }
+		},
+		{
+			"id": "SetContexts",
+			"cpp": "self->contexts = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphContext>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphContext>" }],
+			"csharp": { "member": "Contexts", "kind": "setter" }
+		},
+		{
+			"id": "GetGroups",
+			"cpp": "self->groups",
+			"returns": "list<GraphGroup>",
+			"params": [],
+			"csharp": { "member": "Groups", "kind": "getter" }
+		},
+		{
+			"id": "SetGroups",
+			"cpp": "self->groups = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphGroup>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphGroup>" }],
+			"csharp": { "member": "Groups", "kind": "setter" }
+		},
+		{
+			"id": "GetNotes",
+			"cpp": "self->notes",
+			"returns": "list<GraphNote>",
+			"params": [],
+			"csharp": { "member": "Notes", "kind": "getter" }
+		},
+		{
+			"id": "SetNotes",
+			"cpp": "self->notes = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphNote>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphNote>" }],
+			"csharp": { "member": "Notes", "kind": "setter" }
+		}
+	]
+}

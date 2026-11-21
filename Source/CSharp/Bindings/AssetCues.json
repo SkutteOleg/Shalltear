@@ -1,0 +1,43 @@
+{
+	"area": "AssetCues",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetCues.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.AssetCues",
+	"natives": [{ "name": "AssetCue", "cpp": "::Shalltear::AssetCue", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::AssetCues::Register(type, Slots::FromBits<bool (*)(const Shalltear::AssetCue &)>(fn), ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "fn", "type": "u64" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::AssetCues::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "CanCue",
+			"cpp": "::Shalltear::AssetCues::CanCue(type)",
+			"returns": "bool",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "CanCue", "kind": "method" }
+		},
+		{
+			"id": "Cue",
+			"cpp": "::Shalltear::AssetCues::Cue(*cue)",
+			"returns": "bool",
+			"params": [{ "name": "cue", "type": "AssetCue" }],
+			"csharp": { "member": "Cue", "kind": "method" }
+		}
+	]
+}

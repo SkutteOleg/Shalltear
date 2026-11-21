@@ -1,0 +1,194 @@
+{
+	"area": "FieldInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.FieldInfo",
+	"instance": "FieldInfo",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerType",
+			"cpp": "self->ownerType",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "OwnerType", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerType",
+			"cpp": "self->ownerType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "OwnerType", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldType",
+			"cpp": "self->fieldType",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "FieldType", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldType",
+			"cpp": "self->fieldType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "FieldType", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetAlignment",
+			"cpp": "self->alignment",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Alignment", "kind": "getter" }
+		},
+		{
+			"id": "SetAlignment",
+			"cpp": "self->alignment = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Alignment", "kind": "setter" }
+		},
+		{
+			"id": "GetGetFn",
+			"cpp": "Slots::Bits(self->getFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "GetFn", "kind": "getter" }
+		},
+		{
+			"id": "SetGetFn",
+			"cpp": "self->getFn = Slots::FromBits<void (*)(const void *, Shalltear::Variant *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "GetFn", "kind": "setter" }
+		},
+		{
+			"id": "GetSetFn",
+			"cpp": "Slots::Bits(self->setFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SetFn", "kind": "getter" }
+		},
+		{
+			"id": "SetSetFn",
+			"cpp": "self->setFn = Slots::FromBits<void (*)(void *, const Shalltear::Variant *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "SetFn", "kind": "setter" }
+		},
+		{
+			"id": "GetAddrFn",
+			"cpp": "Slots::Bits(self->addrFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "AddrFn", "kind": "getter" }
+		},
+		{
+			"id": "SetAddrFn",
+			"cpp": "self->addrFn = Slots::FromBits<void *(*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "AddrFn", "kind": "setter" }
+		},
+		{
+			"id": "GetAttributes",
+			"cpp": "self->attributes",
+			"returns": "AttributeInfo",
+			"params": [],
+			"csharp": { "member": "Attributes", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributes",
+			"cpp": "self->attributes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AttributeInfo", "optional": true }],
+			"csharp": { "member": "Attributes", "kind": "setter" }
+		},
+		{
+			"id": "GetAttrCount",
+			"cpp": "self->attrCount",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "AttrCount", "kind": "getter" }
+		},
+		{
+			"id": "SetAttrCount",
+			"cpp": "self->attrCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "AttrCount", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetContainer",
+			"cpp": "self->container",
+			"returns": "ContainerInfo",
+			"params": [],
+			"csharp": { "member": "Container", "kind": "getter" }
+		},
+		{
+			"id": "SetContainer",
+			"cpp": "self->container = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ContainerInfo", "optional": true }],
+			"csharp": { "member": "Container", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->displayName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->displayName = Slots::KeepFieldText(self, 0x63dfc2cbc4f2239cull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DisplayName", "kind": "setter" }
+		}
+	]
+}

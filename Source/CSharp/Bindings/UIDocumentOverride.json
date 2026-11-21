@@ -1,0 +1,67 @@
+{
+	"area": "UIDocumentOverride",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h"
+	],
+	"class": "Shalltear.UIDocumentOverride",
+	"instance": "UIDocumentOverride",
+	"functions": [
+		{
+			"id": "GetElementId",
+			"cpp": "self->elementId",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ElementId", "kind": "getter" }
+		},
+		{
+			"id": "SetElementId",
+			"cpp": "self->elementId = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ElementId", "kind": "setter" }
+		},
+		{
+			"id": "GetAttributes",
+			"cpp": "self->attributes",
+			"returns": "list<UIDocumentAttribute>",
+			"params": [],
+			"csharp": { "member": "Attributes", "kind": "getter" }
+		},
+		{
+			"id": "SetAttributes",
+			"cpp": "self->attributes = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDocumentAttribute>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDocumentAttribute>" }],
+			"csharp": { "member": "Attributes", "kind": "setter" }
+		},
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		},
+		{
+			"id": "GetTextKey",
+			"cpp": "self->textKey",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TextKey", "kind": "getter" }
+		},
+		{
+			"id": "SetTextKey",
+			"cpp": "self->textKey = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TextKey", "kind": "setter" }
+		}
+	]
+}

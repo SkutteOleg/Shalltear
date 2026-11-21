@@ -1,0 +1,81 @@
+{
+	"area": "ProfilerZoneResult",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Profiler.h"
+	],
+	"class": "Shalltear.ProfilerZoneResult",
+	"instance": "ProfilerZoneResult",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0xf82f7543dcbb1680ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetMilliseconds",
+			"cpp": "self->milliseconds",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "Milliseconds", "kind": "getter" }
+		},
+		{
+			"id": "SetMilliseconds",
+			"cpp": "self->milliseconds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "Milliseconds", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxMilliseconds",
+			"cpp": "self->maxMilliseconds",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "MaxMilliseconds", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxMilliseconds",
+			"cpp": "self->maxMilliseconds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "MaxMilliseconds", "kind": "setter" }
+		},
+		{
+			"id": "GetCalls",
+			"cpp": "self->calls",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Calls", "kind": "getter" }
+		},
+		{
+			"id": "SetCalls",
+			"cpp": "self->calls = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Calls", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,66 @@
+{
+	"area": "AssetInspectorSectionDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyDrawers.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.AssetInspectorSectionDesc",
+	"instance": "AssetInspectorSectionDesc",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = Slots::KeepFieldText(self, 0x8cd2eee702186b74ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetOrder",
+			"cpp": "self->order",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Order", "kind": "getter" }
+		},
+		{
+			"id": "SetOrder",
+			"cpp": "self->order = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Order", "kind": "setter" }
+		},
+		{
+			"id": "SetApplies",
+			"cpp": "self->applies = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;EngineGuid;Asset>", "optional": true, "cpp": "std::function<bool (const Shalltear::Guid &, Shalltear::Asset &)>" }
+			],
+			"csharp": { "member": "SetApplies", "kind": "method" }
+		},
+		{
+			"id": "SetDraw",
+			"cpp": "self->draw = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle;EngineGuid;Asset>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &, Shalltear::Asset &)>"
+				}
+			],
+			"csharp": { "member": "SetDraw", "kind": "method" }
+		}
+	]
+}

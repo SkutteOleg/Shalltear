@@ -1,0 +1,153 @@
+{
+	"area": "EditorListView",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorListView.h",
+		"Shalltear/Editor/EditorPanel.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorListView",
+	"instance": "EditorListView",
+	"enums": [
+		{
+			"name": "ListLayout",
+			"cpp": "::Shalltear::ListLayout",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Rows", "value": 0 },
+				{ "name": "Grid", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorListViewFoldOutBand",
+			"cpp": "::Shalltear::EditorListView::FoldOutBand",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "rect", "type": "UIRect", "offset": 0 },
+				{ "name": "fromAbove", "type": "bool", "offset": 16 },
+				{ "name": "continuesBelow", "type": "bool", "offset": 17 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorListView", "cpp": "::Shalltear::EditorListView", "owned": true, "create": true },
+		{ "name": "ListViewDesc", "cpp": "::Shalltear::ListViewDesc", "owned": true, "create": true },
+		{ "name": "ListRow", "cpp": "::Shalltear::ListRow", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Build",
+			"cpp": "self->Build(owner, *context, parent, *desc)",
+			"returns": "void",
+			"params": [
+				{ "name": "owner", "type": "EditorPanel", "optional": true },
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "ListViewDesc" }
+			],
+			"csharp": { "member": "Build", "kind": "method" }
+		},
+		{
+			"id": "SetRows",
+			"cpp": "self->SetRows(std::span<const ::Shalltear::ListRow>(Slots::Copies<::Shalltear::Vector<::Shalltear::ListRow>>(rows)))",
+			"returns": "void",
+			"params": [{ "name": "rows", "type": "list<ListRow>" }],
+			"csharp": { "member": "SetRows", "kind": "method" }
+		},
+		{
+			"id": "SetLayout",
+			"cpp": "self->SetLayout(layout, cellWidthPx, cellHeightPx, cellPaddingPx)",
+			"returns": "void",
+			"params": [
+				{ "name": "layout", "type": "ListLayout" },
+				{ "name": "cellWidthPx", "type": "f32" },
+				{ "name": "cellHeightPx", "type": "f32" },
+				{ "name": "cellPaddingPx", "type": "f32" }
+			],
+			"csharp": { "member": "SetLayout", "kind": "method" }
+		},
+		{
+			"id": "SetSelection",
+			"cpp": "self->SetSelection(ids)",
+			"returns": "void",
+			"params": [{ "name": "ids", "type": "list<u64>" }],
+			"csharp": { "member": "SetSelection", "kind": "method" }
+		},
+		{
+			"id": "RevealRow",
+			"cpp": "self->RevealRow(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "RevealRow", "kind": "method" }
+		},
+		{
+			"id": "GetSelected",
+			"cpp": "self->GetSelected()",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Selected", "kind": "getter" }
+		},
+		{
+			"id": "SelectAll",
+			"cpp": "self->SelectAll()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SelectAll", "kind": "method" }
+		},
+		{
+			"id": "HasFocus",
+			"cpp": "self->HasFocus()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasFocus", "kind": "getter" }
+		},
+		{
+			"id": "TakeFocus",
+			"cpp": "self->TakeFocus()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "TakeFocus", "kind": "method" }
+		},
+		{
+			"id": "GetVisibleRows",
+			"cpp": "self->GetVisibleRows(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<u64>", "out": true, "cpp": "::Shalltear::Vector<u64>" }],
+			"csharp": { "member": "GetVisibleRows", "kind": "method" }
+		},
+		{
+			"id": "GetFoldOutBands",
+			"cpp": "self->GetFoldOutBands(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<EditorListViewFoldOutBand>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::EditorListView::FoldOutBand>" }
+			],
+			"csharp": { "member": "GetFoldOutBands", "kind": "method" }
+		},
+		{
+			"id": "PingRow",
+			"cpp": "self->PingRow(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "PingRow", "kind": "method" }
+		},
+		{
+			"id": "Tick",
+			"cpp": "self->Tick(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "Tick", "kind": "method" }
+		},
+		{
+			"id": "Command",
+			"cpp": "self->Command(command)",
+			"returns": "bool",
+			"params": [{ "name": "command", "type": "PanelCommand" }],
+			"csharp": { "member": "Command", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,102 @@
+{
+	"area": "UIWidgetsMenuItem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h"
+	],
+	"class": "Shalltear.UIWidgetsMenuItem",
+	"instance": "UIWidgetsMenuItem",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetShortcut",
+			"cpp": "self->shortcut",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Shortcut", "kind": "getter" }
+		},
+		{
+			"id": "SetShortcut",
+			"cpp": "self->shortcut = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Shortcut", "kind": "setter" }
+		},
+		{
+			"id": "GetEnabledField",
+			"cpp": "self->enabled",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnabledField", "kind": "getter" }
+		},
+		{
+			"id": "SetEnabledField",
+			"cpp": "self->enabled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnabledField", "kind": "setter" }
+		},
+		{
+			"id": "GetSeparatorBefore",
+			"cpp": "self->separatorBefore",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SeparatorBefore", "kind": "getter" }
+		},
+		{
+			"id": "SetSeparatorBefore",
+			"cpp": "self->separatorBefore = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SeparatorBefore", "kind": "setter" }
+		},
+		{
+			"id": "SetOnSelect",
+			"cpp": "self->onSelect = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnSelect", "kind": "method" }
+		},
+		{
+			"id": "GetChecked",
+			"cpp": "self->checked",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Checked", "kind": "getter" }
+		},
+		{
+			"id": "SetChecked",
+			"cpp": "self->checked = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Checked", "kind": "setter" }
+		},
+		{
+			"id": "GetChildren",
+			"cpp": "self->children",
+			"returns": "list<UIWidgetsMenuItem>",
+			"params": [],
+			"csharp": { "member": "Children", "kind": "getter" }
+		},
+		{
+			"id": "SetChildren",
+			"cpp": "self->children = Slots::Copies<::Shalltear::Vector<::Shalltear::UI::Widgets::MenuItem>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIWidgetsMenuItem>" }],
+			"csharp": { "member": "Children", "kind": "setter" }
+		}
+	]
+}

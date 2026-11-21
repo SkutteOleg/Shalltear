@@ -1,0 +1,168 @@
+{
+	"area": "EditorChromeOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorChromeOps.h",
+		"Shalltear/Editor/EditorConsole.h",
+		"Shalltear/Editor/EditorIcons.h",
+		"Shalltear/Core/Window/Window.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorChromeOps",
+	"structs": [
+		{
+			"name": "EditorChromeOpsWindowControlParts",
+			"cpp": "::Shalltear::EditorChromeOps::WindowControlParts",
+			"size": 12,
+			"align": 4,
+			"fields": [{ "name": "maximizeFace", "type": "UIElementHandle", "offset": 0 }]
+		},
+		{
+			"name": "EditorChromeOpsConsoleNoticeParts",
+			"cpp": "::Shalltear::EditorChromeOps::ConsoleNoticeParts",
+			"size": 60,
+			"align": 4,
+			"fields": [
+				{ "name": "root", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "icon", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "message", "type": "UIElementHandle", "offset": 24 },
+				{ "name": "errors", "type": "UIElementHandle", "offset": 36 },
+				{ "name": "warnings", "type": "UIElementHandle", "offset": 48 }
+			]
+		},
+		{
+			"name": "EditorChromeOpsFloatingChromeParts",
+			"cpp": "::Shalltear::EditorChromeOps::FloatingChromeParts",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "dockHost", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "controls", "type": "UIElementHandle", "offset": 12 },
+				{ "name": "maximizeFace", "type": "UIElementHandle", "offset": 24 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorChromeOpsConsoleNoticeState", "cpp": "::Shalltear::EditorChromeOps::ConsoleNoticeState", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "HitTestChrome",
+			"cpp": "::Shalltear::EditorChromeOps::HitTestChrome(*context, clientPosPx)",
+			"returns": "HitTestResult",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "clientPosPx", "type": "Vec2I" }
+			],
+			"csharp": { "member": "HitTestChrome", "kind": "method" }
+		},
+		{
+			"id": "ChromeHitTest",
+			"cpp": "::Shalltear::EditorChromeOps::ChromeHitTest(*window, clientPosPx, reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "HitTestResult",
+			"params": [
+				{ "name": "window", "type": "Window" },
+				{ "name": "clientPosPx", "type": "Vec2I" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "ChromeHitTest", "kind": "method" }
+		},
+		{
+			"id": "CaptionButton",
+			"cpp": "::Shalltear::EditorChromeOps::CaptionButton(*context, parent, *icon, fallbackLabel, tooltip, restColor, isClose, onClick)",
+			"returns": "EditorIconsIconButtonParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "fallbackLabel", "type": "string" },
+				{ "name": "tooltip", "type": "string" },
+				{ "name": "restColor", "type": "Color" },
+				{ "name": "isClose", "type": "bool" },
+				{ "name": "onClick", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "CaptionButton", "kind": "method" }
+		},
+		{
+			"id": "BuildWindowControls",
+			"cpp": "::Shalltear::EditorChromeOps::BuildWindowControls(*context, parent, ::Shalltear::Handle<::Shalltear::Window>(window), onClose)",
+			"returns": "EditorChromeOpsWindowControlParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "window", "type": "Window", "optional": true },
+				{ "name": "onClose", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "BuildWindowControls", "kind": "method" }
+		},
+		{
+			"id": "SetMaximizeGlyph",
+			"cpp": "::Shalltear::EditorChromeOps::SetMaximizeGlyph(*context, face, maximized)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "face", "type": "UIElementHandle" },
+				{ "name": "maximized", "type": "bool" }
+			],
+			"csharp": { "member": "SetMaximizeGlyph", "kind": "method" }
+		},
+		{
+			"id": "BuildConsoleNotice",
+			"cpp": "::Shalltear::EditorChromeOps::BuildConsoleNotice(*context, parent, onActivate)",
+			"returns": "EditorChromeOpsConsoleNoticeParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "onActivate", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "BuildConsoleNotice", "kind": "method" }
+		},
+		{
+			"id": "DescribeConsoleNotice",
+			"cpp": "::Shalltear::EditorChromeOps::DescribeConsoleNotice(*summary)",
+			"returns": "EditorChromeOpsConsoleNoticeState",
+			"params": [{ "name": "summary", "type": "ConsoleSummary" }],
+			"csharp": { "member": "DescribeConsoleNotice", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetConsoleNotice",
+			"cpp": "::Shalltear::EditorChromeOps::SetConsoleNotice(*context, parts, *summary)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parts", "type": "EditorChromeOpsConsoleNoticeParts" },
+				{ "name": "summary", "type": "ConsoleSummary" }
+			],
+			"csharp": { "member": "SetConsoleNotice", "kind": "method" }
+		},
+		{
+			"id": "BuildFloatingChrome",
+			"cpp": "::Shalltear::EditorChromeOps::BuildFloatingChrome(*context, ::Shalltear::Handle<::Shalltear::Window>(window), onClose)",
+			"returns": "EditorChromeOpsFloatingChromeParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "window", "type": "Window", "optional": true },
+				{ "name": "onClose", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "BuildFloatingChrome", "kind": "method" }
+		},
+		{
+			"id": "GetCaptionClass",
+			"cpp": "::Shalltear::EditorChromeOps::CaptionClass",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "CaptionClass", "kind": "getter" }
+		},
+		{
+			"id": "GetCaptionStripClass",
+			"cpp": "::Shalltear::EditorChromeOps::CaptionStripClass",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "CaptionStripClass", "kind": "getter" }
+		}
+	]
+}

@@ -1,0 +1,57 @@
+{
+	"area": "VariantDispatch",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/VariantDispatch.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.VariantDispatch",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::VariantDispatch::Register(typeId, vtable)",
+			"returns": "void",
+			"params": [
+				{ "name": "typeId", "type": "StringHash" },
+				{ "name": "vtable", "type": "VariantVTable", "optional": true }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "Unregister",
+			"cpp": "::Shalltear::VariantDispatch::Unregister(typeId)",
+			"returns": "void",
+			"params": [{ "name": "typeId", "type": "StringHash" }],
+			"csharp": { "member": "Unregister", "kind": "method" }
+		},
+		{
+			"id": "UnregisterAllOwnedBy",
+			"cpp": "::Shalltear::VariantDispatch::UnregisterAllOwnedBy(reinterpret_cast<const void*>(static_cast<uintptr_t>(imageBase)))",
+			"returns": "u64",
+			"params": [{ "name": "imageBase", "type": "u64" }],
+			"csharp": { "member": "UnregisterAllOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Lookup",
+			"cpp": "::Shalltear::VariantDispatch::Lookup(typeId)",
+			"returns": "VariantVTable",
+			"params": [{ "name": "typeId", "type": "StringHash" }],
+			"csharp": { "member": "Lookup", "kind": "method" }
+		},
+		{
+			"id": "GetOwner",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::VariantDispatch::GetOwner(typeId)))",
+			"returns": "u64",
+			"params": [{ "name": "typeId", "type": "StringHash" }],
+			"csharp": { "member": "GetOwner", "kind": "method" }
+		},
+		{
+			"id": "GetEntryCount",
+			"cpp": "::Shalltear::VariantDispatch::GetEntryCount()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "EntryCount", "kind": "getter" }
+		}
+	]
+}

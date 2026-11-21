@@ -1,0 +1,14 @@
+{
+	"area": "PostProcessingTypes",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/LensFlarePass.h",
+		"Shalltear/PostProcessing/PostProcessPass.h"
+	],
+	"class": "Shalltear.PostProcessingTypes",
+	"types": [
+		{ "name": "LensFlarePass", "cpp": "::Shalltear::LensFlarePass", "engine": "LensFlarePass", "base": "Asset" },
+		{ "name": "PostProcessPass", "cpp": "::Shalltear::PostProcessPass", "engine": "PostProcessPass", "base": "Asset" }
+	],
+	"functions": []
+}

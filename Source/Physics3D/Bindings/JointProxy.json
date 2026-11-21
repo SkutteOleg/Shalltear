@@ -1,0 +1,56 @@
+{
+	"area": "JointProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Joints.h",
+		"DerivedTypes.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.JointProxy",
+	"instance": "JointProxy",
+	"prelude": [
+		"class JointProxy final : public ::Shalltear::Joint {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::Joint::GetType(); }",
+		"\t~JointProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<bool(Shalltear::PhysicsJointRequest &)> describeJoint;",
+		"\tbool DescribeJoint(Shalltear::PhysicsJointRequest & a0) const override {",
+		"\t\treturn describeJoint ? describeJoint(a0) : Slots::ResultOf<decltype(describeJoint)>();",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "JointProxy", "cpp": "JointProxy" }],
+	"functions": [
+		{
+			"id": "SetDescribeJoint",
+			"cpp": "self->describeJoint = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;PhysicsJointRequest>", "optional": true, "cpp": "std::function<bool(Shalltear::PhysicsJointRequest &)>" }
+			],
+			"csharp": { "member": "SetDescribeJoint", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::Joint*>(self)",
+			"returns": "Joint",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<JointProxy, ::Shalltear::Joint>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;JointProxy>", "cpp": "std::function<void(JointProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

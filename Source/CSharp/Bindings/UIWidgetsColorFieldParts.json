@@ -1,0 +1,55 @@
+{
+	"area": "UIWidgetsColorFieldParts",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIWidgetsColorFieldParts",
+	"instance": "UIWidgetsColorFieldParts",
+	"functions": [
+		{
+			"id": "GetRoot",
+			"cpp": "self->root",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" }
+		},
+		{
+			"id": "SetRoot",
+			"cpp": "self->root = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementHandle" }],
+			"csharp": { "member": "Root", "kind": "setter" }
+		},
+		{
+			"id": "GetSwatch",
+			"cpp": "self->swatch",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Swatch", "kind": "getter" }
+		},
+		{
+			"id": "SetSwatch",
+			"cpp": "self->swatch = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementHandle" }],
+			"csharp": { "member": "Swatch", "kind": "setter" }
+		},
+		{
+			"id": "GetVector",
+			"cpp": "&self->vector",
+			"returns": "UIWidgetsVectorFieldParts",
+			"params": [],
+			"csharp": { "member": "Vector", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetVector",
+			"cpp": "self->vector = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetsVectorFieldParts" }],
+			"csharp": { "member": "Vector", "kind": "setter" }
+		}
+	]
+}

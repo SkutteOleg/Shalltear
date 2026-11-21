@@ -1,0 +1,67 @@
+{
+	"area": "BuildStepDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h"
+	],
+	"class": "Shalltear.Editor.BuildStepDesc",
+	"instance": "BuildStepDesc",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetPhase",
+			"cpp": "self->phase",
+			"returns": "BuildPhase",
+			"params": [],
+			"csharp": { "member": "Phase", "kind": "getter" }
+		},
+		{
+			"id": "SetPhase",
+			"cpp": "self->phase = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildPhase" }],
+			"csharp": { "member": "Phase", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerField",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->owner))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		},
+		{
+			"id": "SetFn",
+			"cpp": "self->fn = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<BuildStepStatus;BuildContext>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::BuildStepStatus (Shalltear::BuildContext &)>"
+				}
+			],
+			"csharp": { "member": "SetFn", "kind": "method" }
+		}
+	]
+}

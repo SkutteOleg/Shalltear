@@ -1,0 +1,398 @@
+{
+	"area": "RHIBufferHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHIBufferHandle",
+	"instance": "RHIBufferHandle",
+	"enums": [
+		{
+			"name": "RHIResourceState",
+			"cpp": "::Shalltear::RHI::ResourceState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Undefined", "value": 0 },
+				{ "name": "RenderTarget", "value": 1 },
+				{ "name": "DepthWrite", "value": 2 },
+				{ "name": "DepthRead", "value": 3 },
+				{ "name": "ShaderResource", "value": 4 },
+				{ "name": "TransferSrc", "value": 5 },
+				{ "name": "TransferDst", "value": 6 },
+				{ "name": "Present", "value": 7 },
+				{ "name": "UnorderedAccess", "value": 8 },
+				{ "name": "IndirectArgument", "value": 9 },
+				{ "name": "Count", "value": 10 }
+			]
+		},
+		{
+			"name": "RHIBlendMode",
+			"cpp": "::Shalltear::RHI::BlendMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Opaque", "value": 0 },
+				{ "name": "Alpha", "value": 1 },
+				{ "name": "Additive", "value": 2 },
+				{ "name": "Premultiplied", "value": 3 },
+				{ "name": "Multiply", "value": 4 },
+				{ "name": "Count", "value": 5 }
+			]
+		},
+		{
+			"name": "RHIDepthMode",
+			"cpp": "::Shalltear::RHI::DepthMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "TestWrite", "value": 0 },
+				{ "name": "TestOnly", "value": 1 },
+				{ "name": "Off", "value": 2 }
+			]
+		},
+		{
+			"name": "RHICullMode",
+			"cpp": "::Shalltear::RHI::CullMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Back", "value": 0 },
+				{ "name": "Front", "value": 1 },
+				{ "name": "Off", "value": 2 },
+				{ "name": "Count", "value": 3 }
+			]
+		},
+		{
+			"name": "RHIPrimitiveTopology",
+			"cpp": "::Shalltear::RHI::PrimitiveTopology",
+			"underlying": "u8",
+			"values": [
+				{ "name": "TriangleList", "value": 0 },
+				{ "name": "LineList", "value": 1 },
+				{ "name": "PointList", "value": 2 }
+			]
+		},
+		{
+			"name": "RHIFillMode",
+			"cpp": "::Shalltear::RHI::FillMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Solid", "value": 0 },
+				{ "name": "Wireframe", "value": 1 }
+			]
+		},
+		{
+			"name": "RHIDepthCompare",
+			"cpp": "::Shalltear::RHI::DepthCompare",
+			"underlying": "u8",
+			"values": [
+				{ "name": "NearerOrEqual", "value": 0 },
+				{ "name": "Nearer", "value": 1 },
+				{ "name": "Farther", "value": 2 },
+				{ "name": "FartherOrEqual", "value": 3 },
+				{ "name": "Equal", "value": 4 },
+				{ "name": "NotEqual", "value": 5 },
+				{ "name": "Always", "value": 6 },
+				{ "name": "Count", "value": 7 }
+			]
+		},
+		{
+			"name": "RHIFrontFace",
+			"cpp": "::Shalltear::RHI::FrontFace",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Clockwise", "value": 0 },
+				{ "name": "CounterClockwise", "value": 1 }
+			]
+		},
+		{
+			"name": "RHIFormat",
+			"cpp": "::Shalltear::RHI::Format",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Unknown", "value": 0 },
+				{ "name": "R8Unorm", "value": 1 },
+				{ "name": "RGBA8Unorm", "value": 2 },
+				{ "name": "RGBA8SRGB", "value": 3 },
+				{ "name": "BGRA8Unorm", "value": 4 },
+				{ "name": "BGRA8SRGB", "value": 5 },
+				{ "name": "RGBA16Float", "value": 6 },
+				{ "name": "RG16Float", "value": 7 },
+				{ "name": "R32Uint", "value": 8 },
+				{ "name": "D32Float", "value": 9 },
+				{ "name": "BC5Unorm", "value": 10 },
+				{ "name": "BC7Unorm", "value": 11 },
+				{ "name": "BC7SRGB", "value": 12 },
+				{ "name": "BC6HUFloat", "value": 13 },
+				{ "name": "RGBA32Float", "value": 14 },
+				{ "name": "Count", "value": 15 }
+			]
+		},
+		{
+			"name": "RHITextureUsage",
+			"cpp": "::Shalltear::RHI::TextureUsage",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Sampled", "value": 1 },
+				{ "name": "RenderTarget", "value": 2 },
+				{ "name": "DepthStencil", "value": 4 },
+				{ "name": "TransferSrc", "value": 8 },
+				{ "name": "TransferDst", "value": 16 }
+			]
+		},
+		{
+			"name": "RHIBufferUsage",
+			"cpp": "::Shalltear::RHI::BufferUsage",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Vertex", "value": 1 },
+				{ "name": "Index", "value": 2 },
+				{ "name": "Uniform", "value": 4 },
+				{ "name": "Storage", "value": 8 },
+				{ "name": "TransferSrc", "value": 16 },
+				{ "name": "TransferDst", "value": 32 },
+				{ "name": "DeviceAddress", "value": 64 },
+				{ "name": "Indirect", "value": 128 }
+			]
+		},
+		{
+			"name": "RHIMemoryAccess",
+			"cpp": "::Shalltear::RHI::MemoryAccess",
+			"underlying": "u8",
+			"values": [
+				{ "name": "GPUOnly", "value": 0 },
+				{ "name": "CPUToGPU", "value": 1 },
+				{ "name": "Readback", "value": 2 }
+			]
+		},
+		{
+			"name": "RHIFilterMode",
+			"cpp": "::Shalltear::RHI::FilterMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Nearest", "value": 0 },
+				{ "name": "Linear", "value": 1 }
+			]
+		},
+		{
+			"name": "RHIAddressMode",
+			"cpp": "::Shalltear::RHI::AddressMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Repeat", "value": 0 },
+				{ "name": "ClampToEdge", "value": 1 },
+				{ "name": "MirroredRepeat", "value": 2 }
+			]
+		},
+		{
+			"name": "RHIShaderStage",
+			"cpp": "::Shalltear::RHI::ShaderStage",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Vertex", "value": 1 },
+				{ "name": "Pixel", "value": 2 },
+				{ "name": "Compute", "value": 4 }
+			]
+		},
+		{
+			"name": "RHITextureDimension",
+			"cpp": "::Shalltear::RHI::TextureDimension",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Texture2D", "value": 0 },
+				{ "name": "Texture2DArray", "value": 1 },
+				{ "name": "Texture3D", "value": 2 },
+				{ "name": "Cube", "value": 3 },
+				{ "name": "CubeArray", "value": 4 },
+				{ "name": "Count", "value": 5 }
+			]
+		},
+		{
+			"name": "RHIDescriptorType",
+			"cpp": "::Shalltear::RHI::DescriptorType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "UniformBuffer", "value": 0 },
+				{ "name": "StorageBuffer", "value": 1 },
+				{ "name": "SampledTexture", "value": 2 },
+				{ "name": "Sampler", "value": 3 },
+				{ "name": "Count", "value": 4 }
+			]
+		},
+		{
+			"name": "RHILoadOp",
+			"cpp": "::Shalltear::RHI::LoadOp",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Load", "value": 0 },
+				{ "name": "Clear", "value": 1 },
+				{ "name": "DontCare", "value": 2 }
+			]
+		},
+		{
+			"name": "RHIStoreOp",
+			"cpp": "::Shalltear::RHI::StoreOp",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Store", "value": 0 },
+				{ "name": "DontCare", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "RHIBufferHandle",
+			"cpp": "::Shalltear::RHI::BufferHandle",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "RHIShaderRenderState",
+			"cpp": "::Shalltear::RHI::ShaderRenderState",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "blend", "type": "RHIBlendMode", "offset": 0 },
+				{ "name": "depth", "type": "RHIDepthMode", "offset": 1 },
+				{ "name": "cull", "type": "RHICullMode", "offset": 2 },
+				{ "name": "topology", "type": "RHIPrimitiveTopology", "offset": 3 },
+				{ "name": "fill", "type": "RHIFillMode", "offset": 4 },
+				{ "name": "depthBiasConstant", "type": "f32", "offset": 8 },
+				{ "name": "depthBiasSlope", "type": "f32", "offset": 12 },
+				{ "name": "depthCompare", "type": "RHIDepthCompare", "offset": 16 },
+				{ "name": "dynamicDepthBias", "type": "bool", "offset": 17 }
+			]
+		},
+		{
+			"name": "RHITextureHandle",
+			"cpp": "::Shalltear::RHI::TextureHandle",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "RHIPipelineHandle",
+			"cpp": "::Shalltear::RHI::PipelineHandle",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "RHITransientSet",
+			"cpp": "::Shalltear::RHI::TransientSet",
+			"size": 8,
+			"align": 8,
+			"fields": [{ "name": "opaque", "type": "u64", "offset": 0 }]
+		},
+		{
+			"name": "RHISamplerHandle",
+			"cpp": "::Shalltear::RHI::SamplerHandle",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "RHIDeviceDesc",
+			"cpp": "::Shalltear::RHI::DeviceDesc",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "enableValidation", "type": "bool", "offset": 0 },
+				{ "name": "forceAdapterIndex", "type": "i32", "offset": 4 },
+				{ "name": "headless", "type": "bool", "offset": 8 }
+			]
+		},
+		{
+			"name": "RHIVideoMemoryInfo",
+			"cpp": "::Shalltear::RHI::VideoMemoryInfo",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "usedBytes", "type": "u64", "offset": 0 },
+				{ "name": "budgetBytes", "type": "u64", "offset": 8 }
+			]
+		},
+		{
+			"name": "RHIDescriptorBindingDesc",
+			"cpp": "::Shalltear::RHI::DescriptorBindingDesc",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "set", "type": "u32", "offset": 0 },
+				{ "name": "binding", "type": "u32", "offset": 4 },
+				{ "name": "type", "type": "RHIDescriptorType", "offset": 8 },
+				{ "name": "stages", "type": "RHIShaderStage", "offset": 9 }
+			]
+		},
+		{
+			"name": "RHISpecializationConstant",
+			"cpp": "::Shalltear::RHI::SpecializationConstant",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "id", "type": "u32", "offset": 0 },
+				{ "name": "value", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "RHIRenderPassDescAttachment",
+			"cpp": "::Shalltear::RHI::RenderPassDesc::Attachment",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "texture", "type": "RHITextureHandle", "offset": 0 },
+				{ "name": "load", "type": "RHILoadOp", "offset": 8 },
+				{ "name": "store", "type": "RHIStoreOp", "offset": 9 },
+				{ "name": "clearColor", "type": "Color", "offset": 12 },
+				{ "name": "layer", "type": "u32", "offset": 28 },
+				{ "name": "mip", "type": "u32", "offset": 32 }
+			]
+		},
+		{
+			"name": "RHIRenderPassDescDepthAttachment",
+			"cpp": "::Shalltear::RHI::RenderPassDesc::DepthAttachment",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "texture", "type": "RHITextureHandle", "offset": 0 },
+				{ "name": "load", "type": "RHILoadOp", "offset": 8 },
+				{ "name": "store", "type": "RHIStoreOp", "offset": 9 },
+				{ "name": "clearDepth", "type": "f32", "offset": 12 },
+				{ "name": "layer", "type": "u32", "offset": 16 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "RHIRenderPassDesc", "cpp": "::Shalltear::RHI::RenderPassDesc", "owned": true, "create": true },
+		{ "name": "RHIAdapterInfo", "cpp": "::Shalltear::RHI::AdapterInfo", "owned": true, "create": true },
+		{ "name": "RHIBufferDesc", "cpp": "::Shalltear::RHI::BufferDesc", "owned": true, "create": true },
+		{ "name": "RHITextureDesc", "cpp": "::Shalltear::RHI::TextureDesc", "owned": true, "create": true },
+		{ "name": "RHISamplerDesc", "cpp": "::Shalltear::RHI::SamplerDesc", "owned": true, "create": true },
+		{ "name": "RHIGraphicsPipelineDesc", "cpp": "::Shalltear::RHI::GraphicsPipelineDesc", "owned": true, "create": true },
+		{ "name": "RHIComputePipelineDesc", "cpp": "::Shalltear::RHI::ComputePipelineDesc", "owned": true, "create": true },
+		{ "name": "RHINativeSwapChainDesc", "cpp": "::Shalltear::RHI::NativeSwapChainDesc", "owned": true, "create": true },
+		{ "name": "RHITransientAllocation", "cpp": "::Shalltear::RHI::TransientAllocation", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

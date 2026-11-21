@@ -1,0 +1,66 @@
+{
+	"area": "UIStyleSheet",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Style.h"
+	],
+	"class": "Shalltear.UIStyleSheet",
+	"instance": "UIStyleSheet",
+	"functions": [
+		{
+			"id": "Parse",
+			"cpp": "self->Parse(source)",
+			"returns": "void",
+			"params": [{ "name": "source", "type": "string" }],
+			"csharp": { "member": "Parse", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "SplitSource",
+			"cpp": "::Shalltear::UI::StyleSheet::SplitSource(source, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "outValue", "type": "list<UIStyleRuleSource>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UI::StyleRuleSource>" }
+			],
+			"csharp": { "member": "SplitSource", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "SplitDeclarations",
+			"cpp": "::Shalltear::UI::StyleSheet::SplitDeclarations(declarations, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "declarations", "type": "string" },
+				{ "name": "outValue", "type": "list<UIStyleDeclarationSource>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UI::StyleDeclarationSource>" }
+			],
+			"csharp": { "member": "SplitDeclarations", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetRules",
+			"cpp": "self->GetRules()",
+			"returns": "list<UIStyleRule>",
+			"params": [],
+			"csharp": { "member": "Rules", "kind": "getter" }
+		},
+		{
+			"id": "ApplyRule",
+			"cpp": "::Shalltear::UI::StyleSheet::ApplyRule(*style, *rule, vars)",
+			"returns": "void",
+			"params": [
+				{ "name": "style", "type": "UIStyle" },
+				{ "name": "rule", "type": "UIStyleRule" },
+				{ "name": "vars", "type": "UIStyleVars", "optional": true }
+			],
+			"csharp": { "member": "ApplyRule", "kind": "method" },
+			"static": true
+		}
+	]
+}

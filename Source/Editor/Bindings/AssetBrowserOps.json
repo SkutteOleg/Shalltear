@@ -1,0 +1,437 @@
+{
+	"area": "AssetBrowserOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AssetBrowserOps.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.AssetBrowserOps",
+	"constants": [
+		{ "name": "SLIDER_SMALLEST_GRID", "cpp": "::Shalltear::AssetBrowserOps::SLIDER_SMALLEST_GRID", "type": "f32", "value": "0x1.eb851e0000000p-5" }
+	],
+	"functions": [
+		{
+			"id": "IsProjectMounted",
+			"cpp": "::Shalltear::AssetBrowserOps::IsProjectMounted()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsProjectMounted", "kind": "getter" }
+		},
+		{
+			"id": "GetProjectRootPhysical",
+			"cpp": "(::Shalltear::AssetBrowserOps::GetProjectRootPhysical()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProjectRootPhysical", "kind": "getter" }
+		},
+		{
+			"id": "ScanTree",
+			"cpp": "::Shalltear::AssetBrowserOps::ScanTree(outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "outValue", "type": "list<AssetBrowserOpsEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::Entry>" }
+			],
+			"csharp": { "member": "ScanTree", "kind": "method" }
+		},
+		{
+			"id": "FolderContents",
+			"cpp": "::Shalltear::AssetBrowserOps::FolderContents(Slots::Copies<::Shalltear::Vector<::Shalltear::AssetBrowserOps::Entry>>(tree), folderRelPath, filter, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "tree", "type": "list<AssetBrowserOpsEntry>" },
+				{ "name": "folderRelPath", "type": "string" },
+				{ "name": "filter", "type": "string" },
+				{ "name": "outValue", "type": "list<AssetBrowserOpsEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::Entry>" }
+			],
+			"csharp": { "member": "FolderContents", "kind": "method" }
+		},
+		{
+			"id": "EntryKeyForPath",
+			"cpp": "::Shalltear::AssetBrowserOps::EntryKeyForPath(relPath)",
+			"returns": "u64",
+			"params": [{ "name": "relPath", "type": "string" }],
+			"csharp": { "member": "EntryKeyForPath", "kind": "method" }
+		},
+		{
+			"id": "ScanProducts",
+			"cpp": "::Shalltear::AssetBrowserOps::ScanProducts(str(relPath), depth, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "relPath", "type": "string" },
+				{ "name": "depth", "type": "u32" },
+				{ "name": "outValue", "type": "list<AssetBrowserOpsEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::Entry>" }
+			],
+			"csharp": { "member": "ScanProducts", "kind": "method" }
+		},
+		{
+			"id": "ScanLinks",
+			"cpp": "::Shalltear::AssetBrowserOps::ScanLinks(str(relPath), depth, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "relPath", "type": "string" },
+				{ "name": "depth", "type": "u32" },
+				{ "name": "outValue", "type": "list<AssetBrowserOpsEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::Entry>" }
+			],
+			"csharp": { "member": "ScanLinks", "kind": "method" }
+		},
+		{
+			"id": "CollectAssignableAssets",
+			"cpp": "::Shalltear::AssetBrowserOps::CollectAssignableAssets(type, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "type", "type": "StringHash" },
+				{
+					"name": "outValue",
+					"type": "list<AssetBrowserOpsAssignableAsset>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::AssignableAsset>"
+				}
+			],
+			"csharp": { "member": "CollectAssignableAssets", "kind": "method" }
+		},
+		{
+			"id": "RefusalFor",
+			"cpp": "::Shalltear::AssetBrowserOps::RefusalFor(*entry, command)",
+			"returns": "string",
+			"params": [
+				{ "name": "entry", "type": "AssetBrowserOpsEntry" },
+				{ "name": "command", "type": "AssetBrowserOpsEntryCommand" }
+			],
+			"csharp": { "member": "RefusalFor", "kind": "method" }
+		},
+		{
+			"id": "ExtractProduct",
+			"cpp": "::Shalltear::AssetBrowserOps::ExtractProduct(*entry)",
+			"returns": "string",
+			"params": [{ "name": "entry", "type": "AssetBrowserOpsEntry" }],
+			"csharp": { "member": "ExtractProduct", "kind": "method" }
+		},
+		{
+			"id": "RevealEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::RevealEntry(*entry)",
+			"returns": "bool",
+			"params": [{ "name": "entry", "type": "AssetBrowserOpsEntry" }],
+			"csharp": { "member": "RevealEntry", "kind": "method" }
+		},
+		{
+			"id": "GetDefaultCreateFolder",
+			"cpp": "(::Shalltear::AssetBrowserOps::GetDefaultCreateFolder()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultCreateFolder", "kind": "getter" }
+		},
+		{
+			"id": "CreateFolder",
+			"cpp": "::Shalltear::AssetBrowserOps::CreateFolder(::Shalltear::Path(str(virtualDir)), str(name))",
+			"returns": "bool",
+			"params": [
+				{ "name": "virtualDir", "type": "string" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "CreateFolder", "kind": "method" }
+		},
+		{
+			"id": "RenameEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::RenameEntry(::Shalltear::Path(str(virtualPath)), str(newName))",
+			"returns": "bool",
+			"params": [
+				{ "name": "virtualPath", "type": "string" },
+				{ "name": "newName", "type": "string" }
+			],
+			"csharp": { "member": "RenameEntry", "kind": "method" }
+		},
+		{
+			"id": "RenameStem",
+			"cpp": "::Shalltear::AssetBrowserOps::RenameStem(fileName)",
+			"returns": "string",
+			"params": [{ "name": "fileName", "type": "string" }],
+			"csharp": { "member": "RenameStem", "kind": "method" }
+		},
+		{
+			"id": "RenamedFileName",
+			"cpp": "::Shalltear::AssetBrowserOps::RenamedFileName(fileName, typed)",
+			"returns": "string",
+			"params": [
+				{ "name": "fileName", "type": "string" },
+				{ "name": "typed", "type": "string" }
+			],
+			"csharp": { "member": "RenamedFileName", "kind": "method" }
+		},
+		{
+			"id": "ResolveTypedPath",
+			"cpp": "::Shalltear::AssetBrowserOps::ResolveTypedPath(std::span<const ::Shalltear::AssetBrowserOps::Entry>(Slots::Copies<::Shalltear::Vector<::Shalltear::AssetBrowserOps::Entry>>(entries)), typed)",
+			"returns": "AssetBrowserOpsEntry",
+			"params": [
+				{ "name": "entries", "type": "list<AssetBrowserOpsEntry>" },
+				{ "name": "typed", "type": "string" }
+			],
+			"csharp": { "member": "ResolveTypedPath", "kind": "method" }
+		},
+		{
+			"id": "DeleteEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::DeleteEntry(::Shalltear::Path(str(virtualPath)))",
+			"returns": "bool",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "DeleteEntry", "kind": "method" }
+		},
+		{
+			"id": "MakeUniqueName",
+			"cpp": "::Shalltear::AssetBrowserOps::MakeUniqueName(::Shalltear::Path(str(virtualDir)), str(desiredName))",
+			"returns": "string",
+			"params": [
+				{ "name": "virtualDir", "type": "string" },
+				{ "name": "desiredName", "type": "string" }
+			],
+			"csharp": { "member": "MakeUniqueName", "kind": "method" }
+		},
+		{
+			"id": "CreateAsset",
+			"cpp": "::Shalltear::AssetBrowserOps::CreateAsset(::Shalltear::Path(str(virtualDir)), assetTypeId, str(desiredName), &outRelPath, templateIndex)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "virtualDir", "type": "string" },
+				{ "name": "assetTypeId", "type": "StringHash" },
+				{ "name": "desiredName", "type": "string" },
+				{ "name": "outRelPath", "type": "string", "out": true },
+				{ "name": "templateIndex", "type": "u32" }
+			],
+			"csharp": { "member": "CreateAsset", "kind": "method" }
+		},
+		{
+			"id": "GetCreateMenuEntries",
+			"cpp": "::Shalltear::AssetBrowserOps::GetCreateMenuEntries(outValue)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "outValue",
+					"type": "list<AssetBrowserOpsCreateMenuEntry>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::CreateMenuEntry>"
+				}
+			],
+			"csharp": { "member": "GetCreateMenuEntries", "kind": "method" }
+		},
+		{
+			"id": "RegisterCreateEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::RegisterCreateEntry(label, defaultName, create, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "label", "type": "string" },
+				{ "name": "defaultName", "type": "string" },
+				{
+					"name": "create",
+					"type": "fn<EngineGuid;string;string>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::Guid (const Shalltear::Path &, const std::basic_string<char> &)>"
+				}
+			],
+			"csharp": { "member": "RegisterCreateEntry", "kind": "method" }
+		},
+		{
+			"id": "UnregisterCreateEntriesOwnedBy",
+			"cpp": "::Shalltear::AssetBrowserOps::UnregisterCreateEntriesOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterCreateEntriesOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "RunCreateEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::RunCreateEntry(label, ::Shalltear::Path(str(virtualDir)), str(name), &outRelPath)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "label", "type": "string" },
+				{ "name": "virtualDir", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "outRelPath", "type": "string", "out": true }
+			],
+			"csharp": { "member": "RunCreateEntry", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabFromObject",
+			"cpp": "::Shalltear::AssetBrowserOps::CreatePrefabFromObject(::Shalltear::Handle<::Shalltear::SceneObject>(root), ::Shalltear::Path(str(virtualDir)), &outRelPath)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "virtualDir", "type": "string" },
+				{ "name": "outRelPath", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CreatePrefabFromObject", "kind": "method" }
+		},
+		{
+			"id": "CanCreatePrefabVariant",
+			"cpp": "::Shalltear::AssetBrowserOps::CanCreatePrefabVariant(::Shalltear::Path(str(virtualPath)))",
+			"returns": "bool",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "CanCreatePrefabVariant", "kind": "method" }
+		},
+		{
+			"id": "IsPrefabVariant",
+			"cpp": "::Shalltear::AssetBrowserOps::IsPrefabVariant(str(relPath))",
+			"returns": "bool",
+			"params": [{ "name": "relPath", "type": "string" }],
+			"csharp": { "member": "IsPrefabVariant", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabVariant",
+			"cpp": "::Shalltear::AssetBrowserOps::CreatePrefabVariant(::Shalltear::Path(str(virtualPath)), &outRelPath)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "virtualPath", "type": "string" },
+				{ "name": "outRelPath", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CreatePrefabVariant", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabVariantFromObject",
+			"cpp": "::Shalltear::AssetBrowserOps::CreatePrefabVariantFromObject(::Shalltear::Handle<::Shalltear::SceneObject>(root), ::Shalltear::Path(str(virtualDir)), &outRelPath)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "virtualDir", "type": "string" },
+				{ "name": "outRelPath", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CreatePrefabVariantFromObject", "kind": "method" }
+		},
+		{
+			"id": "MoveEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::MoveEntry(::Shalltear::Path(str(virtualPath)), ::Shalltear::Path(str(virtualDestDir)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "virtualPath", "type": "string" },
+				{ "name": "virtualDestDir", "type": "string" }
+			],
+			"csharp": { "member": "MoveEntry", "kind": "method" }
+		},
+		{
+			"id": "DuplicateEntry",
+			"cpp": "::Shalltear::AssetBrowserOps::DuplicateEntry(::Shalltear::Path(str(virtualPath)))",
+			"returns": "string",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "DuplicateEntry", "kind": "method" }
+		},
+		{
+			"id": "ImportExternalFile",
+			"cpp": "::Shalltear::AssetBrowserOps::ImportExternalFile(::Shalltear::Path(str(physicalSource)), ::Shalltear::Path(str(virtualDestDir)))",
+			"returns": "string",
+			"params": [
+				{ "name": "physicalSource", "type": "string" },
+				{ "name": "virtualDestDir", "type": "string" }
+			],
+			"csharp": { "member": "ImportExternalFile", "kind": "method" }
+		},
+		{
+			"id": "RevealInExplorer",
+			"cpp": "::Shalltear::AssetBrowserOps::RevealInExplorer(::Shalltear::Path(str(virtualPath)))",
+			"returns": "bool",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "RevealInExplorer", "kind": "method" }
+		},
+		{
+			"id": "OpensInExternalEditor",
+			"cpp": "::Shalltear::AssetBrowserOps::OpensInExternalEditor(extension)",
+			"returns": "bool",
+			"params": [{ "name": "extension", "type": "string" }],
+			"csharp": { "member": "OpensInExternalEditor", "kind": "method" }
+		},
+		{
+			"id": "OpenInExternalEditor",
+			"cpp": "::Shalltear::AssetBrowserOps::OpenInExternalEditor(::Shalltear::Path(str(physicalPath)), line)",
+			"returns": "bool",
+			"params": [
+				{ "name": "physicalPath", "type": "string" },
+				{ "name": "line", "type": "u32" }
+			],
+			"csharp": { "member": "OpenInExternalEditor", "kind": "method" }
+		},
+		{
+			"id": "MatchesFilter",
+			"cpp": "::Shalltear::AssetBrowserOps::MatchesFilter(text, filter)",
+			"returns": "bool",
+			"params": [
+				{ "name": "text", "type": "string" },
+				{ "name": "filter", "type": "string" }
+			],
+			"csharp": { "member": "MatchesFilter", "kind": "method" }
+		},
+		{
+			"id": "CellSizeForSlider",
+			"cpp": "::Shalltear::AssetBrowserOps::CellSizeForSlider(sliderValue, minSidePx, maxSidePx, labelBandPx)",
+			"returns": "AssetBrowserOpsGridCellSize",
+			"params": [
+				{ "name": "sliderValue", "type": "f32" },
+				{ "name": "minSidePx", "type": "f32" },
+				{ "name": "maxSidePx", "type": "f32" },
+				{ "name": "labelBandPx", "type": "f32" }
+			],
+			"csharp": { "member": "CellSizeForSlider", "kind": "method" }
+		},
+		{
+			"id": "SliderIsGrid",
+			"cpp": "::Shalltear::AssetBrowserOps::SliderIsGrid(sliderValue)",
+			"returns": "bool",
+			"params": [{ "name": "sliderValue", "type": "f32" }],
+			"csharp": { "member": "SliderIsGrid", "kind": "method" }
+		},
+		{
+			"id": "BadgeGlyphSizeFor",
+			"cpp": "::Shalltear::AssetBrowserOps::BadgeGlyphSizeFor(wellPx)",
+			"returns": "f32",
+			"params": [{ "name": "wellPx", "type": "f32" }],
+			"csharp": { "member": "BadgeGlyphSizeFor", "kind": "method" }
+		},
+		{
+			"id": "GridColumnsFor",
+			"cpp": "::Shalltear::AssetBrowserOps::GridColumnsFor(viewportWidthPx, cellWidthPx)",
+			"returns": "u32",
+			"params": [
+				{ "name": "viewportWidthPx", "type": "f32" },
+				{ "name": "cellWidthPx", "type": "f32" }
+			],
+			"csharp": { "member": "GridColumnsFor", "kind": "method" }
+		},
+		{
+			"id": "VisibleGridWindow",
+			"cpp": "::Shalltear::AssetBrowserOps::VisibleGridWindow(itemCount, columns, cellHeightPx, scrollYPx, viewportHeightPx)",
+			"returns": "AssetBrowserOpsGridWindow",
+			"params": [
+				{ "name": "itemCount", "type": "u32" },
+				{ "name": "columns", "type": "u32" },
+				{ "name": "cellHeightPx", "type": "f32" },
+				{ "name": "scrollYPx", "type": "f32" },
+				{ "name": "viewportHeightPx", "type": "f32" }
+			],
+			"csharp": { "member": "VisibleGridWindow", "kind": "method" }
+		},
+		{
+			"id": "FoldOutBandSegments",
+			"cpp": "::Shalltear::AssetBrowserOps::FoldOutBandSegments(depths, columns, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "depths", "type": "list<u32>" },
+				{ "name": "columns", "type": "u32" },
+				{
+					"name": "outValue",
+					"type": "list<AssetBrowserOpsFoldOutSegment>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::AssetBrowserOps::FoldOutSegment>"
+				}
+			],
+			"csharp": { "member": "FoldOutBandSegments", "kind": "method" }
+		},
+		{
+			"id": "FoldButtonSizeFor",
+			"cpp": "::Shalltear::AssetBrowserOps::FoldButtonSizeFor(cellSidePx, maxCellSidePx, smallPx, mediumPx, largePx)",
+			"returns": "f32",
+			"params": [
+				{ "name": "cellSidePx", "type": "f32" },
+				{ "name": "maxCellSidePx", "type": "f32" },
+				{ "name": "smallPx", "type": "f32" },
+				{ "name": "mediumPx", "type": "f32" },
+				{ "name": "largePx", "type": "f32" }
+			],
+			"csharp": { "member": "FoldButtonSizeFor", "kind": "method" }
+		}
+	]
+}

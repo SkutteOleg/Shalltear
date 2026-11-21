@@ -1,0 +1,39 @@
+{
+	"area": "UIDebugOpsSnapshot",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsSnapshot",
+	"instance": "UIDebugOpsSnapshot",
+	"functions": [
+		{
+			"id": "GetRows",
+			"cpp": "self->rows",
+			"returns": "list<UIDebugOpsRow>",
+			"params": [],
+			"csharp": { "member": "Rows", "kind": "getter" }
+		},
+		{
+			"id": "SetRows",
+			"cpp": "self->rows = Slots::ToVector<::Shalltear::UIDebugOps::Row>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDebugOpsRow>" }],
+			"csharp": { "member": "Rows", "kind": "setter" }
+		},
+		{
+			"id": "GetRevision",
+			"cpp": "self->revision",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Revision", "kind": "getter" }
+		},
+		{
+			"id": "SetRevision",
+			"cpp": "self->revision = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Revision", "kind": "setter" }
+		}
+	]
+}

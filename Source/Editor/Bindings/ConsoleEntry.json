@@ -1,0 +1,138 @@
+{
+	"area": "ConsoleEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorConsole.h",
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.Editor.ConsoleEntry",
+	"instance": "ConsoleEntry",
+	"functions": [
+		{
+			"id": "GetLevel",
+			"cpp": "self->level",
+			"returns": "LogLevel",
+			"params": [],
+			"csharp": { "member": "Level", "kind": "getter" }
+		},
+		{
+			"id": "SetLevel",
+			"cpp": "self->level = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LogLevel" }],
+			"csharp": { "member": "Level", "kind": "setter" }
+		},
+		{
+			"id": "GetCategory",
+			"cpp": "self->category",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Category", "kind": "getter" }
+		},
+		{
+			"id": "SetCategory",
+			"cpp": "self->category = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Category", "kind": "setter" }
+		},
+		{
+			"id": "GetMessage",
+			"cpp": "self->message",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Message", "kind": "getter" }
+		},
+		{
+			"id": "SetMessage",
+			"cpp": "self->message = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Message", "kind": "setter" }
+		},
+		{
+			"id": "GetFile",
+			"cpp": "self->file",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "File", "kind": "getter" }
+		},
+		{
+			"id": "SetFile",
+			"cpp": "self->file = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "File", "kind": "setter" }
+		},
+		{
+			"id": "GetFunction",
+			"cpp": "self->function",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Function", "kind": "getter" }
+		},
+		{
+			"id": "SetFunction",
+			"cpp": "self->function = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Function", "kind": "setter" }
+		},
+		{
+			"id": "GetLine",
+			"cpp": "self->line",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Line", "kind": "getter" }
+		},
+		{
+			"id": "SetLine",
+			"cpp": "self->line = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Line", "kind": "setter" }
+		},
+		{
+			"id": "GetColumn",
+			"cpp": "self->column",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Column", "kind": "getter" }
+		},
+		{
+			"id": "SetColumn",
+			"cpp": "self->column = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Column", "kind": "setter" }
+		},
+		{
+			"id": "GetSequence",
+			"cpp": "self->sequence",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Sequence", "kind": "getter" }
+		},
+		{
+			"id": "SetSequence",
+			"cpp": "self->sequence = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Sequence", "kind": "setter" }
+		},
+		{
+			"id": "GetClickable",
+			"cpp": "self->clickable",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Clickable", "kind": "getter" }
+		},
+		{
+			"id": "SetClickable",
+			"cpp": "self->clickable = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Clickable", "kind": "setter" }
+		}
+	]
+}

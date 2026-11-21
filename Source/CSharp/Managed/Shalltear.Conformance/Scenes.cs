@@ -39,6 +39,28 @@ static class SceneProbe {
 }
 
 static class SceneTests {
+	[ConformanceTest]
+	internal static void ComponentsFoundThroughTheHierarchy() {
+		SceneObject root = BindingProbe.CreateObject("LookupRoot");
+		SceneObject middle = BindingProbe.CreateObject("LookupMiddle");
+		SceneObject leaf = BindingProbe.CreateObject("LookupLeaf");
+		middle.SetParent(root);
+		leaf.SetParent(middle);
+		Camera camera = leaf.AddComponent<Camera>();
+		Light light = root.AddComponent<Light>();
+		Check.Same(camera, root.GetComponentInChildren<Camera>());
+		Check.Same(light, root.GetComponentInChildren<Light>());
+		Check.True(middle.GetComponentInChildren<Light>() == null, "no light under middle");
+		Check.Same(light, leaf.GetComponentInParent<Light>());
+		Check.Same(camera, leaf.GetComponentInParent<Camera>());
+		Check.True(root.GetComponentInParent<Camera>() == null, "no camera over root");
+		middle.SetActive(false);
+		Check.True(root.GetComponentInChildren<Camera>() == null, "inactive branch skipped");
+		Check.Same(camera, root.GetComponentInChildren<Camera>(true));
+		root.Destroy();
+		BindingProbe.EndFrame();
+	}
+
 	const string LEVEL = "project://Assets/Level.scene";
 	const string UNIT = "project://Assets/Unit.prefab";
 	const string LIFECYCLE = " called inside OnAttach/OnDetach/OnEnable/OnDisable/OnDestroy. Call from OnUpdate";

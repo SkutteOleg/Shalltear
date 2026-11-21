@@ -1,0 +1,201 @@
+{
+	"area": "SpriteEditorOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SpriteEditorOps.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.Editor.SpriteEditorOps",
+	"enums": [
+		{
+			"name": "SpriteEditorOpsSliceMode",
+			"cpp": "::Shalltear::SpriteEditorOps::SliceMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "CellSize", "value": 0 },
+				{ "name": "CellCount", "value": 1 },
+				{ "name": "Automatic", "value": 2 }
+			]
+		},
+		{
+			"name": "SpriteEditorOpsGrabKind",
+			"cpp": "::Shalltear::SpriteEditorOps::GrabKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Create", "value": 1 },
+				{ "name": "Move", "value": 2 },
+				{ "name": "Resize", "value": 3 }
+			]
+		},
+		{
+			"name": "SpriteEditorOpsGrabEdge",
+			"cpp": "::Shalltear::SpriteEditorOps::GrabEdge",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Left", "value": 1 },
+				{ "name": "Top", "value": 2 },
+				{ "name": "Right", "value": 4 },
+				{ "name": "Bottom", "value": 8 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "SpriteEditorOpsSliceDesc",
+			"cpp": "::Shalltear::SpriteEditorOps::SliceDesc",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "mode", "type": "SpriteEditorOpsSliceMode", "offset": 0 },
+				{ "name": "cell", "type": "Vec2I", "offset": 4 },
+				{ "name": "offset", "type": "Vec2I", "offset": 12 },
+				{ "name": "padding", "type": "Vec2I", "offset": 20 }
+			]
+		},
+		{
+			"name": "SpriteEditorOpsCanvasView",
+			"cpp": "::Shalltear::SpriteEditorOps::CanvasView",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "box", "type": "UIRect", "offset": 0 },
+				{ "name": "imageSize", "type": "Vec2I", "offset": 16 },
+				{ "name": "zoom", "type": "f32", "offset": 24 },
+				{ "name": "pan", "type": "Vec2", "offset": 28 }
+			]
+		},
+		{
+			"name": "SpriteEditorOpsGrab",
+			"cpp": "::Shalltear::SpriteEditorOps::Grab",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "kind", "type": "SpriteEditorOpsGrabKind", "offset": 0 },
+				{ "name": "sprite", "type": "i32", "offset": 4 },
+				{ "name": "edges", "type": "u8", "offset": 8 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "Slice",
+			"cpp": "::Shalltear::SpriteEditorOps::Slice(desc, imageSize, reinterpret_cast<const u8*>(static_cast<uintptr_t>(rgba)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "desc", "type": "SpriteEditorOpsSliceDesc" },
+				{ "name": "imageSize", "type": "Vec2I" },
+				{ "name": "rgba", "type": "u64" },
+				{ "name": "outValue", "type": "list<RectI>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::RectI>" }
+			],
+			"csharp": { "member": "Slice", "kind": "method" }
+		},
+		{
+			"id": "MergeSlices",
+			"cpp": "::Shalltear::SpriteEditorOps::MergeSlices(sprites, rects, baseName)",
+			"returns": "void",
+			"params": [
+				{ "name": "sprites", "type": "list<TextureSprite>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::TextureSprite>" },
+				{ "name": "rects", "type": "list<RectI>" },
+				{ "name": "baseName", "type": "string" }
+			],
+			"csharp": { "member": "MergeSlices", "kind": "method" }
+		},
+		{
+			"id": "MintId",
+			"cpp": "::Shalltear::SpriteEditorOps::MintId()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "MintId", "kind": "method" }
+		},
+		{
+			"id": "UniqueName",
+			"cpp": "::Shalltear::SpriteEditorOps::UniqueName(std::span<const ::Shalltear::TextureSprite>(Slots::Copies<::Shalltear::Vector<::Shalltear::TextureSprite>>(sprites)), baseValue)",
+			"returns": "string",
+			"params": [
+				{ "name": "sprites", "type": "list<TextureSprite>" },
+				{ "name": "baseValue", "type": "string" }
+			],
+			"csharp": { "member": "UniqueName", "kind": "method" }
+		},
+		{
+			"id": "DecodeTexels",
+			"cpp": "::Shalltear::SpriteEditorOps::DecodeTexels(*texture, rgba)",
+			"returns": "bool",
+			"params": [
+				{ "name": "texture", "type": "Texture" },
+				{ "name": "rgba", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" }
+			],
+			"csharp": { "member": "DecodeTexels", "kind": "method" }
+		},
+		{
+			"id": "ApplySprites",
+			"cpp": "::Shalltear::SpriteEditorOps::ApplySprites(::Shalltear::Path(str(texturePath)), std::span<const ::Shalltear::TextureSprite>(Slots::Copies<::Shalltear::Vector<::Shalltear::TextureSprite>>(sprites)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "texturePath", "type": "string" },
+				{ "name": "sprites", "type": "list<TextureSprite>" }
+			],
+			"csharp": { "member": "ApplySprites", "kind": "method" }
+		},
+		{
+			"id": "ZoomAt",
+			"cpp": "::Shalltear::SpriteEditorOps::ZoomAt(view, point, notches)",
+			"returns": "void",
+			"params": [
+				{ "name": "view", "type": "SpriteEditorOpsCanvasView", "out": true },
+				{ "name": "point", "type": "Vec2" },
+				{ "name": "notches", "type": "f32" }
+			],
+			"csharp": { "member": "ZoomAt", "kind": "method" }
+		},
+		{
+			"id": "Pick",
+			"cpp": "::Shalltear::SpriteEditorOps::Pick(view, std::span<const ::Shalltear::TextureSprite>(Slots::Copies<::Shalltear::Vector<::Shalltear::TextureSprite>>(sprites)), selected, point, handlePx)",
+			"returns": "SpriteEditorOpsGrab",
+			"params": [
+				{ "name": "view", "type": "SpriteEditorOpsCanvasView" },
+				{ "name": "sprites", "type": "list<TextureSprite>" },
+				{ "name": "selected", "type": "i32" },
+				{ "name": "point", "type": "Vec2" },
+				{ "name": "handlePx", "type": "f32" }
+			],
+			"csharp": { "member": "Pick", "kind": "method" }
+		},
+		{
+			"id": "Drag",
+			"cpp": "::Shalltear::SpriteEditorOps::Drag(start, grab, delta, imageSize)",
+			"returns": "RectI",
+			"params": [
+				{ "name": "start", "type": "RectI" },
+				{ "name": "grab", "type": "SpriteEditorOpsGrab" },
+				{ "name": "delta", "type": "Vec2I" },
+				{ "name": "imageSize", "type": "Vec2I" }
+			],
+			"csharp": { "member": "Drag", "kind": "method" }
+		},
+		{
+			"id": "SpanRect",
+			"cpp": "::Shalltear::SpriteEditorOps::SpanRect(fromTexel, toTexel, imageSize)",
+			"returns": "RectI",
+			"params": [
+				{ "name": "fromTexel", "type": "Vec2" },
+				{ "name": "toTexel", "type": "Vec2" },
+				{ "name": "imageSize", "type": "Vec2I" }
+			],
+			"csharp": { "member": "SpanRect", "kind": "method" }
+		},
+		{
+			"id": "ClampBorder",
+			"cpp": "::Shalltear::SpriteEditorOps::ClampBorder(border, rectSize)",
+			"returns": "SpriteBorder",
+			"params": [
+				{ "name": "border", "type": "SpriteBorder" },
+				{ "name": "rectSize", "type": "Vec2I" }
+			],
+			"csharp": { "member": "ClampBorder", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,141 @@
+{
+	"area": "ModelContribution",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelContributors.h",
+		"Shalltear/Core/Asset/AssetImporter.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Serialization/JSON.h",
+		"Shalltear/ImportPipeline/ModelParse.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.ModelContribution",
+	"instance": "ModelContribution",
+	"functions": [
+		{
+			"id": "FindProduct",
+			"cpp": "self->FindProduct(type)",
+			"returns": "EngineGuid",
+			"params": [{ "name": "type", "type": "StringHash" }],
+			"csharp": { "member": "FindProduct", "kind": "method" }
+		},
+		{
+			"id": "MakeProductKey",
+			"cpp": "self->MakeProductKey(kind, name)",
+			"returns": "string",
+			"params": [
+				{ "name": "kind", "type": "string" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "MakeProductKey", "kind": "method" }
+		},
+		{
+			"id": "AddRootComponent",
+			"cpp": "self->AddRootComponent(componentType)",
+			"returns": "bool",
+			"params": [{ "name": "componentType", "type": "StringHash" }],
+			"csharp": { "member": "AddRootComponent", "kind": "method" }
+		},
+		{
+			"id": "GetParsed",
+			"cpp": "self->parsed",
+			"returns": "ModelParseResult",
+			"params": [],
+			"csharp": { "member": "Parsed", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetModelVirtualPath",
+			"cpp": "(self->modelVirtualPath).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ModelVirtualPath", "kind": "getter" }
+		},
+		{
+			"id": "GetProducts",
+			"cpp": "self->products",
+			"returns": "list<ModelProduct>",
+			"params": [],
+			"csharp": { "member": "Products", "kind": "getter" }
+		},
+		{
+			"id": "SetProducts",
+			"cpp": "self->products = Slots::KeepFieldCopies(self, 0xf1647a638e2d8224ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelProduct>" }],
+			"csharp": { "member": "Products", "kind": "setter" }
+		},
+		{
+			"id": "GetNodeToBone",
+			"cpp": "self->nodeToBone",
+			"returns": "list<i32>",
+			"params": [],
+			"csharp": { "member": "NodeToBone", "kind": "getter" }
+		},
+		{
+			"id": "SetNodeToBone",
+			"cpp": "self->nodeToBone = Slots::KeepFieldSpan(self, 0xd62f4be3d492db5full, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i32>" }],
+			"csharp": { "member": "NodeToBone", "kind": "setter" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "JSONValue",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetContext",
+			"cpp": "self->context",
+			"returns": "AssetImportContext",
+			"params": [],
+			"csharp": { "member": "Context", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetUser",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->user))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "User", "kind": "getter" }
+		},
+		{
+			"id": "SetUser",
+			"cpp": "self->user = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "User", "kind": "setter" }
+		},
+		{
+			"id": "GetKeyLedger",
+			"cpp": "Slots::Deref(self->keyLedger)",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "KeyLedger", "kind": "getter" }
+		},
+		{
+			"id": "SetKeyLedger",
+			"cpp": "Slots::Deref(self->keyLedger) = Slots::ToVector<::Shalltear::str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "KeyLedger", "kind": "setter" }
+		},
+		{
+			"id": "GetRootComponents",
+			"cpp": "Slots::Deref(self->rootComponents)",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "RootComponents", "kind": "getter" }
+		},
+		{
+			"id": "SetRootComponents",
+			"cpp": "Slots::Deref(self->rootComponents) = Slots::ToVector<::Shalltear::StringHash>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "RootComponents", "kind": "setter" }
+		}
+	]
+}

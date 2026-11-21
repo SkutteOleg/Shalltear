@@ -1,0 +1,82 @@
+{
+	"area": "SettingsCategoryInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Settings.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.SettingsCategoryInfo",
+	"instance": "SettingsCategoryInfo",
+	"functions": [
+		{
+			"id": "GetPath",
+			"cpp": "self->path",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Path", "kind": "getter" }
+		},
+		{
+			"id": "SetPath",
+			"cpp": "self->path = Slots::KeepFieldText(self, 0x44c95120c4b1444bull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Path", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetLive",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->live))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Live", "kind": "getter" }
+		},
+		{
+			"id": "SetLive",
+			"cpp": "self->live = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Live", "kind": "setter" }
+		},
+		{
+			"id": "GetScope",
+			"cpp": "self->scope",
+			"returns": "SettingScope",
+			"params": [],
+			"csharp": { "member": "Scope", "kind": "getter" }
+		},
+		{
+			"id": "SetScope",
+			"cpp": "self->scope = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SettingScope" }],
+			"csharp": { "member": "Scope", "kind": "setter" }
+		},
+		{
+			"id": "GetOverridable",
+			"cpp": "self->overridable",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Overridable", "kind": "getter" }
+		},
+		{
+			"id": "SetOverridable",
+			"cpp": "self->overridable = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Overridable", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,25 @@
+{
+	"area": "TextRef",
+	"slots": true,
+	"include": ["Shalltear/Core/Types.h"],
+	"class": "Shalltear.Interop.TextRef",
+	"instance": "TextRef",
+	"natives": [{ "name": "TextRef", "cpp": "::Shalltear::str", "doc": "C++ string a callback may change (valid until the callback returns)." }],
+	"functions": [
+		{
+			"id": "GetValue",
+			"cpp": "std::string_view(*self)",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" },
+			"doc": "Text (read or assign)."
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->assign(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

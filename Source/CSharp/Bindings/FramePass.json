@@ -1,0 +1,25 @@
+{
+	"area": "FramePass",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h"
+	],
+	"class": "Shalltear.FramePass",
+	"instance": "FramePass",
+	"functions": [
+		{
+			"id": "Declare",
+			"cpp": "self->Declare(*plan)",
+			"returns": "void",
+			"params": [{ "name": "plan", "type": "FramePassPlan" }],
+			"csharp": { "member": "Declare", "kind": "method" }
+		},
+		{
+			"id": "Record",
+			"cpp": "self->Record(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "ComputeContext" }],
+			"csharp": { "member": "Record", "kind": "method" }
+		}
+	]
+}

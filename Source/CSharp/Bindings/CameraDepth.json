@@ -1,0 +1,70 @@
+{
+	"area": "CameraDepth",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.CameraDepth",
+	"instance": "CameraDepth",
+	"functions": [
+		{
+			"id": "GetImage",
+			"cpp": "self->image",
+			"returns": "FrameImage",
+			"params": [],
+			"csharp": { "member": "Image", "kind": "getter" }
+		},
+		{
+			"id": "SetImage",
+			"cpp": "self->image = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FrameImage" }],
+			"csharp": { "member": "Image", "kind": "setter" }
+		},
+		{
+			"id": "GetView",
+			"cpp": "&self->view",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "View", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetView",
+			"cpp": "self->view = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "View", "kind": "setter" }
+		},
+		{
+			"id": "GetProjection",
+			"cpp": "&self->projection",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Projection", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetProjection",
+			"cpp": "self->projection = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "Projection", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		}
+	]
+}

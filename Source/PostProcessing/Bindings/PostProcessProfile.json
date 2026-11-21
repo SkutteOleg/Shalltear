@@ -1,0 +1,476 @@
+{
+	"area": "PostProcessProfile",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/PostProcessProfile.h"
+	],
+	"class": "Shalltear.PostProcessProfile",
+	"instance": "PostProcessProfile",
+	"types": [
+		{ "name": "PostProcessProfile", "cpp": "::Shalltear::PostProcessProfile", "engine": "PostProcessProfile", "base": "Asset" }
+	],
+	"functions": [
+		{
+			"id": "GetColorGrading",
+			"cpp": "self->colorGrading",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ColorGrading", "kind": "getter" }
+		},
+		{
+			"id": "SetColorGrading",
+			"cpp": "self->colorGrading = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ColorGrading", "kind": "setter" }
+		},
+		{
+			"id": "GetPostExposure",
+			"cpp": "self->postExposure",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "PostExposure", "kind": "getter" }
+		},
+		{
+			"id": "SetPostExposure",
+			"cpp": "self->postExposure = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "PostExposure", "kind": "setter" }
+		},
+		{
+			"id": "GetContrast",
+			"cpp": "self->contrast",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Contrast", "kind": "getter" }
+		},
+		{
+			"id": "SetContrast",
+			"cpp": "self->contrast = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Contrast", "kind": "setter" }
+		},
+		{
+			"id": "GetColorFilter",
+			"cpp": "self->colorFilter",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "ColorFilter", "kind": "getter" }
+		},
+		{
+			"id": "SetColorFilter",
+			"cpp": "self->colorFilter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "ColorFilter", "kind": "setter" }
+		},
+		{
+			"id": "GetHueShift",
+			"cpp": "self->hueShift",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "HueShift", "kind": "getter" }
+		},
+		{
+			"id": "SetHueShift",
+			"cpp": "self->hueShift = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "HueShift", "kind": "setter" }
+		},
+		{
+			"id": "GetSaturation",
+			"cpp": "self->saturation",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Saturation", "kind": "getter" }
+		},
+		{
+			"id": "SetSaturation",
+			"cpp": "self->saturation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Saturation", "kind": "setter" }
+		},
+		{
+			"id": "GetWhiteBalance",
+			"cpp": "self->whiteBalance",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WhiteBalance", "kind": "getter" }
+		},
+		{
+			"id": "SetWhiteBalance",
+			"cpp": "self->whiteBalance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "WhiteBalance", "kind": "setter" }
+		},
+		{
+			"id": "GetTemperature",
+			"cpp": "self->temperature",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Temperature", "kind": "getter" }
+		},
+		{
+			"id": "SetTemperature",
+			"cpp": "self->temperature = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Temperature", "kind": "setter" }
+		},
+		{
+			"id": "GetTint",
+			"cpp": "self->tint",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Tint", "kind": "getter" }
+		},
+		{
+			"id": "SetTint",
+			"cpp": "self->tint = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Tint", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowsMidtonesHighlights",
+			"cpp": "self->shadowsMidtonesHighlights",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ShadowsMidtonesHighlights", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowsMidtonesHighlights",
+			"cpp": "self->shadowsMidtonesHighlights = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ShadowsMidtonesHighlights", "kind": "setter" }
+		},
+		{
+			"id": "GetShadows",
+			"cpp": "self->shadows",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "Shadows", "kind": "getter" }
+		},
+		{
+			"id": "SetShadows",
+			"cpp": "self->shadows = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "Shadows", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowsOffset",
+			"cpp": "self->shadowsOffset",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowsOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowsOffset",
+			"cpp": "self->shadowsOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowsOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetMidtones",
+			"cpp": "self->midtones",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "Midtones", "kind": "getter" }
+		},
+		{
+			"id": "SetMidtones",
+			"cpp": "self->midtones = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "Midtones", "kind": "setter" }
+		},
+		{
+			"id": "GetMidtonesOffset",
+			"cpp": "self->midtonesOffset",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MidtonesOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetMidtonesOffset",
+			"cpp": "self->midtonesOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MidtonesOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetHighlights",
+			"cpp": "self->highlights",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "Highlights", "kind": "getter" }
+		},
+		{
+			"id": "SetHighlights",
+			"cpp": "self->highlights = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "Highlights", "kind": "setter" }
+		},
+		{
+			"id": "GetHighlightsOffset",
+			"cpp": "self->highlightsOffset",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "HighlightsOffset", "kind": "getter" }
+		},
+		{
+			"id": "SetHighlightsOffset",
+			"cpp": "self->highlightsOffset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "HighlightsOffset", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowsStart",
+			"cpp": "self->shadowsStart",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowsStart", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowsStart",
+			"cpp": "self->shadowsStart = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowsStart", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowsEnd",
+			"cpp": "self->shadowsEnd",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ShadowsEnd", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowsEnd",
+			"cpp": "self->shadowsEnd = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ShadowsEnd", "kind": "setter" }
+		},
+		{
+			"id": "GetHighlightsStart",
+			"cpp": "self->highlightsStart",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "HighlightsStart", "kind": "getter" }
+		},
+		{
+			"id": "SetHighlightsStart",
+			"cpp": "self->highlightsStart = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "HighlightsStart", "kind": "setter" }
+		},
+		{
+			"id": "GetHighlightsEnd",
+			"cpp": "self->highlightsEnd",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "HighlightsEnd", "kind": "getter" }
+		},
+		{
+			"id": "SetHighlightsEnd",
+			"cpp": "self->highlightsEnd = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "HighlightsEnd", "kind": "setter" }
+		},
+		{
+			"id": "GetVignette",
+			"cpp": "self->vignette",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Vignette", "kind": "getter" }
+		},
+		{
+			"id": "SetVignette",
+			"cpp": "self->vignette = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Vignette", "kind": "setter" }
+		},
+		{
+			"id": "GetVignetteColor",
+			"cpp": "self->vignetteColor",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "VignetteColor", "kind": "getter" }
+		},
+		{
+			"id": "SetVignetteColor",
+			"cpp": "self->vignetteColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "VignetteColor", "kind": "setter" }
+		},
+		{
+			"id": "GetVignetteCenter",
+			"cpp": "self->vignetteCenter",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "VignetteCenter", "kind": "getter" }
+		},
+		{
+			"id": "SetVignetteCenter",
+			"cpp": "self->vignetteCenter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "VignetteCenter", "kind": "setter" }
+		},
+		{
+			"id": "GetVignetteIntensity",
+			"cpp": "self->vignetteIntensity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "VignetteIntensity", "kind": "getter" }
+		},
+		{
+			"id": "SetVignetteIntensity",
+			"cpp": "self->vignetteIntensity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "VignetteIntensity", "kind": "setter" }
+		},
+		{
+			"id": "GetVignetteSmoothness",
+			"cpp": "self->vignetteSmoothness",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "VignetteSmoothness", "kind": "getter" }
+		},
+		{
+			"id": "SetVignetteSmoothness",
+			"cpp": "self->vignetteSmoothness = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "VignetteSmoothness", "kind": "setter" }
+		},
+		{
+			"id": "GetVignetteRounded",
+			"cpp": "self->vignetteRounded",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "VignetteRounded", "kind": "getter" }
+		},
+		{
+			"id": "SetVignetteRounded",
+			"cpp": "self->vignetteRounded = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "VignetteRounded", "kind": "setter" }
+		},
+		{
+			"id": "GetBloom",
+			"cpp": "self->bloom",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Bloom", "kind": "getter" }
+		},
+		{
+			"id": "SetBloom",
+			"cpp": "self->bloom = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Bloom", "kind": "setter" }
+		},
+		{
+			"id": "GetBloomThreshold",
+			"cpp": "self->bloomThreshold",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BloomThreshold", "kind": "getter" }
+		},
+		{
+			"id": "SetBloomThreshold",
+			"cpp": "self->bloomThreshold = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BloomThreshold", "kind": "setter" }
+		},
+		{
+			"id": "GetBloomIntensity",
+			"cpp": "self->bloomIntensity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BloomIntensity", "kind": "getter" }
+		},
+		{
+			"id": "SetBloomIntensity",
+			"cpp": "self->bloomIntensity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BloomIntensity", "kind": "setter" }
+		},
+		{
+			"id": "GetBloomScatter",
+			"cpp": "self->bloomScatter",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BloomScatter", "kind": "getter" }
+		},
+		{
+			"id": "SetBloomScatter",
+			"cpp": "self->bloomScatter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BloomScatter", "kind": "setter" }
+		},
+		{
+			"id": "GetBloomTint",
+			"cpp": "self->bloomTint",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "BloomTint", "kind": "getter" }
+		},
+		{
+			"id": "SetBloomTint",
+			"cpp": "self->bloomTint = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "BloomTint", "kind": "setter" }
+		},
+		{
+			"id": "GetBloomClamp",
+			"cpp": "self->bloomClamp",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BloomClamp", "kind": "getter" }
+		},
+		{
+			"id": "SetBloomClamp",
+			"cpp": "self->bloomClamp = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BloomClamp", "kind": "setter" }
+		},
+		{
+			"id": "GetBloomMaxIterations",
+			"cpp": "self->bloomMaxIterations",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "BloomMaxIterations", "kind": "getter" }
+		},
+		{
+			"id": "SetBloomMaxIterations",
+			"cpp": "self->bloomMaxIterations = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "BloomMaxIterations", "kind": "setter" }
+		}
+	]
+}

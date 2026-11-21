@@ -1,0 +1,52 @@
+{
+	"area": "FileReader",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/FileSystem.h"
+	],
+	"class": "Shalltear.FileReader",
+	"instance": "FileReader",
+	"functions": [
+		{
+			"id": "Open",
+			"cpp": "self->Open(::Shalltear::Path(str(physicalPath)), sharing)",
+			"returns": "bool",
+			"params": [
+				{ "name": "physicalPath", "type": "string" },
+				{ "name": "sharing", "type": "FileSharing" }
+			],
+			"csharp": { "member": "Open", "kind": "method" }
+		},
+		{
+			"id": "Open2",
+			"cpp": "self->Open(*reader)",
+			"returns": "bool",
+			"params": [{ "name": "reader", "type": "FileReader" }],
+			"csharp": { "member": "Open", "kind": "method" }
+		},
+		{
+			"id": "IsOpen",
+			"cpp": "self->IsOpen()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsOpen", "kind": "getter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->GetSize()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "ReadAt",
+			"cpp": "self->ReadAt(offset, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "offset", "type": "u64" },
+				{ "name": "outValue", "type": "span<u8>", "out": true }
+			],
+			"csharp": { "member": "ReadAt", "kind": "method" }
+		}
+	]
+}

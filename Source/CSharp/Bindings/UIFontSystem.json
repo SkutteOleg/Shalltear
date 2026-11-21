@@ -1,0 +1,85 @@
+{
+	"area": "UIFontSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/UI/UIAtlas.h"
+	],
+	"class": "Shalltear.UIFontSystem",
+	"instance": "UIFontSystem",
+	"functions": [
+		{
+			"id": "ShapeText",
+			"cpp": "self->ShapeText(*query, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "query", "type": "UITextQuery" },
+				{ "name": "outValue", "type": "UIShapedRun" }
+			],
+			"csharp": { "member": "ShapeText", "kind": "method" }
+		},
+		{
+			"id": "MeasureText",
+			"cpp": "self->MeasureText(*query)",
+			"returns": "Vec2",
+			"params": [{ "name": "query", "type": "UITextQuery" }],
+			"csharp": { "member": "MeasureText", "kind": "method" }
+		},
+		{
+			"id": "GetLineHeight",
+			"cpp": "self->GetLineHeight(::Shalltear::Handle<::Shalltear::FontAsset>(font), sizePx)",
+			"returns": "f32",
+			"params": [
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "sizePx", "type": "f32" }
+			],
+			"csharp": { "member": "GetLineHeight", "kind": "method" }
+		},
+		{
+			"id": "DescribeFont",
+			"cpp": "self->DescribeFont(::Shalltear::Handle<::Shalltear::FontAsset>(font), outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "font", "type": "FontAsset", "optional": true },
+				{ "name": "outValue", "type": "UIFontFaceInfo", "out": true }
+			],
+			"csharp": { "member": "DescribeFont", "kind": "method" }
+		},
+		{
+			"id": "GetAtlasPage",
+			"cpp": "self->GetAtlasPage(outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "UIAtlasPage", "out": true }],
+			"csharp": { "member": "GetAtlasPage", "kind": "method" }
+		},
+		{
+			"id": "GetAtlasGeneration",
+			"cpp": "self->GetAtlasGeneration()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AtlasGeneration", "kind": "getter" }
+		},
+		{
+			"id": "GetMetricsGeneration",
+			"cpp": "self->GetMetricsGeneration()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MetricsGeneration", "kind": "getter" }
+		},
+		{
+			"id": "GetTextStats",
+			"cpp": "self->GetTextStats()",
+			"returns": "UITextStats",
+			"params": [],
+			"csharp": { "member": "TextStats", "kind": "getter" }
+		},
+		{
+			"id": "ResetTextStats",
+			"cpp": "self->ResetTextStats()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetTextStats", "kind": "method" }
+		}
+	]
+}

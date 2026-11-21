@@ -1,0 +1,31 @@
+{
+	"area": "Addresses",
+	"slots": true,
+	"internal": true,
+	"include": ["Shalltear/Core/Object.h"],
+	"class": "Shalltear.Interop.AddressBindings",
+	"functions": [
+		{
+			"id": "IdAt",
+			"cpp": "Slots::IdOfItem(Slots::FromBits<const ::Shalltear::Object*>(address))",
+			"returns": "u64",
+			"params": [{ "name": "address", "type": "u64" }],
+			"csharp": { "member": "IdAt", "kind": "method" }
+		},
+		{
+			"id": "OfId",
+			"cpp": "Slots::Bits(ResolveObject<::Shalltear::Object>(id))",
+			"returns": "u64",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "OfId", "kind": "method" }
+		},
+		{
+			"id": "ReleaseShared",
+			"cpp": "Slots::DropShared(Slots::FromBits<const void*>(address))",
+			"returns": "void",
+			"thread": "any",
+			"params": [{ "name": "address", "type": "u64" }],
+			"csharp": { "member": "ReleaseShared", "kind": "method" }
+		}
+	]
+}

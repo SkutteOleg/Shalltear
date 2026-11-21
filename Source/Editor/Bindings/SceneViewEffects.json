@@ -1,0 +1,52 @@
+{
+	"area": "SceneViewEffects",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneViewEffects.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.SceneViewEffects",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::SceneViewEffects::Register(label, ScriptRuntime::GetScriptsOwner(), renderers)",
+			"returns": "bool",
+			"params": [
+				{ "name": "label", "type": "string" },
+				{ "name": "renderers", "type": "list<StringHash>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::SceneViewEffects::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "GetLabels",
+			"cpp": "::Shalltear::SceneViewEffects::GetLabels(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetLabels", "kind": "method" }
+		},
+		{
+			"id": "IsShown",
+			"cpp": "::Shalltear::SceneViewEffects::IsShown(label)",
+			"returns": "bool",
+			"params": [{ "name": "label", "type": "string" }],
+			"csharp": { "member": "IsShown", "kind": "method" }
+		},
+		{
+			"id": "GetHiddenRenderers",
+			"cpp": "::Shalltear::SceneViewEffects::GetHiddenRenderers(shows, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "shows", "type": "fn<bool;string>", "optional": true, "cpp": "std::function<bool (std::basic_string_view<char>)>" },
+				{ "name": "outValue", "type": "list<StringHash>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::StringHash>" }
+			],
+			"csharp": { "member": "GetHiddenRenderers", "kind": "method" }
+		}
+	]
+}

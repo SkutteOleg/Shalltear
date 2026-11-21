@@ -1,0 +1,34 @@
+{
+	"area": "EditorSelectionOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorSelectionOps.h"
+	],
+	"class": "Shalltear.Editor.EditorSelectionOps",
+	"functions": [
+		{
+			"id": "ResolveRange",
+			"cpp": "::Shalltear::EditorSelectionOps::ResolveRange(ordered, anchor, target, first, last)",
+			"returns": "bool",
+			"params": [
+				{ "name": "ordered", "type": "list<u64>" },
+				{ "name": "anchor", "type": "u64" },
+				{ "name": "target", "type": "u64" },
+				{ "name": "first", "type": "u32", "out": true },
+				{ "name": "last", "type": "u32", "out": true }
+			],
+			"csharp": { "member": "ResolveRange", "kind": "method" }
+		},
+		{
+			"id": "ResolveTargets",
+			"cpp": "::Shalltear::EditorSelectionOps::ResolveTargets(selection, actedOn, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "selection", "type": "list<u64>" },
+				{ "name": "actedOn", "type": "u64" },
+				{ "name": "outValue", "type": "list<u64>", "out": true, "cpp": "::Shalltear::Vector<u64>" }
+			],
+			"csharp": { "member": "ResolveTargets", "kind": "method" }
+		}
+	]
+}

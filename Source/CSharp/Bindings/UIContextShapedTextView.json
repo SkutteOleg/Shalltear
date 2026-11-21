@@ -1,0 +1,54 @@
+{
+	"area": "UIContextShapedTextView",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/Font.h"
+	],
+	"class": "Shalltear.UIContextShapedTextView",
+	"instance": "UIContextShapedTextView",
+	"functions": [
+		{
+			"id": "GetRun",
+			"cpp": "self->run",
+			"returns": "UIShapedRun",
+			"params": [],
+			"csharp": { "member": "Run", "kind": "getter" }
+		},
+		{
+			"id": "SetRun",
+			"cpp": "self->run = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIShapedRun", "optional": true }],
+			"csharp": { "member": "Run", "kind": "setter" }
+		},
+		{
+			"id": "GetOriginPx",
+			"cpp": "self->originPx",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "OriginPx", "kind": "getter" }
+		},
+		{
+			"id": "SetOriginPx",
+			"cpp": "self->originPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "OriginPx", "kind": "setter" }
+		},
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = Slots::KeepFieldText(self, 0x3a42901f0b69ba4cull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		}
+	]
+}

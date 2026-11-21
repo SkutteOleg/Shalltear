@@ -1,0 +1,237 @@
+{
+	"area": "UITextRun",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UITextRun",
+	"instance": "UITextRun",
+	"functions": [
+		{
+			"id": "GetBegin",
+			"cpp": "self->begin",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Begin", "kind": "getter" }
+		},
+		{
+			"id": "SetBegin",
+			"cpp": "self->begin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Begin", "kind": "setter" }
+		},
+		{
+			"id": "GetEnd",
+			"cpp": "self->end",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "End", "kind": "getter" }
+		},
+		{
+			"id": "SetEnd",
+			"cpp": "self->end = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "End", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetSizePx",
+			"cpp": "self->sizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetSizePx",
+			"cpp": "self->sizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetLetterSpacing",
+			"cpp": "self->letterSpacing",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LetterSpacing", "kind": "getter" }
+		},
+		{
+			"id": "SetLetterSpacing",
+			"cpp": "self->letterSpacing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LetterSpacing", "kind": "setter" }
+		},
+		{
+			"id": "GetLineHeight",
+			"cpp": "self->lineHeight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LineHeight", "kind": "getter" }
+		},
+		{
+			"id": "SetLineHeight",
+			"cpp": "self->lineHeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LineHeight", "kind": "setter" }
+		},
+		{
+			"id": "GetLineHeightScale",
+			"cpp": "self->lineHeightScale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LineHeightScale", "kind": "getter" }
+		},
+		{
+			"id": "SetLineHeightScale",
+			"cpp": "self->lineHeightScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LineHeightScale", "kind": "setter" }
+		},
+		{
+			"id": "GetBaselineShift",
+			"cpp": "self->baselineShift",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BaselineShift", "kind": "getter" }
+		},
+		{
+			"id": "SetBaselineShift",
+			"cpp": "self->baselineShift = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BaselineShift", "kind": "setter" }
+		},
+		{
+			"id": "GetAdvance",
+			"cpp": "self->advance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Advance", "kind": "getter" }
+		},
+		{
+			"id": "SetAdvance",
+			"cpp": "self->advance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Advance", "kind": "setter" }
+		},
+		{
+			"id": "GetFontWeight",
+			"cpp": "self->fontWeight",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "FontWeight", "kind": "getter" }
+		},
+		{
+			"id": "SetFontWeight",
+			"cpp": "self->fontWeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "FontWeight", "kind": "setter" }
+		},
+		{
+			"id": "GetPaint",
+			"cpp": "self->paint",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "Paint", "kind": "getter" }
+		},
+		{
+			"id": "SetPaint",
+			"cpp": "self->paint = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "Paint", "kind": "setter" }
+		},
+		{
+			"id": "GetFontStyle",
+			"cpp": "self->fontStyle",
+			"returns": "UIFontStyle",
+			"params": [],
+			"csharp": { "member": "FontStyle", "kind": "getter" }
+		},
+		{
+			"id": "SetFontStyle",
+			"cpp": "self->fontStyle = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIFontStyle" }],
+			"csharp": { "member": "FontStyle", "kind": "setter" }
+		},
+		{
+			"id": "GetScript",
+			"cpp": "self->script",
+			"returns": "UITextScript",
+			"params": [],
+			"csharp": { "member": "Script", "kind": "getter" }
+		},
+		{
+			"id": "SetScript",
+			"cpp": "self->script = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UITextScript" }],
+			"csharp": { "member": "Script", "kind": "setter" }
+		},
+		{
+			"id": "GetTextCase",
+			"cpp": "self->textCase",
+			"returns": "UITextCase",
+			"params": [],
+			"csharp": { "member": "TextCase", "kind": "getter" }
+		},
+		{
+			"id": "SetTextCase",
+			"cpp": "self->textCase = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UITextCase" }],
+			"csharp": { "member": "TextCase", "kind": "setter" }
+		},
+		{
+			"id": "GetDecoration",
+			"cpp": "self->decoration",
+			"returns": "UITextDecoration",
+			"params": [],
+			"csharp": { "member": "Decoration", "kind": "getter" }
+		},
+		{
+			"id": "SetDecoration",
+			"cpp": "self->decoration = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UITextDecoration" }],
+			"csharp": { "member": "Decoration", "kind": "setter" }
+		},
+		{
+			"id": "GetNoBreak",
+			"cpp": "self->noBreak",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "NoBreak", "kind": "getter" }
+		},
+		{
+			"id": "SetNoBreak",
+			"cpp": "self->noBreak = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "NoBreak", "kind": "setter" }
+		}
+	]
+}

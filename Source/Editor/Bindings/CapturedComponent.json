@@ -1,0 +1,40 @@
+{
+	"area": "CapturedComponent",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.CapturedComponent",
+	"instance": "CapturedComponent",
+	"functions": [
+		{
+			"id": "GetTypeName",
+			"cpp": "self->typeName",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeName", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeName",
+			"cpp": "self->typeName = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeName", "kind": "setter" }
+		},
+		{
+			"id": "GetStateJSON",
+			"cpp": "self->stateJSON",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "StateJSON", "kind": "getter" }
+		},
+		{
+			"id": "SetStateJSON",
+			"cpp": "self->stateJSON = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "StateJSON", "kind": "setter" }
+		}
+	]
+}

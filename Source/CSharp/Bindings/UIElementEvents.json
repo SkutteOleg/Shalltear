@@ -1,0 +1,206 @@
+{
+	"area": "UIElementEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/Input/InputCodes.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.UIElementEvents",
+	"instance": "UIElementEvents",
+	"functions": [
+		{
+			"id": "SetOnMouseDown",
+			"cpp": "self->onMouseDown = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnMouseDown", "kind": "method" }
+		},
+		{
+			"id": "SetOnMouseUp",
+			"cpp": "self->onMouseUp = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnMouseUp", "kind": "method" }
+		},
+		{
+			"id": "SetOnClick",
+			"cpp": "self->onClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnRightClick",
+			"cpp": "self->onRightClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnRightClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnDoubleClick",
+			"cpp": "self->onDoubleClick = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnDoubleClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnHoverEnter",
+			"cpp": "self->onHoverEnter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnHoverEnter", "kind": "method" }
+		},
+		{
+			"id": "SetOnHoverLeave",
+			"cpp": "self->onHoverLeave = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnHoverLeave", "kind": "method" }
+		},
+		{
+			"id": "SetOnPressDrag",
+			"cpp": "self->onPressDrag = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;Vec2>", "optional": true, "cpp": "std::function<void (Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetOnPressDrag", "kind": "method" }
+		},
+		{
+			"id": "SetOnPressEnd",
+			"cpp": "self->onPressEnd = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnPressEnd", "kind": "method" }
+		},
+		{
+			"id": "SetOnWheel",
+			"cpp": "self->onWheel = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;Vec2>", "optional": true, "cpp": "std::function<bool (Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetOnWheel", "kind": "method" }
+		},
+		{
+			"id": "SetOnScrollChanged",
+			"cpp": "self->onScrollChanged = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;UIScrollBand>", "optional": true, "cpp": "std::function<void (const Shalltear::UI::ScrollBand &)>" }
+			],
+			"csharp": { "member": "SetOnScrollChanged", "kind": "method" }
+		},
+		{
+			"id": "SetOnMiddleDrag",
+			"cpp": "self->onMiddleDrag = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;Vec2>", "optional": true, "cpp": "std::function<void (Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetOnMiddleDrag", "kind": "method" }
+		},
+		{
+			"id": "SetOnFocusGained",
+			"cpp": "self->onFocusGained = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnFocusGained", "kind": "method" }
+		},
+		{
+			"id": "SetOnFocusLost",
+			"cpp": "self->onFocusLost = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnFocusLost", "kind": "method" }
+		},
+		{
+			"id": "SetOnKeyDown",
+			"cpp": "self->onKeyDown = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;Key;KeyMod>", "optional": true, "cpp": "std::function<bool (Shalltear::Key, Shalltear::KeyMod)>" }
+			],
+			"csharp": { "member": "SetOnKeyDown", "kind": "method" }
+		},
+		{
+			"id": "SetOnTextChange",
+			"cpp": "self->onTextChange = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;string>", "optional": true, "cpp": "std::function<void (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetOnTextChange", "kind": "method" }
+		},
+		{
+			"id": "SetOnTextCommit",
+			"cpp": "self->onTextCommit = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;string>", "optional": true, "cpp": "std::function<void (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetOnTextCommit", "kind": "method" }
+		},
+		{
+			"id": "SetOnValueChange",
+			"cpp": "self->onValueChange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;f64>", "optional": true, "cpp": "std::function<void (double)>" }],
+			"csharp": { "member": "SetOnValueChange", "kind": "method" }
+		},
+		{
+			"id": "SetOnTextFilter",
+			"cpp": "self->onTextFilter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<bool;u32>", "optional": true, "cpp": "std::function<bool (char32_t)>" }],
+			"csharp": { "member": "SetOnTextFilter", "kind": "method" }
+		},
+		{
+			"id": "SetOnPopupClosed",
+			"cpp": "self->onPopupClosed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnPopupClosed", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragOver",
+			"cpp": "self->onDragOver = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;UIDragPayload>", "optional": true, "cpp": "std::function<bool (const Shalltear::UI::DragPayload &)>" }
+			],
+			"csharp": { "member": "SetOnDragOver", "kind": "method" }
+		},
+		{
+			"id": "SetOnDrop",
+			"cpp": "self->onDrop = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIDragPayload;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnDrop", "kind": "method" }
+		},
+		{
+			"id": "SetCustomDraw",
+			"cpp": "self->customDraw = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle;UIPaintScope>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::UI::PaintScope &)>"
+				}
+			],
+			"csharp": { "member": "SetCustomDraw", "kind": "method" }
+		}
+	]
+}

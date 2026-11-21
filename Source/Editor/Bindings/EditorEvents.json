@@ -1,0 +1,179 @@
+{
+	"area": "EditorEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorEvents.h"
+	],
+	"class": "Shalltear.Editor.EditorEvents",
+	"functions": [
+		{
+			"id": "PingTargetForInstance",
+			"cpp": "::Shalltear::PingTargetForInstance(instanceId)",
+			"returns": "EditorPingTarget",
+			"params": [{ "name": "instanceId", "type": "u64" }],
+			"csharp": { "member": "PingTargetForInstance", "kind": "method" }
+		},
+		{
+			"id": "SubscribeSelectionChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::SelectionChanged, handler)",
+			"returns": "u64",
+			"params": [{ "name": "handler", "type": "fn<void>", "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SubscribeSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "SubscribePlayModeChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::PlayModeChanged, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorPlayModeChangedEvent>", "cpp": "std::function<void(const ::Shalltear::EditorPlayModeChangedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribePlayModeChanged", "kind": "method" }
+		},
+		{
+			"id": "PublishPlayModeChanged",
+			"cpp": "::Shalltear::EditorEvents::PlayModeChanged.Publish(::Shalltear::EventBus::GetGlobal(), payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorPlayModeChangedEvent" }],
+			"csharp": { "member": "PublishPlayModeChanged", "kind": "method" }
+		},
+		{
+			"id": "SubscribePlayStarting",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::PlayStarting, handler)",
+			"returns": "u64",
+			"params": [{ "name": "handler", "type": "fn<void>", "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SubscribePlayStarting", "kind": "method" }
+		},
+		{
+			"id": "SubscribeSceneDirtied",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::SceneDirtied, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorSceneDirtiedEvent>", "cpp": "std::function<void(const ::Shalltear::EditorSceneDirtiedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeSceneDirtied", "kind": "method" }
+		},
+		{
+			"id": "PublishSceneDirtied",
+			"cpp": "::Shalltear::EditorEvents::SceneDirtied.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorSceneDirtiedEvent" }],
+			"csharp": { "member": "PublishSceneDirtied", "kind": "method" }
+		},
+		{
+			"id": "SubscribeModuleReloadBegan",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::ModuleReloadBegan, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorModuleReloadBeganEvent>", "cpp": "std::function<void(const ::Shalltear::EditorModuleReloadBeganEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeModuleReloadBegan", "kind": "method" }
+		},
+		{
+			"id": "PublishModuleReloadBegan",
+			"cpp": "::Shalltear::EditorEvents::ModuleReloadBegan.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorModuleReloadBeganEvent" }],
+			"csharp": { "member": "PublishModuleReloadBegan", "kind": "method" }
+		},
+		{
+			"id": "SubscribeModuleReloadEnded",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::ModuleReloadEnded, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorModuleReloadEndedEvent>", "cpp": "std::function<void(const ::Shalltear::EditorModuleReloadEndedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeModuleReloadEnded", "kind": "method" }
+		},
+		{
+			"id": "PublishModuleReloadEnded",
+			"cpp": "::Shalltear::EditorEvents::ModuleReloadEnded.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorModuleReloadEndedEvent" }],
+			"csharp": { "member": "PublishModuleReloadEnded", "kind": "method" }
+		},
+		{
+			"id": "SubscribeCompileStateChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::CompileStateChanged, handler)",
+			"returns": "u64",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;EditorCompileStateChangedEvent>",
+					"cpp": "std::function<void(const ::Shalltear::EditorCompileStateChangedEvent&)>"
+				}
+			],
+			"csharp": { "member": "SubscribeCompileStateChanged", "kind": "method" }
+		},
+		{
+			"id": "PublishCompileStateChanged",
+			"cpp": "::Shalltear::EditorEvents::CompileStateChanged.Publish(::Shalltear::EventBus::GetGlobal(), payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorCompileStateChangedEvent" }],
+			"csharp": { "member": "PublishCompileStateChanged", "kind": "method" }
+		},
+		{
+			"id": "SubscribePingRequested",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::PingRequested, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorPingRequestedEvent>", "cpp": "std::function<void(const ::Shalltear::EditorPingRequestedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribePingRequested", "kind": "method" }
+		},
+		{
+			"id": "PublishPingRequested",
+			"cpp": "::Shalltear::EditorEvents::PingRequested.Publish(::Shalltear::EventBus::GetGlobal(), payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorPingRequestedEvent" }],
+			"csharp": { "member": "PublishPingRequested", "kind": "method" }
+		},
+		{
+			"id": "SubscribeFollowRequested",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::FollowRequested, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorFollowRequestedEvent>", "cpp": "std::function<void(const ::Shalltear::EditorFollowRequestedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeFollowRequested", "kind": "method" }
+		},
+		{
+			"id": "PublishFollowRequested",
+			"cpp": "::Shalltear::EditorEvents::FollowRequested.Publish(::Shalltear::EventBus::GetGlobal(), payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorFollowRequestedEvent" }],
+			"csharp": { "member": "PublishFollowRequested", "kind": "method" }
+		},
+		{
+			"id": "SubscribeWorldRemapped",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::WorldRemapped, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorWorldRemappedEvent>", "cpp": "std::function<void(const ::Shalltear::EditorWorldRemappedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeWorldRemapped", "kind": "method" }
+		},
+		{
+			"id": "PublishWorldRemapped",
+			"cpp": "::Shalltear::EditorEvents::WorldRemapped.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorWorldRemappedEvent" }],
+			"csharp": { "member": "PublishWorldRemapped", "kind": "method" }
+		},
+		{
+			"id": "SubscribeTransformGesture",
+			"cpp": "EventBridge::Subscribe(::Shalltear::EditorEvents::TransformGesture, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EditorTransformGestureEvent>", "cpp": "std::function<void(const ::Shalltear::EditorTransformGestureEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeTransformGesture", "kind": "method" }
+		},
+		{
+			"id": "PublishTransformGesture",
+			"cpp": "::Shalltear::EditorEvents::TransformGesture.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "EditorTransformGestureEvent" }],
+			"csharp": { "member": "PublishTransformGesture", "kind": "method" }
+		}
+	]
+}

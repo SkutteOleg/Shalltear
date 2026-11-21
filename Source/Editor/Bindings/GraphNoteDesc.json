@@ -1,0 +1,110 @@
+{
+	"area": "GraphNoteDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphNoteDesc",
+	"instance": "GraphNoteDesc",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetBody",
+			"cpp": "self->body",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Body", "kind": "getter" }
+		},
+		{
+			"id": "SetBody",
+			"cpp": "self->body = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Body", "kind": "setter" }
+		},
+		{
+			"id": "GetTheme",
+			"cpp": "self->theme",
+			"returns": "GraphNoteTheme",
+			"params": [],
+			"csharp": { "member": "Theme", "kind": "getter" }
+		},
+		{
+			"id": "SetTheme",
+			"cpp": "self->theme = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphNoteTheme" }],
+			"csharp": { "member": "Theme", "kind": "setter" }
+		},
+		{
+			"id": "GetTextSize",
+			"cpp": "self->textSize",
+			"returns": "GraphNoteSize",
+			"params": [],
+			"csharp": { "member": "TextSize", "kind": "getter" }
+		},
+		{
+			"id": "SetTextSize",
+			"cpp": "self->textSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphNoteSize" }],
+			"csharp": { "member": "TextSize", "kind": "setter" }
+		}
+	]
+}

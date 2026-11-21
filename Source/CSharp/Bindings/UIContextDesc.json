@@ -1,0 +1,110 @@
+{
+	"area": "UIContextDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIContextDesc",
+	"instance": "UIContextDesc",
+	"functions": [
+		{
+			"id": "GetSizePx",
+			"cpp": "self->sizePx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetSizePx",
+			"cpp": "self->sizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "SizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetContentScale",
+			"cpp": "self->contentScale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ContentScale", "kind": "getter" }
+		},
+		{
+			"id": "SetContentScale",
+			"cpp": "self->contentScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ContentScale", "kind": "setter" }
+		},
+		{
+			"id": "GetDoubleClickSeconds",
+			"cpp": "self->doubleClickSeconds",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DoubleClickSeconds", "kind": "getter" }
+		},
+		{
+			"id": "SetDoubleClickSeconds",
+			"cpp": "self->doubleClickSeconds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DoubleClickSeconds", "kind": "setter" }
+		},
+		{
+			"id": "GetDoubleClickDistancePx",
+			"cpp": "self->doubleClickDistancePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DoubleClickDistancePx", "kind": "getter" }
+		},
+		{
+			"id": "SetDoubleClickDistancePx",
+			"cpp": "self->doubleClickDistancePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DoubleClickDistancePx", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltipFont",
+			"cpp": "self->tooltipFont",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "TooltipFont", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltipFont",
+			"cpp": "self->tooltipFont = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "TooltipFont", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltipFontSizePx",
+			"cpp": "self->tooltipFontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "TooltipFontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltipFontSizePx",
+			"cpp": "self->tooltipFontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "TooltipFontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltipDelaySeconds",
+			"cpp": "self->tooltipDelaySeconds",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "TooltipDelaySeconds", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltipDelaySeconds",
+			"cpp": "self->tooltipDelaySeconds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "TooltipDelaySeconds", "kind": "setter" }
+		}
+	]
+}

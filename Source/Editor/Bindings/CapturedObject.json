@@ -1,0 +1,109 @@
+{
+	"area": "CapturedObject",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h"
+	],
+	"class": "Shalltear.Editor.CapturedObject",
+	"instance": "CapturedObject",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetActiveSelf",
+			"cpp": "self->activeSelf",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ActiveSelf", "kind": "getter" }
+		},
+		{
+			"id": "SetActiveSelf",
+			"cpp": "self->activeSelf = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ActiveSelf", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalPosition",
+			"cpp": "self->localPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "LocalPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetLocalPosition",
+			"cpp": "self->localPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "LocalPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalRotation",
+			"cpp": "self->localRotation",
+			"returns": "Quat",
+			"params": [],
+			"csharp": { "member": "LocalRotation", "kind": "getter" }
+		},
+		{
+			"id": "SetLocalRotation",
+			"cpp": "self->localRotation = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Quat" }],
+			"csharp": { "member": "LocalRotation", "kind": "setter" }
+		},
+		{
+			"id": "GetLocalScale",
+			"cpp": "self->localScale",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "LocalScale", "kind": "getter" }
+		},
+		{
+			"id": "SetLocalScale",
+			"cpp": "self->localScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "LocalScale", "kind": "setter" }
+		},
+		{
+			"id": "GetComponents",
+			"cpp": "self->components",
+			"returns": "list<CapturedComponent>",
+			"params": [],
+			"csharp": { "member": "Components", "kind": "getter" }
+		},
+		{
+			"id": "SetComponents",
+			"cpp": "self->components = Slots::Copies<::Shalltear::Vector<::Shalltear::CapturedComponent>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<CapturedComponent>" }],
+			"csharp": { "member": "Components", "kind": "setter" }
+		},
+		{
+			"id": "GetChildren",
+			"cpp": "self->children",
+			"returns": "list<CapturedObject>",
+			"params": [],
+			"csharp": { "member": "Children", "kind": "getter" }
+		},
+		{
+			"id": "SetChildren",
+			"cpp": "self->children = Slots::Copies<::Shalltear::Vector<::Shalltear::CapturedObject>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<CapturedObject>" }],
+			"csharp": { "member": "Children", "kind": "setter" }
+		}
+	]
+}

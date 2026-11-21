@@ -1,0 +1,39 @@
+{
+	"area": "SettingChangedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Settings.h"
+	],
+	"class": "Shalltear.SettingChangedEvent",
+	"instance": "SettingChangedEvent",
+	"functions": [
+		{
+			"id": "GetCategoryPath",
+			"cpp": "self->categoryPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CategoryPath", "kind": "getter" }
+		},
+		{
+			"id": "SetCategoryPath",
+			"cpp": "self->categoryPath = Slots::KeepFieldText(self, 0x43bb696433325b1cull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "CategoryPath", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldName",
+			"cpp": "self->fieldName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FieldName", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldName",
+			"cpp": "self->fieldName = Slots::KeepFieldText(self, 0xd7ba616f696e1c82ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FieldName", "kind": "setter" }
+		}
+	]
+}

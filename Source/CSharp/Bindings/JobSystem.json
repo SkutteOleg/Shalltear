@@ -1,0 +1,54 @@
+{
+	"area": "JobSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Jobs/JobSystem.h",
+		"Shalltear/Core/Jobs/Job.h"
+	],
+	"class": "Shalltear.JobSystem",
+	"enums": [
+		{
+			"name": "JobType",
+			"cpp": "::Shalltear::JobType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Normal", "value": 0 },
+				{ "name": "LongRunning", "value": 1 }
+			]
+		}
+	],
+	"constants": [{ "name": "MAX_LANES", "cpp": "::Shalltear::JobSystem::MAX_LANES", "type": "u32", "value": 64 }],
+	"functions": [
+		{
+			"id": "WaitFor",
+			"cpp": "::Shalltear::JobSystem::WaitFor(handle)",
+			"returns": "void",
+			"params": [{ "name": "handle", "type": "JobHandle" }],
+			"csharp": { "member": "WaitFor", "kind": "method" }
+		},
+		{
+			"id": "WaitForAll",
+			"cpp": "::Shalltear::JobSystem::WaitForAll(handles)",
+			"returns": "void",
+			"params": [{ "name": "handles", "type": "list<JobHandle>" }],
+			"csharp": { "member": "WaitForAll", "kind": "method" }
+		},
+		{
+			"id": "GetWorkerCount",
+			"cpp": "::Shalltear::JobSystem::GetWorkerCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "WorkerCount", "kind": "getter" }
+		},
+		{
+			"id": "LaneCount",
+			"cpp": "::Shalltear::JobSystem::LaneCount(count, minPerLane)",
+			"returns": "u32",
+			"params": [
+				{ "name": "count", "type": "u32" },
+				{ "name": "minPerLane", "type": "u32" }
+			],
+			"csharp": { "member": "LaneCount", "kind": "method" }
+		}
+	]
+}

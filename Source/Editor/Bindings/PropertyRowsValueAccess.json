@@ -1,0 +1,74 @@
+{
+	"area": "PropertyRowsValueAccess",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyRows.h"
+	],
+	"class": "Shalltear.Editor.PropertyRowsValueAccess",
+	"instance": "PropertyRowsValueAccess",
+	"functions": [
+		{
+			"id": "SetAddressField",
+			"cpp": "self->address = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<u64>", "optional": true, "cpp": "std::function<void *()>" }],
+			"csharp": { "member": "SetAddressField", "kind": "method" }
+		},
+		{
+			"id": "SetCommit",
+			"cpp": "self->commit = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;PropertyRowsCommittedValue>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::PropertyRows::CommittedValue &)>"
+				}
+			],
+			"csharp": { "member": "SetCommit", "kind": "method" }
+		},
+		{
+			"id": "SetBeginGesture",
+			"cpp": "self->beginGesture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetBeginGesture", "kind": "method" }
+		},
+		{
+			"id": "SetEndGesture",
+			"cpp": "self->endGesture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetEndGesture", "kind": "method" }
+		},
+		{
+			"id": "GetReadOnly",
+			"cpp": "self->readOnly",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ReadOnly", "kind": "getter" }
+		},
+		{
+			"id": "SetReadOnly",
+			"cpp": "self->readOnly = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ReadOnly", "kind": "setter" }
+		},
+		{
+			"id": "GetElement",
+			"cpp": "self->element",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Element", "kind": "getter" }
+		},
+		{
+			"id": "SetElement",
+			"cpp": "self->element = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Element", "kind": "setter" }
+		}
+	]
+}

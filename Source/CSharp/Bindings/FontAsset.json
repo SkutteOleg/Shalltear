@@ -1,0 +1,107 @@
+{
+	"area": "FontAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.FontAsset",
+	"instance": "FontAsset",
+	"enums": [
+		{
+			"name": "SyntheticBoldSpacing",
+			"cpp": "::Shalltear::SyntheticBoldSpacing",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Widened", "value": 0 },
+				{ "name": "Regular", "value": 1 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetFace",
+			"cpp": "self->GetFace(index)",
+			"returns": "FontAsset",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "GetFace", "kind": "method" }
+		},
+		{
+			"id": "GetFallback",
+			"cpp": "self->GetFallback(index)",
+			"returns": "FontAsset",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "GetFallback", "kind": "method" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "self->data",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" }
+		},
+		{
+			"id": "SetData",
+			"cpp": "self->data = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Data", "kind": "setter" }
+		},
+		{
+			"id": "GetFaces",
+			"cpp": "self->faces",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Faces", "kind": "getter" }
+		},
+		{
+			"id": "SetFaces",
+			"cpp": "self->faces = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Faces", "kind": "setter" }
+		},
+		{
+			"id": "GetFallbacks",
+			"cpp": "self->fallbacks",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "Fallbacks", "kind": "getter" }
+		},
+		{
+			"id": "SetFallbacks",
+			"cpp": "self->fallbacks = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "Fallbacks", "kind": "setter" }
+		},
+		{
+			"id": "GetSyntheticBoldSpacing",
+			"cpp": "self->syntheticBoldSpacing",
+			"returns": "SyntheticBoldSpacing",
+			"params": [],
+			"csharp": { "member": "SyntheticBoldSpacing", "kind": "getter" }
+		},
+		{
+			"id": "SetSyntheticBoldSpacing",
+			"cpp": "self->syntheticBoldSpacing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SyntheticBoldSpacing" }],
+			"csharp": { "member": "SyntheticBoldSpacing", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		}
+	]
+}

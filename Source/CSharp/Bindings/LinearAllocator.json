@@ -1,0 +1,69 @@
+{
+	"area": "LinearAllocator",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.LinearAllocator",
+	"instance": "LinearAllocator",
+	"functions": [
+		{
+			"id": "Allocate",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->Allocate(size, alignment)))",
+			"returns": "u64",
+			"params": [
+				{ "name": "size", "type": "u64" },
+				{ "name": "alignment", "type": "u64" }
+			],
+			"csharp": { "member": "Allocate", "kind": "method" }
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reset", "kind": "method" }
+		},
+		{
+			"id": "GetUsedBytes",
+			"cpp": "self->GetUsedBytes()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "UsedBytes", "kind": "getter" }
+		},
+		{
+			"id": "GetCapacity",
+			"cpp": "self->GetCapacity()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Capacity", "kind": "getter" }
+		},
+		{
+			"id": "GetRemainingBytes",
+			"cpp": "self->GetRemainingBytes()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "RemainingBytes", "kind": "getter" }
+		},
+		{
+			"id": "GetTag",
+			"cpp": "self->GetTag()",
+			"returns": "MemTag",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::LinearAllocator(capacity, tag)",
+			"returns": "LinearAllocator",
+			"params": [
+				{ "name": "capacity", "type": "u64" },
+				{ "name": "tag", "type": "MemTag" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

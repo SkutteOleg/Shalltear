@@ -10,9 +10,6 @@ namespace Shalltear.Interop;
 internal unsafe partial class ProbeRecipe {
 	internal string Name {
 		get {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeRecipe.Name");
-			}
 			ulong* slots = stackalloc ulong[3];
 			slots[0] = Pointer;
 			int status = Bindings.table.slotProbeRecipeGetName(slots, slots + 1);
@@ -22,9 +19,6 @@ internal unsafe partial class ProbeRecipe {
 			return SlotValues.Text(slots + 1);
 		}
 		set {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeRecipe.Name");
-			}
 			using UTF8Scratch valueText = new(value, stackalloc byte[UTF8Scratch.STACK_BYTES]);
 			ulong* slots = stackalloc ulong[3];
 			slots[0] = Pointer;
@@ -39,9 +33,6 @@ internal unsafe partial class ProbeRecipe {
 
 	internal float Heat {
 		get {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeRecipe.Heat");
-			}
 			ulong* slots = stackalloc ulong[2];
 			slots[0] = Pointer;
 			int status = Bindings.table.slotProbeRecipeGetHeat(slots, slots + 1);
@@ -51,9 +42,6 @@ internal unsafe partial class ProbeRecipe {
 			return BitConverter.UInt32BitsToSingle((uint)slots[1]);
 		}
 		set {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeRecipe.Heat");
-			}
 			ulong* slots = stackalloc ulong[2];
 			slots[0] = Pointer;
 			slots[1] = BitConverter.SingleToUInt32Bits(value);
@@ -66,9 +54,6 @@ internal unsafe partial class ProbeRecipe {
 
 	internal int[] Steps {
 		get {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeRecipe.Steps");
-			}
 			ulong* slots = stackalloc ulong[3];
 			slots[0] = Pointer;
 			int status = Bindings.table.slotProbeRecipeGetSteps(slots, slots + 1);

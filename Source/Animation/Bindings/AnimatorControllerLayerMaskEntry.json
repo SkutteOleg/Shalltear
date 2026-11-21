@@ -1,0 +1,39 @@
+{
+	"area": "AnimatorControllerLayerMaskEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerLayerMaskEntry",
+	"instance": "AnimatorControllerLayerMaskEntry",
+	"functions": [
+		{
+			"id": "GetBone",
+			"cpp": "self->bone",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Bone", "kind": "getter" }
+		},
+		{
+			"id": "SetBone",
+			"cpp": "self->bone = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Bone", "kind": "setter" }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->weight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->weight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		}
+	]
+}

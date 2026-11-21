@@ -1,0 +1,38 @@
+{
+	"area": "AssetImportContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetImporter.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.AssetImportContext",
+	"instance": "AssetImportContext",
+	"natives": [
+		{ "name": "AssetImportContext", "cpp": "::Shalltear::AssetImportContext" },
+		{ "name": "IAssetImporter", "cpp": "::Shalltear::IAssetImporter" }
+	],
+	"functions": [
+		{
+			"id": "AddProduct",
+			"cpp": "self->AddProduct(key, product, name)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "product", "type": "Asset", "optional": true },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "AddProduct", "kind": "method" }
+		},
+		{
+			"id": "AdoptProduct",
+			"cpp": "self->AdoptProduct(key, identity)",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "identity", "type": "EngineGuid" }
+			],
+			"csharp": { "member": "AdoptProduct", "kind": "method" }
+		}
+	]
+}

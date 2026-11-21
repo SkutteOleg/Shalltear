@@ -1,0 +1,180 @@
+{
+	"area": "CookOpsCookReportAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.CookOpsCookReportAsset",
+	"instance": "CookOpsCookReportAsset",
+	"functions": [
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeName",
+			"cpp": "self->typeName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TypeName", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeName",
+			"cpp": "self->typeName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TypeName", "kind": "setter" }
+		},
+		{
+			"id": "GetDescriptorBytes",
+			"cpp": "self->descriptorBytes",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "DescriptorBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetDescriptorBytes",
+			"cpp": "self->descriptorBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "DescriptorBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetPayloadRaw",
+			"cpp": "self->payloadRaw",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PayloadRaw", "kind": "getter" }
+		},
+		{
+			"id": "SetPayloadRaw",
+			"cpp": "self->payloadRaw = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PayloadRaw", "kind": "setter" }
+		},
+		{
+			"id": "GetPayloadStored",
+			"cpp": "self->payloadStored",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PayloadStored", "kind": "getter" }
+		},
+		{
+			"id": "SetPayloadStored",
+			"cpp": "self->payloadStored = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PayloadStored", "kind": "setter" }
+		},
+		{
+			"id": "GetPageCount",
+			"cpp": "self->pageCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PageCount", "kind": "getter" }
+		},
+		{
+			"id": "SetPageCount",
+			"cpp": "self->pageCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PageCount", "kind": "setter" }
+		},
+		{
+			"id": "GetCodec",
+			"cpp": "self->codec",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "Codec", "kind": "getter" }
+		},
+		{
+			"id": "SetCodec",
+			"cpp": "self->codec = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "Codec", "kind": "setter" }
+		},
+		{
+			"id": "GetIsRoot",
+			"cpp": "self->isRoot",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsRoot", "kind": "getter" }
+		},
+		{
+			"id": "SetIsRoot",
+			"cpp": "self->isRoot = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IsRoot", "kind": "setter" }
+		},
+		{
+			"id": "GetDependsOn",
+			"cpp": "self->dependsOn",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "DependsOn", "kind": "getter" }
+		},
+		{
+			"id": "SetDependsOn",
+			"cpp": "self->dependsOn = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "DependsOn", "kind": "setter" }
+		},
+		{
+			"id": "GetPulledInBy",
+			"cpp": "self->pulledInBy",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "PulledInBy", "kind": "getter" }
+		},
+		{
+			"id": "SetPulledInBy",
+			"cpp": "self->pulledInBy = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "PulledInBy", "kind": "setter" }
+		},
+		{
+			"id": "GetRootPath",
+			"cpp": "self->rootPath",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "RootPath", "kind": "getter" }
+		},
+		{
+			"id": "SetRootPath",
+			"cpp": "self->rootPath = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "RootPath", "kind": "setter" }
+		}
+	]
+}

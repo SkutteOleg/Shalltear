@@ -1,0 +1,56 @@
+{
+	"area": "NetTCPListener",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/Socket.h",
+		"Shalltear/Network/Address.h"
+	],
+	"class": "Shalltear.NetTCPListener",
+	"instance": "NetTCPListener",
+	"functions": [
+		{
+			"id": "Listen",
+			"cpp": "(::Shalltear::Net::TCPListener::Listen(*at, &outError, backlog)).release()",
+			"returns": "NetTCPListener",
+			"params": [
+				{ "name": "at", "type": "NetAddress" },
+				{ "name": "outError", "type": "string", "out": true },
+				{ "name": "backlog", "type": "u32" }
+			],
+			"csharp": { "member": "Listen", "kind": "method" },
+			"adopts": true,
+			"static": true
+		},
+		{
+			"id": "GetPort",
+			"cpp": "self->GetPort()",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "Port", "kind": "getter" }
+		},
+		{
+			"id": "Accept",
+			"cpp": "(self->Accept()).release()",
+			"returns": "NetTCPSocket",
+			"params": [],
+			"csharp": { "member": "Accept", "kind": "method" },
+			"adopts": true
+		},
+		{
+			"id": "Close",
+			"cpp": "self->Close()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Close", "kind": "method" }
+		},
+		{
+			"id": "SetCallback",
+			"cpp": "self->SetCallback(callback)",
+			"returns": "void",
+			"params": [
+				{ "name": "callback", "type": "fn<void;NetSocketEvent>", "optional": true, "cpp": "std::function<void (Shalltear::Net::SocketEvent)>" }
+			],
+			"csharp": { "member": "SetCallback", "kind": "method" }
+		}
+	]
+}

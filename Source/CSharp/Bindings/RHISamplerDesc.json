@@ -1,0 +1,95 @@
+{
+	"area": "RHISamplerDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHISamplerDesc",
+	"instance": "RHISamplerDesc",
+	"functions": [
+		{
+			"id": "GetFilter",
+			"cpp": "self->filter",
+			"returns": "RHIFilterMode",
+			"params": [],
+			"csharp": { "member": "Filter", "kind": "getter" }
+		},
+		{
+			"id": "SetFilter",
+			"cpp": "self->filter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFilterMode" }],
+			"csharp": { "member": "Filter", "kind": "setter" }
+		},
+		{
+			"id": "GetAddressMode",
+			"cpp": "self->addressMode",
+			"returns": "RHIAddressMode",
+			"params": [],
+			"csharp": { "member": "AddressMode", "kind": "getter" }
+		},
+		{
+			"id": "SetAddressMode",
+			"cpp": "self->addressMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIAddressMode" }],
+			"csharp": { "member": "AddressMode", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugName",
+			"cpp": "self->debugName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DebugName", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugName",
+			"cpp": "self->debugName = Slots::KeepFieldText(self, 0x0f1c3f6e803808a5ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DebugName", "kind": "setter" }
+		},
+		{
+			"id": "GetComparison",
+			"cpp": "self->comparison",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Comparison", "kind": "getter" }
+		},
+		{
+			"id": "SetComparison",
+			"cpp": "self->comparison = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Comparison", "kind": "setter" }
+		},
+		{
+			"id": "GetMipFilter",
+			"cpp": "self->mipFilter",
+			"returns": "RHIFilterMode",
+			"params": [],
+			"csharp": { "member": "MipFilter", "kind": "getter" }
+		},
+		{
+			"id": "SetMipFilter",
+			"cpp": "self->mipFilter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFilterMode" }],
+			"csharp": { "member": "MipFilter", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxAnisotropy",
+			"cpp": "self->maxAnisotropy",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "MaxAnisotropy", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxAnisotropy",
+			"cpp": "self->maxAnisotropy = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "MaxAnisotropy", "kind": "setter" }
+		}
+	]
+}

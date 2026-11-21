@@ -1,0 +1,98 @@
+{
+	"area": "EditorPreviews",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.EditorPreviews",
+	"structs": [
+		{
+			"name": "AssetPreviewOrbit",
+			"cpp": "::Shalltear::AssetPreviewOrbit",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "yawDeg", "type": "f32", "offset": 0 },
+				{ "name": "pitchDeg", "type": "f32", "offset": 4 },
+				{ "name": "zoom", "type": "f32", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "AssetPreviewRequest", "cpp": "::Shalltear::AssetPreviewRequest", "owned": true, "create": true },
+		{ "name": "AssetPreviewImage", "cpp": "::Shalltear::AssetPreviewImage", "owned": true, "create": true },
+		{ "name": "AssetPreviewPaneDesc", "cpp": "::Shalltear::AssetPreviewPaneDesc", "owned": true, "create": true },
+		{ "name": "EditorPreviewsTypeBadge", "cpp": "::Shalltear::EditorPreviews::TypeBadge", "owned": true, "create": true },
+		{ "name": "AssetPreviewEntry", "cpp": "::Shalltear::AssetPreviewEntry", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::EditorPreviews::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "RegisterProducer",
+			"cpp": "::Shalltear::EditorPreviews::RegisterProducer(assetTypeName, producer, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "assetTypeName", "type": "StringHash" },
+				{
+					"name": "producer",
+					"type": "fn<bool;AssetPreviewRequest;AssetPreviewImage>",
+					"optional": true,
+					"cpp": "std::function<bool (const Shalltear::AssetPreviewRequest &, Shalltear::AssetPreviewImage &)>"
+				}
+			],
+			"csharp": { "member": "RegisterProducer", "kind": "method" }
+		},
+		{
+			"id": "RegisterPane",
+			"cpp": "::Shalltear::EditorPreviews::RegisterPane(assetTypeName, *desc, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "assetTypeName", "type": "StringHash" },
+				{ "name": "desc", "type": "AssetPreviewPaneDesc" }
+			],
+			"csharp": { "member": "RegisterPane", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorPreviews::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Produce",
+			"cpp": "::Shalltear::EditorPreviews::Produce(*request, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "request", "type": "AssetPreviewRequest" },
+				{ "name": "outValue", "type": "AssetPreviewImage" }
+			],
+			"csharp": { "member": "Produce", "kind": "method" }
+		},
+		{
+			"id": "BadgeForAssetType",
+			"cpp": "::Shalltear::EditorPreviews::BadgeForAssetType(assetTypeName)",
+			"returns": "EditorPreviewsTypeBadge",
+			"params": [{ "name": "assetTypeName", "type": "StringHash" }],
+			"csharp": { "member": "BadgeForAssetType", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BadgeForFileName",
+			"cpp": "::Shalltear::EditorPreviews::BadgeForFileName(fileName)",
+			"returns": "EditorPreviewsTypeBadge",
+			"params": [{ "name": "fileName", "type": "string" }],
+			"csharp": { "member": "BadgeForFileName", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

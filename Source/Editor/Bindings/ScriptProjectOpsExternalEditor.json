@@ -1,0 +1,53 @@
+{
+	"area": "ScriptProjectOpsExternalEditor",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ScriptProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ScriptProjectOpsExternalEditor",
+	"instance": "ScriptProjectOpsExternalEditor",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetFolderCommand",
+			"cpp": "self->folderCommand",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FolderCommand", "kind": "getter" }
+		},
+		{
+			"id": "SetFolderCommand",
+			"cpp": "self->folderCommand = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FolderCommand", "kind": "setter" }
+		},
+		{
+			"id": "GetFileCommand",
+			"cpp": "self->fileCommand",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FileCommand", "kind": "getter" }
+		},
+		{
+			"id": "SetFileCommand",
+			"cpp": "self->fileCommand = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FileCommand", "kind": "setter" }
+		}
+	]
+}

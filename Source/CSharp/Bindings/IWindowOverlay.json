@@ -1,0 +1,139 @@
+{
+	"area": "IWindowOverlay",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Graphics/RHICommandList.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.IWindowOverlay",
+	"instance": "IWindowOverlay",
+	"enums": [
+		{
+			"name": "ViewFill",
+			"cpp": "::Shalltear::ViewFill",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Solid", "value": 0 },
+				{ "name": "Wireframe", "value": 1 },
+				{ "name": "SolidAndWireframe", "value": 2 }
+			]
+		},
+		{
+			"name": "DebugView",
+			"cpp": "::Shalltear::DebugView",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Normals", "value": 1 },
+				{ "name": "Depth", "value": 2 },
+				{ "name": "Cascades", "value": 3 }
+			]
+		},
+		{
+			"name": "DebugOverlay",
+			"cpp": "::Shalltear::DebugOverlay",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "DirectionalAtlas", "value": 1 },
+				{ "name": "PunctualAtlas", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "GraphicsStats",
+			"cpp": "::Shalltear::GraphicsStats",
+			"size": 80,
+			"align": 8,
+			"fields": [
+				{ "name": "vramUsedBytes", "type": "u64", "offset": 0 },
+				{ "name": "vramBudgetBytes", "type": "u64", "offset": 8 },
+				{ "name": "liveBuffers", "type": "u32", "offset": 16 },
+				{ "name": "liveTextures", "type": "u32", "offset": 20 },
+				{ "name": "liveSamplers", "type": "u32", "offset": 24 },
+				{ "name": "livePipelines", "type": "u32", "offset": 28 },
+				{ "name": "drawCalls", "type": "u32", "offset": 32 },
+				{ "name": "triangles", "type": "u32", "offset": 36 },
+				{ "name": "lightsBinned", "type": "u32", "offset": 40 },
+				{ "name": "lightsDropped", "type": "u32", "offset": 44 },
+				{ "name": "clusterLightsDropped", "type": "u32", "offset": 48 },
+				{ "name": "shadowMapsRendered", "type": "u32", "offset": 52 },
+				{ "name": "shadowLights", "type": "u32", "offset": 56 },
+				{ "name": "shadowLightsDropped", "type": "u32", "offset": 60 },
+				{ "name": "proceduralDrawn", "type": "u32", "offset": 64 },
+				{ "name": "proceduralCulled", "type": "u32", "offset": 68 },
+				{ "name": "drawCallsSaved", "type": "u32", "offset": 72 },
+				{ "name": "extractionLanes", "type": "u32", "offset": 76 }
+			]
+		},
+		{
+			"name": "DebugLine",
+			"cpp": "::Shalltear::DebugLine",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "a", "type": "Vec3", "offset": 0 },
+				{ "name": "b", "type": "Vec3", "offset": 12 },
+				{ "name": "color", "type": "Color32", "offset": 24 }
+			]
+		},
+		{
+			"name": "ViewPick",
+			"cpp": "::Shalltear::ViewPick",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "pixel", "type": "Vec2I", "offset": 0 },
+				{ "name": "tag", "type": "u64", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "IWindowOverlay", "cpp": "::Shalltear::IWindowOverlay" },
+		{ "name": "ViewDesc", "cpp": "::Shalltear::ViewDesc", "owned": true, "create": true },
+		{ "name": "CascadeFit", "cpp": "::Shalltear::CascadeFit", "owned": true, "create": true },
+		{ "name": "PickAnswer", "cpp": "::Shalltear::PickAnswer", "owned": true, "create": true },
+		{ "name": "ViewOutline", "cpp": "::Shalltear::ViewOutline", "owned": true, "create": true },
+		{ "name": "WindowList", "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::Window>>" }
+	],
+	"functions": [
+		{
+			"id": "CollectOverlayWindows",
+			"cpp": "self->CollectOverlayWindows(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<Window>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::Window>>", "borrowed": true }
+			],
+			"csharp": { "member": "CollectOverlayWindows", "kind": "method" }
+		},
+		{
+			"id": "RecordOverlay",
+			"cpp": "self->RecordOverlay(::Shalltear::Handle<::Shalltear::Window>(window), *cmd, backbuffer, sizePx)",
+			"returns": "u32",
+			"params": [
+				{ "name": "window", "type": "Window", "optional": true },
+				{ "name": "cmd", "type": "RHICommandList" },
+				{ "name": "backbuffer", "type": "RHITextureHandle" },
+				{ "name": "sizePx", "type": "Vec2I" }
+			],
+			"csharp": { "member": "RecordOverlay", "kind": "method" }
+		},
+		{
+			"id": "HasOffscreenWork",
+			"cpp": "self->HasOffscreenWork()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasOffscreenWork", "kind": "getter" }
+		},
+		{
+			"id": "RecordOffscreen",
+			"cpp": "self->RecordOffscreen(*cmd)",
+			"returns": "u32",
+			"params": [{ "name": "cmd", "type": "RHICommandList" }],
+			"csharp": { "member": "RecordOffscreen", "kind": "method" }
+		}
+	]
+}

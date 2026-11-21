@@ -1,0 +1,81 @@
+{
+	"area": "ProceduralPlan",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ProceduralRenderer.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/ShadowCasting.h"
+	],
+	"class": "Shalltear.ProceduralPlan",
+	"instance": "ProceduralPlan",
+	"types": [
+		{ "name": "ProceduralRenderer", "cpp": "::Shalltear::ProceduralRenderer", "engine": "ProceduralRenderer", "base": "Component", "abstract": true }
+	],
+	"enums": [
+		{
+			"name": "ProceduralPass",
+			"cpp": "::Shalltear::ProceduralPass",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Scene", "value": 0 },
+				{ "name": "Prepass", "value": 1 },
+				{ "name": "Shadow", "value": 2 },
+				{ "name": "Value", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ProceduralPlan", "cpp": "::Shalltear::ProceduralPlan" },
+		{ "name": "ProceduralContext", "cpp": "::Shalltear::ProceduralContext" },
+		{ "name": "ProceduralView", "cpp": "::Shalltear::ProceduralView", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "SetBounds",
+			"cpp": "self->SetBounds(worldBounds)",
+			"returns": "void",
+			"params": [{ "name": "worldBounds", "type": "AABB" }],
+			"csharp": { "member": "SetBounds", "kind": "method" }
+		},
+		{
+			"id": "AddItem",
+			"cpp": "self->AddItem(::Shalltear::Handle<::Shalltear::MaterialAsset>(material), sortPoint, castShadows)",
+			"returns": "u32",
+			"params": [
+				{ "name": "material", "type": "Material", "optional": true },
+				{ "name": "sortPoint", "type": "Vec3" },
+				{ "name": "castShadows", "type": "ShadowCasting" }
+			],
+			"csharp": { "member": "AddItem", "kind": "method" }
+		},
+		{
+			"id": "AddViewStep",
+			"cpp": "self->AddViewStep()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AddViewStep", "kind": "method" }
+		},
+		{
+			"id": "Read",
+			"cpp": "self->Read(buffer, state)",
+			"returns": "void",
+			"params": [
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "state", "type": "RHIResourceState" }
+			],
+			"csharp": { "member": "Read", "kind": "method" }
+		},
+		{
+			"id": "Write",
+			"cpp": "self->Write(buffer, state)",
+			"returns": "void",
+			"params": [
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "state", "type": "RHIResourceState" }
+			],
+			"csharp": { "member": "Write", "kind": "method" }
+		}
+	]
+}

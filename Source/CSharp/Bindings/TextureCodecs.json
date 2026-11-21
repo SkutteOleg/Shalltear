@@ -1,0 +1,42 @@
+{
+	"area": "TextureCodecs",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/TextureCodecs.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.TextureCodecs",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::TextureCodecs::Register(format, *codec, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "format", "type": "RHIFormat" },
+				{ "name": "codec", "type": "TextureCodec" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::TextureCodecs::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "::Shalltear::TextureCodecs::Find(format)",
+			"returns": "TextureCodec",
+			"params": [{ "name": "format", "type": "RHIFormat" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "DecodedFormat",
+			"cpp": "::Shalltear::TextureCodecs::DecodedFormat(format)",
+			"returns": "RHIFormat",
+			"params": [{ "name": "format", "type": "RHIFormat" }],
+			"csharp": { "member": "DecodedFormat", "kind": "method" }
+		}
+	]
+}

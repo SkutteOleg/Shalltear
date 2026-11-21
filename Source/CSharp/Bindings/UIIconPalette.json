@@ -1,0 +1,67 @@
+{
+	"area": "UIIconPalette",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/VectorIcon.h"
+	],
+	"class": "Shalltear.UIIconPalette",
+	"instance": "UIIconPalette",
+	"functions": [
+		{
+			"id": "Set",
+			"cpp": "self->Set(slot, color)",
+			"returns": "UIIconPalette",
+			"params": [
+				{ "name": "slot", "type": "u32" },
+				{ "name": "color", "type": "Color" }
+			],
+			"csharp": { "member": "Set", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "Overrides",
+			"cpp": "self->Overrides(slot)",
+			"returns": "bool",
+			"params": [{ "name": "slot", "type": "u32" }],
+			"csharp": { "member": "Overrides", "kind": "method" }
+		},
+		{
+			"id": "Tint",
+			"cpp": "::Shalltear::UI::IconPalette::Tint(color)",
+			"returns": "UIIconPalette",
+			"params": [{ "name": "color", "type": "Color" }],
+			"csharp": { "member": "Tint", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "GetSlots",
+			"cpp": "self->slots",
+			"returns": "list<Color>",
+			"params": [],
+			"csharp": { "member": "Slots", "kind": "getter" }
+		},
+		{
+			"id": "SetSlots",
+			"cpp": "Slots::Assign(self->slots, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Color>" }],
+			"csharp": { "member": "Slots", "kind": "setter" }
+		},
+		{
+			"id": "GetOverrideMask",
+			"cpp": "self->overrideMask",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "OverrideMask", "kind": "getter" }
+		},
+		{
+			"id": "SetOverrideMask",
+			"cpp": "self->overrideMask = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "OverrideMask", "kind": "setter" }
+		}
+	]
+}

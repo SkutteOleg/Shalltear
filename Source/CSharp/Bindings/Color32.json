@@ -1,0 +1,90 @@
+{
+	"area": "Color32",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Color.h"
+	],
+	"class": "Shalltear.Color32",
+	"instance": "Color32",
+	"structs": [
+		{
+			"name": "Color32",
+			"cpp": "::Shalltear::Color32",
+			"size": 4,
+			"align": 1,
+			"fields": [
+				{ "name": "r", "type": "u8", "offset": 0 },
+				{ "name": "g", "type": "u8", "offset": 1 },
+				{ "name": "b", "type": "u8", "offset": 2 },
+				{ "name": "a", "type": "u8", "offset": 3 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "White",
+			"cpp": "::Shalltear::Color32::White()",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "White", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Black",
+			"cpp": "::Shalltear::Color32::Black()",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "Black", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Clear",
+			"cpp": "::Shalltear::Color32::Clear()",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "ToU32",
+			"cpp": "self->ToU32()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ToU32", "kind": "method" }
+		},
+		{
+			"id": "FromU32",
+			"cpp": "::Shalltear::Color32::FromU32(packed)",
+			"returns": "Color32",
+			"params": [{ "name": "packed", "type": "u32" }],
+			"csharp": { "member": "FromU32", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "ToColor",
+			"cpp": "self->ToColor()",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "ToColor", "kind": "method" }
+		},
+		{
+			"id": "Lerp",
+			"cpp": "::Shalltear::Color32::Lerp(x, y, t)",
+			"returns": "Color32",
+			"params": [
+				{ "name": "x", "type": "Color32" },
+				{ "name": "y", "type": "Color32" },
+				{ "name": "t", "type": "f32" }
+			],
+			"csharp": { "member": "Lerp", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "ToString",
+			"cpp": "self->ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ToText", "kind": "method" }
+		}
+	]
+}

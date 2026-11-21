@@ -1,0 +1,68 @@
+{
+	"area": "ComputeTexture",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.ComputeTexture",
+	"instance": "ComputeTexture",
+	"functions": [
+		{
+			"id": "GetBinding",
+			"cpp": "self->binding",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Binding", "kind": "getter" }
+		},
+		{
+			"id": "SetBinding",
+			"cpp": "self->binding = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Binding", "kind": "setter" }
+		},
+		{
+			"id": "GetSamplerBinding",
+			"cpp": "self->samplerBinding",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SamplerBinding", "kind": "getter" }
+		},
+		{
+			"id": "SetSamplerBinding",
+			"cpp": "self->samplerBinding = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SamplerBinding", "kind": "setter" }
+		},
+		{
+			"id": "GetTexture",
+			"cpp": "self->texture",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "self->texture = ::Shalltear::Handle<::Shalltear::TextureAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Texture", "optional": true }],
+			"csharp": { "member": "Texture", "kind": "setter" }
+		},
+		{
+			"id": "GetImage",
+			"cpp": "self->image",
+			"returns": "FrameImage",
+			"params": [],
+			"csharp": { "member": "Image", "kind": "getter" }
+		},
+		{
+			"id": "SetImage",
+			"cpp": "self->image = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FrameImage" }],
+			"csharp": { "member": "Image", "kind": "setter" }
+		}
+	]
+}

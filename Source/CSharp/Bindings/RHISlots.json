@@ -1,0 +1,197 @@
+{
+	"area": "RHISlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHI",
+	"constants": [
+		{ "name": "FRAMES_IN_FLIGHT", "cpp": "::Shalltear::RHI::FRAMES_IN_FLIGHT", "type": "u32", "value": 2 },
+		{ "name": "WHOLE_BUFFER", "cpp": "::Shalltear::RHI::WHOLE_BUFFER", "type": "u64", "value": 18446744073709551615 },
+		{ "name": "BINDING_OFFSET_ALIGNMENT", "cpp": "::Shalltear::RHI::BINDING_OFFSET_ALIGNMENT", "type": "u64", "value": 256 },
+		{ "name": "MAX_DESCRIPTOR_SETS", "cpp": "::Shalltear::RHI::MAX_DESCRIPTOR_SETS", "type": "u32", "value": 4 },
+		{ "name": "MAX_COLOR_ATTACHMENTS", "cpp": "::Shalltear::RHI::MAX_COLOR_ATTACHMENTS", "type": "u32", "value": 4 },
+		{ "name": "TABLE_SET", "cpp": "::Shalltear::RHI::TABLE_SET", "type": "u32", "value": 3 },
+		{ "name": "TABLE_SAMPLERS_BINDING", "cpp": "::Shalltear::RHI::TABLE_SAMPLERS_BINDING", "type": "u32", "value": 0 },
+		{ "name": "TABLE_TEXTURES_2D_BINDING", "cpp": "::Shalltear::RHI::TABLE_TEXTURES_2D_BINDING", "type": "u32", "value": 1 },
+		{ "name": "TABLE_TEXTURES_CUBE_BINDING", "cpp": "::Shalltear::RHI::TABLE_TEXTURES_CUBE_BINDING", "type": "u32", "value": 2 },
+		{ "name": "TABLE_TEXTURES_3D_BINDING", "cpp": "::Shalltear::RHI::TABLE_TEXTURES_3D_BINDING", "type": "u32", "value": 3 },
+		{ "name": "TABLE_NONE", "cpp": "::Shalltear::RHI::TABLE_NONE", "type": "u32", "value": 4294967295 },
+		{ "name": "MAX_SPECIALIZATION_CONSTANTS", "cpp": "::Shalltear::RHI::MAX_SPECIALIZATION_CONSTANTS", "type": "u32", "value": 8 }
+	],
+	"functions": [
+		{
+			"id": "IsBlockCompressed",
+			"cpp": "::Shalltear::RHI::IsBlockCompressed(format)",
+			"returns": "bool",
+			"params": [{ "name": "format", "type": "RHIFormat" }],
+			"csharp": { "member": "IsBlockCompressed", "kind": "method" }
+		},
+		{
+			"id": "IsSRGB",
+			"cpp": "::Shalltear::RHI::IsSRGB(format)",
+			"returns": "bool",
+			"params": [{ "name": "format", "type": "RHIFormat" }],
+			"csharp": { "member": "IsSRGB", "kind": "method" }
+		},
+		{
+			"id": "WithoutSRGB",
+			"cpp": "::Shalltear::RHI::WithoutSRGB(format)",
+			"returns": "RHIFormat",
+			"params": [{ "name": "format", "type": "RHIFormat" }],
+			"csharp": { "member": "WithoutSRGB", "kind": "method" }
+		},
+		{
+			"id": "FormatLevelBytes",
+			"cpp": "::Shalltear::RHI::FormatLevelBytes(format, size)",
+			"returns": "u64",
+			"params": [
+				{ "name": "format", "type": "RHIFormat" },
+				{ "name": "size", "type": "Vec2I" }
+			],
+			"csharp": { "member": "FormatLevelBytes", "kind": "method" }
+		},
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::RHI::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "RHIBufferUsage" },
+				{ "name": "flags", "type": "RHIBufferUsage" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::RHI::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "RHIBufferUsage" },
+				{ "name": "flags", "type": "RHIBufferUsage" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "HasFlag2",
+			"cpp": "::Shalltear::RHI::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "RHITextureUsage" },
+				{ "name": "flags", "type": "RHITextureUsage" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag2",
+			"cpp": "::Shalltear::RHI::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "RHITextureUsage" },
+				{ "name": "flags", "type": "RHITextureUsage" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "BlendModeName",
+			"cpp": "::Shalltear::RHI::BlendModeName(mode)",
+			"returns": "string",
+			"params": [{ "name": "mode", "type": "RHIBlendMode" }],
+			"csharp": { "member": "BlendModeName", "kind": "method" }
+		},
+		{
+			"id": "ParseBlendMode",
+			"cpp": "::Shalltear::RHI::ParseBlendMode(name, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "RHIBlendMode", "out": true }
+			],
+			"csharp": { "member": "ParseBlendMode", "kind": "method" }
+		},
+		{
+			"id": "CullModeName",
+			"cpp": "::Shalltear::RHI::CullModeName(mode)",
+			"returns": "string",
+			"params": [{ "name": "mode", "type": "RHICullMode" }],
+			"csharp": { "member": "CullModeName", "kind": "method" }
+		},
+		{
+			"id": "ParseCullMode",
+			"cpp": "::Shalltear::RHI::ParseCullMode(name, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "RHICullMode", "out": true }
+			],
+			"csharp": { "member": "ParseCullMode", "kind": "method" }
+		},
+		{
+			"id": "DepthCompareName",
+			"cpp": "::Shalltear::RHI::DepthCompareName(compare)",
+			"returns": "string",
+			"params": [{ "name": "compare", "type": "RHIDepthCompare" }],
+			"csharp": { "member": "DepthCompareName", "kind": "method" }
+		},
+		{
+			"id": "ParseDepthCompare",
+			"cpp": "::Shalltear::RHI::ParseDepthCompare(name, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "RHIDepthCompare", "out": true }
+			],
+			"csharp": { "member": "ParseDepthCompare", "kind": "method" }
+		},
+		{
+			"id": "DepthModeName",
+			"cpp": "::Shalltear::RHI::DepthModeName(mode)",
+			"returns": "string",
+			"params": [{ "name": "mode", "type": "RHIDepthMode" }],
+			"csharp": { "member": "DepthModeName", "kind": "method" }
+		},
+		{
+			"id": "ParseDepthMode",
+			"cpp": "::Shalltear::RHI::ParseDepthMode(name, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "RHIDepthMode", "out": true }
+			],
+			"csharp": { "member": "ParseDepthMode", "kind": "method" }
+		},
+		{
+			"id": "HasFlag3",
+			"cpp": "::Shalltear::RHI::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "RHIShaderStage" },
+				{ "name": "flags", "type": "RHIShaderStage" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag3",
+			"cpp": "::Shalltear::RHI::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "RHIShaderStage" },
+				{ "name": "flags", "type": "RHIShaderStage" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "TextureDimensionName",
+			"cpp": "::Shalltear::RHI::TextureDimensionName(dimension)",
+			"returns": "string",
+			"params": [{ "name": "dimension", "type": "RHITextureDimension" }],
+			"csharp": { "member": "TextureDimensionName", "kind": "method" }
+		},
+		{
+			"id": "ResolveTextureDimension",
+			"cpp": "::Shalltear::RHI::ResolveTextureDimension(*desc)",
+			"returns": "RHITextureDimension",
+			"params": [{ "name": "desc", "type": "RHITextureDesc" }],
+			"csharp": { "member": "ResolveTextureDimension", "kind": "method" }
+		}
+	]
+}

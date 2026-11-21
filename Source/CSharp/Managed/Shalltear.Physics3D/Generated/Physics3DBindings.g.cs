@@ -42,6 +42,10 @@ internal unsafe struct SltPhysics3DBindings {
 	public delegate* unmanaged<ulong, float, int> characterControllerSetHeight;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> characterControllerGetDetectCollisions;
 	public delegate* unmanaged<ulong, byte, int> characterControllerSetDetectCollisions;
+	public delegate* unmanaged<ulong*, ulong*, int> characterControllerSlotsHasFlag;
+	public delegate* unmanaged<ulong*, ulong*, int> characterControllerSlotsHasAnyFlag;
+	public delegate* unmanaged<ulong*, ulong*, int> characterControllerSlotsEngineControllerColliderHitDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> characterControllerSlotsEngineControllerColliderHitNew;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec3*, int> characterJointGetAxis;
 	public delegate* unmanaged<ulong, float, float, float, int> characterJointSetAxis;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec3*, int> characterJointGetSwingAxis;
@@ -77,6 +81,58 @@ internal unsafe struct SltPhysics3DBindings {
 	public delegate* unmanaged<ulong, SltString*, int> colliderGetCollidesWith;
 	public delegate* unmanaged<ulong, SltString, int> colliderSetCollidesWith;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> colliderGetIsInSimulation;
+	public delegate* unmanaged<ulong*, ulong*, int> colliderProxySetDescribeShape;
+	public delegate* unmanaged<ulong*, ulong*, int> colliderProxyGetBase;
+	public delegate* unmanaged<ulong*, ulong*, int> colliderProxyRegister;
+	public delegate* unmanaged<ulong*, ulong*, int> colliderSlotsDescribeShape;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionGetCollider;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionSetCollider;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionGetObject;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionSetObject;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionGetRigidbody;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionSetRigidbody;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionGetRelativeVelocity;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionSetRelativeVelocity;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionGetContactCount;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionSetContactCount;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionGetContacts;
+	public delegate* unmanaged<ulong*, ulong*, int> engineCollisionSetContacts;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetController;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetController;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetCollider;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetCollider;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetObject;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetObject;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetRigidbody;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetRigidbody;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetPoint;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetPoint;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetNormal;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetNormal;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetMoveDirection;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetMoveDirection;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitGetMoveLength;
+	public delegate* unmanaged<ulong*, ulong*, int> engineControllerColliderHitSetMoveLength;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterGetCategories;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterSetCategories;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterGetCollidesWithMode;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterSetCollidesWithMode;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterGetCollidesWith;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterSetCollidesWith;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterGetTriggerInteraction;
+	public delegate* unmanaged<ulong*, ulong*, int> enginePhysicsQueryFilterSetTriggerInteraction;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitGetCollider;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitSetCollider;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitGetObject;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitSetObject;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitGetRigidbody;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitSetRigidbody;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitGetPoint;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitSetPoint;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitGetNormal;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitSetNormal;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitGetDistance;
+	public delegate* unmanaged<ulong*, ulong*, int> engineRaycastHitSetDistance;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec3*, int> hingeJointGetAxis;
 	public delegate* unmanaged<ulong, float, float, float, int> hingeJointSetAxis;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> hingeJointGetUseSpring;
@@ -114,6 +170,10 @@ internal unsafe struct SltPhysics3DBindings {
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> jointGetEnableCollision;
 	public delegate* unmanaged<ulong, byte, int> jointSetEnableCollision;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> jointGetIsInSimulation;
+	public delegate* unmanaged<ulong*, ulong*, int> jointProxySetDescribeJoint;
+	public delegate* unmanaged<ulong*, ulong*, int> jointProxyGetBase;
+	public delegate* unmanaged<ulong*, ulong*, int> jointProxyRegister;
+	public delegate* unmanaged<ulong*, ulong*, int> jointSlotsDescribeJoint;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, ulong*, int> meshColliderGetMesh;
 	public delegate* unmanaged<ulong, ulong, int> meshColliderSetMesh;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> meshColliderGetConvex;
@@ -123,6 +183,25 @@ internal unsafe struct SltPhysics3DBindings {
 	public delegate* unmanaged<float, float, float, float, float, float, float, float, float, float, float, SltString, byte, SltString, byte, RaycastHit*, int, byte*, int> physicsCastCapsule;
 	public delegate* unmanaged<float, float, float, float, SltString, byte, SltString, byte, ulong*, int, int*, int> physicsFindOverlaps;
 	public delegate* unmanaged<long, long, long, long, int*, int> physicsAttachEvents;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnCollisionEnter;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnCollisionStay;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnCollisionExit;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnTriggerEnter;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnTriggerStay;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnTriggerExit;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnJointBreak;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerOnControllerColliderHit;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnCollisionEnter;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnCollisionStay;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnCollisionExit;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnTriggerEnter;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnTriggerStay;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnTriggerExit;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnJointBreak;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxySetOnControllerColliderHit;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxyGetBase;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxyPhysicsListenerProxyDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsListenerProxyPhysicsListenerProxyNew;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> physicsMaterialGetFriction;
 	public delegate* unmanaged<ulong, float, int> physicsMaterialSetFriction;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, float*, int> physicsMaterialGetBounciness;
@@ -133,6 +212,28 @@ internal unsafe struct SltPhysics3DBindings {
 	public delegate* unmanaged<ulong, byte, int> physicsMaterialSetFrictionCombine;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> physicsMaterialGetBounceCombine;
 	public delegate* unmanaged<ulong, byte, int> physicsMaterialSetBounceCombine;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsPackPhysicsMaterialCombine;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsCombinePhysicsMaterialValue;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsGetFrictionField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsSetFrictionField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsGetBouncinessField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsSetBouncinessField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsGetRollingResistanceField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsSetRollingResistanceField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsGetFrictionCombineField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsSetFrictionCombineField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsGetBounceCombineField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsMaterialSlotsSetBounceCombineField;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsAddListenerResolver;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsRemoveListenerResolver;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsEngineRaycastHitDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsEngineRaycastHitNew;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsEnginePhysicsQueryFilterDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsEnginePhysicsQueryFilterNew;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsPhysicsListenerDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsPhysicsListenerNew;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsEngineCollisionDelete;
+	public delegate* unmanaged<ulong*, ulong*, int> physicsSlotsEngineCollisionNew;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, Vec3*, int> prismaticJointGetAxis;
 	public delegate* unmanaged<ulong, float, float, float, int> prismaticJointSetAxis;
 	public delegate* unmanaged[SuppressGCTransition]<ulong, byte*, int> prismaticJointGetUseSpring;
@@ -219,7 +320,7 @@ internal unsafe struct SltPhysics3DBindings {
 /// <summary>Called by generated code.</summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static unsafe partial class Physics3DBindings {
-	internal const ulong LAYOUT_HASH = 0x10f3d524feb962f8;
+	internal const ulong LAYOUT_HASH = 0x48c9a3250e8c0b07;
 
 	internal static SltPhysics3DBindings table;
 
@@ -241,13 +342,16 @@ public static unsafe partial class Physics3DBindings {
 		if (sizeof(ControllerColliderHit) != 72) {
 			throw new EngineException("ControllerColliderHit size " + sizeof(ControllerColliderHit) + " (engine 72)");
 		}
+		if (sizeof(PhysicsContactPoint) != 32) {
+			throw new EngineException("PhysicsContactPoint size " + sizeof(PhysicsContactPoint) + " (engine 32)");
+		}
 		ObjectCache.Wrap(BoxCollider.ENGINE_TYPE, static id => new BoxCollider(id));
 		ObjectCache.Wrap(CapsuleCollider.ENGINE_TYPE, static id => new CapsuleCollider(id));
 		ObjectCache.Wrap(CharacterController.ENGINE_TYPE, static id => new CharacterController(id));
 		ObjectCache.Wrap(CharacterJoint.ENGINE_TYPE, static id => new CharacterJoint(id));
-		ObjectCache.Declare<Collider>(Collider.ENGINE_TYPE);
+		ObjectCache.Wrap<Collider>(Collider.ENGINE_TYPE, static id => new OpaqueCollider(id));
 		ObjectCache.Wrap(HingeJoint.ENGINE_TYPE, static id => new HingeJoint(id));
-		ObjectCache.Declare<Joint>(Joint.ENGINE_TYPE);
+		ObjectCache.Wrap<Joint>(Joint.ENGINE_TYPE, static id => new OpaqueJoint(id));
 		ObjectCache.Wrap(FixedJoint.ENGINE_TYPE, static id => new FixedJoint(id));
 		ObjectCache.Wrap(MeshCollider.ENGINE_TYPE, static id => new MeshCollider(id));
 		ObjectCache.Wrap(PhysicsMaterial.ENGINE_TYPE, static id => new PhysicsMaterial(id));

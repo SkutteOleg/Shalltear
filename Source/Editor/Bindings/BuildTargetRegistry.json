@@ -1,0 +1,63 @@
+{
+	"area": "BuildTargetRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildTarget.h",
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildTargetRegistry",
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::BuildTargetRegistry::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::BuildTargetRegistry::Register(target, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [{ "name": "target", "type": "IBuildTarget", "optional": true }],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "::Shalltear::BuildTargetRegistry::Find(id)",
+			"returns": "IBuildTarget",
+			"params": [{ "name": "id", "type": "string" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::BuildTargetRegistry::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "GetTargetIds",
+			"cpp": "::Shalltear::BuildTargetRegistry::GetTargetIds(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetTargetIds", "kind": "method" }
+		},
+		{
+			"id": "GetDefaultTargetId",
+			"cpp": "::Shalltear::BuildTargetRegistry::GetDefaultTargetId()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultTargetId", "kind": "getter" }
+		},
+		{
+			"id": "GetSchemaFor",
+			"cpp": "::Shalltear::BuildTargetRegistry::GetSchemaFor(id, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "string" },
+				{ "name": "outValue", "type": "list<BuildSettingDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildSettingDesc>" }
+			],
+			"csharp": { "member": "GetSchemaFor", "kind": "method" }
+		}
+	]
+}

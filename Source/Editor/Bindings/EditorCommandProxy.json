@@ -1,0 +1,118 @@
+{
+	"area": "EditorCommandProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Editor/EditorCommands.h"
+	],
+	"class": "Shalltear.Editor.EditorCommandProxy",
+	"instance": "EditorCommandProxy",
+	"prelude": [
+		"class EditorCommandProxy final : public ::Shalltear::IEditorCommand {",
+		"public:",
+		"\tstd::function<void()> apply;",
+		"\tvoid Apply() override {",
+		"\t\tif (apply) {",
+		"\t\t\tapply();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> revert;",
+		"\tvoid Revert() override {",
+		"\t\tif (revert) {",
+		"\t\t\trevert();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<std::basic_string<char>()> getLabel;",
+		"\tstd::basic_string<char> GetLabel() const override {",
+		"\t\treturn getLabel ? getLabel() : Slots::ResultOf<decltype(getLabel)>();",
+		"\t}",
+		"\tstd::function<bool(const Shalltear::IEditorCommand &)> tryCoalesce;",
+		"\tbool TryCoalesce(const Shalltear::IEditorCommand & a0) override {",
+		"\t\treturn tryCoalesce ? tryCoalesce(a0) : ::Shalltear::IEditorCommand::TryCoalesce(a0);",
+		"\t}",
+		"\tstd::function<const Shalltear::PropertySetCommand *()> asPropertySet;",
+		"\tconst Shalltear::PropertySetCommand * AsPropertySet() const override {",
+		"\t\treturn asPropertySet ? asPropertySet() : ::Shalltear::IEditorCommand::AsPropertySet();",
+		"\t}",
+		"\tstd::function<const Shalltear::SetFieldStateCommand *()> asFieldState;",
+		"\tconst Shalltear::SetFieldStateCommand * AsFieldState() const override {",
+		"\t\treturn asFieldState ? asFieldState() : ::Shalltear::IEditorCommand::AsFieldState();",
+		"\t}",
+		"\tstd::function<Shalltear::Handle<Shalltear::Scene>()> getAffectedScene;",
+		"\tShalltear::Handle<Shalltear::Scene> GetAffectedScene() const override {",
+		"\t\treturn getAffectedScene ? getAffectedScene() : ::Shalltear::IEditorCommand::GetAffectedScene();",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "EditorCommandProxy", "cpp": "EditorCommandProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetApply",
+			"cpp": "self->apply = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetApply", "kind": "method" }
+		},
+		{
+			"id": "SetRevert",
+			"cpp": "self->revert = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetRevert", "kind": "method" }
+		},
+		{
+			"id": "SetGetLabel",
+			"cpp": "self->getLabel = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string<char>()>" }
+			],
+			"csharp": { "member": "SetGetLabel", "kind": "method" }
+		},
+		{
+			"id": "SetTryCoalesce",
+			"cpp": "self->tryCoalesce = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;IEditorCommand>", "optional": true, "cpp": "std::function<bool(const Shalltear::IEditorCommand &)>" }
+			],
+			"csharp": { "member": "SetTryCoalesce", "kind": "method" }
+		},
+		{
+			"id": "SetAsPropertySet",
+			"cpp": "self->asPropertySet = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<PropertySetCommand>", "optional": true, "cpp": "std::function<const Shalltear::PropertySetCommand *()>" }
+			],
+			"csharp": { "member": "SetAsPropertySet", "kind": "method" }
+		},
+		{
+			"id": "SetAsFieldState",
+			"cpp": "self->asFieldState = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<SetFieldStateCommand>", "optional": true, "cpp": "std::function<const Shalltear::SetFieldStateCommand *()>" }
+			],
+			"csharp": { "member": "SetAsFieldState", "kind": "method" }
+		},
+		{
+			"id": "SetGetAffectedScene",
+			"cpp": "self->getAffectedScene = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<Scene>", "optional": true, "cpp": "std::function<Shalltear::Handle<Shalltear::Scene>()>" }
+			],
+			"csharp": { "member": "SetGetAffectedScene", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

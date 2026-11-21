@@ -1,0 +1,21 @@
+{
+	"area": "UIRenderer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.UIRenderer",
+	"instance": "UIRenderer",
+	"functions": [
+		{
+			"id": "Submit",
+			"cpp": "self->Submit(*list, *info)",
+			"returns": "void",
+			"params": [
+				{ "name": "list", "type": "UIRenderList" },
+				{ "name": "info", "type": "UISubmitInfo" }
+			],
+			"csharp": { "member": "Submit", "kind": "method" }
+		}
+	]
+}

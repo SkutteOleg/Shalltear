@@ -1,0 +1,51 @@
+{
+	"area": "InputSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Input/Input.h",
+		"Shalltear/Core/Input/InputEvent.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.Input",
+	"functions": [
+		{
+			"id": "GetFrameEvents",
+			"cpp": "::Shalltear::Input::GetFrameEvents()",
+			"returns": "list<EngineInputEvent>",
+			"params": [],
+			"csharp": { "member": "FrameEvents", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "GetFrameEvents2",
+			"cpp": "::Shalltear::Input::GetFrameEvents(::Shalltear::Handle<::Shalltear::Window>(window), Slots::SpanScope<::Shalltear::InputEvent>(outValue))",
+			"returns": "u32",
+			"params": [
+				{ "name": "window", "type": "Window", "optional": true },
+				{ "name": "outValue", "type": "list<EngineInputEvent>" }
+			],
+			"csharp": { "member": "GetFrameEvents", "kind": "method" }
+		},
+		{
+			"id": "GetMousePosition",
+			"cpp": "::Shalltear::Input::GetMousePosition(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "Vec2I",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "GetMousePosition", "kind": "method" }
+		},
+		{
+			"id": "SetGameplayInputRouted",
+			"cpp": "::Shalltear::Input::SetGameplayInputRouted(routed)",
+			"returns": "void",
+			"params": [{ "name": "routed", "type": "bool" }],
+			"csharp": { "member": "SetGameplayInputRouted", "kind": "method" }
+		},
+		{
+			"id": "SetGameplayPointerRouted",
+			"cpp": "::Shalltear::Input::SetGameplayPointerRouted(routed)",
+			"returns": "void",
+			"params": [{ "name": "routed", "type": "bool" }],
+			"csharp": { "member": "SetGameplayPointerRouted", "kind": "method" }
+		}
+	]
+}

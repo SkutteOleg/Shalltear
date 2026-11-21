@@ -1,0 +1,40 @@
+{
+	"area": "AssetBrowserOpsAssignableAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AssetBrowserOps.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.AssetBrowserOpsAssignableAsset",
+	"instance": "AssetBrowserOpsAssignableAsset",
+	"functions": [
+		{
+			"id": "GetDisplay",
+			"cpp": "self->display",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Display", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplay",
+			"cpp": "self->display = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Display", "kind": "setter" }
+		},
+		{
+			"id": "GetGuid",
+			"cpp": "self->guid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Guid", "kind": "getter" }
+		},
+		{
+			"id": "SetGuid",
+			"cpp": "self->guid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Guid", "kind": "setter" }
+		}
+	]
+}

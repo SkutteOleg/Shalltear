@@ -1,0 +1,67 @@
+{
+	"area": "UIDebugOpsPropertyRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsPropertyRow",
+	"instance": "UIDebugOpsPropertyRow",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0x05f84623de7b7edeull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetSource",
+			"cpp": "self->source",
+			"returns": "UIDebugOpsValueSource",
+			"params": [],
+			"csharp": { "member": "Source", "kind": "getter" }
+		},
+		{
+			"id": "SetSource",
+			"cpp": "self->source = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDebugOpsValueSource" }],
+			"csharp": { "member": "Source", "kind": "setter" }
+		},
+		{
+			"id": "GetSheet",
+			"cpp": "self->sheet",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Sheet", "kind": "getter" }
+		},
+		{
+			"id": "SetSheet",
+			"cpp": "self->sheet = Slots::KeepFieldText(self, 0x83cae4e0915d1940ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Sheet", "kind": "setter" }
+		}
+	]
+}

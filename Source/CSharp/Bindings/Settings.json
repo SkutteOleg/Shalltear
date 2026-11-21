@@ -1,0 +1,160 @@
+{
+	"area": "Settings",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Settings.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Settings",
+	"enums": [
+		{
+			"name": "SettingScope",
+			"cpp": "::Shalltear::SettingScope",
+			"underlying": "u8",
+			"values": [
+				{ "name": "UserProject", "value": 0 },
+				{ "name": "User", "value": 1 },
+				{ "name": "Project", "value": 2 }
+			]
+		},
+		{
+			"name": "MutabilityClass",
+			"cpp": "::Shalltear::MutabilityClass",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Hot", "value": 0 },
+				{ "name": "FrameBoundary", "value": 1 },
+				{ "name": "DeviceIdle", "value": 2 },
+				{ "name": "Restart", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "SettingFieldState",
+			"cpp": "::Shalltear::SettingFieldState",
+			"size": 3,
+			"align": 1,
+			"fields": [
+				{ "name": "isOverride", "type": "bool", "offset": 0 },
+				{ "name": "resolvedFrom", "type": "SettingScope", "offset": 1 },
+				{ "name": "editsLandIn", "type": "SettingScope", "offset": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "SettingsPaths", "cpp": "::Shalltear::SettingsPaths", "owned": true, "create": true },
+		{ "name": "SettingsCategoryInfo", "cpp": "::Shalltear::SettingsCategoryInfo", "owned": true, "create": true },
+		{ "name": "SettingChangedEvent", "cpp": "::Shalltear::SettingChangedEvent", "owned": true, "create": true }
+	],
+	"constants": [{ "name": "SETTING_SCOPE_COUNT", "cpp": "::Shalltear::SETTING_SCOPE_COUNT", "type": "u32", "value": 3 }],
+	"functions": [
+		{
+			"id": "GetDefaultPaths",
+			"cpp": "::Shalltear::Settings::GetDefaultPaths()",
+			"returns": "SettingsPaths",
+			"params": [],
+			"csharp": { "member": "DefaultPaths", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "DeclareCategory",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::Settings::DeclareCategory(path, type, scope, overridable)))",
+			"returns": "u64",
+			"params": [
+				{ "name": "path", "type": "string" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "scope", "type": "SettingScope" },
+				{ "name": "overridable", "type": "bool" }
+			],
+			"csharp": { "member": "DeclareCategory", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::Settings::UnregisterOwnedBy(reinterpret_cast<const void*>(static_cast<uintptr_t>(imageBase)))",
+			"returns": "u32",
+			"params": [{ "name": "imageBase", "type": "u64" }],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "GetCategories",
+			"cpp": "::Shalltear::Settings::GetCategories(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<SettingsCategoryInfo>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::SettingsCategoryInfo>" }
+			],
+			"csharp": { "member": "GetCategories", "kind": "method" }
+		},
+		{
+			"id": "GetFieldState",
+			"cpp": "::Shalltear::Settings::GetFieldState(categoryPath, fieldName, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" },
+				{ "name": "outValue", "type": "SettingFieldState", "out": true }
+			],
+			"csharp": { "member": "GetFieldState", "kind": "method" }
+		},
+		{
+			"id": "GetFieldMutability",
+			"cpp": "::Shalltear::Settings::GetFieldMutability(field, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "field", "type": "FieldInfo", "optional": true },
+				{ "name": "outValue", "type": "MutabilityClass", "out": true }
+			],
+			"csharp": { "member": "GetFieldMutability", "kind": "method" }
+		},
+		{
+			"id": "SetFieldEditScope",
+			"cpp": "::Shalltear::Settings::SetFieldEditScope(categoryPath, fieldName, scope)",
+			"returns": "bool",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" },
+				{ "name": "scope", "type": "SettingScope" }
+			],
+			"csharp": { "member": "SetFieldEditScope", "kind": "method" }
+		},
+		{
+			"id": "NotifyChanged",
+			"cpp": "::Shalltear::Settings::NotifyChanged(categoryPath, fieldName)",
+			"returns": "void",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" }
+			],
+			"csharp": { "member": "NotifyChanged", "kind": "method" }
+		},
+		{
+			"id": "Save",
+			"cpp": "::Shalltear::Settings::Save()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Save", "kind": "method" }
+		},
+		{
+			"id": "RevertField",
+			"cpp": "::Shalltear::Settings::RevertField(categoryPath, fieldName)",
+			"returns": "bool",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" }
+			],
+			"csharp": { "member": "RevertField", "kind": "method" }
+		},
+		{
+			"id": "TryGetStoredValue",
+			"cpp": "::Shalltear::Settings::TryGetStoredValue(categoryPath, fieldName, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "fieldName", "type": "string" },
+				{ "name": "outValue", "type": "string", "out": true }
+			],
+			"csharp": { "member": "TryGetStoredValue", "kind": "method" }
+		}
+	]
+}

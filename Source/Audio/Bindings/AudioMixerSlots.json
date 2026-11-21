@@ -1,0 +1,241 @@
+{
+	"area": "AudioMixerSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMixer.h",
+		"Shalltear/Audio/Audio.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.AudioMixer",
+	"instance": "AudioMixer",
+	"enums": [
+		{
+			"name": "AudioMixerParameter",
+			"cpp": "::Shalltear::AudioMixerParameter",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Volume", "value": 0 },
+				{ "name": "Pitch", "value": 1 },
+				{ "name": "SendLevel", "value": 2 },
+				{ "name": "WetLevel", "value": 3 },
+				{ "name": "EffectParameter", "value": 4 }
+			]
+		},
+		{
+			"name": "AudioMixerUpdateMode",
+			"cpp": "::Shalltear::AudioMixerUpdateMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Normal", "value": 0 },
+				{ "name": "UnscaledTime", "value": 1 }
+			]
+		},
+		{
+			"name": "AudioMixerUnitKind",
+			"cpp": "::Shalltear::AudioMixerUnitKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Attenuation", "value": 0 },
+				{ "name": "Send", "value": 1 },
+				{ "name": "Effect", "value": 2 },
+				{ "name": "Receive", "value": 3 }
+			]
+		},
+		{
+			"name": "AudioMixerGroupClock",
+			"cpp": "::Shalltear::AudioMixerGroupClock",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Wall", "value": 0 },
+				{ "name": "Gameplay", "value": 1 }
+			]
+		},
+		{
+			"name": "AudioMixerGroupColor",
+			"cpp": "::Shalltear::AudioMixerGroupColor",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Yellow", "value": 1 },
+				{ "name": "Orange", "value": 2 },
+				{ "name": "Red", "value": 3 },
+				{ "name": "Magenta", "value": 4 },
+				{ "name": "Violet", "value": 5 },
+				{ "name": "Blue", "value": 6 },
+				{ "name": "Cyan", "value": 7 },
+				{ "name": "Green", "value": 8 }
+			]
+		},
+		{
+			"name": "AudioMixerTransitionType",
+			"cpp": "::Shalltear::AudioMixerTransitionType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Lerp", "value": 0 },
+				{ "name": "Smoothstep", "value": 1 },
+				{ "name": "Squared", "value": 2 },
+				{ "name": "SquareRoot", "value": 3 },
+				{ "name": "BrickwallStart", "value": 4 },
+				{ "name": "BrickwallEnd", "value": 5 },
+				{ "name": "Attenuation", "value": 6 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EngineAudioMixerGroup", "cpp": "::Shalltear::AudioMixer::Group", "owned": true, "create": true },
+		{ "name": "EngineAudioMixerSnapshot", "cpp": "::Shalltear::AudioMixer::Snapshot", "owned": true, "create": true },
+		{ "name": "AudioMixerExposedParameter", "cpp": "::Shalltear::AudioMixer::ExposedParameter", "owned": true, "create": true },
+		{ "name": "AudioMixerUnit", "cpp": "::Shalltear::AudioMixer::Unit", "owned": true, "create": true },
+		{ "name": "AudioMixerValue", "cpp": "::Shalltear::AudioMixer::Value", "owned": true, "create": true },
+		{ "name": "AudioMixerTransitionOverride", "cpp": "::Shalltear::AudioMixer::TransitionOverride", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetDefaultValue",
+			"cpp": "::Shalltear::AudioMixer::GetDefaultValue(parameter)",
+			"returns": "f32",
+			"params": [{ "name": "parameter", "type": "AudioMixerParameter" }],
+			"csharp": { "member": "GetDefaultValue", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "TransitionToSnapshots",
+			"cpp": "self->TransitionToSnapshots(std::span<const std::string_view>(snapshotIds), weights, timeToReach)",
+			"returns": "bool",
+			"params": [
+				{ "name": "snapshotIds", "type": "list<string>" },
+				{ "name": "weights", "type": "list<f32>" },
+				{ "name": "timeToReach", "type": "f32" }
+			],
+			"csharp": { "member": "TransitionToSnapshots", "kind": "method" }
+		},
+		{
+			"id": "GetBus",
+			"cpp": "self->GetBus(group)",
+			"returns": "AudioBus",
+			"params": [{ "name": "group", "type": "string" }],
+			"csharp": { "member": "GetBus", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "ApplyChanges",
+			"cpp": "self->ApplyChanges()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ApplyChanges", "kind": "method" }
+		},
+		{
+			"id": "GetGroups",
+			"cpp": "self->groups",
+			"returns": "list<EngineAudioMixerGroup>",
+			"params": [],
+			"csharp": { "member": "Groups", "kind": "getter" }
+		},
+		{
+			"id": "SetGroups",
+			"cpp": "self->groups = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioMixer::Group>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineAudioMixerGroup>" }],
+			"csharp": { "member": "Groups", "kind": "setter" }
+		},
+		{
+			"id": "GetSnapshots",
+			"cpp": "self->snapshots",
+			"returns": "list<EngineAudioMixerSnapshot>",
+			"params": [],
+			"csharp": { "member": "Snapshots", "kind": "getter" }
+		},
+		{
+			"id": "SetSnapshots",
+			"cpp": "self->snapshots = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioMixer::Snapshot>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineAudioMixerSnapshot>" }],
+			"csharp": { "member": "Snapshots", "kind": "setter" }
+		},
+		{
+			"id": "GetExposedParameters",
+			"cpp": "self->exposedParameters",
+			"returns": "list<AudioMixerExposedParameter>",
+			"params": [],
+			"csharp": { "member": "ExposedParameters", "kind": "getter" }
+		},
+		{
+			"id": "SetExposedParameters",
+			"cpp": "self->exposedParameters = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioMixer::ExposedParameter>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioMixerExposedParameter>" }],
+			"csharp": { "member": "ExposedParameters", "kind": "setter" }
+		},
+		{
+			"id": "GetStartSnapshot",
+			"cpp": "self->startSnapshot",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "StartSnapshot", "kind": "getter" }
+		},
+		{
+			"id": "SetStartSnapshot",
+			"cpp": "self->startSnapshot = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "StartSnapshot", "kind": "setter" }
+		},
+		{
+			"id": "GetUpdateMode",
+			"cpp": "self->updateMode",
+			"returns": "AudioMixerUpdateMode",
+			"params": [],
+			"csharp": { "member": "UpdateMode", "kind": "getter" }
+		},
+		{
+			"id": "SetUpdateMode",
+			"cpp": "self->updateMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioMixerUpdateMode" }],
+			"csharp": { "member": "UpdateMode", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputMixer",
+			"cpp": "self->outputMixer",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "OutputMixer", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputMixer",
+			"cpp": "self->outputMixer = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "OutputMixer", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputGroup",
+			"cpp": "self->outputGroup",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "OutputGroup", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputGroup",
+			"cpp": "self->outputGroup = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "OutputGroup", "kind": "setter" }
+		},
+		{
+			"id": "GetViews",
+			"cpp": "self->views",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Views", "kind": "getter" }
+		},
+		{
+			"id": "SetViews",
+			"cpp": "self->views = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Views", "kind": "setter" }
+		}
+	]
+}

@@ -34,9 +34,9 @@ namespace Shalltear::CSharpConformance {
 	}
 
 #ifdef SHALLTEAR_PHYSICS_BACKEND_STUB
-	inline constexpr int32_t PASS_SET_SIZE = 119;
+	inline constexpr int32_t PASS_SET_SIZE = 130;
 #else
-	inline constexpr int32_t PASS_SET_SIZE = 132;
+	inline constexpr int32_t PASS_SET_SIZE = 143;
 #endif
 
 	inline bool IsInPassSet(std::string_view caseName) {
@@ -68,7 +68,7 @@ namespace Shalltear::CSharpConformance {
 	using DriverFn = i32 (*)(i32 op, i32 first, i32 second);
 	using AssetFinderFn = u64 (*)(std::string_view path);
 
-	inline constexpr int32_t AUDIO_CASES = 10;
+	inline constexpr int32_t AUDIO_CASES = 15;
 
 	class AudioStore {
 	public:

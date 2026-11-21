@@ -1,0 +1,82 @@
+{
+	"area": "CompileStatusSourceState",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileStatus.h",
+		"Shalltear/Editor/CompileService.h"
+	],
+	"class": "Shalltear.Editor.CompileStatusSourceState",
+	"instance": "CompileStatusSourceState",
+	"functions": [
+		{
+			"id": "GetCompile",
+			"cpp": "self->compile",
+			"returns": "CompileState",
+			"params": [],
+			"csharp": { "member": "Compile", "kind": "getter" }
+		},
+		{
+			"id": "SetCompile",
+			"cpp": "self->compile = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CompileState" }],
+			"csharp": { "member": "Compile", "kind": "setter" }
+		},
+		{
+			"id": "GetErrors",
+			"cpp": "self->errors",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Errors", "kind": "getter" }
+		},
+		{
+			"id": "SetErrors",
+			"cpp": "self->errors = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Errors", "kind": "setter" }
+		},
+		{
+			"id": "GetWarnings",
+			"cpp": "self->warnings",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Warnings", "kind": "getter" }
+		},
+		{
+			"id": "SetWarnings",
+			"cpp": "self->warnings = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Warnings", "kind": "setter" }
+		},
+		{
+			"id": "GetReloadHeld",
+			"cpp": "self->reloadHeld",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ReloadHeld", "kind": "getter" }
+		},
+		{
+			"id": "SetReloadHeld",
+			"cpp": "self->reloadHeld = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ReloadHeld", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeOwner",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->typeOwner))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TypeOwner", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeOwner",
+			"cpp": "self->typeOwner = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "TypeOwner", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,27 @@
+{
+	"area": "AudioSpatializers",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.AudioSpatializers",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::AudioSpatializers::Register(name, spatializer, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "spatializer", "type": "IAudioSpatializer", "optional": true }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::AudioSpatializers::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

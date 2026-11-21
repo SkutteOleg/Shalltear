@@ -1,0 +1,53 @@
+{
+	"area": "ConsoleOrigin",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorConsole.h"
+	],
+	"class": "Shalltear.Editor.ConsoleOrigin",
+	"instance": "ConsoleOrigin",
+	"functions": [
+		{
+			"id": "GetFile",
+			"cpp": "self->file",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "File", "kind": "getter" }
+		},
+		{
+			"id": "SetFile",
+			"cpp": "self->file = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "File", "kind": "setter" }
+		},
+		{
+			"id": "GetLine",
+			"cpp": "self->line",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Line", "kind": "getter" }
+		},
+		{
+			"id": "SetLine",
+			"cpp": "self->line = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Line", "kind": "setter" }
+		},
+		{
+			"id": "GetColumn",
+			"cpp": "self->column",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Column", "kind": "getter" }
+		},
+		{
+			"id": "SetColumn",
+			"cpp": "self->column = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Column", "kind": "setter" }
+		}
+	]
+}

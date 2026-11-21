@@ -1,0 +1,928 @@
+{
+	"area": "EditorIconsGlyph",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorIcons.h"
+	],
+	"class": "Shalltear.Editor.EditorIconsGlyph",
+	"functions": [
+		{
+			"id": "GetPlay",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Play",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Play", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetStop",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Stop",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Stop", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPause",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Pause",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Pause", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetStep",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Step",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Step", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLoop",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Loop",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Loop", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAutoPlay",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AutoPlay",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AutoPlay", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetMuteAudio",
+			"cpp": "::Shalltear::EditorIcons::Glyph::MuteAudio",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "MuteAudio", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetWindowMinimize",
+			"cpp": "::Shalltear::EditorIcons::Glyph::WindowMinimize",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "WindowMinimize", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetWindowMaximize",
+			"cpp": "::Shalltear::EditorIcons::Glyph::WindowMaximize",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "WindowMaximize", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetWindowRestore",
+			"cpp": "::Shalltear::EditorIcons::Glyph::WindowRestore",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "WindowRestore", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetWindowClose",
+			"cpp": "::Shalltear::EditorIcons::Glyph::WindowClose",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "WindowClose", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLogo",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Logo",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Logo", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetCompile",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Compile",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Compile", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetReload",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Reload",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Reload", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetCaretRight",
+			"cpp": "::Shalltear::EditorIcons::Glyph::CaretRight",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "CaretRight", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetCaretDown",
+			"cpp": "::Shalltear::EditorIcons::Glyph::CaretDown",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "CaretDown", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetFoldOutOpen",
+			"cpp": "::Shalltear::EditorIcons::Glyph::FoldOutOpen",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "FoldOutOpen", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetFoldOutClose",
+			"cpp": "::Shalltear::EditorIcons::Glyph::FoldOutClose",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "FoldOutClose", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetGeneric",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetGeneric",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetGeneric", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetText",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetText",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetText", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetScript",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetScript",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetScript", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetShader",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetShader",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetShader", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetTexture",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetTexture",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetTexture", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetMesh",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetMesh",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetMesh", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetMaterial",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetMaterial",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetMaterial", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetFont",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetFont",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetFont", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetScene",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetScene",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetScene", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetPrefab",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetPrefab",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetPrefab", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetPrefabVariant",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetPrefabVariant",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetPrefabVariant", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetUIDocument",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetUIDocument",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetUIDocument", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetStyleSheet",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetStyleSheet",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetStyleSheet", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetPanelSettings",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetPanelSettings",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetPanelSettings", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetGraphicsProfile",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetGraphicsProfile",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetGraphicsProfile", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetRenderPass",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetRenderPass",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetRenderPass", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetVector",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetVector",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetVector", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetSkeleton",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetSkeleton",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetSkeleton", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetSkin",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetSkin",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetSkin", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAnimationClip",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAnimationClip",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAnimationClip", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAnimatorController",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAnimatorController",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAnimatorController", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetPhysicsMaterial",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetPhysicsMaterial",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetPhysicsMaterial", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAudioClip",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAudioClip",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAudioClip", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetShaderSubgraph",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetShaderSubgraph",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetShaderSubgraph", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetEffectGraph",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetEffectGraph",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetEffectGraph", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetEffectOperator",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetEffectOperator",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetEffectOperator", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetEffectBlock",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetEffectBlock",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetEffectBlock", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAudioMixer",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAudioMixer",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAudioMixer", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAudioConcurrency",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAudioConcurrency",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAudioConcurrency", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAudioRandomContainer",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAudioRandomContainer",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAudioRandomContainer", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAudioLayeredContainer",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAudioLayeredContainer",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAudioLayeredContainer", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAssetAudioInteractiveContainer",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AssetAudioInteractiveContainer",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AssetAudioInteractiveContainer", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetSceneObject",
+			"cpp": "::Shalltear::EditorIcons::Glyph::SceneObject",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "SceneObject", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetUIElement",
+			"cpp": "::Shalltear::EditorIcons::Glyph::UIElement",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "UIElement", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetToolMove",
+			"cpp": "::Shalltear::EditorIcons::Glyph::ToolMove",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "ToolMove", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetToolRotate",
+			"cpp": "::Shalltear::EditorIcons::Glyph::ToolRotate",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "ToolRotate", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetToolScale",
+			"cpp": "::Shalltear::EditorIcons::Glyph::ToolScale",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "ToolScale", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetGrid",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Grid",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Grid", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetEffects",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Effects",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Effects", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetGizmos",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Gizmos",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Gizmos", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetSpaceWorld",
+			"cpp": "::Shalltear::EditorIcons::Glyph::SpaceWorld",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "SpaceWorld", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetSpaceLocal",
+			"cpp": "::Shalltear::EditorIcons::Glyph::SpaceLocal",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "SpaceLocal", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetBack",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Back",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Back", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetForward",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Forward",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Forward", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetFolder",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Folder",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Folder", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetFolderOpen",
+			"cpp": "::Shalltear::EditorIcons::Glyph::FolderOpen",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "FolderOpen", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetSearch",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Search",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Search", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAdd",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Add",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Add", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetMore",
+			"cpp": "::Shalltear::EditorIcons::Glyph::More",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "More", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetStar",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Star",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Star", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPicker",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Picker",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Picker", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetTextOverlay",
+			"cpp": "::Shalltear::EditorIcons::Glyph::TextOverlay",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "TextOverlay", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLock",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Lock",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Lock", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetUnlock",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Unlock",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Unlock", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetEye",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Eye",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Eye", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetEyeSlash",
+			"cpp": "::Shalltear::EditorIcons::Glyph::EyeSlash",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "EyeSlash", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetDuplicate",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Duplicate",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Duplicate", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetDelete",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Delete",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Delete", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetRemove",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Remove",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Remove", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetImport",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Import",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Import", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetExport",
+			"cpp": "::Shalltear::EditorIcons::Glyph::Export",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Export", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetMoveUp",
+			"cpp": "::Shalltear::EditorIcons::Glyph::MoveUp",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "MoveUp", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetMoveDown",
+			"cpp": "::Shalltear::EditorIcons::Glyph::MoveDown",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "MoveDown", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAlignStart",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AlignStart",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AlignStart", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAlignCenter",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AlignCenter",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AlignCenter", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAlignEnd",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AlignEnd",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AlignEnd", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetAlignStretch",
+			"cpp": "::Shalltear::EditorIcons::Glyph::AlignStretch",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "AlignStretch", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelScene",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelScene",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelScene", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelGame",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelGame",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelGame", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelSettings",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelSettings",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelSettings", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelHierarchy",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelHierarchy",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelHierarchy", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelInspector",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelInspector",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelInspector", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelAssets",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelAssets",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelAssets", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelConsole",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelConsole",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelConsole", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelProfiler",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelProfiler",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelProfiler", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelBuild",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelBuild",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelBuild", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelReport",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelReport",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelReport", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetPanelPackages",
+			"cpp": "::Shalltear::EditorIcons::Glyph::PanelPackages",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "PanelPackages", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLevelTrace",
+			"cpp": "::Shalltear::EditorIcons::Glyph::LevelTrace",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "LevelTrace", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLevelDebug",
+			"cpp": "::Shalltear::EditorIcons::Glyph::LevelDebug",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "LevelDebug", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLevelInfo",
+			"cpp": "::Shalltear::EditorIcons::Glyph::LevelInfo",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "LevelInfo", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLevelWarn",
+			"cpp": "::Shalltear::EditorIcons::Glyph::LevelWarn",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "LevelWarn", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLevelError",
+			"cpp": "::Shalltear::EditorIcons::Glyph::LevelError",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "LevelError", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetLevelFatal",
+			"cpp": "::Shalltear::EditorIcons::Glyph::LevelFatal",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "LevelFatal", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

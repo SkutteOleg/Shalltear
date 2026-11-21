@@ -1,0 +1,102 @@
+{
+	"area": "UIVectorIconSystemProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/UI/UIAtlas.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.UIVectorIconSystemProxy",
+	"instance": "UIVectorIconSystemProxy",
+	"prelude": [
+		"class UIVectorIconSystemProxy final : public ::Shalltear::UI::IVectorIconSystem {",
+		"public:",
+		"\tstd::function<bool(const Shalltear::UI::IconQuery &, Shalltear::UI::RasterizedIcon &)> getIcon;",
+		"\tbool GetIcon(const Shalltear::UI::IconQuery & a0, Shalltear::UI::RasterizedIcon & a1) override {",
+		"\t\treturn getIcon ? getIcon(a0, a1) : Slots::ResultOf<decltype(getIcon)>();",
+		"\t}",
+		"\tstd::function<Shalltear::Vec2Generic<float>(Shalltear::Handle<Shalltear::VectorAsset>, float)> measureIcon;",
+		"\tShalltear::Vec2Generic<float> MeasureIcon(Shalltear::Handle<Shalltear::VectorAsset> a0, float a1) override {",
+		"\t\treturn measureIcon ? measureIcon(a0, a1) : Slots::ResultOf<decltype(measureIcon)>();",
+		"\t}",
+		"\tstd::function<void()> endFrame;",
+		"\tvoid EndFrame() override {",
+		"\t\tif (endFrame) {",
+		"\t\t\tendFrame();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<Shalltear::UI::IVectorIconSystem::Stats()> getStats;",
+		"\tShalltear::UI::IVectorIconSystem::Stats GetStats() const override {",
+		"\t\treturn getStats ? getStats() : Slots::ResultOf<decltype(getStats)>();",
+		"\t}",
+		"\tstd::function<bool(Shalltear::UI::AtlasPage &)> getAtlasPage;",
+		"\tbool GetAtlasPage(Shalltear::UI::AtlasPage & a0) const override {",
+		"\t\treturn getAtlasPage ? getAtlasPage(a0) : ::Shalltear::UI::IVectorIconSystem::GetAtlasPage(a0);",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "UIVectorIconSystemProxy", "cpp": "UIVectorIconSystemProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetGetIcon",
+			"cpp": "self->getIcon = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<bool;UIIconQuery;ref:UIRasterizedIcon>",
+					"optional": true,
+					"cpp": "std::function<bool(const Shalltear::UI::IconQuery &, Shalltear::UI::RasterizedIcon &)>"
+				}
+			],
+			"csharp": { "member": "SetGetIcon", "kind": "method" }
+		},
+		{
+			"id": "SetMeasureIcon",
+			"cpp": "self->measureIcon = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<Vec2;VectorAsset;f32>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::Vec2Generic<float>(Shalltear::Handle<Shalltear::VectorAsset>, float)>"
+				}
+			],
+			"csharp": { "member": "SetMeasureIcon", "kind": "method" }
+		},
+		{
+			"id": "SetEndFrame",
+			"cpp": "self->endFrame = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetEndFrame", "kind": "method" }
+		},
+		{
+			"id": "SetGetStats",
+			"cpp": "self->getStats = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<UIVectorIconSystemStats>", "optional": true, "cpp": "std::function<Shalltear::UI::IVectorIconSystem::Stats()>" }
+			],
+			"csharp": { "member": "SetGetStats", "kind": "method" }
+		},
+		{
+			"id": "SetGetAtlasPage",
+			"cpp": "self->getAtlasPage = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;ref:UIAtlasPage>", "optional": true, "cpp": "std::function<bool(Shalltear::UI::AtlasPage &)>" }
+			],
+			"csharp": { "member": "SetGetAtlasPage", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::UI::IVectorIconSystem*>(self)",
+			"returns": "UIVectorIconSystem",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

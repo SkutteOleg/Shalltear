@@ -1,0 +1,25 @@
+{
+	"area": "UIDebugOpsHighlight",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsHighlight",
+	"instance": "UIDebugOpsHighlight",
+	"functions": [
+		{
+			"id": "GetBands",
+			"cpp": "self->bands",
+			"returns": "list<UIDebugOpsHighlightBand>",
+			"params": [],
+			"csharp": { "member": "Bands", "kind": "getter" }
+		},
+		{
+			"id": "SetBands",
+			"cpp": "Slots::Assign(self->bands, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDebugOpsHighlightBand>" }],
+			"csharp": { "member": "Bands", "kind": "setter" }
+		}
+	]
+}

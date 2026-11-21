@@ -1,0 +1,109 @@
+{
+	"area": "CookOpsPakWriteDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h"
+	],
+	"class": "Shalltear.Editor.CookOpsPakWriteDesc",
+	"instance": "CookOpsPakWriteDesc",
+	"functions": [
+		{
+			"id": "GetTargetId",
+			"cpp": "self->targetId",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TargetId", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetId",
+			"cpp": "self->targetId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TargetId", "kind": "setter" }
+		},
+		{
+			"id": "GetLocaleId",
+			"cpp": "self->localeId",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LocaleId", "kind": "getter" }
+		},
+		{
+			"id": "SetLocaleId",
+			"cpp": "self->localeId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "LocaleId", "kind": "setter" }
+		},
+		{
+			"id": "GetShipDebugNames",
+			"cpp": "self->shipDebugNames",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ShipDebugNames", "kind": "getter" }
+		},
+		{
+			"id": "SetShipDebugNames",
+			"cpp": "self->shipDebugNames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ShipDebugNames", "kind": "setter" }
+		},
+		{
+			"id": "GetPageSize",
+			"cpp": "self->pageSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PageSize", "kind": "getter" }
+		},
+		{
+			"id": "SetPageSize",
+			"cpp": "self->pageSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PageSize", "kind": "setter" }
+		},
+		{
+			"id": "GetCompression",
+			"cpp": "self->compression",
+			"returns": "CookOpsCookCompression",
+			"params": [],
+			"csharp": { "member": "Compression", "kind": "getter" }
+		},
+		{
+			"id": "SetCompression",
+			"cpp": "self->compression = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CookOpsCookCompression" }],
+			"csharp": { "member": "Compression", "kind": "setter" }
+		},
+		{
+			"id": "GetStrings",
+			"cpp": "self->strings",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Strings", "kind": "getter" }
+		},
+		{
+			"id": "SetStrings",
+			"cpp": "self->strings = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Strings", "kind": "setter" }
+		},
+		{
+			"id": "GetDocuments",
+			"cpp": "self->documents",
+			"returns": "list<CookOpsPakDocumentSource>",
+			"params": [],
+			"csharp": { "member": "Documents", "kind": "getter" }
+		},
+		{
+			"id": "SetDocuments",
+			"cpp": "self->documents = Slots::Copies<::Shalltear::Vector<::Shalltear::CookOps::PakDocumentSource>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<CookOpsPakDocumentSource>" }],
+			"csharp": { "member": "Documents", "kind": "setter" }
+		}
+	]
+}

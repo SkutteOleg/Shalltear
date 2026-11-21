@@ -1,0 +1,33 @@
+{
+	"area": "IAudioEffectDefinition",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioEffect.h"
+	],
+	"class": "Shalltear.IAudioEffectDefinition",
+	"instance": "IAudioEffectDefinition",
+	"functions": [
+		{
+			"id": "GetParameters",
+			"cpp": "self->GetParameters()",
+			"returns": "list<AudioParameterDefinition>",
+			"params": [],
+			"csharp": { "member": "Parameters", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "IsSidechainTarget",
+			"cpp": "self->IsSidechainTarget()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSidechainTarget", "kind": "getter" }
+		},
+		{
+			"id": "CreateEffect",
+			"cpp": "self->CreateEffect(*context)",
+			"returns": "IAudioEffect",
+			"params": [{ "name": "context", "type": "AudioEffectContext" }],
+			"csharp": { "member": "CreateEffect", "kind": "method" }
+		}
+	]
+}

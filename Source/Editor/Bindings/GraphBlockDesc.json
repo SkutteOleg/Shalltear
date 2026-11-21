@@ -1,0 +1,95 @@
+{
+	"area": "GraphBlockDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h"
+	],
+	"class": "Shalltear.Editor.GraphBlockDesc",
+	"instance": "GraphBlockDesc",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetEnabledField",
+			"cpp": "self->enabled",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnabledField", "kind": "getter" }
+		},
+		{
+			"id": "SetEnabledField",
+			"cpp": "self->enabled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnabledField", "kind": "setter" }
+		},
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "list<GraphSettingDesc>",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphSettingDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphSettingDesc>" }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		},
+		{
+			"id": "GetInputs",
+			"cpp": "self->inputs",
+			"returns": "list<GraphPortDesc>",
+			"params": [],
+			"csharp": { "member": "Inputs", "kind": "getter" }
+		},
+		{
+			"id": "SetInputs",
+			"cpp": "self->inputs = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphPortDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphPortDesc>" }],
+			"csharp": { "member": "Inputs", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputs",
+			"cpp": "self->outputs",
+			"returns": "list<GraphPortDesc>",
+			"params": [],
+			"csharp": { "member": "Outputs", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputs",
+			"cpp": "self->outputs = Slots::Copies<::Shalltear::Vector<::Shalltear::GraphPortDesc>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<GraphPortDesc>" }],
+			"csharp": { "member": "Outputs", "kind": "setter" }
+		}
+	]
+}

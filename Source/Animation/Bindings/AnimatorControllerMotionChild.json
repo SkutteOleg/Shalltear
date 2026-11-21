@@ -1,0 +1,67 @@
+{
+	"area": "AnimatorControllerMotionChild",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerMotionChild",
+	"instance": "AnimatorControllerMotionChild",
+	"functions": [
+		{
+			"id": "GetNode",
+			"cpp": "self->node",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Node", "kind": "getter" }
+		},
+		{
+			"id": "SetNode",
+			"cpp": "self->node = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Node", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "self->speed",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Speed", "kind": "getter" }
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "self->speed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Speed", "kind": "setter" }
+		},
+		{
+			"id": "GetParameter",
+			"cpp": "self->parameter",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Parameter", "kind": "getter" }
+		},
+		{
+			"id": "SetParameter",
+			"cpp": "self->parameter = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Parameter", "kind": "setter" }
+		}
+	]
+}

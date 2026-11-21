@@ -1,0 +1,151 @@
+{
+	"area": "PackageOpsPackageRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PackageOps.h"
+	],
+	"class": "Shalltear.Editor.PackageOpsPackageRow",
+	"instance": "PackageOpsPackageRow",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->displayName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->displayName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DisplayName", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		},
+		{
+			"id": "GetDescription",
+			"cpp": "self->description",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Description", "kind": "getter" }
+		},
+		{
+			"id": "SetDescription",
+			"cpp": "self->description = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Description", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "PackageOpsPackageKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PackageOpsPackageKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetEnabledField",
+			"cpp": "self->enabled",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnabledField", "kind": "getter" }
+		},
+		{
+			"id": "SetEnabledField",
+			"cpp": "self->enabled = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnabledField", "kind": "setter" }
+		},
+		{
+			"id": "GetRequested",
+			"cpp": "self->requested",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Requested", "kind": "getter" }
+		},
+		{
+			"id": "SetRequested",
+			"cpp": "self->requested = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Requested", "kind": "setter" }
+		},
+		{
+			"id": "GetRequired",
+			"cpp": "self->required",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Required", "kind": "getter" }
+		},
+		{
+			"id": "SetRequired",
+			"cpp": "self->required = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Required", "kind": "setter" }
+		},
+		{
+			"id": "GetCanToggle",
+			"cpp": "self->canToggle",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CanToggle", "kind": "getter" }
+		},
+		{
+			"id": "SetCanToggle",
+			"cpp": "self->canToggle = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "CanToggle", "kind": "setter" }
+		},
+		{
+			"id": "GetBlockedBy",
+			"cpp": "self->blockedBy",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "BlockedBy", "kind": "getter" }
+		},
+		{
+			"id": "SetBlockedBy",
+			"cpp": "self->blockedBy = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "BlockedBy", "kind": "setter" }
+		}
+	]
+}

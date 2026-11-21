@@ -1,0 +1,85 @@
+{
+	"area": "UIDebugOpsStyleEdits",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Style.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsStyleEdits",
+	"instance": "UIDebugOpsStyleEdits",
+	"functions": [
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "IsEdited",
+			"cpp": "self->IsEdited(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "IsEdited", "kind": "method" }
+		},
+		{
+			"id": "GetCaptured",
+			"cpp": "&self->captured",
+			"returns": "UIStyle",
+			"params": [],
+			"csharp": { "member": "Captured", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetCaptured",
+			"cpp": "self->captured = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIStyle" }],
+			"csharp": { "member": "Captured", "kind": "setter" }
+		},
+		{
+			"id": "GetWritten",
+			"cpp": "&self->written",
+			"returns": "UIStyle",
+			"params": [],
+			"csharp": { "member": "Written", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetWritten",
+			"cpp": "self->written = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIStyle" }],
+			"csharp": { "member": "Written", "kind": "setter" }
+		},
+		{
+			"id": "GetDeclarations",
+			"cpp": "self->declarations",
+			"returns": "list<UIDebugOpsStyleEditsDeclaration>",
+			"params": [],
+			"csharp": { "member": "Declarations", "kind": "getter" }
+		},
+		{
+			"id": "SetDeclarations",
+			"cpp": "self->declarations = Slots::Copies<::Shalltear::Vector<::Shalltear::UIDebugOps::StyleEdits::Declaration>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIDebugOpsStyleEditsDeclaration>" }],
+			"csharp": { "member": "Declarations", "kind": "setter" }
+		},
+		{
+			"id": "GetArmed",
+			"cpp": "self->armed",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Armed", "kind": "getter" }
+		},
+		{
+			"id": "SetArmed",
+			"cpp": "self->armed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Armed", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,117 @@
+{
+	"area": "ShaderReflection",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.ShaderReflection",
+	"enums": [
+		{
+			"name": "UniformMemberType",
+			"cpp": "::Shalltear::UniformMemberType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Unsupported", "value": 0 },
+				{ "name": "Float", "value": 1 },
+				{ "name": "Vec2", "value": 2 },
+				{ "name": "Vec3", "value": 3 },
+				{ "name": "Vec4", "value": 4 },
+				{ "name": "Int", "value": 5 },
+				{ "name": "Bool", "value": 6 }
+			]
+		},
+		{
+			"name": "ShaderHint",
+			"cpp": "::Shalltear::ShaderHint",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Color", "value": 1 },
+				{ "name": "HDR", "value": 2 },
+				{ "name": "Toggle", "value": 3 },
+				{ "name": "Hidden", "value": 4 }
+			]
+		},
+		{
+			"name": "ShaderTextureFallback",
+			"cpp": "::Shalltear::ShaderTextureFallback",
+			"underlying": "u8",
+			"values": [
+				{ "name": "White", "value": 0 },
+				{ "name": "Black", "value": 1 },
+				{ "name": "Normal", "value": 2 },
+				{ "name": "Transparent", "value": 3 },
+				{ "name": "Gray", "value": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ShaderMemberDefault", "cpp": "::Shalltear::ShaderMemberDefault", "owned": true, "create": true },
+		{ "name": "UniformBlockLayout", "cpp": "::Shalltear::UniformBlockLayout", "owned": true, "create": true },
+		{ "name": "ShaderKeywordBinding", "cpp": "::Shalltear::ShaderKeywordBinding", "owned": true, "create": true },
+		{ "name": "ShaderMemberRange", "cpp": "::Shalltear::ShaderMemberRange", "owned": true, "create": true },
+		{ "name": "SpirvReflection", "cpp": "::Shalltear::SpirvReflection", "owned": true, "create": true },
+		{ "name": "ShaderResourceInfo", "cpp": "::Shalltear::ShaderResourceInfo", "owned": true, "create": true },
+		{ "name": "ShaderTextureDefault", "cpp": "::Shalltear::ShaderTextureDefault", "owned": true, "create": true },
+		{ "name": "ShaderMemberHint", "cpp": "::Shalltear::ShaderMemberHint", "owned": true, "create": true },
+		{ "name": "ShaderMemberGroup", "cpp": "::Shalltear::ShaderMemberGroup", "owned": true, "create": true },
+		{ "name": "ShaderMemberLabel", "cpp": "::Shalltear::ShaderMemberLabel", "owned": true, "create": true },
+		{ "name": "UniformMember", "cpp": "::Shalltear::UniformMember", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "SHADER_LOD_FADE_CONSTANT_ID", "cpp": "::Shalltear::SHADER_LOD_FADE_CONSTANT_ID", "type": "u32", "value": 100 },
+		{ "name": "SHADER_SHADOW_MOMENTS_CONSTANT_ID", "cpp": "::Shalltear::SHADER_SHADOW_MOMENTS_CONSTANT_ID", "type": "u32", "value": 101 },
+		{ "name": "SHADER_GAMMA_COLOR_SPACE_CONSTANT_ID", "cpp": "::Shalltear::SHADER_GAMMA_COLOR_SPACE_CONSTANT_ID", "type": "u32", "value": 102 }
+	],
+	"functions": [
+		{
+			"id": "UniformMemberTypeName",
+			"cpp": "::Shalltear::UniformMemberTypeName(type)",
+			"returns": "string",
+			"params": [{ "name": "type", "type": "UniformMemberType" }],
+			"csharp": { "member": "UniformMemberTypeName", "kind": "method" }
+		},
+		{
+			"id": "UniformMemberFloatCount",
+			"cpp": "::Shalltear::UniformMemberFloatCount(type)",
+			"returns": "u32",
+			"params": [{ "name": "type", "type": "UniformMemberType" }],
+			"csharp": { "member": "UniformMemberFloatCount", "kind": "method" }
+		},
+		{
+			"id": "ReflectSpirv",
+			"cpp": "::Shalltear::ReflectSpirv(blob)",
+			"returns": "SpirvReflection",
+			"params": [{ "name": "blob", "type": "list<u8>" }],
+			"csharp": { "member": "ReflectSpirv", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "MergeReflections",
+			"cpp": "::Shalltear::MergeReflections(*vertex, *pixel, outBindings, outPushConstantSize, outError)",
+			"returns": "bool",
+			"params": [
+				{ "name": "vertex", "type": "SpirvReflection" },
+				{ "name": "pixel", "type": "SpirvReflection" },
+				{ "name": "outBindings", "type": "list<RHIDescriptorBindingDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::RHI::DescriptorBindingDesc>" },
+				{ "name": "outPushConstantSize", "type": "u32", "out": true },
+				{ "name": "outError", "type": "string", "out": true }
+			],
+			"csharp": { "member": "MergeReflections", "kind": "method" }
+		},
+		{
+			"id": "MergeMaterialInterfaces",
+			"cpp": "::Shalltear::MergeMaterialInterfaces(*vertex, *pixel, outBlocks, outResources)",
+			"returns": "void",
+			"params": [
+				{ "name": "vertex", "type": "SpirvReflection" },
+				{ "name": "pixel", "type": "SpirvReflection" },
+				{ "name": "outBlocks", "type": "list<UniformBlockLayout>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UniformBlockLayout>" },
+				{ "name": "outResources", "type": "list<ShaderResourceInfo>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::ShaderResourceInfo>" }
+			],
+			"csharp": { "member": "MergeMaterialInterfaces", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,120 @@
+{
+	"area": "ModuleSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ModuleSystem.h",
+		"Shalltear/Core/FileSystem.h"
+	],
+	"class": "Shalltear.ModuleSystem",
+	"enums": [
+		{
+			"name": "ModuleLoadPolicy",
+			"cpp": "::Shalltear::ModuleLoadPolicy",
+			"underlying": "u8",
+			"values": [
+				{ "name": "CacheCopy", "value": 0 },
+				{ "name": "InPlace", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "ModuleHandle",
+			"cpp": "::Shalltear::ModuleHandle",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "IsInitialized",
+			"cpp": "::Shalltear::ModuleSystem::IsInitialized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInitialized", "kind": "getter" }
+		},
+		{
+			"id": "Load",
+			"cpp": "::Shalltear::ModuleSystem::Load(::Shalltear::Path(str(binaryPath)), policy)",
+			"returns": "ModuleHandle",
+			"params": [
+				{ "name": "binaryPath", "type": "string" },
+				{ "name": "policy", "type": "ModuleLoadPolicy" }
+			],
+			"csharp": { "member": "Load", "kind": "method" }
+		},
+		{
+			"id": "Unload",
+			"cpp": "::Shalltear::ModuleSystem::Unload(handle)",
+			"returns": "bool",
+			"params": [{ "name": "handle", "type": "ModuleHandle" }],
+			"csharp": { "member": "Unload", "kind": "method" }
+		},
+		{
+			"id": "Reload",
+			"cpp": "::Shalltear::ModuleSystem::Reload(handle, newBinaryPath)",
+			"returns": "bool",
+			"params": [
+				{ "name": "handle", "type": "ModuleHandle" },
+				{ "name": "newBinaryPath", "type": "EnginePath", "optional": true }
+			],
+			"csharp": { "member": "Reload", "kind": "method" }
+		},
+		{
+			"id": "IsLoaded",
+			"cpp": "::Shalltear::ModuleSystem::IsLoaded(handle)",
+			"returns": "bool",
+			"params": [{ "name": "handle", "type": "ModuleHandle" }],
+			"csharp": { "member": "IsLoaded", "kind": "method" }
+		},
+		{
+			"id": "GetLoadedCount",
+			"cpp": "::Shalltear::ModuleSystem::GetLoadedCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LoadedCount", "kind": "getter" }
+		},
+		{
+			"id": "GetModuleName",
+			"cpp": "::Shalltear::ModuleSystem::GetModuleName(handle)",
+			"returns": "string",
+			"params": [{ "name": "handle", "type": "ModuleHandle" }],
+			"csharp": { "member": "GetModuleName", "kind": "method" }
+		},
+		{
+			"id": "GetModuleBinaryPath",
+			"cpp": "(::Shalltear::ModuleSystem::GetModuleBinaryPath(handle)).ToString()",
+			"returns": "string",
+			"params": [{ "name": "handle", "type": "ModuleHandle" }],
+			"csharp": { "member": "GetModuleBinaryPath", "kind": "method" }
+		},
+		{
+			"id": "GetNativeHandle",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::ModuleSystem::GetNativeHandle(handle)))",
+			"returns": "u64",
+			"params": [{ "name": "handle", "type": "ModuleHandle" }],
+			"csharp": { "member": "GetNativeHandle", "kind": "method" }
+		},
+		{
+			"id": "GetExecutableImage",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::ModuleSystem::GetExecutableImage()))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ExecutableImage", "kind": "getter" }
+		},
+		{
+			"id": "FindSymbol",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::ModuleSystem::FindSymbol(reinterpret_cast<const void*>(static_cast<uintptr_t>(imageBase)), str(name).c_str())))",
+			"returns": "u64",
+			"params": [
+				{ "name": "imageBase", "type": "u64" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "FindSymbol", "kind": "method" }
+		}
+	]
+}

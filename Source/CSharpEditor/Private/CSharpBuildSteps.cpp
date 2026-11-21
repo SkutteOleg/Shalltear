@@ -9,6 +9,7 @@
 #include "DotNetToolchain.h"
 #include "ManagedCodeGate.h"
 #include "NativeAOTHost.h"
+#include "PackageBindings.h"
 #include "ScriptLog.h"
 
 #include "Shalltear/Core/Containers.h"
@@ -22,8 +23,10 @@
 #include "Shalltear/Editor/BuildTarget.h"
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Shalltear/Editor/CppToolchain.h"
+#include "Shalltear/Editor/PackageOps.h"
 #include "Shalltear/Editor/ScriptProjectOps.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
@@ -224,6 +227,28 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Failed;
 		}
 
+		str PlayerPackagesArgument() {
+			Vector<PackageOps::PackageManifest> catalogue{GetMemoryResource(MemTag::Editor)};
+			Vector<str> diagnostics{GetMemoryResource(MemTag::Editor)};
+			PackageOps::LoadBuiltInCatalogue(catalogue, diagnostics);
+			Vector<str> stored{GetMemoryResource(MemTag::Editor)};
+			PackageOps::ReadEnabledSet(stored);
+			Vector<PackageOps::ResolvedPackage> resolution{GetMemoryResource(MemTag::Editor)};
+			PackageOps::ResolveEnabledSet(catalogue, stored, resolution);
+			Vector<str> game{GetMemoryResource(MemTag::Editor)};
+			PackageOps::SelectGamePackages(catalogue, resolution, game);
+			str list;
+			for (u32 index = 0; index < CSharpImpl::PackageBindings::GetCount(); ++index) {
+				const str name(CSharpImpl::PackageBindings::GetName(index));
+				for (const PackageOps::PackageManifest& manifest : catalogue) {
+					if (manifest.bridge && PackageOps::GetPackageBinaryName(manifest) == name + "CSharp" && std::find(game.begin(), game.end(), manifest.name) != game.end()) {
+						list += (list.empty() ? "Shalltear." : "+Shalltear.") + name;
+					}
+				}
+			}
+			return " -p:ShalltearPlayerPackages=" + (list.empty() ? str("-") : list);
+		}
+
 		BuildStepStatus StartScripts(BuildContext& context, State& state) {
 			state.errorCount = 0;
 			state.warningCount = 0;
@@ -262,7 +287,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 			const str arguments = std::format("msbuild {} -restore -t:Build -p:Configuration={} -p:ShalltearPlayerScripts=true -p:ShalltearTargetPlatform={} {}",
 											  QuoteCommandArgument(project), context.configuration, targetId,
-											  QuoteCommandArgument(std::format("-p:ShalltearBuildRoot={}/{}/", state.root, ScriptsFolder)));
+											  QuoteCommandArgument(std::format("-p:ShalltearBuildRoot={}/{}/", state.root, ScriptsFolder))) +
+								  PlayerPackagesArgument();
 			if (!Start(state, context, arguments)) {
 				context.AddIssue(BuildIssueSeverity::Error, "", "C# script compile couldn't be started");
 				return BuildStepStatus::Failed;
@@ -276,7 +302,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 										QuoteCommandArgument(state.root + "/" + str(ShellProject)), context.configuration,
 										RuntimeIdentifierOf(context.target->GetId()));
 			const str native = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path().generic_string() + "/native/";
-			arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native);
+			arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native) + PlayerPackagesArgument();
 			std::error_code ec;
 			fs::remove_all(fs::path(state.root) / RenameFolder, ec);
 			if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {

@@ -1,0 +1,42 @@
+{
+	"area": "UILength",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UILength",
+	"instance": "UILength",
+	"functions": [
+		{
+			"id": "Auto",
+			"cpp": "::Shalltear::UI::Length::Auto()",
+			"returns": "UILength",
+			"params": [],
+			"csharp": { "member": "Auto", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Pixel",
+			"cpp": "::Shalltear::UI::Length::Pixel(px)",
+			"returns": "UILength",
+			"params": [{ "name": "px", "type": "f32" }],
+			"csharp": { "member": "Pixel", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Percent",
+			"cpp": "::Shalltear::UI::Length::Percent(fraction)",
+			"returns": "UILength",
+			"params": [{ "name": "fraction", "type": "f32" }],
+			"csharp": { "member": "Percent", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "IsAuto",
+			"cpp": "self->IsAuto()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsAuto", "kind": "getter" }
+		}
+	]
+}

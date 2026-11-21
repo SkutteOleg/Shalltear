@@ -1,0 +1,194 @@
+{
+	"area": "RenderPass",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Frame/FrameStages.h"
+	],
+	"class": "Shalltear.RenderPass",
+	"instance": "RenderPass",
+	"enums": [
+		{
+			"name": "PassPoint",
+			"cpp": "::Shalltear::PassPoint",
+			"underlying": "u8",
+			"values": [
+				{ "name": "BeforeFrame", "value": 0 },
+				{ "name": "Skinning", "value": 1 },
+				{ "name": "BeforeShadows", "value": 2 },
+				{ "name": "Shadows", "value": 3 },
+				{ "name": "AfterShadows", "value": 4 },
+				{ "name": "BeforePrepass", "value": 5 },
+				{ "name": "DepthPrepass", "value": 6 },
+				{ "name": "AfterPrepass", "value": 7 },
+				{ "name": "BeforeOpaque", "value": 8 },
+				{ "name": "Opaque", "value": 9 },
+				{ "name": "AfterOpaque", "value": 10 },
+				{ "name": "Sky", "value": 11 },
+				{ "name": "BeforeTransparent", "value": 12 },
+				{ "name": "Transparent", "value": 13 },
+				{ "name": "AfterTransparent", "value": 14 },
+				{ "name": "BeforePost", "value": 15 },
+				{ "name": "Post", "value": 16 },
+				{ "name": "AfterPost", "value": 17 },
+				{ "name": "Tonemap", "value": 18 },
+				{ "name": "Overlay", "value": 19 },
+				{ "name": "Present", "value": 20 }
+			]
+		},
+		{
+			"name": "PassRequests",
+			"cpp": "::Shalltear::PassRequests",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "SceneColor", "value": 1 },
+				{ "name": "SceneDepth", "value": 2 },
+				{ "name": "SceneNormals", "value": 4 }
+			]
+		},
+		{
+			"name": "PassProduces",
+			"cpp": "::Shalltear::PassProduces",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "AmbientOcclusion", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "PassTarget",
+			"cpp": "::Shalltear::PassTarget",
+			"size": 4,
+			"align": 2,
+			"fields": [
+				{ "name": "format", "type": "RHIFormat", "offset": 0 },
+				{ "name": "divisor", "type": "u16", "offset": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "PassPlan", "cpp": "::Shalltear::PassPlan", "owned": true },
+		{ "name": "PassVolume", "cpp": "::Shalltear::PassVolume", "owned": true, "create": true },
+		{ "name": "PassStep", "cpp": "::Shalltear::PassStep", "owned": true, "create": true },
+		{ "name": "PassContext", "cpp": "::Shalltear::PassContext" }
+	],
+	"constants": [
+		{ "name": "PASS_POINT_COUNT", "cpp": "::Shalltear::PASS_POINT_COUNT", "type": "u32", "value": 21 },
+		{ "name": "PASS_SCENE_TARGET", "cpp": "::Shalltear::PASS_SCENE_TARGET", "type": "u8", "value": 255 },
+		{ "name": "PASS_NO_READ", "cpp": "::Shalltear::PASS_NO_READ", "type": "u8", "value": 255 }
+	],
+	"functions": [
+		{
+			"id": "GetPassPointName",
+			"cpp": "::Shalltear::GetPassPointName(point)",
+			"returns": "string",
+			"params": [{ "name": "point", "type": "PassPoint" }],
+			"csharp": { "member": "GetPassPointName", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "IsPerViewPassPoint",
+			"cpp": "::Shalltear::IsPerViewPassPoint(point)",
+			"returns": "bool",
+			"params": [{ "name": "point", "type": "PassPoint" }],
+			"csharp": { "member": "IsPerViewPassPoint", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "PassRequests" },
+				{ "name": "flags", "type": "PassRequests" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "PassRequests" },
+				{ "name": "flags", "type": "PassRequests" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HasFlag2",
+			"cpp": "::Shalltear::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "PassProduces" },
+				{ "name": "flags", "type": "PassProduces" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HasAnyFlag2",
+			"cpp": "::Shalltear::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "PassProduces" },
+				{ "name": "flags", "type": "PassProduces" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Record",
+			"cpp": "self->Record(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "PassContext" }],
+			"csharp": { "member": "Record", "kind": "method" }
+		},
+		{
+			"id": "GetRequests",
+			"cpp": "self->GetRequests()",
+			"returns": "PassRequests",
+			"params": [],
+			"csharp": { "member": "Requests", "kind": "getter" }
+		},
+		{
+			"id": "DeclarePlan",
+			"cpp": "self->DeclarePlan(*plan)",
+			"returns": "void",
+			"params": [{ "name": "plan", "type": "PassPlan" }],
+			"csharp": { "member": "DeclarePlan", "kind": "method" }
+		},
+		{
+			"id": "GetPoint",
+			"cpp": "self->point",
+			"returns": "PassPoint",
+			"params": [],
+			"csharp": { "member": "Point", "kind": "getter" }
+		},
+		{
+			"id": "SetPoint",
+			"cpp": "self->point = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PassPoint" }],
+			"csharp": { "member": "Point", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "FrameStagePosition",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FrameStagePosition" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		}
+	]
+}

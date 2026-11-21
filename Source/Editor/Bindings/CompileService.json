@@ -1,0 +1,119 @@
+{
+	"area": "CompileService",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileService.h",
+		"Shalltear/Editor/CppToolchain.h"
+	],
+	"class": "Shalltear.Editor.CompileService",
+	"instance": "CompileService",
+	"functions": [
+		{
+			"id": "GetActive",
+			"cpp": "::Shalltear::CompileService::GetActive()",
+			"returns": "CompileService",
+			"params": [],
+			"csharp": { "member": "Active", "kind": "getter" },
+			"static": true
+		},
+		{
+			"id": "RefreshToolchain",
+			"cpp": "self->RefreshToolchain()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RefreshToolchain", "kind": "method" }
+		},
+		{
+			"id": "GetToolchain",
+			"cpp": "self->GetToolchain()",
+			"returns": "CppToolchainToolchainInfo",
+			"params": [],
+			"csharp": { "member": "Toolchain", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "RequestCompile",
+			"cpp": "self->RequestCompile(*request)",
+			"returns": "bool",
+			"params": [{ "name": "request", "type": "CompileRequest" }],
+			"csharp": { "member": "RequestCompile", "kind": "method" }
+		},
+		{
+			"id": "Cancel",
+			"cpp": "self->Cancel()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Cancel", "kind": "method" }
+		},
+		{
+			"id": "PumpMainThread",
+			"cpp": "self->PumpMainThread()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "PumpMainThread", "kind": "method" }
+		},
+		{
+			"id": "GetState",
+			"cpp": "self->GetState()",
+			"returns": "CompileState",
+			"params": [],
+			"csharp": { "member": "State", "kind": "getter" }
+		},
+		{
+			"id": "IsBusy",
+			"cpp": "self->IsBusy()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsBusy", "kind": "getter" }
+		},
+		{
+			"id": "GetErrorCount",
+			"cpp": "self->GetErrorCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ErrorCount", "kind": "getter" }
+		},
+		{
+			"id": "GetWarningCount",
+			"cpp": "self->GetWarningCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "WarningCount", "kind": "getter" }
+		},
+		{
+			"id": "GetLastDurationSeconds",
+			"cpp": "self->GetLastDurationSeconds()",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "LastDurationSeconds", "kind": "getter" }
+		},
+		{
+			"id": "GetDiagnostics",
+			"cpp": "self->GetDiagnostics()",
+			"returns": "list<CompilerDiagnostic>",
+			"params": [],
+			"csharp": { "member": "Diagnostics", "kind": "getter" }
+		},
+		{
+			"id": "GetProjectPath",
+			"cpp": "self->GetProjectPath()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProjectPath", "kind": "getter" }
+		},
+		{
+			"id": "DescribeCompileState",
+			"cpp": "::Shalltear::DescribeCompileState(state, errorCount, warningCount)",
+			"returns": "CompileControlText",
+			"params": [
+				{ "name": "state", "type": "CompileState" },
+				{ "name": "errorCount", "type": "u32" },
+				{ "name": "warningCount", "type": "u32" }
+			],
+			"csharp": { "member": "DescribeCompileState", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		}
+	]
+}

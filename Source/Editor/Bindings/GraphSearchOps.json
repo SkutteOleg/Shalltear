@@ -1,0 +1,55 @@
+{
+	"area": "GraphSearchOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphSearch.h"
+	],
+	"class": "Shalltear.Editor.GraphSearchOps",
+	"structs": [
+		{
+			"name": "GraphSearchSpan",
+			"cpp": "::Shalltear::GraphSearchSpan",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "begin", "type": "u32", "offset": 0 },
+				{ "name": "end", "type": "u32", "offset": 4 }
+			]
+		}
+	],
+	"natives": [{ "name": "GraphSearchEntry", "cpp": "::Shalltear::GraphSearchEntry", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Rank",
+			"cpp": "::Shalltear::GraphSearchOps::Rank(query, std::span<const ::Shalltear::GraphSearchEntry>(Slots::Copies<::Shalltear::Vector<::Shalltear::GraphSearchEntry>>(library)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "query", "type": "string" },
+				{ "name": "library", "type": "list<GraphSearchEntry>" },
+				{ "name": "outValue", "type": "list<u32>", "out": true, "cpp": "::Shalltear::Vector<u32>" }
+			],
+			"csharp": { "member": "Rank", "kind": "method" }
+		},
+		{
+			"id": "Highlights",
+			"cpp": "::Shalltear::GraphSearchOps::Highlights(query, name, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "query", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "list<GraphSearchSpan>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphSearchSpan>" }
+			],
+			"csharp": { "member": "Highlights", "kind": "method" }
+		},
+		{
+			"id": "Completion",
+			"cpp": "::Shalltear::GraphSearchOps::Completion(query, name)",
+			"returns": "string",
+			"params": [
+				{ "name": "query", "type": "string" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "Completion", "kind": "method" }
+		}
+	]
+}

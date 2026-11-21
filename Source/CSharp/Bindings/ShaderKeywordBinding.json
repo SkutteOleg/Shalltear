@@ -1,0 +1,67 @@
+{
+	"area": "ShaderKeywordBinding",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.ShaderKeywordBinding",
+	"instance": "ShaderKeywordBinding",
+	"functions": [
+		{
+			"id": "GetKeyword",
+			"cpp": "self->keyword",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Keyword", "kind": "getter" }
+		},
+		{
+			"id": "SetKeyword",
+			"cpp": "self->keyword = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Keyword", "kind": "setter" }
+		},
+		{
+			"id": "GetMember",
+			"cpp": "self->member",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Member", "kind": "getter" }
+		},
+		{
+			"id": "SetMember",
+			"cpp": "self->member = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Member", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetEntry",
+			"cpp": "self->entry",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Entry", "kind": "getter" }
+		},
+		{
+			"id": "SetEntry",
+			"cpp": "self->entry = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Entry", "kind": "setter" }
+		}
+	]
+}

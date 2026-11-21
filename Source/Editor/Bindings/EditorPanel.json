@@ -1,0 +1,171 @@
+{
+	"area": "EditorPanel",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPanel.h",
+		"Shalltear/Editor/EditorIcons.h",
+		"Shalltear/Editor/EditorListView.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorPanel",
+	"instance": "EditorPanel",
+	"types": [
+		{ "name": "EditorPanel", "cpp": "::Shalltear::EditorPanel", "engine": "EditorPanel", "base": "EngineObject", "abstract": true }
+	],
+	"enums": [
+		{
+			"name": "PanelCommand",
+			"cpp": "::Shalltear::PanelCommand",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Delete", "value": 0 },
+				{ "name": "Duplicate", "value": 1 },
+				{ "name": "Rename", "value": 2 },
+				{ "name": "SelectAll", "value": 3 },
+				{ "name": "Count", "value": 4 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetTitleBase",
+			"cpp": "self->GetTitleBase()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TitleBase", "kind": "getter" }
+		},
+		{
+			"id": "GetTabIcon",
+			"cpp": "self->GetTabIcon()",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "TabIcon", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BuildContent",
+			"cpp": "self->BuildContent(*context, root)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "root", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "BuildContent", "kind": "method" }
+		},
+		{
+			"id": "OnTick",
+			"cpp": "self->OnTick(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "OnTick", "kind": "method" }
+		},
+		{
+			"id": "WantsPlayModeTint",
+			"cpp": "self->WantsPlayModeTint()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WantsPlayModeTint", "kind": "method" }
+		},
+		{
+			"id": "OnSubmitView",
+			"cpp": "self->OnSubmitView(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "OnSubmitView", "kind": "method" }
+		},
+		{
+			"id": "GetPresentedSurface",
+			"cpp": "self->GetPresentedSurface()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PresentedSurface", "kind": "getter" }
+		},
+		{
+			"id": "OnOpen",
+			"cpp": "self->OnOpen()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnOpen", "kind": "method" }
+		},
+		{
+			"id": "OnClose",
+			"cpp": "self->OnClose()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnClose", "kind": "method" }
+		},
+		{
+			"id": "OnSelectionChanged",
+			"cpp": "self->OnSelectionChanged()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "HasUnsavedChanges",
+			"cpp": "self->HasUnsavedChanges()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasUnsavedChanges", "kind": "getter" }
+		},
+		{
+			"id": "GetSaveChangesMessage",
+			"cpp": "self->GetSaveChangesMessage()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SaveChangesMessage", "kind": "getter" }
+		},
+		{
+			"id": "SaveChanges",
+			"cpp": "self->SaveChanges()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "SaveChanges", "kind": "method" }
+		},
+		{
+			"id": "DiscardChanges",
+			"cpp": "self->DiscardChanges()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DiscardChanges", "kind": "method" }
+		},
+		{
+			"id": "OnCommand",
+			"cpp": "self->OnCommand(command)",
+			"returns": "bool",
+			"params": [{ "name": "command", "type": "PanelCommand" }],
+			"csharp": { "member": "OnCommand", "kind": "method" }
+		},
+		{
+			"id": "FocusList",
+			"cpp": "self->FocusList(*list)",
+			"returns": "void",
+			"params": [{ "name": "list", "type": "EditorListView" }],
+			"csharp": { "member": "FocusList", "kind": "method" }
+		},
+		{
+			"id": "GetInstanceSerial",
+			"cpp": "self->GetInstanceSerial()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "InstanceSerial", "kind": "getter" }
+		},
+		{
+			"id": "GetDockId",
+			"cpp": "self->GetDockId()",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "DockId", "kind": "getter" }
+		},
+		{
+			"id": "GetTitle",
+			"cpp": "self->GetTitle()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		}
+	]
+}

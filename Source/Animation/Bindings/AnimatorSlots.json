@@ -1,0 +1,14 @@
+{
+	"area": "AnimatorSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/Animator.h"
+	],
+	"class": "Shalltear.Animator",
+	"instance": "Animator",
+	"natives": [{ "name": "EnginePlayHandle", "cpp": "::Shalltear::PlayHandle", "owned": true, "create": true }],
+	"constants": [
+		{ "name": "ANIMATION_DEFAULT_FADE", "cpp": "::Shalltear::ANIMATION_DEFAULT_FADE", "type": "f32", "value": "-0x1.0000000000000p+0" }
+	],
+	"functions": []
+}

@@ -1,0 +1,73 @@
+{
+	"area": "ShaderCompileQueue",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderCompileQueue.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.ShaderCompileQueue",
+	"enums": [
+		{
+			"name": "ShaderCompileStatus",
+			"cpp": "::Shalltear::ShaderCompileStatus",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Pending", "value": 0 },
+				{ "name": "Succeeded", "value": 1 },
+				{ "name": "Failed", "value": 2 },
+				{ "name": "Unknown", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "ShaderCompileStats",
+			"cpp": "::Shalltear::ShaderCompileStats",
+			"size": 32,
+			"align": 8,
+			"fields": [
+				{ "name": "submitted", "type": "u64", "offset": 0 },
+				{ "name": "finished", "type": "u64", "offset": 8 },
+				{ "name": "compilesOnCompileThreads", "type": "u64", "offset": 16 },
+				{ "name": "compilesElsewhere", "type": "u64", "offset": 24 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "Submit",
+			"cpp": "::Shalltear::ShaderCompileQueue::Submit(::Shalltear::Path(str(virtualOrPhysical)), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(keywords)))",
+			"returns": "u64",
+			"params": [
+				{ "name": "virtualOrPhysical", "type": "string" },
+				{ "name": "keywords", "type": "list<string>" }
+			],
+			"csharp": { "member": "Submit", "kind": "method" }
+		},
+		{
+			"id": "Collect",
+			"cpp": "::Shalltear::ShaderCompileQueue::Collect(ticket, outValue, &messages)",
+			"returns": "ShaderCompileStatus",
+			"params": [
+				{ "name": "ticket", "type": "u64" },
+				{ "name": "outValue", "type": "ShaderAsset", "out": true },
+				{ "name": "messages", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Collect", "kind": "method" }
+		},
+		{
+			"id": "Cancel",
+			"cpp": "::Shalltear::ShaderCompileQueue::Cancel(ticket)",
+			"returns": "void",
+			"params": [{ "name": "ticket", "type": "u64" }],
+			"csharp": { "member": "Cancel", "kind": "method" }
+		},
+		{
+			"id": "GetStats",
+			"cpp": "::Shalltear::ShaderCompileQueue::GetStats()",
+			"returns": "ShaderCompileStats",
+			"params": [],
+			"csharp": { "member": "Stats", "kind": "getter" }
+		}
+	]
+}

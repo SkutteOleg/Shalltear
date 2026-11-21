@@ -1,0 +1,180 @@
+{
+	"area": "BuildProfileResult",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h",
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildProfileResult",
+	"instance": "BuildProfileResult",
+	"functions": [
+		{
+			"id": "GetProfile",
+			"cpp": "self->profile",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Profile", "kind": "getter" }
+		},
+		{
+			"id": "SetProfile",
+			"cpp": "self->profile = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Profile", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetId",
+			"cpp": "self->targetId",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "TargetId", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetId",
+			"cpp": "self->targetId = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "TargetId", "kind": "setter" }
+		},
+		{
+			"id": "GetOutcome",
+			"cpp": "self->outcome",
+			"returns": "BuildOutcome",
+			"params": [],
+			"csharp": { "member": "Outcome", "kind": "getter" }
+		},
+		{
+			"id": "SetOutcome",
+			"cpp": "self->outcome = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildOutcome" }],
+			"csharp": { "member": "Outcome", "kind": "setter" }
+		},
+		{
+			"id": "GetReason",
+			"cpp": "self->reason",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Reason", "kind": "getter" }
+		},
+		{
+			"id": "SetReason",
+			"cpp": "self->reason = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Reason", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputPath",
+			"cpp": "self->outputPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "OutputPath", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputPath",
+			"cpp": "self->outputPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "OutputPath", "kind": "setter" }
+		},
+		{
+			"id": "GetLaunchCommand",
+			"cpp": "self->launchCommand",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "LaunchCommand", "kind": "getter" }
+		},
+		{
+			"id": "SetLaunchCommand",
+			"cpp": "self->launchCommand = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "LaunchCommand", "kind": "setter" }
+		},
+		{
+			"id": "GetBuildNumber",
+			"cpp": "self->buildNumber",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BuildNumber", "kind": "getter" }
+		},
+		{
+			"id": "SetBuildNumber",
+			"cpp": "self->buildNumber = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "BuildNumber", "kind": "setter" }
+		},
+		{
+			"id": "GetErrorCount",
+			"cpp": "self->errorCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ErrorCount", "kind": "getter" }
+		},
+		{
+			"id": "SetErrorCount",
+			"cpp": "self->errorCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ErrorCount", "kind": "setter" }
+		},
+		{
+			"id": "GetWarningCount",
+			"cpp": "self->warningCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "WarningCount", "kind": "getter" }
+		},
+		{
+			"id": "SetWarningCount",
+			"cpp": "self->warningCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "WarningCount", "kind": "setter" }
+		},
+		{
+			"id": "GetDurationSeconds",
+			"cpp": "self->durationSeconds",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "DurationSeconds", "kind": "getter" }
+		},
+		{
+			"id": "SetDurationSeconds",
+			"cpp": "self->durationSeconds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "DurationSeconds", "kind": "setter" }
+		},
+		{
+			"id": "GetArtifactBytes",
+			"cpp": "self->artifactBytes",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ArtifactBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetArtifactBytes",
+			"cpp": "self->artifactBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ArtifactBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetIssues",
+			"cpp": "self->issues",
+			"returns": "list<BuildIssue>",
+			"params": [],
+			"csharp": { "member": "Issues", "kind": "getter" }
+		},
+		{
+			"id": "SetIssues",
+			"cpp": "self->issues = Slots::Copies<::Shalltear::Vector<::Shalltear::BuildIssue>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<BuildIssue>" }],
+			"csharp": { "member": "Issues", "kind": "setter" }
+		}
+	]
+}

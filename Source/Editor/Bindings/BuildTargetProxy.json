@@ -1,0 +1,150 @@
+{
+	"area": "BuildTargetProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildTarget.h",
+		"Shalltear/Editor/BuildPipeline.h",
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildTargetProxy",
+	"instance": "BuildTargetProxy",
+	"prelude": [
+		"class BuildTargetProxy final : public ::Shalltear::IBuildTarget {",
+		"public:",
+		"\tstd::function<std::basic_string_view<char>()> getId;",
+		"\tstd::basic_string_view<char> GetId() const override {",
+		"\t\treturn getId ? getId() : Slots::ResultOf<decltype(getId)>();",
+		"\t}",
+		"\tstd::function<std::basic_string_view<char>()> getDisplayName;",
+		"\tstd::basic_string_view<char> GetDisplayName() const override {",
+		"\t\treturn getDisplayName ? getDisplayName() : Slots::ResultOf<decltype(getDisplayName)>();",
+		"\t}",
+		"\tstd::function<bool(std::basic_string<char> &)> isAvailable;",
+		"\tbool IsAvailable(std::basic_string<char> & a0) const override {",
+		"\t\treturn isAvailable ? isAvailable(a0) : Slots::ResultOf<decltype(isAvailable)>();",
+		"\t}",
+		"\tstd::function<bool()> requiresMonotonicBuildNumber;",
+		"\tbool RequiresMonotonicBuildNumber() const override {",
+		"\t\treturn requiresMonotonicBuildNumber ? requiresMonotonicBuildNumber() : ::Shalltear::IBuildTarget::RequiresMonotonicBuildNumber();",
+		"\t}",
+		"\tstd::function<void(std::vector<Shalltear::BuildSettingDesc, std::pmr::polymorphic_allocator<Shalltear::BuildSettingDesc>> &)> describeSettings;",
+		"\tvoid DescribeSettings(std::vector<Shalltear::BuildSettingDesc, std::pmr::polymorphic_allocator<Shalltear::BuildSettingDesc>> & a0) const override {",
+		"\t\tif (describeSettings) {",
+		"\t\t\tdescribeSettings(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const std::basic_string<char> &, const Shalltear::ResolvedProfile &, std::vector<Shalltear::BuildIssue, std::pmr::polymorphic_allocator<Shalltear::BuildIssue>> &)> validate;",
+		"\tvoid Validate(const std::basic_string<char> & a0, const Shalltear::ResolvedProfile & a1, std::vector<Shalltear::BuildIssue, std::pmr::polymorphic_allocator<Shalltear::BuildIssue>> & a2) const override {",
+		"\t\tif (validate) {",
+		"\t\t\tvalidate(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::BuildContext &)> configurePipeline;",
+		"\tvoid ConfigurePipeline(Shalltear::BuildContext & a0) const override {",
+		"\t\tif (configurePipeline) {",
+		"\t\t\tconfigurePipeline(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<std::basic_string<char>(const Shalltear::BuildContext &)> getLaunchCommand;",
+		"\tstd::basic_string<char> GetLaunchCommand(const Shalltear::BuildContext & a0) const override {",
+		"\t\treturn getLaunchCommand ? getLaunchCommand(a0) : Slots::ResultOf<decltype(getLaunchCommand)>();",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "BuildTargetProxy", "cpp": "BuildTargetProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetGetId",
+			"cpp": "self->getId = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string_view<char>()>" }
+			],
+			"csharp": { "member": "SetGetId", "kind": "method" }
+		},
+		{
+			"id": "SetGetDisplayName",
+			"cpp": "self->getDisplayName = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string_view<char>()>" }
+			],
+			"csharp": { "member": "SetGetDisplayName", "kind": "method" }
+		},
+		{
+			"id": "SetIsAvailable",
+			"cpp": "self->isAvailable = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;TextRef>", "optional": true, "cpp": "std::function<bool(std::basic_string<char> &)>" }
+			],
+			"csharp": { "member": "SetIsAvailable", "kind": "method" }
+		},
+		{
+			"id": "SetRequiresMonotonicBuildNumber",
+			"cpp": "self->requiresMonotonicBuildNumber = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetRequiresMonotonicBuildNumber", "kind": "method" }
+		},
+		{
+			"id": "SetDescribeSettings",
+			"cpp": "self->describeSettings = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;BuildSettingDescList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::BuildSettingDesc, std::pmr::polymorphic_allocator<Shalltear::BuildSettingDesc>> &)>"
+				}
+			],
+			"csharp": { "member": "SetDescribeSettings", "kind": "method" }
+		},
+		{
+			"id": "SetValidate",
+			"cpp": "self->validate = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;string;ResolvedProfile;BuildIssueList>",
+					"optional": true,
+					"cpp": "std::function<void(const std::basic_string<char> &, const Shalltear::ResolvedProfile &, std::vector<Shalltear::BuildIssue, std::pmr::polymorphic_allocator<Shalltear::BuildIssue>> &)>"
+				}
+			],
+			"csharp": { "member": "SetValidate", "kind": "method" }
+		},
+		{
+			"id": "SetConfigurePipeline",
+			"cpp": "self->configurePipeline = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;BuildContext>", "optional": true, "cpp": "std::function<void(Shalltear::BuildContext &)>" }
+			],
+			"csharp": { "member": "SetConfigurePipeline", "kind": "method" }
+		},
+		{
+			"id": "SetGetLaunchCommand",
+			"cpp": "self->getLaunchCommand = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<string;BuildContext>",
+					"optional": true,
+					"cpp": "std::function<std::basic_string<char>(const Shalltear::BuildContext &)>"
+				}
+			],
+			"csharp": { "member": "SetGetLaunchCommand", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IBuildTarget*>(self)",
+			"returns": "IBuildTarget",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

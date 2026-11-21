@@ -1,0 +1,157 @@
+{
+	"area": "UIFontSystemProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/UI/UIAtlas.h"
+	],
+	"class": "Shalltear.UIFontSystemProxy",
+	"instance": "UIFontSystemProxy",
+	"prelude": [
+		"class UIFontSystemProxy final : public ::Shalltear::UI::IFontSystem {",
+		"public:",
+		"\tstd::function<bool(const Shalltear::UI::TextQuery &, Shalltear::UI::ShapedRun &)> shapeText;",
+		"\tbool ShapeText(const Shalltear::UI::TextQuery & a0, Shalltear::UI::ShapedRun & a1) override {",
+		"\t\treturn shapeText ? shapeText(a0, a1) : Slots::ResultOf<decltype(shapeText)>();",
+		"\t}",
+		"\tstd::function<Shalltear::Vec2Generic<float>(const Shalltear::UI::TextQuery &)> measureText;",
+		"\tShalltear::Vec2Generic<float> MeasureText(const Shalltear::UI::TextQuery & a0) override {",
+		"\t\treturn measureText ? measureText(a0) : Slots::ResultOf<decltype(measureText)>();",
+		"\t}",
+		"\tstd::function<float(Shalltear::Handle<Shalltear::FontAsset>, float)> getLineHeight;",
+		"\tfloat GetLineHeight(Shalltear::Handle<Shalltear::FontAsset> a0, float a1) override {",
+		"\t\treturn getLineHeight ? getLineHeight(a0, a1) : Slots::ResultOf<decltype(getLineHeight)>();",
+		"\t}",
+		"\tstd::function<bool(Shalltear::Handle<Shalltear::FontAsset>, Shalltear::UI::FontFaceInfo &)> describeFont;",
+		"\tbool DescribeFont(Shalltear::Handle<Shalltear::FontAsset> a0, Shalltear::UI::FontFaceInfo & a1) override {",
+		"\t\treturn describeFont ? describeFont(a0, a1) : ::Shalltear::UI::IFontSystem::DescribeFont(a0, a1);",
+		"\t}",
+		"\tstd::function<bool(Shalltear::UI::AtlasPage &)> getAtlasPage;",
+		"\tbool GetAtlasPage(Shalltear::UI::AtlasPage & a0) const override {",
+		"\t\treturn getAtlasPage ? getAtlasPage(a0) : ::Shalltear::UI::IFontSystem::GetAtlasPage(a0);",
+		"\t}",
+		"\tstd::function<unsigned int()> getAtlasGeneration;",
+		"\tunsigned int GetAtlasGeneration() const override {",
+		"\t\treturn getAtlasGeneration ? getAtlasGeneration() : ::Shalltear::UI::IFontSystem::GetAtlasGeneration();",
+		"\t}",
+		"\tstd::function<unsigned int()> getMetricsGeneration;",
+		"\tunsigned int GetMetricsGeneration() const override {",
+		"\t\treturn getMetricsGeneration ? getMetricsGeneration() : ::Shalltear::UI::IFontSystem::GetMetricsGeneration();",
+		"\t}",
+		"\tstd::function<Shalltear::UI::TextStats()> getTextStats;",
+		"\tShalltear::UI::TextStats GetTextStats() const override {",
+		"\t\treturn getTextStats ? getTextStats() : ::Shalltear::UI::IFontSystem::GetTextStats();",
+		"\t}",
+		"\tstd::function<void()> resetTextStats;",
+		"\tvoid ResetTextStats() override {",
+		"\t\tif (resetTextStats) {",
+		"\t\t\tresetTextStats();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::UI::IFontSystem::ResetTextStats();",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "UIFontSystemProxy", "cpp": "UIFontSystemProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetShapeText",
+			"cpp": "self->shapeText = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<bool;UITextQuery;UIShapedRun>",
+					"optional": true,
+					"cpp": "std::function<bool(const Shalltear::UI::TextQuery &, Shalltear::UI::ShapedRun &)>"
+				}
+			],
+			"csharp": { "member": "SetShapeText", "kind": "method" }
+		},
+		{
+			"id": "SetMeasureText",
+			"cpp": "self->measureText = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<Vec2;UITextQuery>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::Vec2Generic<float>(const Shalltear::UI::TextQuery &)>"
+				}
+			],
+			"csharp": { "member": "SetMeasureText", "kind": "method" }
+		},
+		{
+			"id": "SetGetLineHeight",
+			"cpp": "self->getLineHeight = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<f32;FontAsset;f32>", "optional": true, "cpp": "std::function<float(Shalltear::Handle<Shalltear::FontAsset>, float)>" }
+			],
+			"csharp": { "member": "SetGetLineHeight", "kind": "method" }
+		},
+		{
+			"id": "SetDescribeFont",
+			"cpp": "self->describeFont = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<bool;FontAsset;ref:UIFontFaceInfo>",
+					"optional": true,
+					"cpp": "std::function<bool(Shalltear::Handle<Shalltear::FontAsset>, Shalltear::UI::FontFaceInfo &)>"
+				}
+			],
+			"csharp": { "member": "SetDescribeFont", "kind": "method" }
+		},
+		{
+			"id": "SetGetAtlasPage",
+			"cpp": "self->getAtlasPage = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;ref:UIAtlasPage>", "optional": true, "cpp": "std::function<bool(Shalltear::UI::AtlasPage &)>" }
+			],
+			"csharp": { "member": "SetGetAtlasPage", "kind": "method" }
+		},
+		{
+			"id": "SetGetAtlasGeneration",
+			"cpp": "self->getAtlasGeneration = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<u32>", "optional": true, "cpp": "std::function<unsigned int()>" }],
+			"csharp": { "member": "SetGetAtlasGeneration", "kind": "method" }
+		},
+		{
+			"id": "SetGetMetricsGeneration",
+			"cpp": "self->getMetricsGeneration = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<u32>", "optional": true, "cpp": "std::function<unsigned int()>" }],
+			"csharp": { "member": "SetGetMetricsGeneration", "kind": "method" }
+		},
+		{
+			"id": "SetGetTextStats",
+			"cpp": "self->getTextStats = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<UITextStats>", "optional": true, "cpp": "std::function<Shalltear::UI::TextStats()>" }
+			],
+			"csharp": { "member": "SetGetTextStats", "kind": "method" }
+		},
+		{
+			"id": "SetResetTextStats",
+			"cpp": "self->resetTextStats = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetResetTextStats", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::UI::IFontSystem*>(self)",
+			"returns": "UIFontSystem",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

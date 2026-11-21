@@ -1,0 +1,278 @@
+{
+	"area": "ScriptProjectOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ScriptProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ScriptProjectOps",
+	"enums": [
+		{
+			"name": "ScriptProjectOpsModuleStatus",
+			"cpp": "::Shalltear::ScriptProjectOps::ModuleStatus",
+			"underlying": "u8",
+			"values": [
+				{ "name": "NoScriptProject", "value": 0 },
+				{ "name": "Compiling", "value": 1 },
+				{ "name": "CompileFailed", "value": 2 },
+				{ "name": "LoadFailed", "value": 3 },
+				{ "name": "Loaded", "value": 4 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "ScriptProjectOpsModuleStatusFacts",
+			"cpp": "::Shalltear::ScriptProjectOps::ModuleStatusFacts",
+			"size": 4,
+			"align": 1,
+			"fields": [
+				{ "name": "hasScriptProject", "type": "bool", "offset": 0 },
+				{ "name": "compiling", "type": "bool", "offset": 1 },
+				{ "name": "compileFailed", "type": "bool", "offset": 2 },
+				{ "name": "moduleLoaded", "type": "bool", "offset": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "ScriptProjectOpsScriptSettings", "cpp": "::Shalltear::ScriptProjectOps::ScriptSettings", "owned": true, "create": true },
+		{ "name": "ScriptProjectOpsTemplateToken", "cpp": "::Shalltear::ScriptProjectOps::TemplateToken", "owned": true, "create": true },
+		{ "name": "ScriptProjectOpsScaffoldOptions", "cpp": "::Shalltear::ScriptProjectOps::ScaffoldOptions", "owned": true, "create": true },
+		{ "name": "ScriptProjectOpsScaffoldResult", "cpp": "::Shalltear::ScriptProjectOps::ScaffoldResult", "owned": true, "create": true },
+		{ "name": "ScriptProjectOpsExternalEditor", "cpp": "::Shalltear::ScriptProjectOps::ExternalEditor", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetActiveConfigName",
+			"cpp": "::Shalltear::ScriptProjectOps::GetActiveConfigName()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ActiveConfigName", "kind": "getter" }
+		},
+		{
+			"id": "GetEditorExecutablePath",
+			"cpp": "::Shalltear::ScriptProjectOps::GetEditorExecutablePath()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "EditorExecutablePath", "kind": "getter" }
+		},
+		{
+			"id": "GetSDKRoot",
+			"cpp": "::Shalltear::ScriptProjectOps::GetSDKRoot()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKRoot", "kind": "getter" }
+		},
+		{
+			"id": "GetSourceDirectory",
+			"cpp": "::Shalltear::ScriptProjectOps::GetSourceDirectory(str(projectPath))",
+			"returns": "string",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "GetSourceDirectory", "kind": "method" }
+		},
+		{
+			"id": "GetModuleName",
+			"cpp": "::Shalltear::ScriptProjectOps::GetModuleName(str(projectPath))",
+			"returns": "string",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "GetModuleName", "kind": "method" }
+		},
+		{
+			"id": "GetCompileDirectory",
+			"cpp": "::Shalltear::ScriptProjectOps::GetCompileDirectory(str(projectPath), configName)",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "configName", "type": "string" }
+			],
+			"csharp": { "member": "GetCompileDirectory", "kind": "method" }
+		},
+		{
+			"id": "GetModuleBinaryPath",
+			"cpp": "::Shalltear::ScriptProjectOps::GetModuleBinaryPath(str(projectPath), configName)",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "configName", "type": "string" }
+			],
+			"csharp": { "member": "GetModuleBinaryPath", "kind": "method" }
+		},
+		{
+			"id": "GetModuleCompileStampPath",
+			"cpp": "::Shalltear::ScriptProjectOps::GetModuleCompileStampPath(str(projectPath), configName)",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "configName", "type": "string" }
+			],
+			"csharp": { "member": "GetModuleCompileStampPath", "kind": "method" }
+		},
+		{
+			"id": "HasScriptProject",
+			"cpp": "::Shalltear::ScriptProjectOps::HasScriptProject(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "HasScriptProject", "kind": "method" }
+		},
+		{
+			"id": "GetLoadedModuleBase",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(::Shalltear::ScriptProjectOps::GetLoadedModuleBase()))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LoadedModuleBase", "kind": "getter" }
+		},
+		{
+			"id": "IsModuleBinaryOutOfDate",
+			"cpp": "::Shalltear::ScriptProjectOps::IsModuleBinaryOutOfDate(str(projectPath), configName, &outReason)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "configName", "type": "string" },
+				{ "name": "outReason", "type": "string", "out": true }
+			],
+			"csharp": { "member": "IsModuleBinaryOutOfDate", "kind": "method" }
+		},
+		{
+			"id": "IsCompileCacheStale",
+			"cpp": "::Shalltear::ScriptProjectOps::IsCompileCacheStale(str(projectPath), configName, str(compilerPath), &outReason)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "configName", "type": "string" },
+				{ "name": "compilerPath", "type": "string" },
+				{ "name": "outReason", "type": "string", "out": true }
+			],
+			"csharp": { "member": "IsCompileCacheStale", "kind": "method" }
+		},
+		{
+			"id": "ClassifyModuleStatus",
+			"cpp": "::Shalltear::ScriptProjectOps::ClassifyModuleStatus(facts)",
+			"returns": "ScriptProjectOpsModuleStatus",
+			"params": [{ "name": "facts", "type": "ScriptProjectOpsModuleStatusFacts" }],
+			"csharp": { "member": "ClassifyModuleStatus", "kind": "method" }
+		},
+		{
+			"id": "GetModuleStatus",
+			"cpp": "::Shalltear::ScriptProjectOps::GetModuleStatus(str(projectPath))",
+			"returns": "ScriptProjectOpsModuleStatus",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "GetModuleStatus", "kind": "method" }
+		},
+		{
+			"id": "ReadScriptSettings",
+			"cpp": "::Shalltear::ScriptProjectOps::ReadScriptSettings(str(projectPath))",
+			"returns": "ScriptProjectOpsScriptSettings",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "ReadScriptSettings", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "WriteScriptSettings",
+			"cpp": "::Shalltear::ScriptProjectOps::WriteScriptSettings(str(projectPath), *settings)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "settings", "type": "ScriptProjectOpsScriptSettings" }
+			],
+			"csharp": { "member": "WriteScriptSettings", "kind": "method" }
+		},
+		{
+			"id": "RenderTemplate",
+			"cpp": "::Shalltear::ScriptProjectOps::RenderTemplate(templateName, Slots::Copies<::Shalltear::Vector<::Shalltear::ScriptProjectOps::TemplateToken>>(tokens), outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "templateName", "type": "string" },
+				{ "name": "tokens", "type": "list<ScriptProjectOpsTemplateToken>" },
+				{ "name": "outValue", "type": "string", "out": true }
+			],
+			"csharp": { "member": "RenderTemplate", "kind": "method" }
+		},
+		{
+			"id": "ScaffoldScriptProject",
+			"cpp": "::Shalltear::ScriptProjectOps::ScaffoldScriptProject(str(projectPath), *options, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "options", "type": "ScriptProjectOpsScaffoldOptions" },
+				{ "name": "outValue", "type": "ScriptProjectOpsScaffoldResult" }
+			],
+			"csharp": { "member": "ScaffoldScriptProject", "kind": "method" }
+		},
+		{
+			"id": "RegenerateProjectFiles",
+			"cpp": "::Shalltear::ScriptProjectOps::RegenerateProjectFiles(str(projectPath), *options, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "options", "type": "ScriptProjectOpsScaffoldOptions" },
+				{ "name": "outValue", "type": "ScriptProjectOpsScaffoldResult" }
+			],
+			"csharp": { "member": "RegenerateProjectFiles", "kind": "method" }
+		},
+		{
+			"id": "NeedsProjectFileRegeneration",
+			"cpp": "::Shalltear::ScriptProjectOps::NeedsProjectFileRegeneration(str(projectPath), *options)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "options", "type": "ScriptProjectOpsScaffoldOptions" }
+			],
+			"csharp": { "member": "NeedsProjectFileRegeneration", "kind": "method" }
+		},
+		{
+			"id": "RegisterDebugConfiguration",
+			"cpp": "::Shalltear::ScriptProjectOps::RegisterDebugConfiguration(json, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [{ "name": "json", "type": "string" }],
+			"csharp": { "member": "RegisterDebugConfiguration", "kind": "method" }
+		},
+		{
+			"id": "UnregisterDebugConfigurationsOwnedBy",
+			"cpp": "::Shalltear::ScriptProjectOps::UnregisterDebugConfigurationsOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterDebugConfigurationsOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "DetectExternalEditor",
+			"cpp": "::Shalltear::ScriptProjectOps::DetectExternalEditor()",
+			"returns": "ScriptProjectOpsExternalEditor",
+			"params": [],
+			"csharp": { "member": "DetectExternalEditor", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "OpenInExternalEditor",
+			"cpp": "::Shalltear::ScriptProjectOps::OpenInExternalEditor(str(projectPath), str(commandTemplate), str(targetPath), line, column)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "commandTemplate", "type": "string" },
+				{ "name": "targetPath", "type": "string" },
+				{ "name": "line", "type": "u32" },
+				{ "name": "column", "type": "u32" }
+			],
+			"csharp": { "member": "OpenInExternalEditor", "kind": "method" }
+		},
+		{
+			"id": "IsValidClassName",
+			"cpp": "::Shalltear::ScriptProjectOps::IsValidClassName(className)",
+			"returns": "bool",
+			"params": [{ "name": "className", "type": "string" }],
+			"csharp": { "member": "IsValidClassName", "kind": "method" }
+		},
+		{
+			"id": "CreateComponentSource",
+			"cpp": "::Shalltear::ScriptProjectOps::CreateComponentSource(str(projectPath), str(folderRelativeToSource), str(className), *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "folderRelativeToSource", "type": "string" },
+				{ "name": "className", "type": "string" },
+				{ "name": "outValue", "type": "ScriptProjectOpsScaffoldResult" }
+			],
+			"csharp": { "member": "CreateComponentSource", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,49 @@
+{
+	"area": "EditorFrameRateMeter",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameRate.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameRateMeter",
+	"instance": "EditorFrameRateMeter",
+	"natives": [
+		{ "name": "EditorFrameRateMeter", "cpp": "::Shalltear::EditorFrameRate::Meter", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Add",
+			"cpp": "self->Add(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "GetWindowSeconds",
+			"cpp": "self->GetWindowSeconds()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "WindowSeconds", "kind": "getter" }
+		},
+		{
+			"id": "GetFps",
+			"cpp": "self->GetFps()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Fps", "kind": "getter" }
+		},
+		{
+			"id": "GetMeanMs",
+			"cpp": "self->GetMeanMs()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MeanMs", "kind": "getter" }
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reset", "kind": "method" }
+		}
+	]
+}

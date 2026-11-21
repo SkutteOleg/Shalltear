@@ -1,0 +1,54 @@
+{
+	"area": "AnimationLayerMotion",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimationLayer.h",
+		"Shalltear/Animation/AnimationClip.h"
+	],
+	"class": "Shalltear.AnimationLayerMotion",
+	"instance": "AnimationLayerMotion",
+	"functions": [
+		{
+			"id": "GetClip",
+			"cpp": "self->clip",
+			"returns": "AnimationClip",
+			"params": [],
+			"csharp": { "member": "Clip", "kind": "getter" }
+		},
+		{
+			"id": "SetClip",
+			"cpp": "self->clip = ::Shalltear::Handle<::Shalltear::AnimationClip>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationClip", "optional": true }],
+			"csharp": { "member": "Clip", "kind": "setter" }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->weight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->weight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeed",
+			"cpp": "self->speed",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Speed", "kind": "getter" }
+		},
+		{
+			"id": "SetSpeed",
+			"cpp": "self->speed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Speed", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,38 @@
+{
+	"area": "EngineGuid",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.EngineGuid",
+	"instance": "EngineGuid",
+	"structs": [
+		{
+			"name": "EngineGuid",
+			"cpp": "::Shalltear::Guid",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "low", "type": "u64", "offset": 0 },
+				{ "name": "high", "type": "u64", "offset": 8 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		},
+		{
+			"id": "FromString",
+			"cpp": "::Shalltear::Guid::FromString(text)",
+			"returns": "EngineGuid",
+			"params": [{ "name": "text", "type": "string" }],
+			"csharp": { "member": "FromString", "kind": "method" },
+			"static": true
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+	"area": "UIBuilderNodeDragData",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDragData.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderNodeDragData",
+	"instance": "UIBuilderNodeDragData",
+	"functions": [
+		{
+			"id": "GetPanelId",
+			"cpp": "self->panelId",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PanelId", "kind": "getter" }
+		},
+		{
+			"id": "SetPanelId",
+			"cpp": "self->panelId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PanelId", "kind": "setter" }
+		},
+		{
+			"id": "GetNodes",
+			"cpp": "self->nodes",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "Nodes", "kind": "getter" }
+		},
+		{
+			"id": "SetNodes",
+			"cpp": "self->nodes = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "Nodes", "kind": "setter" }
+		}
+	]
+}

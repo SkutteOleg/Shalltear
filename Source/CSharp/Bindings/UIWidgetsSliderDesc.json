@@ -1,0 +1,131 @@
+{
+	"area": "UIWidgetsSliderDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIWidgetsSliderDesc",
+	"instance": "UIWidgetsSliderDesc",
+	"functions": [
+		{
+			"id": "GetMinValue",
+			"cpp": "self->minValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MinValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMinValue",
+			"cpp": "self->minValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MinValue", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxValue",
+			"cpp": "self->maxValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MaxValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxValue",
+			"cpp": "self->maxValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MaxValue", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetShowValueField",
+			"cpp": "self->showValueField",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ShowValueField", "kind": "getter" }
+		},
+		{
+			"id": "SetShowValueField",
+			"cpp": "self->showValueField = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ShowValueField", "kind": "setter" }
+		},
+		{
+			"id": "GetDecimals",
+			"cpp": "self->decimals",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Decimals", "kind": "getter" }
+		},
+		{
+			"id": "SetDecimals",
+			"cpp": "self->decimals = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Decimals", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnChange",
+			"cpp": "self->onChange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;f32>", "optional": true, "cpp": "std::function<void (float)>" }],
+			"csharp": { "member": "SetOnChange", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragBegin",
+			"cpp": "self->onDragBegin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnDragBegin", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragEnd",
+			"cpp": "self->onDragEnd = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnDragEnd", "kind": "method" }
+		}
+	]
+}

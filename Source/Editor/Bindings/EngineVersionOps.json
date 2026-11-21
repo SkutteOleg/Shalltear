@@ -1,0 +1,24 @@
+{
+	"area": "EngineVersionOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EngineVersionOps.h"
+	],
+	"class": "Shalltear.Editor.EngineVersionOps",
+	"functions": [
+		{
+			"id": "ReleaseLabel",
+			"cpp": "::Shalltear::EngineVersionOps::ReleaseLabel()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ReleaseLabel", "kind": "method" }
+		},
+		{
+			"id": "DisplayLabel",
+			"cpp": "::Shalltear::EngineVersionOps::DisplayLabel()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayLabel", "kind": "method" }
+		}
+	]
+}

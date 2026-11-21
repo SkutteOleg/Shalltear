@@ -1,0 +1,35 @@
+{
+	"area": "ActionFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorAssetOps.h"
+	],
+	"class": "Shalltear.Editor.ActionFn",
+	"instance": "ActionFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void ()>(std::move(handler))",
+			"returns": "ActionFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [{ "name": "handler", "type": "fn<void>", "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

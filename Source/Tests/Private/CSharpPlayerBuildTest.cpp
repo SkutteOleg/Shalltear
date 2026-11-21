@@ -70,7 +70,8 @@ namespace {
 		"using System.Globalization;\nusing Shalltear;\n\nnamespace Scripted;\n\npublic sealed class Bumper : Behavior, IPhysicsListener {\n"
 		"\tpublic Rigidbody? body;\n\tint _frames;\n\n\tprotected override void OnEnable() {\n"
 		"\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE body mass=\" + (body ? body!.Mass : -1f).ToString(CultureInfo.InvariantCulture) +\n"
-		"\t\t\t\t\t\t\t\t\" same=\" + ReferenceEquals(body, Owner.GetComponent<Rigidbody>()));\n\t}\n\n"
+		"\t\t\t\t\t\t\t\t\" same=\" + ReferenceEquals(body, Owner.GetComponent<Rigidbody>()));\n"
+		"\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE animator=\" + (Owner.GetComponent<Animator>() ? \"yes\" : \"no\"));\n\t}\n\n"
 		"\tprotected override void OnUpdate() {\n\t\tif (++_frames == 2) {\n"
 		"\t\t\tbool hit = Physics.Raycast(new Ray(new Vec3(0f, 5f, 0f), new Vec3(0f, -1f, 0f)), out RaycastHit found);\n"
 		"\t\t\tLog.Info(\"PlayerProbe\", \"SHALLTEAR_CSHARP_PROBE ray hit=\" + hit + \" object=\" + (hit ? found.Object!.Name : \"none\"));\n"
@@ -343,7 +344,7 @@ public sealed partial class Reader : Behavior {
 			projectFile.SetString("Project", "name", "ScriptedGame");
 			ASSERT_TRUE(projectFile.Save(Path(suite.project.generic_string() + "/Project.ini")));
 			Config settings;
-			settings.SetString("Packages", "enabled", "dev.shalltear.csharp;dev.shalltear.physics3d");
+			settings.SetString("Packages", "enabled", "dev.shalltear.animation;dev.shalltear.csharp;dev.shalltear.physics3d");
 			settings.SetBool("C#", "allowUnsafeCode", true);
 			ASSERT_TRUE(settings.Save(Path(suite.project.generic_string() + "/ProjectSettings.ini")));
 			std::ofstream(suite.project / "Assets" / "Scripts" / "Talker.cs", std::ios::binary) << TALKER;
@@ -622,6 +623,7 @@ TEST_F(CSharpPlayerBuildTest, CSharpTypesRegisteredBeforeBootScene) {
 TEST_F(CSharpPlayerBuildTest, CSharpPlayerResolvesPackageTypes) {
 	ASSERT_EQ(_suite->playerExit, 0) << _suite->playerLog;
 	EXPECT_NE(_suite->playerLog.find(str(PROBE_MARKER) + " body mass=1 same=True"), str::npos) << _suite->playerLog;
+	EXPECT_NE(_suite->playerLog.find(str(PROBE_MARKER) + " animator=no"), str::npos) << _suite->playerLog;
 #ifndef SHALLTEAR_PHYSICS_BACKEND_STUB
 	EXPECT_NE(_suite->playerLog.find(str(PROBE_MARKER) + " ray hit=True object=Guide"), str::npos) << _suite->playerLog;
 #endif

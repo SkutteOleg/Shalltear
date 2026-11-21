@@ -1,0 +1,263 @@
+{
+	"area": "AssetImporterProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetImporter.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/FileSystem.h",
+		"Shalltear/Core/Serialization/JSON.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.AssetImporterProxy",
+	"instance": "AssetImporterProxy",
+	"prelude": [
+		"class AssetImporterProxy final : public ::Shalltear::IAssetImporter {",
+		"public:",
+		"\tstd::function<Shalltear::StringHash()> getAssetType;",
+		"\tShalltear::StringHash GetAssetType() const override {",
+		"\t\treturn getAssetType ? getAssetType() : Slots::ResultOf<decltype(getAssetType)>();",
+		"\t}",
+		"\tstd::function<Shalltear::Asset *(const Shalltear::Path &)> import;",
+		"\tShalltear::Asset * Import(const Shalltear::Path & a0) override {",
+		"\t\treturn import ? import(a0) : Slots::ResultOf<decltype(import)>();",
+		"\t}",
+		"\tstd::function<Shalltear::Asset *(const Shalltear::Path &, const Shalltear::Path &, const Shalltear::JSONValue &)> importWithSettings;",
+		"\tShalltear::Asset * ImportWithSettings(const Shalltear::Path & a0, const Shalltear::Path & a1, const Shalltear::JSONValue & a2) override {",
+		"\t\treturn importWithSettings ? importWithSettings(a0, a1, a2) : ::Shalltear::IAssetImporter::ImportWithSettings(a0, a1, a2);",
+		"\t}",
+		"\tstd::function<Shalltear::Asset *(const Shalltear::Path &, const Shalltear::Path &, const Shalltear::JSONValue &, Shalltear::AssetImportContext &)> importWithSettings2;",
+		"\tShalltear::Asset * ImportWithSettings(const Shalltear::Path & a0, const Shalltear::Path & a1, const Shalltear::JSONValue & a2, Shalltear::AssetImportContext & a3) override {",
+		"\t\treturn importWithSettings2 ? importWithSettings2(a0, a1, a2, a3) : ::Shalltear::IAssetImporter::ImportWithSettings(a0, a1, a2, a3);",
+		"\t}",
+		"\tstd::function<unsigned int()> getImporterVersion;",
+		"\tunsigned int GetImporterVersion() const override {",
+		"\t\treturn getImporterVersion ? getImporterVersion() : ::Shalltear::IAssetImporter::GetImporterVersion();",
+		"\t}",
+		"\tstd::function<void(const Shalltear::Path &, Shalltear::JSONValue &)> serializeSettings;",
+		"\tvoid SerializeSettings(const Shalltear::Path & a0, Shalltear::JSONValue & a1) const override {",
+		"\t\tif (serializeSettings) {",
+		"\t\t\tserializeSettings(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::IAssetImporter::SerializeSettings(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::JSONValue &)> deserializeSettings;",
+		"\tvoid DeserializeSettings(const Shalltear::JSONValue & a0) override {",
+		"\t\tif (deserializeSettings) {",
+		"\t\t\tdeserializeSettings(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::IAssetImporter::DeserializeSettings(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool()> isAlwaysCooked;",
+		"\tbool IsAlwaysCooked() const override {",
+		"\t\treturn isAlwaysCooked ? isAlwaysCooked() : ::Shalltear::IAssetImporter::IsAlwaysCooked();",
+		"\t}",
+		"\tstd::function<bool()> canCreateAsset;",
+		"\tbool CanCreateAsset() const override {",
+		"\t\treturn canCreateAsset ? canCreateAsset() : ::Shalltear::IAssetImporter::CanCreateAsset();",
+		"\t}",
+		"\tstd::function<std::basic_string_view<char>()> getCreateMenuLabel;",
+		"\tstd::basic_string_view<char> GetCreateMenuLabel() const override {",
+		"\t\treturn getCreateMenuLabel ? getCreateMenuLabel() : ::Shalltear::IAssetImporter::GetCreateMenuLabel();",
+		"\t}",
+		"\tstd::function<std::basic_string_view<char>()> getCreateDefaultFileName;",
+		"\tstd::basic_string_view<char> GetCreateDefaultFileName() const override {",
+		"\t\treturn getCreateDefaultFileName ? getCreateDefaultFileName() : ::Shalltear::IAssetImporter::GetCreateDefaultFileName();",
+		"\t}",
+		"\tstd::function<Shalltear::Asset *()> createAsset;",
+		"\tShalltear::Asset * CreateAsset() override {",
+		"\t\treturn createAsset ? createAsset() : ::Shalltear::IAssetImporter::CreateAsset();",
+		"\t}",
+		"\tstd::function<bool(Shalltear::Buffer &)> createAssetSource;",
+		"\tbool CreateAssetSource(Shalltear::Buffer & a0) override {",
+		"\t\treturn createAssetSource ? createAssetSource(a0) : ::Shalltear::IAssetImporter::CreateAssetSource(a0);",
+		"\t}",
+		"\tstd::function<unsigned int()> getCreateTemplateCount;",
+		"\tunsigned int GetCreateTemplateCount() const override {",
+		"\t\treturn getCreateTemplateCount ? getCreateTemplateCount() : ::Shalltear::IAssetImporter::GetCreateTemplateCount();",
+		"\t}",
+		"\tstd::function<std::basic_string_view<char>(unsigned int)> getCreateTemplateLabel;",
+		"\tstd::basic_string_view<char> GetCreateTemplateLabel(unsigned int a0) const override {",
+		"\t\treturn getCreateTemplateLabel ? getCreateTemplateLabel(a0) : ::Shalltear::IAssetImporter::GetCreateTemplateLabel(a0);",
+		"\t}",
+		"\tstd::function<std::basic_string_view<char>(unsigned int)> getCreateTemplateFileName;",
+		"\tstd::basic_string_view<char> GetCreateTemplateFileName(unsigned int a0) const override {",
+		"\t\treturn getCreateTemplateFileName ? getCreateTemplateFileName(a0) : ::Shalltear::IAssetImporter::GetCreateTemplateFileName(a0);",
+		"\t}",
+		"\tstd::function<bool(unsigned int, Shalltear::Buffer &)> createTemplateSource;",
+		"\tbool CreateTemplateSource(unsigned int a0, Shalltear::Buffer & a1) override {",
+		"\t\treturn createTemplateSource ? createTemplateSource(a0, a1) : ::Shalltear::IAssetImporter::CreateTemplateSource(a0, a1);",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "AssetImporterProxy", "cpp": "AssetImporterProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetGetAssetType",
+			"cpp": "self->getAssetType = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<StringHash>", "optional": true, "cpp": "std::function<Shalltear::StringHash()>" }
+			],
+			"csharp": { "member": "SetGetAssetType", "kind": "method" }
+		},
+		{
+			"id": "SetImport",
+			"cpp": "self->import = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<Asset;string>", "optional": true, "cpp": "std::function<Shalltear::Asset *(const Shalltear::Path &)>" }
+			],
+			"csharp": { "member": "SetImport", "kind": "method" }
+		},
+		{
+			"id": "SetImportWithSettings",
+			"cpp": "self->importWithSettings = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<Asset;string;string;JSONValue>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::Asset *(const Shalltear::Path &, const Shalltear::Path &, const Shalltear::JSONValue &)>"
+				}
+			],
+			"csharp": { "member": "SetImportWithSettings", "kind": "method" }
+		},
+		{
+			"id": "SetImportWithSettings2",
+			"cpp": "self->importWithSettings2 = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<Asset;string;string;JSONValue;AssetImportContext>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::Asset *(const Shalltear::Path &, const Shalltear::Path &, const Shalltear::JSONValue &, Shalltear::AssetImportContext &)>"
+				}
+			],
+			"csharp": { "member": "SetImportWithSettings", "kind": "method" }
+		},
+		{
+			"id": "SetGetImporterVersion",
+			"cpp": "self->getImporterVersion = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<u32>", "optional": true, "cpp": "std::function<unsigned int()>" }],
+			"csharp": { "member": "SetGetImporterVersion", "kind": "method" }
+		},
+		{
+			"id": "SetSerializeSettings",
+			"cpp": "self->serializeSettings = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;string;JSONValue>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::Path &, Shalltear::JSONValue &)>"
+				}
+			],
+			"csharp": { "member": "SetSerializeSettings", "kind": "method" }
+		},
+		{
+			"id": "SetDeserializeSettings",
+			"cpp": "self->deserializeSettings = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;JSONValue>", "optional": true, "cpp": "std::function<void(const Shalltear::JSONValue &)>" }
+			],
+			"csharp": { "member": "SetDeserializeSettings", "kind": "method" }
+		},
+		{
+			"id": "SetIsAlwaysCooked",
+			"cpp": "self->isAlwaysCooked = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetIsAlwaysCooked", "kind": "method" }
+		},
+		{
+			"id": "SetCanCreateAsset",
+			"cpp": "self->canCreateAsset = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetCanCreateAsset", "kind": "method" }
+		},
+		{
+			"id": "SetGetCreateMenuLabel",
+			"cpp": "self->getCreateMenuLabel = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string_view<char>()>" }
+			],
+			"csharp": { "member": "SetGetCreateMenuLabel", "kind": "method" }
+		},
+		{
+			"id": "SetGetCreateDefaultFileName",
+			"cpp": "self->getCreateDefaultFileName = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string_view<char>()>" }
+			],
+			"csharp": { "member": "SetGetCreateDefaultFileName", "kind": "method" }
+		},
+		{
+			"id": "SetCreateAsset",
+			"cpp": "self->createAsset = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<Asset>", "optional": true, "cpp": "std::function<Shalltear::Asset *()>" }],
+			"csharp": { "member": "SetCreateAsset", "kind": "method" }
+		},
+		{
+			"id": "SetCreateAssetSource",
+			"cpp": "self->createAssetSource = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;EngineBuffer>", "optional": true, "cpp": "std::function<bool(Shalltear::Buffer &)>" }
+			],
+			"csharp": { "member": "SetCreateAssetSource", "kind": "method" }
+		},
+		{
+			"id": "SetGetCreateTemplateCount",
+			"cpp": "self->getCreateTemplateCount = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<u32>", "optional": true, "cpp": "std::function<unsigned int()>" }],
+			"csharp": { "member": "SetGetCreateTemplateCount", "kind": "method" }
+		},
+		{
+			"id": "SetGetCreateTemplateLabel",
+			"cpp": "self->getCreateTemplateLabel = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string;u32>", "optional": true, "cpp": "std::function<std::basic_string_view<char>(unsigned int)>" }
+			],
+			"csharp": { "member": "SetGetCreateTemplateLabel", "kind": "method" }
+		},
+		{
+			"id": "SetGetCreateTemplateFileName",
+			"cpp": "self->getCreateTemplateFileName = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string;u32>", "optional": true, "cpp": "std::function<std::basic_string_view<char>(unsigned int)>" }
+			],
+			"csharp": { "member": "SetGetCreateTemplateFileName", "kind": "method" }
+		},
+		{
+			"id": "SetCreateTemplateSource",
+			"cpp": "self->createTemplateSource = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;u32;EngineBuffer>", "optional": true, "cpp": "std::function<bool(unsigned int, Shalltear::Buffer &)>" }
+			],
+			"csharp": { "member": "SetCreateTemplateSource", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IAssetImporter*>(self)",
+			"returns": "IAssetImporter",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

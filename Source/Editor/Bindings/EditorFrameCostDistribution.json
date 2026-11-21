@@ -1,0 +1,81 @@
+{
+	"area": "EditorFrameCostDistribution",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostDistribution",
+	"instance": "EditorFrameCostDistribution",
+	"functions": [
+		{
+			"id": "GetFrames",
+			"cpp": "self->frames",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Frames", "kind": "getter" }
+		},
+		{
+			"id": "SetFrames",
+			"cpp": "self->frames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Frames", "kind": "setter" }
+		},
+		{
+			"id": "GetSumTicks",
+			"cpp": "self->sumTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SumTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetSumTicks",
+			"cpp": "self->sumTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "SumTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetMinTicks",
+			"cpp": "self->minTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MinTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetMinTicks",
+			"cpp": "self->minTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "MinTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxTicks",
+			"cpp": "self->maxTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MaxTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxTicks",
+			"cpp": "self->maxTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "MaxTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetBuckets",
+			"cpp": "self->buckets",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "Buckets", "kind": "getter" }
+		},
+		{
+			"id": "SetBuckets",
+			"cpp": "Slots::Assign(self->buckets, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "Buckets", "kind": "setter" }
+		}
+	]
+}

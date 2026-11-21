@@ -1,0 +1,82 @@
+{
+	"area": "AssetBrowserOpsCreateMenuEntry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AssetBrowserOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.AssetBrowserOpsCreateMenuEntry",
+	"instance": "AssetBrowserOpsCreateMenuEntry",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeId",
+			"cpp": "self->typeId",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeId", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeId",
+			"cpp": "self->typeId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeId", "kind": "setter" }
+		},
+		{
+			"id": "GetFileName",
+			"cpp": "self->fileName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FileName", "kind": "getter" }
+		},
+		{
+			"id": "SetFileName",
+			"cpp": "self->fileName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FileName", "kind": "setter" }
+		},
+		{
+			"id": "GetTemplateIndex",
+			"cpp": "self->templateIndex",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "TemplateIndex", "kind": "getter" }
+		},
+		{
+			"id": "SetTemplateIndex",
+			"cpp": "self->templateIndex = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "TemplateIndex", "kind": "setter" }
+		},
+		{
+			"id": "GetAsksName",
+			"cpp": "self->asksName",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AsksName", "kind": "getter" }
+		},
+		{
+			"id": "SetAsksName",
+			"cpp": "self->asksName = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "AsksName", "kind": "setter" }
+		}
+	]
+}

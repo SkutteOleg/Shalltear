@@ -1,0 +1,41 @@
+{
+	"area": "SpriteEditorOpsCanvasView",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SpriteEditorOps.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.SpriteEditorOpsCanvasView",
+	"instance": "SpriteEditorOpsCanvasView",
+	"functions": [
+		{
+			"id": "Scale",
+			"cpp": "self->Scale()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "method" }
+		},
+		{
+			"id": "ToTexel",
+			"cpp": "self->ToTexel(point)",
+			"returns": "Vec2",
+			"params": [{ "name": "point", "type": "Vec2" }],
+			"csharp": { "member": "ToTexel", "kind": "method" }
+		},
+		{
+			"id": "ToPoint",
+			"cpp": "self->ToPoint(texel)",
+			"returns": "Vec2",
+			"params": [{ "name": "texel", "type": "Vec2" }],
+			"csharp": { "member": "ToPoint", "kind": "method" }
+		},
+		{
+			"id": "ToRect",
+			"cpp": "self->ToRect(texels)",
+			"returns": "UIRect",
+			"params": [{ "name": "texels", "type": "RectI" }],
+			"csharp": { "member": "ToRect", "kind": "method" }
+		}
+	]
+}

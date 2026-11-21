@@ -1,0 +1,78 @@
+{
+	"area": "AudioGeneratorProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioGenerator.h",
+		"DerivedTypes.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.AudioGeneratorProxy",
+	"instance": "AudioGeneratorProxy",
+	"prelude": [
+		"class AudioGeneratorProxy final : public ::Shalltear::AudioGenerator {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::AudioGenerator::GetType(); }",
+		"\t~AudioGeneratorProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<Shalltear::IAudioGeneratorInstance *(const Shalltear::AudioGeneratorFormat &, Shalltear::AudioGeneratorFormat &)> createInstance;",
+		"\tShalltear::IAudioGeneratorInstance * CreateInstance(const Shalltear::AudioGeneratorFormat & a0, Shalltear::AudioGeneratorFormat & a1) override {",
+		"\t\treturn createInstance ? createInstance(a0, a1) : Slots::ResultOf<decltype(createInstance)>();",
+		"\t}",
+		"\tstd::function<void(Shalltear::AudioGeneratorControl &)> update;",
+		"\tvoid Update(Shalltear::AudioGeneratorControl & a0) override {",
+		"\t\tif (update) {",
+		"\t\t\tupdate(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::AudioGenerator::Update(a0);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "AudioGeneratorProxy", "cpp": "AudioGeneratorProxy" }],
+	"functions": [
+		{
+			"id": "SetCreateInstance",
+			"cpp": "self->createInstance = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<give:IAudioGeneratorInstance;AudioGeneratorFormat;ref:AudioGeneratorFormat>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::IAudioGeneratorInstance *(const Shalltear::AudioGeneratorFormat &, Shalltear::AudioGeneratorFormat &)>"
+				}
+			],
+			"csharp": { "member": "SetCreateInstance", "kind": "method" }
+		},
+		{
+			"id": "SetUpdate",
+			"cpp": "self->update = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;AudioGeneratorControl>", "optional": true, "cpp": "std::function<void(Shalltear::AudioGeneratorControl &)>" }
+			],
+			"csharp": { "member": "SetUpdate", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::AudioGenerator*>(self)",
+			"returns": "AudioGenerator",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<AudioGeneratorProxy, ::Shalltear::AudioGenerator>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;AudioGeneratorProxy>", "cpp": "std::function<void(AudioGeneratorProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

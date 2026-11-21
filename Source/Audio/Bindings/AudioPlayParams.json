@@ -1,0 +1,267 @@
+{
+	"area": "AudioPlayParams",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/Audio.h",
+		"Shalltear/Audio/AudioConcurrency.h",
+		"Shalltear/Audio/AudioTime.h",
+		"Shalltear/Core/Object.h"
+	],
+	"class": "Shalltear.AudioPlayParams",
+	"instance": "AudioPlayParams",
+	"functions": [
+		{
+			"id": "GetAt",
+			"cpp": "self->at",
+			"returns": "EngineAudioTime",
+			"params": [],
+			"csharp": { "member": "At", "kind": "getter" }
+		},
+		{
+			"id": "SetAt",
+			"cpp": "self->at = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineAudioTime" }],
+			"csharp": { "member": "At", "kind": "setter" }
+		},
+		{
+			"id": "GetStartSample",
+			"cpp": "self->startSample",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "StartSample", "kind": "getter" }
+		},
+		{
+			"id": "SetStartSample",
+			"cpp": "self->startSample = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "StartSample", "kind": "setter" }
+		},
+		{
+			"id": "GetVolume",
+			"cpp": "self->volume",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Volume", "kind": "getter" }
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "self->volume = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Volume", "kind": "setter" }
+		},
+		{
+			"id": "GetPitch",
+			"cpp": "self->pitch",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Pitch", "kind": "getter" }
+		},
+		{
+			"id": "SetPitch",
+			"cpp": "self->pitch = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Pitch", "kind": "setter" }
+		},
+		{
+			"id": "GetStereoPan",
+			"cpp": "self->stereoPan",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "StereoPan", "kind": "getter" }
+		},
+		{
+			"id": "SetStereoPan",
+			"cpp": "self->stereoPan = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "StereoPan", "kind": "setter" }
+		},
+		{
+			"id": "GetLoop",
+			"cpp": "self->loop",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Loop", "kind": "getter" }
+		},
+		{
+			"id": "SetLoop",
+			"cpp": "self->loop = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Loop", "kind": "setter" }
+		},
+		{
+			"id": "GetOutput",
+			"cpp": "&self->output",
+			"returns": "AudioBus",
+			"params": [],
+			"csharp": { "member": "Output", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetOutput",
+			"cpp": "self->output = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioBus" }],
+			"csharp": { "member": "Output", "kind": "setter" }
+		},
+		{
+			"id": "GetReverbZoneMix",
+			"cpp": "self->reverbZoneMix",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ReverbZoneMix", "kind": "getter" }
+		},
+		{
+			"id": "SetReverbZoneMix",
+			"cpp": "self->reverbZoneMix = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ReverbZoneMix", "kind": "setter" }
+		},
+		{
+			"id": "GetEffects",
+			"cpp": "self->effects",
+			"returns": "list<AudioVoiceEffect>",
+			"params": [],
+			"csharp": { "member": "Effects", "kind": "getter" }
+		},
+		{
+			"id": "SetEffects",
+			"cpp": "self->effects = Slots::KeepFieldCopies(self, 0xcbc5419234d51521ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioVoiceEffect>" }],
+			"csharp": { "member": "Effects", "kind": "setter" }
+		},
+		{
+			"id": "GetBypassEffects",
+			"cpp": "self->bypassEffects",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BypassEffects", "kind": "getter" }
+		},
+		{
+			"id": "SetBypassEffects",
+			"cpp": "self->bypassEffects = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BypassEffects", "kind": "setter" }
+		},
+		{
+			"id": "GetBypassListenerEffects",
+			"cpp": "self->bypassListenerEffects",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BypassListenerEffects", "kind": "getter" }
+		},
+		{
+			"id": "SetBypassListenerEffects",
+			"cpp": "self->bypassListenerEffects = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BypassListenerEffects", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->priority",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Priority", "kind": "getter" }
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->priority = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetConcurrency",
+			"cpp": "self->concurrency",
+			"returns": "AudioConcurrency",
+			"params": [],
+			"csharp": { "member": "Concurrency", "kind": "getter" }
+		},
+		{
+			"id": "SetConcurrency",
+			"cpp": "self->concurrency = ::Shalltear::Handle<::Shalltear::AudioConcurrency>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioConcurrency", "optional": true }],
+			"csharp": { "member": "Concurrency", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerField",
+			"cpp": "self->owner",
+			"returns": "EngineObject",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = ::Shalltear::Handle<::Shalltear::Object>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineObject", "optional": true }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		},
+		{
+			"id": "GetSpatial",
+			"cpp": "self->spatial",
+			"returns": "AudioSpatialSettings",
+			"params": [],
+			"csharp": { "member": "Spatial", "kind": "getter" }
+		},
+		{
+			"id": "SetSpatial",
+			"cpp": "self->spatial = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioSpatialSettings" }],
+			"csharp": { "member": "Spatial", "kind": "setter" }
+		},
+		{
+			"id": "GetCurves",
+			"cpp": "self->curves",
+			"returns": "AudioDistanceCurves",
+			"params": [],
+			"csharp": { "member": "Curves", "kind": "getter" }
+		},
+		{
+			"id": "SetCurves",
+			"cpp": "self->curves = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioDistanceCurves", "optional": true }],
+			"csharp": { "member": "Curves", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetVelocity",
+			"cpp": "self->velocity",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Velocity", "kind": "getter" }
+		},
+		{
+			"id": "SetVelocity",
+			"cpp": "self->velocity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Velocity", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,54 @@
+{
+	"area": "UIScreenSurfaceDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UISystem.h",
+		"Shalltear/Core/UI/UIPanelSettings.h"
+	],
+	"class": "Shalltear.UIScreenSurfaceDesc",
+	"instance": "UIScreenSurfaceDesc",
+	"functions": [
+		{
+			"id": "GetSettings",
+			"cpp": "self->settings",
+			"returns": "UIPanelSettings",
+			"params": [],
+			"csharp": { "member": "Settings", "kind": "getter" }
+		},
+		{
+			"id": "SetSettings",
+			"cpp": "self->settings = ::Shalltear::Handle<::Shalltear::UIPanelSettings>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIPanelSettings", "optional": true }],
+			"csharp": { "member": "Settings", "kind": "setter" }
+		},
+		{
+			"id": "GetSortOrder",
+			"cpp": "self->sortOrder",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SortOrder", "kind": "getter" }
+		},
+		{
+			"id": "SetSortOrder",
+			"cpp": "self->sortOrder = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SortOrder", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		}
+	]
+}

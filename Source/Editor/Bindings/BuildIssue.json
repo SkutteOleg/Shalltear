@@ -1,0 +1,67 @@
+{
+	"area": "BuildIssue",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildIssue",
+	"instance": "BuildIssue",
+	"functions": [
+		{
+			"id": "GetSeverity",
+			"cpp": "self->severity",
+			"returns": "BuildIssueSeverity",
+			"params": [],
+			"csharp": { "member": "Severity", "kind": "getter" }
+		},
+		{
+			"id": "SetSeverity",
+			"cpp": "self->severity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "BuildIssueSeverity" }],
+			"csharp": { "member": "Severity", "kind": "setter" }
+		},
+		{
+			"id": "GetProfile",
+			"cpp": "self->profile",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Profile", "kind": "getter" }
+		},
+		{
+			"id": "SetProfile",
+			"cpp": "self->profile = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Profile", "kind": "setter" }
+		},
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetMessage",
+			"cpp": "self->message",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Message", "kind": "getter" }
+		},
+		{
+			"id": "SetMessage",
+			"cpp": "self->message = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Message", "kind": "setter" }
+		}
+	]
+}

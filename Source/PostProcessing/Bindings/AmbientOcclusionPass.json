@@ -1,0 +1,98 @@
+{
+	"area": "AmbientOcclusionPass",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/AmbientOcclusionPass.h"
+	],
+	"class": "Shalltear.AmbientOcclusionPass",
+	"instance": "AmbientOcclusionPass",
+	"types": [
+		{ "name": "AmbientOcclusionPass", "cpp": "::Shalltear::AmbientOcclusionPass", "engine": "AmbientOcclusionPass", "base": "Asset" }
+	],
+	"functions": [
+		{
+			"id": "GetIntensity",
+			"cpp": "self->intensity",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Intensity", "kind": "getter" }
+		},
+		{
+			"id": "SetIntensity",
+			"cpp": "self->intensity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Intensity", "kind": "setter" }
+		},
+		{
+			"id": "GetRadius",
+			"cpp": "self->radius",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Radius", "kind": "getter" }
+		},
+		{
+			"id": "SetRadius",
+			"cpp": "self->radius = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Radius", "kind": "setter" }
+		},
+		{
+			"id": "GetFalloffDistance",
+			"cpp": "self->falloffDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FalloffDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetFalloffDistance",
+			"cpp": "self->falloffDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FalloffDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetDirections",
+			"cpp": "self->directions",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Directions", "kind": "getter" }
+		},
+		{
+			"id": "SetDirections",
+			"cpp": "self->directions = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Directions", "kind": "setter" }
+		},
+		{
+			"id": "GetDownsample",
+			"cpp": "self->downsample",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Downsample", "kind": "getter" }
+		},
+		{
+			"id": "SetDownsample",
+			"cpp": "self->downsample = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Downsample", "kind": "setter" }
+		},
+		{
+			"id": "GetAfterOpaque",
+			"cpp": "self->afterOpaque",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AfterOpaque", "kind": "getter" }
+		},
+		{
+			"id": "SetAfterOpaque",
+			"cpp": "self->afterOpaque = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "AfterOpaque", "kind": "setter" }
+		}
+	]
+}

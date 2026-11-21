@@ -1,0 +1,40 @@
+{
+	"area": "UIWidgetsVectorFieldParts",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIWidgetsVectorFieldParts",
+	"instance": "UIWidgetsVectorFieldParts",
+	"functions": [
+		{
+			"id": "GetRoot",
+			"cpp": "self->root",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" }
+		},
+		{
+			"id": "SetRoot",
+			"cpp": "self->root = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementHandle" }],
+			"csharp": { "member": "Root", "kind": "setter" }
+		},
+		{
+			"id": "GetComponents",
+			"cpp": "self->components",
+			"returns": "list<UIWidgetsNumberFieldParts>",
+			"params": [],
+			"csharp": { "member": "Components", "kind": "getter" }
+		},
+		{
+			"id": "SetComponents",
+			"cpp": "Slots::Assign(self->components, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIWidgetsNumberFieldParts>" }],
+			"csharp": { "member": "Components", "kind": "setter" }
+		}
+	]
+}

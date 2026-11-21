@@ -1,0 +1,30 @@
+{
+	"area": "JobHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Jobs/Job.h"
+	],
+	"class": "Shalltear.JobHandle",
+	"instance": "JobHandle",
+	"structs": [
+		{
+			"name": "JobHandle",
+			"cpp": "::Shalltear::JobHandle",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

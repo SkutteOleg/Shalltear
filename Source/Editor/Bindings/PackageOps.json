@@ -1,0 +1,247 @@
+{
+	"area": "PackageOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PackageOps.h"
+	],
+	"class": "Shalltear.Editor.PackageOps",
+	"enums": [
+		{
+			"name": "PackageOpsPackageKind",
+			"cpp": "::Shalltear::PackageOps::PackageKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Game", "value": 0 },
+				{ "name": "Engine", "value": 1 },
+				{ "name": "Tool", "value": 2 },
+				{ "name": "Package", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "PackageOpsPackageManifest", "cpp": "::Shalltear::PackageOps::PackageManifest", "owned": true, "create": true },
+		{ "name": "PackageOpsResolvedPackage", "cpp": "::Shalltear::PackageOps::ResolvedPackage", "owned": true, "create": true },
+		{ "name": "PackageOpsPackageRow", "cpp": "::Shalltear::PackageOps::PackageRow", "owned": true, "create": true },
+		{ "name": "PackageOpsPackageDependency", "cpp": "::Shalltear::PackageOps::PackageDependency", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "ManifestFileName", "cpp": "::Shalltear::PackageOps::ManifestFileName", "type": "string", "value": "package.json" },
+		{ "name": "SettingsCategoryPath", "cpp": "::Shalltear::PackageOps::SettingsCategoryPath", "type": "string", "value": "Packages" }
+	],
+	"functions": [
+		{
+			"id": "ParseManifest",
+			"cpp": "::Shalltear::PackageOps::ParseManifest(json, *outValue, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "json", "type": "string" },
+				{ "name": "outValue", "type": "PackageOpsPackageManifest" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "ParseManifest", "kind": "method" }
+		},
+		{
+			"id": "LoadManifest",
+			"cpp": "::Shalltear::PackageOps::LoadManifest(::Shalltear::Path(str(manifestFile)), *outValue, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "manifestFile", "type": "string" },
+				{ "name": "outValue", "type": "PackageOpsPackageManifest" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "LoadManifest", "kind": "method" }
+		},
+		{
+			"id": "KindName",
+			"cpp": "::Shalltear::PackageOps::KindName(kind)",
+			"returns": "string",
+			"params": [{ "name": "kind", "type": "PackageOpsPackageKind" }],
+			"csharp": { "member": "KindName", "kind": "method" }
+		},
+		{
+			"id": "DiscoverPackages",
+			"cpp": "::Shalltear::PackageOps::DiscoverPackages(std::span<const ::Shalltear::Path>(Slots::ToPaths(roots)), outValue, diagnostics)",
+			"returns": "void",
+			"params": [
+				{ "name": "roots", "type": "list<string>" },
+				{ "name": "outValue", "type": "list<PackageOpsPackageManifest>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>" },
+				{ "name": "diagnostics", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "DiscoverPackages", "kind": "method" }
+		},
+		{
+			"id": "ValidateCatalogue",
+			"cpp": "::Shalltear::PackageOps::ValidateCatalogue(catalogue, diagnostics)",
+			"returns": "void",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>" },
+				{ "name": "diagnostics", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "ValidateCatalogue", "kind": "method" }
+		},
+		{
+			"id": "FindPackage",
+			"cpp": "::Shalltear::PackageOps::FindPackage(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), name)",
+			"returns": "PackageOpsPackageManifest",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "FindPackage", "kind": "method" }
+		},
+		{
+			"id": "ResolveEnabledSet",
+			"cpp": "::Shalltear::PackageOps::ResolveEnabledSet(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(stored)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "stored", "type": "list<string>" },
+				{ "name": "outValue", "type": "list<PackageOpsResolvedPackage>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::PackageOps::ResolvedPackage>" }
+			],
+			"csharp": { "member": "ResolveEnabledSet", "kind": "method" }
+		},
+		{
+			"id": "IsEnabled",
+			"cpp": "::Shalltear::PackageOps::IsEnabled(std::span<const ::Shalltear::PackageOps::ResolvedPackage>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::ResolvedPackage>>(resolution)), name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "resolution", "type": "list<PackageOpsResolvedPackage>" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "IsEnabled", "kind": "method" }
+		},
+		{
+			"id": "CanDisable",
+			"cpp": "::Shalltear::PackageOps::CanDisable(std::span<const ::Shalltear::PackageOps::ResolvedPackage>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::ResolvedPackage>>(resolution)), name, blockers)",
+			"returns": "bool",
+			"params": [
+				{ "name": "resolution", "type": "list<PackageOpsResolvedPackage>" },
+				{ "name": "name", "type": "string" },
+				{ "name": "blockers", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "CanDisable", "kind": "method" }
+		},
+		{
+			"id": "LoadBuiltInCatalogue",
+			"cpp": "::Shalltear::PackageOps::LoadBuiltInCatalogue(outValue, diagnostics)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<PackageOpsPackageManifest>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>" },
+				{ "name": "diagnostics", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "LoadBuiltInCatalogue", "kind": "method" }
+		},
+		{
+			"id": "GetPackageBinaryName",
+			"cpp": "::Shalltear::PackageOps::GetPackageBinaryName(*manifest)",
+			"returns": "string",
+			"params": [{ "name": "manifest", "type": "PackageOpsPackageManifest" }],
+			"csharp": { "member": "GetPackageBinaryName", "kind": "method" }
+		},
+		{
+			"id": "FindUnloadedPackageImports",
+			"cpp": "::Shalltear::PackageOps::FindUnloadedPackageImports(::Shalltear::Path(str(binary)), std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(loaded)), outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "binary", "type": "string" },
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "loaded", "type": "list<string>" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "FindUnloadedPackageImports", "kind": "method" }
+		},
+		{
+			"id": "SelectGamePackages",
+			"cpp": "::Shalltear::PackageOps::SelectGamePackages(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), std::span<const ::Shalltear::PackageOps::ResolvedPackage>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::ResolvedPackage>>(resolution)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "resolution", "type": "list<PackageOpsResolvedPackage>" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "SelectGamePackages", "kind": "method" }
+		},
+		{
+			"id": "DeclareSettings",
+			"cpp": "::Shalltear::PackageOps::DeclareSettings()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DeclareSettings", "kind": "method" }
+		},
+		{
+			"id": "ReadEnabledSet",
+			"cpp": "::Shalltear::PackageOps::ReadEnabledSet(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "ReadEnabledSet", "kind": "method" }
+		},
+		{
+			"id": "WriteEnabledSet",
+			"cpp": "::Shalltear::PackageOps::WriteEnabledSet(std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(names)))",
+			"returns": "void",
+			"params": [{ "name": "names", "type": "list<string>" }],
+			"csharp": { "member": "WriteEnabledSet", "kind": "method" }
+		},
+		{
+			"id": "UpgradeStoredSet",
+			"cpp": "::Shalltear::PackageOps::UpgradeStoredSet(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)))",
+			"returns": "bool",
+			"params": [{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" }],
+			"csharp": { "member": "UpgradeStoredSet", "kind": "method" }
+		},
+		{
+			"id": "ScaffoldEnabledSet",
+			"cpp": "::Shalltear::PackageOps::ScaffoldEnabledSet(::Shalltear::Path(str(projectDocument)), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(optIn)))",
+			"returns": "u32",
+			"params": [
+				{ "name": "projectDocument", "type": "string" },
+				{ "name": "optIn", "type": "list<string>" }
+			],
+			"csharp": { "member": "ScaffoldEnabledSet", "kind": "method" }
+		},
+		{
+			"id": "ScaffoldEnabledSet2",
+			"cpp": "::Shalltear::PackageOps::ScaffoldEnabledSet(::Shalltear::Path(str(projectDocument)), std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(optIn)))",
+			"returns": "u32",
+			"params": [
+				{ "name": "projectDocument", "type": "string" },
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "optIn", "type": "list<string>" }
+			],
+			"csharp": { "member": "ScaffoldEnabledSet", "kind": "method" }
+		},
+		{
+			"id": "ListOptInPackages",
+			"cpp": "::Shalltear::PackageOps::ListOptInPackages(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "outValue", "type": "list<PackageOpsPackageManifest>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>" }
+			],
+			"csharp": { "member": "ListOptInPackages", "kind": "method" }
+		},
+		{
+			"id": "BuildPackageRows",
+			"cpp": "::Shalltear::PackageOps::BuildPackageRows(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), std::span<const ::Shalltear::PackageOps::ResolvedPackage>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::ResolvedPackage>>(resolution)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "resolution", "type": "list<PackageOpsResolvedPackage>" },
+				{ "name": "outValue", "type": "list<PackageOpsPackageRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::PackageOps::PackageRow>" }
+			],
+			"csharp": { "member": "BuildPackageRows", "kind": "method" }
+		},
+		{
+			"id": "SetPackageEnabled",
+			"cpp": "::Shalltear::PackageOps::SetPackageEnabled(std::span<const ::Shalltear::PackageOps::PackageManifest>(Slots::Copies<::Shalltear::Vector<::Shalltear::PackageOps::PackageManifest>>(catalogue)), name, enabled, blockers)",
+			"returns": "bool",
+			"params": [
+				{ "name": "catalogue", "type": "list<PackageOpsPackageManifest>" },
+				{ "name": "name", "type": "string" },
+				{ "name": "enabled", "type": "bool" },
+				{ "name": "blockers", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "SetPackageEnabled", "kind": "method" }
+		}
+	]
+}

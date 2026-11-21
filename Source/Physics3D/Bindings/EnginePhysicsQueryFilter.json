@@ -1,0 +1,68 @@
+{
+	"area": "EnginePhysicsQueryFilter",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Physics.h",
+		"Shalltear/Physics3D/PhysicsCategoryMatch.h"
+	],
+	"class": "Shalltear.EnginePhysicsQueryFilter",
+	"instance": "EnginePhysicsQueryFilter",
+	"functions": [
+		{
+			"id": "GetCategories",
+			"cpp": "self->categories",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Categories", "kind": "getter" }
+		},
+		{
+			"id": "SetCategories",
+			"cpp": "self->categories = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Categories", "kind": "setter" }
+		},
+		{
+			"id": "GetCollidesWithMode",
+			"cpp": "self->collidesWithMode",
+			"returns": "PhysicsCategoryMatch",
+			"params": [],
+			"csharp": { "member": "CollidesWithMode", "kind": "getter" }
+		},
+		{
+			"id": "SetCollidesWithMode",
+			"cpp": "self->collidesWithMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PhysicsCategoryMatch" }],
+			"csharp": { "member": "CollidesWithMode", "kind": "setter" }
+		},
+		{
+			"id": "GetCollidesWith",
+			"cpp": "self->collidesWith",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CollidesWith", "kind": "getter" }
+		},
+		{
+			"id": "SetCollidesWith",
+			"cpp": "self->collidesWith = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "CollidesWith", "kind": "setter" }
+		},
+		{
+			"id": "GetTriggerInteraction",
+			"cpp": "self->triggerInteraction",
+			"returns": "PhysicsQueryTriggers",
+			"params": [],
+			"csharp": { "member": "TriggerInteraction", "kind": "getter" }
+		},
+		{
+			"id": "SetTriggerInteraction",
+			"cpp": "self->triggerInteraction = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PhysicsQueryTriggers" }],
+			"csharp": { "member": "TriggerInteraction", "kind": "setter" }
+		}
+	]
+}

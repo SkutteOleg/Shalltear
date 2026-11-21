@@ -1,0 +1,39 @@
+{
+	"area": "UIStyleVarDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Style.h"
+	],
+	"class": "Shalltear.UIStyleVarDesc",
+	"instance": "UIStyleVarDesc",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0x74ebbf84cc6b7743ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = Slots::KeepFieldText(self, 0xf6edcd3ba33c4df1ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

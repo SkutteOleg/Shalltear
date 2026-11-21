@@ -1,0 +1,102 @@
+{
+	"area": "AudioSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/Audio.h",
+		"Shalltear/Audio/AudioMusicClock.h",
+		"Shalltear/Audio/AudioResource.h"
+	],
+	"class": "Shalltear.Audio",
+	"structs": [
+		{
+			"name": "EngineAudioMusicClock",
+			"cpp": "::Shalltear::AudioMusicClock",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "origin", "type": "EngineAudioTime", "offset": 0 },
+				{ "name": "beatsPerMinute", "type": "f64", "offset": 8 },
+				{ "name": "beatsPerBar", "type": "u32", "offset": 16 },
+				{ "name": "sampleRate", "type": "u32", "offset": 20 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "Play",
+			"cpp": "::Shalltear::Audio::Play(::Shalltear::Handle<::Shalltear::AudioResource>(resource), *paramsValue)",
+			"returns": "EngineAudioVoice",
+			"params": [
+				{ "name": "resource", "type": "AudioResource", "optional": true },
+				{ "name": "paramsValue", "type": "AudioPlayParams" }
+			],
+			"csharp": { "member": "Play", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetOutput",
+			"cpp": "::Shalltear::Audio::SetOutput(*voice, *output)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "EngineAudioVoice" },
+				{ "name": "output", "type": "AudioBus" }
+			],
+			"csharp": { "member": "SetOutput", "kind": "method" }
+		},
+		{
+			"id": "SetSpatialSettings",
+			"cpp": "::Shalltear::Audio::SetSpatialSettings(*voice, settings)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "EngineAudioVoice" },
+				{ "name": "settings", "type": "AudioSpatialSettings" }
+			],
+			"csharp": { "member": "SetSpatialSettings", "kind": "method" }
+		},
+		{
+			"id": "SetDistanceCurves",
+			"cpp": "::Shalltear::Audio::SetDistanceCurves(*voice, curves)",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "EngineAudioVoice" },
+				{ "name": "curves", "type": "AudioDistanceCurves", "optional": true }
+			],
+			"csharp": { "member": "SetDistanceCurves", "kind": "method" }
+		},
+		{
+			"id": "SetEffects",
+			"cpp": "::Shalltear::Audio::SetEffects(*voice, std::span<const ::Shalltear::AudioVoiceEffect>(Slots::Copies<::Shalltear::Vector<::Shalltear::AudioVoiceEffect>>(effects)))",
+			"returns": "void",
+			"params": [
+				{ "name": "voice", "type": "EngineAudioVoice" },
+				{ "name": "effects", "type": "list<AudioVoiceEffect>" }
+			],
+			"csharp": { "member": "SetEffects", "kind": "method" }
+		},
+		{
+			"id": "CreateClock",
+			"cpp": "::Shalltear::Audio::CreateClock(beatsPerMinute, beatsPerBar)",
+			"returns": "EngineAudioMusicClock",
+			"params": [
+				{ "name": "beatsPerMinute", "type": "f64" },
+				{ "name": "beatsPerBar", "type": "u32" }
+			],
+			"csharp": { "member": "CreateClock", "kind": "method" }
+		},
+		{
+			"id": "PlayQuantized",
+			"cpp": "::Shalltear::Audio::PlayQuantized(::Shalltear::Handle<::Shalltear::AudioResource>(resource), clock, boundary, *paramsValue)",
+			"returns": "EngineAudioVoice",
+			"params": [
+				{ "name": "resource", "type": "AudioResource", "optional": true },
+				{ "name": "clock", "type": "EngineAudioMusicClock" },
+				{ "name": "boundary", "type": "AudioQuantization" },
+				{ "name": "paramsValue", "type": "AudioPlayParams" }
+			],
+			"csharp": { "member": "PlayQuantized", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

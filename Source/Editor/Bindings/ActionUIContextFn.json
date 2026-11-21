@@ -1,0 +1,36 @@
+{
+	"area": "ActionUIContextFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneViewOverlays.h",
+		"Shalltear/Core/UI/Context.h"
+	],
+	"class": "Shalltear.Editor.ActionUIContextFn",
+	"instance": "ActionUIContextFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)(*argument0)",
+			"returns": "void",
+			"params": [{ "name": "argument0", "type": "UIContext" }],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void (Shalltear::UI::Context &)>(std::move(handler))",
+			"returns": "ActionUIContextFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [{ "name": "handler", "type": "fn<void;UIContext>", "cpp": "std::function<void (Shalltear::UI::Context &)>" }],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

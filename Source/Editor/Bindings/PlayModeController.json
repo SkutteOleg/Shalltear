@@ -1,0 +1,74 @@
+{
+	"area": "PlayModeController",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PlayModeController.h"
+	],
+	"class": "Shalltear.Editor.PlayModeController",
+	"instance": "PlayModeController",
+	"structs": [
+		{
+			"name": "SceneRowKey",
+			"cpp": "::Shalltear::SceneRowKey",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "localId", "type": "u64", "offset": 0 },
+				{ "name": "prefabKey", "type": "u64", "offset": 8 },
+				{ "name": "ordinal", "type": "u32", "offset": 16 }
+			]
+		}
+	],
+	"natives": [{ "name": "PlayModeController", "cpp": "::Shalltear::PlayModeController", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "IsPlaying",
+			"cpp": "self->IsPlaying()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPlaying", "kind": "getter" }
+		},
+		{
+			"id": "IsPaused",
+			"cpp": "self->IsPaused()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPaused", "kind": "getter" }
+		},
+		{
+			"id": "RequestToggle",
+			"cpp": "self->RequestToggle()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RequestToggle", "kind": "method" }
+		},
+		{
+			"id": "RequestPause",
+			"cpp": "self->RequestPause()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RequestPause", "kind": "method" }
+		},
+		{
+			"id": "RequestStep",
+			"cpp": "self->RequestStep()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RequestStep", "kind": "method" }
+		},
+		{
+			"id": "BeginFrameTick",
+			"cpp": "self->BeginFrameTick()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BeginFrameTick", "kind": "method" }
+		},
+		{
+			"id": "PumpMainThread",
+			"cpp": "self->PumpMainThread()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "PumpMainThread", "kind": "method" }
+		}
+	]
+}

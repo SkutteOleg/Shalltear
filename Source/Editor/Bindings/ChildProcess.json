@@ -1,0 +1,81 @@
+{
+	"area": "ChildProcess",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ChildProcess.h"
+	],
+	"class": "Shalltear.Editor.ChildProcess",
+	"instance": "ChildProcess",
+	"natives": [
+		{ "name": "ChildVariable", "cpp": "::Shalltear::ChildVariable", "owned": true, "create": true },
+		{ "name": "ChildProcess", "cpp": "::Shalltear::ChildProcess", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Start",
+			"cpp": "self->Start(str(commandLine), str(workingDirectory), std::span<const ::Shalltear::ChildVariable>(Slots::Copies<::Shalltear::Vector<::Shalltear::ChildVariable>>(variables)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "commandLine", "type": "string" },
+				{ "name": "workingDirectory", "type": "string" },
+				{ "name": "variables", "type": "list<ChildVariable>" }
+			],
+			"csharp": { "member": "Start", "kind": "method" }
+		},
+		{
+			"id": "IsRunning",
+			"cpp": "self->IsRunning()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsRunning", "kind": "getter" }
+		},
+		{
+			"id": "DrainLines",
+			"cpp": "self->DrainLines(outValue)",
+			"returns": "u32",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "DrainLines", "kind": "method" }
+		},
+		{
+			"id": "TryFinish",
+			"cpp": "self->TryFinish(outExitCode)",
+			"returns": "bool",
+			"params": [{ "name": "outExitCode", "type": "i32", "out": true }],
+			"csharp": { "member": "TryFinish", "kind": "method" }
+		},
+		{
+			"id": "Kill",
+			"cpp": "self->Kill()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Kill", "kind": "method" }
+		},
+		{
+			"id": "Detach",
+			"cpp": "self->Detach()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Detach", "kind": "method" }
+		},
+		{
+			"id": "QuoteCommandArgument",
+			"cpp": "::Shalltear::QuoteCommandArgument(str(valueValue))",
+			"returns": "string",
+			"params": [{ "name": "valueValue", "type": "string" }],
+			"csharp": { "member": "QuoteCommandArgument", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "StartDetachedProcess",
+			"cpp": "::Shalltear::StartDetachedProcess(str(commandLine), str(workingDirectory), std::span<const ::Shalltear::ChildVariable>(Slots::Copies<::Shalltear::Vector<::Shalltear::ChildVariable>>(variables)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "commandLine", "type": "string" },
+				{ "name": "workingDirectory", "type": "string" },
+				{ "name": "variables", "type": "list<ChildVariable>" }
+			],
+			"csharp": { "member": "StartDetachedProcess", "kind": "method" },
+			"static": true
+		}
+	]
+}

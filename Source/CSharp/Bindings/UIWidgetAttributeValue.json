@@ -1,0 +1,54 @@
+{
+	"area": "UIWidgetAttributeValue",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/WidgetRegistry.h",
+		"Shalltear/Core/Asset/Asset.h"
+	],
+	"class": "Shalltear.UIWidgetAttributeValue",
+	"instance": "UIWidgetAttributeValue",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0x7f9958651420105dull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = Slots::KeepFieldText(self, 0x32148d83c4d42d1full, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "Asset",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Asset", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		}
+	]
+}

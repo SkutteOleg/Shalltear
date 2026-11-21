@@ -1,0 +1,124 @@
+{
+	"area": "GraphCanvas",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Editor/GraphCanvasOps.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.GraphCanvas",
+	"instance": "GraphCanvas",
+	"functions": [
+		{
+			"id": "Build",
+			"cpp": "self->Build(*context, parent, model, desc)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "model", "type": "GraphViewModel", "optional": true },
+				{ "name": "desc", "type": "GraphCanvasDesc" }
+			],
+			"csharp": { "member": "Build", "kind": "method" }
+		},
+		{
+			"id": "RebuildNodes",
+			"cpp": "self->RebuildNodes(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "RebuildNodes", "kind": "method" }
+		},
+		{
+			"id": "PlaceNodes",
+			"cpp": "self->PlaceNodes(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "PlaceNodes", "kind": "method" }
+		},
+		{
+			"id": "FrameAll",
+			"cpp": "self->FrameAll(*context)",
+			"returns": "bool",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "FrameAll", "kind": "method" }
+		},
+		{
+			"id": "ResetView",
+			"cpp": "self->ResetView()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetView", "kind": "method" }
+		},
+		{
+			"id": "OpenSearcherAt",
+			"cpp": "self->OpenSearcherAt(*context, anchor)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "anchor", "type": "Vec2" }
+			],
+			"csharp": { "member": "OpenSearcherAt", "kind": "method" }
+		},
+		{
+			"id": "OpenBlockSearcherAt",
+			"cpp": "self->OpenBlockSearcherAt(*context, stack, anchor)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "stack", "type": "u64" },
+				{ "name": "anchor", "type": "Vec2" }
+			],
+			"csharp": { "member": "OpenBlockSearcherAt", "kind": "method" }
+		},
+		{
+			"id": "GetSelection",
+			"cpp": "self->GetSelection()",
+			"returns": "list<GraphItem>",
+			"params": [],
+			"csharp": { "member": "Selection", "kind": "getter" }
+		},
+		{
+			"id": "IsSelected",
+			"cpp": "self->IsSelected(item)",
+			"returns": "bool",
+			"params": [{ "name": "item", "type": "GraphItem" }],
+			"csharp": { "member": "IsSelected", "kind": "method" }
+		},
+		{
+			"id": "SetSelection",
+			"cpp": "self->SetSelection(items)",
+			"returns": "void",
+			"params": [{ "name": "items", "type": "list<GraphItem>" }],
+			"csharp": { "member": "SetSelection", "kind": "method" }
+		},
+		{
+			"id": "SelectAll",
+			"cpp": "self->SelectAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "SelectAll", "kind": "method" }
+		},
+		{
+			"id": "GetView",
+			"cpp": "self->GetView()",
+			"returns": "GraphView",
+			"params": [],
+			"csharp": { "member": "View", "kind": "getter" }
+		},
+		{
+			"id": "GetElement",
+			"cpp": "self->GetElement()",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Element", "kind": "getter" }
+		},
+		{
+			"id": "PointerLocal",
+			"cpp": "self->PointerLocal(*context)",
+			"returns": "Vec2",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "PointerLocal", "kind": "method" }
+		}
+	]
+}

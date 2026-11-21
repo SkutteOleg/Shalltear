@@ -1,0 +1,71 @@
+{
+	"area": "ModelContributors",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelContributors.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/ImportPipeline/ModelParse.h",
+		"Shalltear/Core/Graphics/SkeletonAsset.h"
+	],
+	"class": "Shalltear.ModelContributors",
+	"natives": [
+		{ "name": "ModelSkinFrame", "cpp": "::Shalltear::ModelSkinFrame", "owned": true, "create": true },
+		{ "name": "ModelContribution", "cpp": "::Shalltear::ModelContribution" },
+		{ "name": "ModelContributorDesc", "cpp": "::Shalltear::ModelContributorDesc", "owned": true, "create": true },
+		{ "name": "ModelProduct", "cpp": "::Shalltear::ModelProduct", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "ProductKindSkeletons", "cpp": "::Shalltear::ProductKindSkeletons", "type": "string", "value": "Skeletons" }
+	],
+	"functions": [
+		{
+			"id": "FindSkinFrame",
+			"cpp": "::Shalltear::FindSkinFrame(*parsed, nodeToBone)",
+			"returns": "ModelSkinFrame",
+			"params": [
+				{ "name": "parsed", "type": "ModelParseResult" },
+				{ "name": "nodeToBone", "type": "list<i32>" }
+			],
+			"csharp": { "member": "FindSkinFrame", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "BuildNodeSkeleton",
+			"cpp": "::Shalltear::BuildNodeSkeleton(*parsed)",
+			"returns": "SkeletonAsset",
+			"params": [{ "name": "parsed", "type": "ModelParseResult" }],
+			"csharp": { "member": "BuildNodeSkeleton", "kind": "method" }
+		},
+		{
+			"id": "ModelRootName",
+			"cpp": "::Shalltear::ModelRootName(::Shalltear::Path(str(virtualPath)))",
+			"returns": "string",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "ModelRootName", "kind": "method" }
+		},
+		{
+			"id": "ParseReferencedModel",
+			"cpp": "::Shalltear::ParseReferencedModel(modelGuid)",
+			"returns": "ModelParseResult",
+			"params": [{ "name": "modelGuid", "type": "EngineGuid" }],
+			"csharp": { "member": "ParseReferencedModel", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Register",
+			"cpp": "[&] { ::Shalltear::ModelContributorDesc owned = *desc; owned.owner = ScriptRuntime::GetScriptsOwner(); return ::Shalltear::ModelContributors::Register(owned); }()",
+			"returns": "bool",
+			"params": [{ "name": "desc", "type": "ModelContributorDesc" }],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::ModelContributors::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

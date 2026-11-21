@@ -1,0 +1,34 @@
+{
+	"area": "EngineBoneTransform",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/SkeletonAsset.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.EngineBoneTransform",
+	"instance": "EngineBoneTransform",
+	"structs": [
+		{
+			"name": "EngineBoneTransform",
+			"cpp": "::Shalltear::BoneTransform",
+			"size": 48,
+			"align": 16,
+			"fields": [
+				{ "name": "position", "type": "Vec3", "offset": 0 },
+				{ "name": "rotation", "type": "Quat", "offset": 16 },
+				{ "name": "scale", "type": "Vec3", "offset": 32 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "ToMatrix",
+			"cpp": "self->ToMatrix()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "ToMatrix", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

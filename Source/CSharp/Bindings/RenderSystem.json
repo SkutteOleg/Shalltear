@@ -1,0 +1,364 @@
+{
+	"area": "RenderSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Graphics/Camera.h",
+		"Shalltear/Core/Graphics/ColorSpace.h",
+		"Shalltear/Core/Graphics/Decal.h",
+		"Shalltear/Core/Graphics/Environment.h",
+		"Shalltear/Core/Graphics/GraphicsProfile.h",
+		"Shalltear/Core/Graphics/LODGroup.h",
+		"Shalltear/Core/Graphics/Light.h",
+		"Shalltear/Core/Graphics/MeshRenderer.h",
+		"Shalltear/Core/Graphics/ObjectShadow.h",
+		"Shalltear/Core/Graphics/RHIDevice.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/ReflectionProbe.h",
+		"Shalltear/Core/Graphics/SkinnedMeshRenderer.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.RenderSystem",
+	"constants": [
+		{ "name": "INVALID_VIEW_TARGET", "cpp": "::Shalltear::INVALID_VIEW_TARGET", "type": "u32", "value": 0 },
+		{ "name": "MAX_OUTLINE_COLORS", "cpp": "::Shalltear::MAX_OUTLINE_COLORS", "type": "u32", "value": 4 },
+		{ "name": "MAX_SHADOW_CASCADES", "cpp": "::Shalltear::MAX_SHADOW_CASCADES", "type": "u32", "value": 4 }
+	],
+	"functions": [
+		{
+			"id": "IsInitialized",
+			"cpp": "::Shalltear::RenderSystem::IsInitialized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInitialized", "kind": "getter" }
+		},
+		{
+			"id": "IsRenderingAvailable",
+			"cpp": "::Shalltear::RenderSystem::IsRenderingAvailable()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsRenderingAvailable", "kind": "getter" }
+		},
+		{
+			"id": "GetDevice",
+			"cpp": "::Shalltear::RenderSystem::GetDevice()",
+			"returns": "RHIDevice",
+			"params": [],
+			"csharp": { "member": "Device", "kind": "getter" }
+		},
+		{
+			"id": "SetWindowOverlay",
+			"cpp": "::Shalltear::RenderSystem::SetWindowOverlay(overlay)",
+			"returns": "void",
+			"params": [{ "name": "overlay", "type": "IWindowOverlay", "optional": true }],
+			"csharp": { "member": "SetWindowOverlay", "kind": "method" }
+		},
+		{
+			"id": "GetStats",
+			"cpp": "::Shalltear::RenderSystem::GetStats()",
+			"returns": "GraphicsStats",
+			"params": [],
+			"csharp": { "member": "Stats", "kind": "getter" }
+		},
+		{
+			"id": "GetSampleCount",
+			"cpp": "::Shalltear::RenderSystem::GetSampleCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SampleCount", "kind": "getter" }
+		},
+		{
+			"id": "GetActiveProfile",
+			"cpp": "::Shalltear::RenderSystem::GetActiveProfile()",
+			"returns": "GraphicsProfile",
+			"params": [],
+			"csharp": { "member": "ActiveProfile", "kind": "getter" }
+		},
+		{
+			"id": "GetReflectionProbeResolution",
+			"cpp": "::Shalltear::RenderSystem::GetReflectionProbeResolution()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ReflectionProbeResolution", "kind": "getter" }
+		},
+		{
+			"id": "GetColorSpace",
+			"cpp": "::Shalltear::RenderSystem::GetColorSpace()",
+			"returns": "ColorSpace",
+			"params": [],
+			"csharp": { "member": "ColorSpace", "kind": "getter" }
+		},
+		{
+			"id": "CreateViewTarget",
+			"cpp": "::Shalltear::RenderSystem::CreateViewTarget(sizePx)",
+			"returns": "u32",
+			"params": [{ "name": "sizePx", "type": "Vec2I" }],
+			"csharp": { "member": "CreateViewTarget", "kind": "method" }
+		},
+		{
+			"id": "ResizeViewTarget",
+			"cpp": "::Shalltear::RenderSystem::ResizeViewTarget(target, sizePx)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "sizePx", "type": "Vec2I" }
+			],
+			"csharp": { "member": "ResizeViewTarget", "kind": "method" }
+		},
+		{
+			"id": "DestroyViewTarget",
+			"cpp": "::Shalltear::RenderSystem::DestroyViewTarget(target)",
+			"returns": "void",
+			"params": [{ "name": "target", "type": "u32" }],
+			"csharp": { "member": "DestroyViewTarget", "kind": "method" }
+		},
+		{
+			"id": "GetViewTargetTexture",
+			"cpp": "::Shalltear::RenderSystem::GetViewTargetTexture(target)",
+			"returns": "RHITextureHandle",
+			"params": [{ "name": "target", "type": "u32" }],
+			"csharp": { "member": "GetViewTargetTexture", "kind": "method" }
+		},
+		{
+			"id": "GetViewTargetSize",
+			"cpp": "::Shalltear::RenderSystem::GetViewTargetSize(target)",
+			"returns": "Vec2I",
+			"params": [{ "name": "target", "type": "u32" }],
+			"csharp": { "member": "GetViewTargetSize", "kind": "method" }
+		},
+		{
+			"id": "IsViewTargetDrawn",
+			"cpp": "::Shalltear::RenderSystem::IsViewTargetDrawn(target)",
+			"returns": "bool",
+			"params": [{ "name": "target", "type": "u32" }],
+			"csharp": { "member": "IsViewTargetDrawn", "kind": "method" }
+		},
+		{
+			"id": "SubmitView",
+			"cpp": "::Shalltear::RenderSystem::SubmitView(target, *desc)",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "desc", "type": "ViewDesc" }
+			],
+			"csharp": { "member": "SubmitView", "kind": "method" }
+		},
+		{
+			"id": "SubmitCameras",
+			"cpp": "::Shalltear::RenderSystem::SubmitCameras(target, std::span<const ::Shalltear::Handle<::Shalltear::Camera>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::Camera>>(cameras)))",
+			"returns": "void",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "cameras", "type": "list<Camera>" }
+			],
+			"csharp": { "member": "SubmitCameras", "kind": "method" }
+		},
+		{
+			"id": "GetCascadeFit",
+			"cpp": "::Shalltear::RenderSystem::GetCascadeFit(target, Slots::SpanScope<::Shalltear::CascadeFit>(outValue))",
+			"returns": "u32",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "outValue", "type": "list<CascadeFit>" }
+			],
+			"csharp": { "member": "GetCascadeFit", "kind": "method" }
+		},
+		{
+			"id": "TakePickAnswer",
+			"cpp": "::Shalltear::RenderSystem::TakePickAnswer(target, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "outValue", "type": "PickAnswer" }
+			],
+			"csharp": { "member": "TakePickAnswer", "kind": "method" }
+		},
+		{
+			"id": "SetSceneCamerasRenderToWindows",
+			"cpp": "::Shalltear::RenderSystem::SetSceneCamerasRenderToWindows(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SceneCamerasRenderToWindows", "kind": "setter" }
+		},
+		{
+			"id": "GetSceneCamerasRenderToWindows",
+			"cpp": "::Shalltear::RenderSystem::GetSceneCamerasRenderToWindows()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "SceneCamerasRenderToWindows", "kind": "getter" }
+		},
+		{
+			"id": "ReadbackViewTarget",
+			"cpp": "::Shalltear::RenderSystem::ReadbackViewTarget(target, outRGBA8, outSize)",
+			"returns": "bool",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "outRGBA8", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" },
+				{ "name": "outSize", "type": "Vec2I", "out": true }
+			],
+			"csharp": { "member": "ReadbackViewTarget", "kind": "method" }
+		},
+		{
+			"id": "ReadbackViewTargetRadiance",
+			"cpp": "::Shalltear::RenderSystem::ReadbackViewTargetRadiance(target, outRGBA16F, outSize)",
+			"returns": "bool",
+			"params": [
+				{ "name": "target", "type": "u32" },
+				{ "name": "outRGBA16F", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" },
+				{ "name": "outSize", "type": "Vec2I", "out": true }
+			],
+			"csharp": { "member": "ReadbackViewTargetRadiance", "kind": "method" }
+		},
+		{
+			"id": "RegisterCamera",
+			"cpp": "::Shalltear::RenderSystem::RegisterCamera(::Shalltear::Handle<::Shalltear::Camera>(camera))",
+			"returns": "void",
+			"params": [{ "name": "camera", "type": "Camera", "optional": true }],
+			"csharp": { "member": "RegisterCamera", "kind": "method" }
+		},
+		{
+			"id": "UnregisterCamera",
+			"cpp": "::Shalltear::RenderSystem::UnregisterCamera(::Shalltear::Handle<::Shalltear::Camera>(camera))",
+			"returns": "void",
+			"params": [{ "name": "camera", "type": "Camera", "optional": true }],
+			"csharp": { "member": "UnregisterCamera", "kind": "method" }
+		},
+		{
+			"id": "GetCameras",
+			"cpp": "::Shalltear::RenderSystem::GetCameras()",
+			"returns": "list<Camera>",
+			"params": [],
+			"csharp": { "member": "Cameras", "kind": "getter" }
+		},
+		{
+			"id": "RegisterLight",
+			"cpp": "::Shalltear::RenderSystem::RegisterLight(::Shalltear::Handle<::Shalltear::Light>(light))",
+			"returns": "void",
+			"params": [{ "name": "light", "type": "Light", "optional": true }],
+			"csharp": { "member": "RegisterLight", "kind": "method" }
+		},
+		{
+			"id": "UnregisterLight",
+			"cpp": "::Shalltear::RenderSystem::UnregisterLight(::Shalltear::Handle<::Shalltear::Light>(light))",
+			"returns": "void",
+			"params": [{ "name": "light", "type": "Light", "optional": true }],
+			"csharp": { "member": "UnregisterLight", "kind": "method" }
+		},
+		{
+			"id": "RegisterDecal",
+			"cpp": "::Shalltear::RenderSystem::RegisterDecal(::Shalltear::Handle<::Shalltear::Decal>(decal))",
+			"returns": "void",
+			"params": [{ "name": "decal", "type": "Decal", "optional": true }],
+			"csharp": { "member": "RegisterDecal", "kind": "method" }
+		},
+		{
+			"id": "UnregisterDecal",
+			"cpp": "::Shalltear::RenderSystem::UnregisterDecal(::Shalltear::Handle<::Shalltear::Decal>(decal))",
+			"returns": "void",
+			"params": [{ "name": "decal", "type": "Decal", "optional": true }],
+			"csharp": { "member": "UnregisterDecal", "kind": "method" }
+		},
+		{
+			"id": "RegisterEnvironment",
+			"cpp": "::Shalltear::RenderSystem::RegisterEnvironment(::Shalltear::Handle<::Shalltear::Environment>(environment))",
+			"returns": "void",
+			"params": [{ "name": "environment", "type": "EngineEnvironment", "optional": true }],
+			"csharp": { "member": "RegisterEnvironment", "kind": "method" }
+		},
+		{
+			"id": "UnregisterEnvironment",
+			"cpp": "::Shalltear::RenderSystem::UnregisterEnvironment(::Shalltear::Handle<::Shalltear::Environment>(environment))",
+			"returns": "void",
+			"params": [{ "name": "environment", "type": "EngineEnvironment", "optional": true }],
+			"csharp": { "member": "UnregisterEnvironment", "kind": "method" }
+		},
+		{
+			"id": "RegisterReflectionProbe",
+			"cpp": "::Shalltear::RenderSystem::RegisterReflectionProbe(::Shalltear::Handle<::Shalltear::ReflectionProbe>(probe))",
+			"returns": "void",
+			"params": [{ "name": "probe", "type": "ReflectionProbe", "optional": true }],
+			"csharp": { "member": "RegisterReflectionProbe", "kind": "method" }
+		},
+		{
+			"id": "UnregisterReflectionProbe",
+			"cpp": "::Shalltear::RenderSystem::UnregisterReflectionProbe(::Shalltear::Handle<::Shalltear::ReflectionProbe>(probe))",
+			"returns": "void",
+			"params": [{ "name": "probe", "type": "ReflectionProbe", "optional": true }],
+			"csharp": { "member": "UnregisterReflectionProbe", "kind": "method" }
+		},
+		{
+			"id": "RegisterMeshRenderer",
+			"cpp": "::Shalltear::RenderSystem::RegisterMeshRenderer(::Shalltear::Handle<::Shalltear::MeshRenderer>(renderer))",
+			"returns": "void",
+			"params": [{ "name": "renderer", "type": "MeshRenderer", "optional": true }],
+			"csharp": { "member": "RegisterMeshRenderer", "kind": "method" }
+		},
+		{
+			"id": "UnregisterMeshRenderer",
+			"cpp": "::Shalltear::RenderSystem::UnregisterMeshRenderer(::Shalltear::Handle<::Shalltear::MeshRenderer>(renderer))",
+			"returns": "void",
+			"params": [{ "name": "renderer", "type": "MeshRenderer", "optional": true }],
+			"csharp": { "member": "UnregisterMeshRenderer", "kind": "method" }
+		},
+		{
+			"id": "RegisterSkinnedMeshRenderer",
+			"cpp": "::Shalltear::RenderSystem::RegisterSkinnedMeshRenderer(::Shalltear::Handle<::Shalltear::SkinnedMeshRenderer>(renderer))",
+			"returns": "void",
+			"params": [{ "name": "renderer", "type": "SkinnedMeshRenderer", "optional": true }],
+			"csharp": { "member": "RegisterSkinnedMeshRenderer", "kind": "method" }
+		},
+		{
+			"id": "UnregisterSkinnedMeshRenderer",
+			"cpp": "::Shalltear::RenderSystem::UnregisterSkinnedMeshRenderer(::Shalltear::Handle<::Shalltear::SkinnedMeshRenderer>(renderer))",
+			"returns": "void",
+			"params": [{ "name": "renderer", "type": "SkinnedMeshRenderer", "optional": true }],
+			"csharp": { "member": "UnregisterSkinnedMeshRenderer", "kind": "method" }
+		},
+		{
+			"id": "RegisterLODGroup",
+			"cpp": "::Shalltear::RenderSystem::RegisterLODGroup(::Shalltear::Handle<::Shalltear::LODGroup>(group))",
+			"returns": "void",
+			"params": [{ "name": "group", "type": "LODGroup", "optional": true }],
+			"csharp": { "member": "RegisterLODGroup", "kind": "method" }
+		},
+		{
+			"id": "UnregisterLODGroup",
+			"cpp": "::Shalltear::RenderSystem::UnregisterLODGroup(::Shalltear::Handle<::Shalltear::LODGroup>(group))",
+			"returns": "void",
+			"params": [{ "name": "group", "type": "LODGroup", "optional": true }],
+			"csharp": { "member": "UnregisterLODGroup", "kind": "method" }
+		},
+		{
+			"id": "RegisterObjectShadow",
+			"cpp": "::Shalltear::RenderSystem::RegisterObjectShadow(::Shalltear::Handle<::Shalltear::ObjectShadow>(shadow))",
+			"returns": "void",
+			"params": [{ "name": "shadow", "type": "ObjectShadow", "optional": true }],
+			"csharp": { "member": "RegisterObjectShadow", "kind": "method" }
+		},
+		{
+			"id": "UnregisterObjectShadow",
+			"cpp": "::Shalltear::RenderSystem::UnregisterObjectShadow(::Shalltear::Handle<::Shalltear::ObjectShadow>(shadow))",
+			"returns": "void",
+			"params": [{ "name": "shadow", "type": "ObjectShadow", "optional": true }],
+			"csharp": { "member": "UnregisterObjectShadow", "kind": "method" }
+		},
+		{
+			"id": "ReadbackWindowSceneColor",
+			"cpp": "::Shalltear::RenderSystem::ReadbackWindowSceneColor(::Shalltear::Handle<::Shalltear::Window>(window), outRGBA16F, outSize)",
+			"returns": "bool",
+			"params": [
+				{ "name": "window", "type": "Window", "optional": true },
+				{ "name": "outRGBA16F", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" },
+				{ "name": "outSize", "type": "Vec2I", "out": true }
+			],
+			"csharp": { "member": "ReadbackWindowSceneColor", "kind": "method" }
+		},
+		{
+			"id": "NotifyShaderFileChanged",
+			"cpp": "::Shalltear::RenderSystem::NotifyShaderFileChanged(str(physicalPath))",
+			"returns": "void",
+			"params": [{ "name": "physicalPath", "type": "string" }],
+			"csharp": { "member": "NotifyShaderFileChanged", "kind": "method" }
+		}
+	]
+}

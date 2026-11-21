@@ -1,0 +1,22 @@
+{
+	"area": "ColliderSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Colliders.h"
+	],
+	"class": "Shalltear.Collider",
+	"instance": "Collider",
+	"natives": [{ "name": "PhysicsShapeRequest", "cpp": "::Shalltear::PhysicsShapeRequest" }],
+	"functions": [
+		{
+			"id": "DescribeShape",
+			"cpp": "self->DescribeShape(lossyScale, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "lossyScale", "type": "Vec3" },
+				{ "name": "outValue", "type": "PhysicsShapeRequest" }
+			],
+			"csharp": { "member": "DescribeShape", "kind": "method" }
+		}
+	]
+}

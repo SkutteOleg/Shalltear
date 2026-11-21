@@ -1,0 +1,58 @@
+{
+	"area": "EditorDocumentDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDocuments.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.EditorDocumentDesc",
+	"instance": "EditorDocumentDesc",
+	"functions": [
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerField",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->owner))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		},
+		{
+			"id": "SetCapture",
+			"cpp": "self->capture = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;TextRef>", "optional": true, "cpp": "std::function<void (std::basic_string<char> &)>" }
+			],
+			"csharp": { "member": "SetCapture", "kind": "method" }
+		},
+		{
+			"id": "SetRestore",
+			"cpp": "self->restore = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;string>", "optional": true, "cpp": "std::function<bool (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetRestore", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,40 @@
+{
+	"area": "ComponentSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.Component",
+	"instance": "Component",
+	"functions": [
+		{
+			"id": "GetScene",
+			"cpp": "self->GetScene()",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "Scene", "kind": "getter" }
+		},
+		{
+			"id": "IsPendingDestroy",
+			"cpp": "self->IsPendingDestroy()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsPendingDestroy", "kind": "getter" }
+		},
+		{
+			"id": "GetLocalId",
+			"cpp": "self->GetLocalId()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "LocalId", "kind": "getter" }
+		},
+		{
+			"id": "GetPrefabKey",
+			"cpp": "self->GetPrefabKey()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PrefabKey", "kind": "getter" }
+		}
+	]
+}

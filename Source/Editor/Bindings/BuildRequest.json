@@ -1,0 +1,53 @@
+{
+	"area": "BuildRequest",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h"
+	],
+	"class": "Shalltear.Editor.BuildRequest",
+	"instance": "BuildRequest",
+	"functions": [
+		{
+			"id": "GetProjectPath",
+			"cpp": "self->projectPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProjectPath", "kind": "getter" }
+		},
+		{
+			"id": "SetProjectPath",
+			"cpp": "self->projectPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ProjectPath", "kind": "setter" }
+		},
+		{
+			"id": "GetProfiles",
+			"cpp": "self->profiles",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Profiles", "kind": "getter" }
+		},
+		{
+			"id": "SetProfiles",
+			"cpp": "self->profiles = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Profiles", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputOverride",
+			"cpp": "self->outputOverride",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "OutputOverride", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputOverride",
+			"cpp": "self->outputOverride = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "OutputOverride", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,43 @@
+{
+	"area": "EditorMenus",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorMenus.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/Widgets.h"
+	],
+	"class": "Shalltear.Editor.EditorMenus",
+	"natives": [
+		{ "name": "EditorMenusMenuItemDesc", "cpp": "::Shalltear::EditorMenus::MenuItemDesc", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::EditorMenus::Register(menuLabel, *item, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "menuLabel", "type": "string" },
+				{ "name": "item", "type": "EditorMenusMenuItemDesc" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorMenus::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "AppendContributed",
+			"cpp": "::Shalltear::EditorMenus::AppendContributed(menuLabel, *context, items)",
+			"returns": "void",
+			"params": [
+				{ "name": "menuLabel", "type": "string" },
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "items", "type": "list<UIWidgetsMenuItem>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UI::Widgets::MenuItem>" }
+			],
+			"csharp": { "member": "AppendContributed", "kind": "method" }
+		}
+	]
+}

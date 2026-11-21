@@ -1,0 +1,19 @@
+{
+	"area": "SceneAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneAsset.h",
+		"Shalltear/Core/Scene/Prefab.h"
+	],
+	"class": "Shalltear.SceneAsset",
+	"instance": "SceneAsset",
+	"functions": [
+		{
+			"id": "GetDocument",
+			"cpp": "self->GetDocument()",
+			"returns": "SceneDocument",
+			"params": [],
+			"csharp": { "member": "Document", "kind": "getter" }
+		}
+	]
+}

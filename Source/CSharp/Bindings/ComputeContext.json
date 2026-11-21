@@ -1,0 +1,62 @@
+{
+	"area": "ComputeContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.ComputeContext",
+	"instance": "ComputeContext",
+	"functions": [
+		{
+			"id": "GetStep",
+			"cpp": "self->GetStep()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Step", "kind": "getter" }
+		},
+		{
+			"id": "Dispatch",
+			"cpp": "self->Dispatch(::Shalltear::Handle<::Shalltear::ShaderAsset>(kernel), buffers, std::span<const ::Shalltear::ComputeTexture>(Slots::Copies<::Shalltear::Vector<::Shalltear::ComputeTexture>>(textures)), pushConstants, groupsX, groupsY, groupsZ)",
+			"returns": "bool",
+			"params": [
+				{ "name": "kernel", "type": "ShaderAsset", "optional": true },
+				{ "name": "buffers", "type": "list<ComputeBinding>" },
+				{ "name": "textures", "type": "list<ComputeTexture>" },
+				{ "name": "pushConstants", "type": "list<u8>" },
+				{ "name": "groupsX", "type": "u32" },
+				{ "name": "groupsY", "type": "u32" },
+				{ "name": "groupsZ", "type": "u32" }
+			],
+			"csharp": { "member": "Dispatch", "kind": "method" }
+		},
+		{
+			"id": "DispatchIndirect",
+			"cpp": "self->DispatchIndirect(::Shalltear::Handle<::Shalltear::ShaderAsset>(kernel), buffers, std::span<const ::Shalltear::ComputeTexture>(Slots::Copies<::Shalltear::Vector<::Shalltear::ComputeTexture>>(textures)), pushConstants, argumentsValue, offset)",
+			"returns": "bool",
+			"params": [
+				{ "name": "kernel", "type": "ShaderAsset", "optional": true },
+				{ "name": "buffers", "type": "list<ComputeBinding>" },
+				{ "name": "textures", "type": "list<ComputeTexture>" },
+				{ "name": "pushConstants", "type": "list<u8>" },
+				{ "name": "argumentsValue", "type": "RHIBufferHandle" },
+				{ "name": "offset", "type": "u64" }
+			],
+			"csharp": { "member": "DispatchIndirect", "kind": "method" }
+		},
+		{
+			"id": "CopyBuffer",
+			"cpp": "self->CopyBuffer(source, destination, sourceOffset, destinationOffset, size)",
+			"returns": "bool",
+			"params": [
+				{ "name": "source", "type": "RHIBufferHandle" },
+				{ "name": "destination", "type": "RHIBufferHandle" },
+				{ "name": "sourceOffset", "type": "u64" },
+				{ "name": "destinationOffset", "type": "u64" },
+				{ "name": "size", "type": "u64" }
+			],
+			"csharp": { "member": "CopyBuffer", "kind": "method" }
+		}
+	]
+}

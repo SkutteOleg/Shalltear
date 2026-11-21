@@ -1,0 +1,43 @@
+{
+	"area": "IEventDelegate",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Event.h"
+	],
+	"class": "Shalltear.IEventDelegate",
+	"instance": "IEventDelegate",
+	"natives": [
+		{ "name": "IEventDelegate", "cpp": "::Shalltear::IEventDelegate" },
+		{ "name": "EventBus", "cpp": "::Shalltear::EventBus", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Invoke",
+			"cpp": "self->Invoke(reinterpret_cast<const void*>(static_cast<uintptr_t>(payload)))",
+			"returns": "bool",
+			"params": [{ "name": "payload", "type": "u64" }],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "GetObjectId",
+			"cpp": "self->GetObjectId()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ObjectId", "kind": "getter" }
+		},
+		{
+			"id": "Cancel",
+			"cpp": "self->Cancel()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Cancel", "kind": "method" }
+		},
+		{
+			"id": "IsCancelled",
+			"cpp": "self->IsCancelled()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsCancelled", "kind": "getter" }
+		}
+	]
+}

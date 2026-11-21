@@ -11,6 +11,7 @@
 #include "CSharpSetup.h"
 #include "DotNetAcquire.h"
 #include "DotNetToolchain.h"
+#include "EditorBindings.h"
 #include "ManagedCodeGate.h"
 
 #include "Shalltear/Core/Types.h"
@@ -78,6 +79,7 @@ namespace Shalltear::CSharpEditor {
 		bool (*isValidScriptName)(std::string_view name);
 		Guid (*createScript)(const Path& virtualDir, const str& name, CSharpScripts::Template kind);
 		u32 (*scanForManagedFiles)(const str& directory, bool release, u64 sliceBytes, Vector<ManagedCodeGate::Finding>& outFindings);
+		void (*registerEditorBindings)();
 		const char* muxerName;
 		const char* hostLibraryName;
 	};

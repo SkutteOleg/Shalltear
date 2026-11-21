@@ -1,0 +1,110 @@
+{
+	"area": "ShalltearModuleAPI",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ModuleAPI.h"
+	],
+	"class": "Shalltear.ShalltearModuleAPI",
+	"instance": "ShalltearModuleAPI",
+	"natives": [{ "name": "ShalltearModuleAPI", "cpp": "::Shalltear::ShalltearModuleAPI", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetContextVersion",
+			"cpp": "self->contextVersion",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ContextVersion", "kind": "getter" }
+		},
+		{
+			"id": "SetContextVersion",
+			"cpp": "self->contextVersion = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ContextVersion", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetAbiHash",
+			"cpp": "self->abiHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "AbiHash", "kind": "getter" }
+		},
+		{
+			"id": "SetAbiHash",
+			"cpp": "self->abiHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "AbiHash", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0xa5118a481a856decull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetBind",
+			"cpp": "Slots::Bits(self->bind)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Bind", "kind": "getter" }
+		},
+		{
+			"id": "SetBind",
+			"cpp": "self->bind = Slots::FromBits<bool (*)(const Shalltear::EngineContext *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Bind", "kind": "setter" }
+		},
+		{
+			"id": "GetRegisterTypes",
+			"cpp": "Slots::Bits(self->registerTypes)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "RegisterTypes", "kind": "getter" }
+		},
+		{
+			"id": "SetRegisterTypes",
+			"cpp": "self->registerTypes = Slots::FromBits<void (*)()>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "RegisterTypes", "kind": "setter" }
+		},
+		{
+			"id": "GetShutdown",
+			"cpp": "Slots::Bits(self->shutdown)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Shutdown", "kind": "getter" }
+		},
+		{
+			"id": "SetShutdown",
+			"cpp": "self->shutdown = Slots::FromBits<void (*)()>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Shutdown", "kind": "setter" }
+		}
+	]
+}

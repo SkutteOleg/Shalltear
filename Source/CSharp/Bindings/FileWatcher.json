@@ -1,0 +1,29 @@
+{
+	"area": "FileWatcher",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/FileSystem.h"
+	],
+	"class": "Shalltear.FileWatcher",
+	"instance": "FileWatcher",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::FileWatcher(::Shalltear::Path(str(directory)), callback)",
+			"returns": "FileWatcher",
+			"params": [
+				{ "name": "directory", "type": "string" },
+				{
+					"name": "callback",
+					"type": "fn<void;string;FileAction>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::Path &, Shalltear::FileAction)>"
+				}
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

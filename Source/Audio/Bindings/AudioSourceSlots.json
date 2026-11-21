@@ -1,0 +1,44 @@
+{
+	"area": "AudioSourceSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioSource.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.AudioSource",
+	"instance": "AudioSource",
+	"enums": [
+		{
+			"name": "AudioSourceCurveType",
+			"cpp": "::Shalltear::AudioSourceCurveType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "CustomRolloff", "value": 0 },
+				{ "name": "SpatialBlend", "value": 1 },
+				{ "name": "ReverbZoneMix", "value": 2 },
+				{ "name": "Spread", "value": 3 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetCustomCurve",
+			"cpp": "self->GetCustomCurve(type)",
+			"returns": "AnimationCurve",
+			"params": [{ "name": "type", "type": "AudioSourceCurveType" }],
+			"csharp": { "member": "GetCustomCurve", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetCustomCurve",
+			"cpp": "self->SetCustomCurve(type, *curve)",
+			"returns": "void",
+			"params": [
+				{ "name": "type", "type": "AudioSourceCurveType" },
+				{ "name": "curve", "type": "AnimationCurve" }
+			],
+			"csharp": { "member": "SetCustomCurve", "kind": "method" }
+		}
+	]
+}

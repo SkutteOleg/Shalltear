@@ -8,19 +8,33 @@ internal static partial class ObjectCache {
 	static void WrapGenerated() {
 		Wrap(Camera.ENGINE_TYPE, static id => new Camera(id));
 		Wrap(RenderPass.ENGINE_TYPE, static id => new RenderPass(id));
+		Wrap(Decal.ENGINE_TYPE, static id => new Decal(id));
+		Wrap(EngineEnvironment.ENGINE_TYPE, static id => new EngineEnvironment(id));
+		Wrap(FullScreenPass.ENGINE_TYPE, static id => new FullScreenPass(id));
+		Wrap(GraphicsProfile.ENGINE_TYPE, static id => new GraphicsProfile(id));
+		Wrap(LODGroup.ENGINE_TYPE, static id => new LODGroup(id));
 		Wrap(Light.ENGINE_TYPE, static id => new Light(id));
 		Wrap(MeshRenderer.ENGINE_TYPE, static id => new MeshRenderer(id));
+		Wrap(ObjectPass.ENGINE_TYPE, static id => new ObjectPass(id));
+		Wrap(ObjectShadow.ENGINE_TYPE, static id => new ObjectShadow(id));
+		Wrap<ProceduralRenderer>(ProceduralRenderer.ENGINE_TYPE, static id => new OpaqueProceduralRenderer(id));
+		Wrap(ReflectionProbe.ENGINE_TYPE, static id => new ReflectionProbe(id));
 		Wrap(Scene.ENGINE_TYPE, static id => new Scene(id));
 		Wrap(SceneAsset.ENGINE_TYPE, static id => new SceneAsset(id));
 		Wrap(Prefab.ENGINE_TYPE, static id => new Prefab(id));
+		Wrap(ShaderAsset.ENGINE_TYPE, static id => new ShaderAsset(id));
 		Wrap(Skeleton.ENGINE_TYPE, static id => new Skeleton(id));
 		Wrap(SkeletonAsset.ENGINE_TYPE, static id => new SkeletonAsset(id));
 		Wrap(SkinnedMeshRenderer.ENGINE_TYPE, static id => new SkinnedMeshRenderer(id));
 		Wrap(SkinAsset.ENGINE_TYPE, static id => new SkinAsset(id));
+		Wrap(StringTableAsset.ENGINE_TYPE, static id => new StringTableAsset(id));
+		Wrap(StyleSheetAsset.ENGINE_TYPE, static id => new StyleSheetAsset(id));
 		Wrap(TextAsset.ENGINE_TYPE, static id => new TextAsset(id));
 		Wrap(UIPanelRenderer.ENGINE_TYPE, static id => new UIPanelRenderer(id));
 		Wrap(UIDocumentAsset.ENGINE_TYPE, static id => new UIDocumentAsset(id));
 		Wrap(UIPanelSettings.ENGINE_TYPE, static id => new UIPanelSettings(id));
 		Wrap(FontAsset.ENGINE_TYPE, static id => new FontAsset(id));
+		Wrap(UnresolvedComponent.ENGINE_TYPE, static id => new UnresolvedComponent(id));
+		Wrap(VectorAsset.ENGINE_TYPE, static id => new VectorAsset(id));
 	}
 }

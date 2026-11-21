@@ -58,11 +58,11 @@ IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9]*\Z")
 CLASS_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*(\.[A-Za-z][A-Za-z0-9]*)+\Z")
 SPAN = re.compile(r"span<([A-Za-z0-9]+)>\Z")
 LIST = re.compile(r"list<([A-Za-z0-9]+)>\Z")
-CALLBACK = re.compile(r"fn<[A-Za-z0-9]+(;[A-Za-z0-9]+)*>\Z")
+CALLBACK = re.compile(r"fn<((give:|copy:)?[A-Za-z0-9]+|list<[A-Za-z0-9]+>)(;(ref:)?[A-Za-z0-9]+|;(list|span)<[A-Za-z0-9]+>)*>\Z")
 AREA_KEYS = {"area", "include", "class", "doc", "test", "internal", "instance", "functions", "types", "enums", "structs", "handles", "slots", "natives",
-			 "constants"}
-FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable", "owns", "static", "mutates"}
-PARAM_KEYS = {"name", "type", "out", "optional", "default", "cpp"}
+			 "constants", "prelude"}
+FUNCTION_KEYS = {"id", "cpp", "returns", "params", "leaf", "thread", "csharp", "doc", "nullable", "owns", "static", "mutates", "adopts", "shared"}
+PARAM_KEYS = {"name", "type", "out", "optional", "default", "cpp", "shared", "borrowed"}
 CSHARP_KEYS = {"member", "kind", "conditional", "relay", "access"}
 TYPE_KEYS = {"name", "cpp", "engine", "base", "doc", "abstract", "extern"}
 ENUM_KEYS = {"name", "cpp", "underlying", "values", "doc", "flags"}
@@ -71,6 +71,8 @@ FIELD_KEYS = {"name", "type", "doc", "access", "offset", "cpp"}
 NATIVE_KEYS = {"name", "cpp", "doc", "owned", "create"}
 CONSTANT_KEYS = {"name", "cpp", "type", "value", "doc"}
 CONSTANT_NAME = re.compile(r"[A-Za-z][A-Za-z0-9_]*\Z")
+FIELD_ACCESS = re.compile(r"self->\w+")
+MEMBER_CALL = re.compile(r"self->\w+\s*\(|self->\w+\s*(?:\.|->)\s*\w+\s*\(")
 INTEGER_RANGES = {"u8": (0, 0xFF), "i8": (-0x80, 0x7F), "u16": (0, 0xFFFF), "i16": (-0x8000, 0x7FFF), "i32": (-0x80000000, 0x7FFFFFFF), "u32": (0, 0xFFFFFFFF),
 				  "i64": (-0x8000000000000000, 0x7FFFFFFFFFFFFFFF), "u64": (0, 0xFFFFFFFFFFFFFFFF)}
 ENUM_VALUE_KEYS = {"name", "value", "doc"}
@@ -91,8 +93,10 @@ class SchemaError(Exception):
 
 
 class Param:
-	def __init__(self, name, kind, type_name, out=False, optional=False, implicit=False, default=None, cpp=""):
+	def __init__(self, name, kind, type_name, out=False, optional=False, implicit=False, default=None, cpp="", shared="", borrowed=False):
 		self.cpp = cpp
+		self.shared = shared
+		self.borrowed = borrowed
 		self.name = name
 		self.kind = kind
 		self.type = type_name
@@ -129,7 +133,7 @@ def find_sets(root):
 	for folder in sorted((root / "Source").glob("*/Bindings"), key=lambda folder: folder.parent.name):
 		name = folder.parent.name
 		if name != "CSharp":
-			sets.append(BindingSet(name, folder, root / "Source" / f"{name}CSharp" / "Private" / "Generated",
+			sets.append(BindingSet(name, folder, root / "Source" / ("CSharpEditor" if name == "Editor" else f"{name}CSharp") / "Private" / "Generated",
 								   root / "Source" / "CSharp" / "Managed" / f"Shalltear.{name}" / "Generated"))
 	return sets
 
@@ -171,7 +175,7 @@ def classify(type_name, catalog):
 	if isinstance(type_name, str) and type_name in catalog.enums:
 		return "enum", type_name
 	match = SPAN.match(type_name) if isinstance(type_name, str) else None
-	if match and ((match.group(1) in SCALARS and match.group(1) != "bool") or match.group(1) in catalog.structs):
+	if match and ((match.group(1) in SCALARS and match.group(1) != "bool") or match.group(1) in catalog.structs or match.group(1) in VALUES):
 		return "span", match.group(1)
 	if isinstance(type_name, str) and type_name in catalog.structs:
 		return "struct", type_name
@@ -182,10 +186,34 @@ def classify(type_name, catalog):
 		return "list", match.group(1)
 	if isinstance(type_name, str) and CALLBACK.match(type_name):
 		returns, *taken = type_name[3:-1].split(";")
-		if (returns == "void" or classify(returns, catalog)[0] in ("scalar", "enum", "value", "string", "object")) and all(
-				classify(item, catalog)[0] in ("scalar", "enum", "value", "string", "object", "struct", "native") for item in taken):
+		if callback_result(returns, catalog)[0] is not None and all(callback_item(item, catalog)[0] is not None for item in taken):
 			return "callback", type_name[3:-1]
 	return None, type_name
+
+
+def callback_result(item, catalog):
+	mode = item[:4] if item.startswith(("give:", "copy:")) else ""
+	kind, type_name = classify(item[5:] if mode else item, catalog)
+	if kind == "list" and not mode and classify(type_name, catalog)[0] in ("scalar", "enum", "value", "struct", "native") and type_name != "bool":
+		return kind, type_name, mode
+	if kind not in ("void", "scalar", "enum", "value", "string", "object", "struct", "native") or (mode and kind != "native"):
+		return None, type_name, mode
+	return kind, type_name, mode
+
+
+def callback_item(item, catalog):
+	written = item.startswith("ref:")
+	kind, type_name = classify(item[4:] if written else item, catalog)
+	if written:
+		plain = kind in ("scalar", "value", "struct") or (kind == "enum" and not catalog.enums[type_name].handle)
+		return (kind if plain else None), type_name, written
+	if kind not in ("scalar", "enum", "value", "string", "object", "struct", "native", "list", "span"):
+		return None, type_name, written
+	return kind, type_name, written
+
+
+def callback_span(type_name):
+	return SCALARS[type_name][2] if type_name in SCALARS else type_name
 
 
 SLOT_KINDS = ("struct", "native", "list", "callback")
@@ -256,6 +284,12 @@ def parse_function(raw, area, path, catalog):
 	listed = function.return_kind == "list" and classify(function.returns, catalog)[0] == "native"
 	if function.owns and function.return_kind != "native" and not listed:
 		raise SchemaError(f"{path.name}: {where}: 'owns' is for a returned native object, this returns {raw['returns']}")
+	function.adopts = raw.get("adopts", False)
+	function.shared = raw.get("shared", False)
+	if function.shared and (function.return_kind != "native" or function.owns or function.adopts):
+		raise SchemaError(f"{path.name}: {where}: 'shared' is for a returned shared_ptr of a native, without 'owns' and 'adopts'")
+	if function.adopts and (function.return_kind != "native" or function.owns):
+		raise SchemaError(f"{path.name}: {where}: 'adopts' is for a returned native pointer freed by the script, without 'owns'")
 	function.nullable = raw.get("nullable", True)
 	if "nullable" in raw and function.return_kind not in ("object", "native"):
 		raise SchemaError(f"{path.name}: {where}: 'nullable' is for a returned object, this returns {raw['returns']}")
@@ -283,9 +317,11 @@ def parse_function(raw, area, path, catalog):
 		if entry["name"] == "self" and area.instance:
 			raise SchemaError(f"{path.name}: {where}: parameter 'self' is the {area.instance} passed by the area. Leave it out")
 		default = parse_default(entry, kind, type_name, catalog, f"{path.name}: {where}") if "default" in entry else None
+		if entry.get("shared", "") not in ("", "take", "alias", "unique") or ("shared" in entry and (kind != "native" or entry.get("out", False))):
+			raise SchemaError(f"{path.name}: {where}: 'shared' is take/alias/unique on a native parameter, '{entry['name']}' is {entry['type']}")
 		function.params.append(Param(entry["name"], kind, type_name, entry.get("out", False), entry.get("optional", False), default=default,
-									 cpp=entry.get("cpp", "")))
-	copied = [param.type for param in function.params if boxed(param, catalog)] + ([function.returns] if function.owns else [])
+									 cpp=entry.get("cpp", ""), shared=entry.get("shared", ""), borrowed=entry.get("borrowed", False)))
+	copied = [param.type for param in function.params if boxed(param, catalog)] + ([function.returns] if function.owns or function.adopts else [])
 	for name in copied:
 		if not catalog.natives[name].owned:
 			raise SchemaError(f"{path.name}: {where}: {name} is copied for the script. Mark the native 'owned'")
@@ -341,6 +377,11 @@ def parse_function(raw, area, path, catalog):
 	function.slots = area.slots
 	if area.slots and function.leaf:
 		raise SchemaError(f"{path.name}: {where}: 'leaf' isn't for a slots area")
+	touched = [classify(function.returns, catalog)[0] if function.return_kind == "list" else function.return_kind]
+	touched += [classify(param.type, catalog)[0] if param.kind == "list" else param.kind for param in function.params if not param.implicit]
+	if ("thread" not in raw and area.slots and not function.static and area.instance in catalog.natives and function.kind in ("getter", "setter")
+			and FIELD_ACCESS.search(function.cpp) and not MEMBER_CALL.search(function.cpp) and "object" not in touched and "callback" not in touched):
+		function.any_thread = True
 	function.table_member = camel_case(area.name) + function.id
 	function.thunk = area.name + function.id
 	return function
@@ -644,6 +685,9 @@ def build_area(path, raw, catalog, types, enums, structs, natives=()):
 	if not area.test and not area.internal and not area.instance and not area.doc and not area.slots:
 		raise SchemaError(f"{path.name}: 'doc' is missing")
 	area.functions = [parse_function(entry, area, path, catalog) for entry in raw["functions"]]
+	area.prelude = raw.get("prelude", [])
+	if area.prelude and (not area.slots or not isinstance(area.prelude, list) or any(not isinstance(line, str) for line in area.prelude)):
+		raise SchemaError(f"{path.name}: 'prelude' is a list of C++ lines in a slots area")
 	area.constants = parse_constants(raw, path)
 	named = [declared.name for declared in area.constants] + [function.member for function in area.functions]
 	for declared in area.constants:
@@ -652,9 +696,9 @@ def build_area(path, raw, catalog, types, enums, structs, natives=()):
 	for function in area.functions:
 		function.hidden = False
 	for declared in area.natives:
-		made = [(declared.name + "Delete", "Delete(target)", "void", [{"name": "target", "type": declared.name}])] if declared.owned else []
+		made = [(declared.name + "Delete", "Slots::ForgetFields(target), delete target", "void", [{"name": "target", "type": declared.name}])] if declared.owned else []
 		if declared.create:
-			made.append((declared.name + "New", f"New<{declared.cpp}>(MemTag::Scripting)", declared.name, []))
+			made.append((declared.name + "New", f"new {declared.cpp}()", declared.name, []))
 		for name, cpp, returns, params in made:
 			function = parse_function({"id": name, "cpp": cpp, "returns": returns, "params": params,
 									   "csharp": {"member": name, "kind": "method", "access": "internal"}}, area, path, catalog)
@@ -693,7 +737,7 @@ def build_area(path, raw, catalog, types, enums, structs, natives=()):
 
 
 def boxed(param, catalog):
-	return param.out and param.kind == "list" and classify(param.type, catalog)[0] == "native"
+	return param.out and param.kind == "list" and classify(param.type, catalog)[0] == "native" and not param.borrowed
 
 
 def explicit(function):
@@ -761,10 +805,11 @@ def layout_hash(areas):
 	for area in areas:
 		for function in area.functions:
 			params = ",".join((param.kind + "<" + param.type + ">" if param.kind in ("span", "list") else param.type) + ("&" if param.out else "") +
-							  ("?" if param.optional else "") for param in function.params)
+							  ("?" if param.optional else "") + ("^" + param.shared if param.shared else "") for param in function.params)
 			returns = f"list<{function.returns}>" if function.return_kind == "list" else function.returns
 			lines.append(f"{area.name}.{function.id}:{returns}({params}){'|leaf' if function.leaf else ''}{'|slots' if function.slots else ''}"
-						 f"{'|owns' if function.owns else ''}{'|static' if function.static and not function.hidden else ''}")
+						 f"{'|owns' if function.owns else ''}{'|adopts' if function.adopts else ''}{'|shared' if function.shared else ''}"
+						 f"{'|static' if function.static and not function.hidden else ''}")
 	return fnv1a(("\n".join(lines) + "\n").encode("utf-8"))
 
 
@@ -773,6 +818,8 @@ def element(type_name):
 
 
 def span_element(param, catalog, managed):
+	if param.type in VALUES:
+		return param.type
 	if param.type in catalog.structs:
 		return param.type if managed else "Slt" + param.type
 	return SCALARS[param.type][2 if managed == "api" else 1 if managed else 0]
@@ -988,6 +1035,8 @@ def render_native_area(area):
 	if area.test:
 		out += ["#ifdef SLT_CSHARP_TEST_HOOKS", ""]
 	out += ["namespace Shalltear::CSharpImpl::Generated {", ""]
+	if area.prelude:
+		out += ["\tnamespace {", ""] + ["\t\t" + line if line else "" for line in area.prelude] + ["", "\t} // anonymous namespace", ""]
 	for declared in area.enums:
 		trivial = f" && std::is_trivially_copyable_v<{declared.cpp}>" if declared.handle else ""
 		out.append(f"\tstatic_assert(sizeof({declared.cpp}) == sizeof({SCALARS[declared.underlying][0]}){trivial});")
@@ -1007,7 +1056,7 @@ def render_native_area(area):
 	out += [f"\t\ttable.{function.table_member} = &{function.thunk};" for function in area.functions]
 	out += ["\t}", "", "} // namespace Shalltear::CSharpImpl::Generated", ""]
 	if area.test:
-		out += ["#else", "", "namespace Shalltear::CSharpImpl::Generated {", "", f"\tvoid Fill{area.name}Bindings(SltBindings&) {{}}", "",
+		out += ["#else", "", "namespace Shalltear::CSharpImpl::Generated {", "", f"\tvoid Fill{area.name}Bindings({area.set.table}&) {{}}", "",
 				"} // namespace Shalltear::CSharpImpl::Generated", "", "#endif", ""]
 	return "\n".join(out)
 
@@ -1034,8 +1083,9 @@ def cs_pointer(function):
 
 def render_package_table(binding_set):
 	areas = binding_set.areas
+	spaces = sorted({area.namespace for area in areas if area.structs or area.types} - {"Shalltear", "Shalltear.Interop"})
 	out = ["// <auto-generated/>", f"// {BANNER}", "#nullable enable", "#pragma warning disable CS0649", "",
-		   "using System.Runtime.InteropServices;", "", "namespace Shalltear.Interop;", "",
+		   "using System.Runtime.InteropServices;"] + [f"using {space};" for space in spaces] + ["", "namespace Shalltear.Interop;", "",
 		   "[StructLayout(LayoutKind.Sequential)]", f"internal unsafe struct {binding_set.table} {{"]
 	for area in areas:
 		for function in area.functions:
@@ -1056,7 +1106,7 @@ def render_package_table(binding_set):
 
 
 def wrapper_lines(area, prefix):
-	return [f"\t\t{prefix}Declare<{declared.name}>({declared.name}.ENGINE_TYPE);" if declared.abstract else
+	return [f"\t\t{prefix}Wrap<{declared.name}>({declared.name}.ENGINE_TYPE, static id => new Opaque{declared.name}(id));" if declared.abstract else
 			f"\t\t{prefix}Wrap({declared.name}.ENGINE_TYPE, static id => new {declared.name}(id));" for declared in area.types if not declared.external]
 
 
@@ -1266,38 +1316,68 @@ def cpp_slot_write(kind, type_name, catalog, base, offset, value, owns=False):
 def callback_thunk(param, catalog, inner, at):
 	returns, *taken = param.type.split(";")
 	name = param.name
+	items = [callback_item(item, catalog) for item in taken]
+	declared = ", ".join(f"{'auto&' if written else 'const auto&'} a{index}" for index, (_, _, written) in enumerate(items))
 	lines = [f"{inner}{param.cpp} {name};", f"{inner}if (const auto {name}Hold = Slots::HoldCallback(arguments[{at}])) {{",
-			 f"{inner}\t{name} = [{name}Hold]({', '.join(f'const auto& a{index}' for index in range(len(taken)))}) -> Slots::ResultOf<{param.cpp}> {{"]
+			 f"{inner}\t{name} = [{name}Hold]({declared}) -> Slots::ResultOf<{param.cpp}> {{"]
 	body = inner + "\t\t"
 	offsets, total = [], 0
-	for item in taken:
+	for kind, type_name, written in items:
 		offsets.append(total)
-		total += slot_width(*classify(item, catalog))
-	width = 0 if returns == "void" else slot_width(*classify(returns, catalog))
+		total += 1 if written else slot_width(kind, type_name)
+	result_kind, result_type, result_mode = callback_result(returns, catalog)
+	width = 0 if result_kind == "void" else slot_width(result_kind, result_type)
 	lines += [f"{body}uint64_t callArguments[{max(1, total)}]{{}};", f"{body}uint64_t callResults[{max(1, width)}]{{}};"]
-	for index, item in enumerate(taken):
-		kind, type_name = classify(item, catalog)
-		if kind == "object":
+	for index, (kind, type_name, written) in enumerate(items):
+		if written:
+			lines.append(f"{body}callArguments[{offsets[index]}] = Slots::Bits(&a{index});")
+		elif kind == "object":
 			lines.append(f"{body}callArguments[{offsets[index]}] = Slots::IdOfItem(a{index});")
 		elif kind == "struct":
 			lines.append(f"{body}callArguments[{offsets[index]}] = Slots::Pointer<{cpp_type_of(kind, type_name, catalog)}>(a{index});")
+		elif kind == "scalar" and type_name == "u64":
+			lines.append(f"{body}callArguments[{offsets[index]}] = Slots::Bits(a{index});")
+		elif kind == "span":
+			lines += [f"{body}callArguments[{offsets[index]}] = Slots::Bits(a{index}.data());", f"{body}callArguments[{offsets[index] + 1}] = a{index}.size();"]
 		else:
 			lines.append(f"{body}{cpp_slot_write(kind, type_name, catalog, 'callArguments', offsets[index], f'a{index}')}")
-	failed = "return;" if returns == "void" else f"return Slots::ResultOf<{param.cpp}>();"
+	if result_kind == "struct":
+		lines += [f"{body}{cpp_type_of(result_kind, result_type, catalog)} made{{}};", f"{body}callResults[0] = Slots::Bits(&made);"]
+	failed = "return;" if result_kind == "void" else f"return Slots::ResultOf<{param.cpp}>();"
 	lines += [f"{body}if (Slots::InvokeCallback(*{name}Hold, callArguments, callResults) != SLT_OK) {{", f"{body}\t{failed}", f"{body}}}"]
-	if returns != "void":
-		kind, type_name = classify(returns, catalog)
-		lines.append(f"{body}return static_cast<Slots::ResultOf<{param.cpp}>>({cpp_slot_read(kind, type_name, catalog, 'callResults', 0)});")
+	if result_kind == "struct":
+		lines.append(f"{body}return static_cast<Slots::ResultOf<{param.cpp}>>(made);")
+	elif result_kind == "scalar" and result_type == "u64":
+		lines.append(f"{body}return Slots::FromBits<Slots::ResultOf<{param.cpp}>>(callResults[0]);")
+	elif result_kind == "list":
+		element_kind, _ = classify(result_type, catalog)
+		element = cpp_type_of(element_kind, result_type, catalog)
+		if element_kind == "native":
+			lines.append(f"{body}return Slots::Copies<Slots::ResultOf<{param.cpp}>>(std::span<{element}* const>(reinterpret_cast<{element}* const*>("
+						 f"static_cast<uintptr_t>(callResults[0])), static_cast<size_t>(callResults[1])));")
+		else:
+			lines += [f"{body}const auto* const items = reinterpret_cast<const {element}*>(static_cast<uintptr_t>(callResults[0]));",
+					  f"{body}return Slots::ResultOf<{param.cpp}>(items, items + callResults[1]);"]
+	elif result_mode == "copy":
+		lines += [f"{body}const auto* const made = {cpp_slot_read(result_kind, result_type, catalog, 'callResults', 0)};",
+				  f"{body}return made ? static_cast<Slots::ResultOf<{param.cpp}>>(*made) : Slots::ResultOf<{param.cpp}>();"]
+	elif result_kind != "void":
+		lines.append(f"{body}return static_cast<Slots::ResultOf<{param.cpp}>>({cpp_slot_read(result_kind, result_type, catalog, 'callResults', 0)});")
 	lines += [f"{inner}\t}};", f"{inner}}}"]
 	return lines
 
 
 def cs_delegate(param, catalog):
 	returns, *taken = param.type.split(";")
-	types = [cs_slot_api_type(*classify(item, catalog), catalog) for item in taken]
-	if returns == "void":
+	types = []
+	for item in taken:
+		kind, type_name, written = callback_item(item, catalog)
+		spelled = f"Span<{callback_span(type_name)}>" if kind == "span" else cs_slot_api_type(kind, type_name, catalog)
+		types.append(f"Ref<{spelled}>" if written else spelled)
+	result_kind, result_type, _ = callback_result(returns, catalog)
+	if result_kind == "void":
 		return "Action" + (f"<{', '.join(types)}>" if types else "")
-	return f"Func<{', '.join(types + [cs_slot_api_type(*classify(returns, catalog), catalog)])}>"
+	return f"Func<{', '.join(types + [cs_slot_api_type(result_kind, result_type, catalog) + ('?' if result_kind in ('native', 'list') else '')])}>"
 
 
 def callback_name(function, param):
@@ -1310,34 +1390,47 @@ def callback_helper(function, param):
 	arguments = []
 	at = 0
 	for item in taken:
-		kind, type_name = classify(item, catalog)
-		arguments.append(f"*({type_name}*)slots[{at}]" if kind == "struct" else cs_slot_read(kind, type_name, catalog, at, nullable=False))
+		kind, type_name, written = callback_item(item, catalog)
+		if written:
+			arguments.append(f"new Ref<{cs_slot_api_type(kind, type_name, catalog)}>(slots[{at}])")
+			at += 1
+			continue
+		if kind == "span":
+			arguments.append(f"new Span<{callback_span(type_name)}>((void*)slots[{at}], (int)slots[{at + 1}])")
+		else:
+			arguments.append(f"(slots[{at}] == 0 ? default : *({type_name}*)slots[{at}])" if kind == "struct" else cs_slot_read(kind, type_name, catalog, at, nullable=False))
 		at += slot_width(kind, type_name)
 	call = f"handler({', '.join(arguments)})"
 	out = [f"\tstatic SlotCallback {callback_name(function, param)}({cs_delegate(param, catalog)} handler) {{", "\t\treturn (slots, results) => {"]
-	if returns == "void":
+	kind, type_name, mode = callback_result(returns, catalog)
+	if kind == "void":
 		out.append(f"\t\t\t{call};")
+	elif kind == "scalar" and type_name == "bool":
+		out.append(f"\t\t\tresults[0] = {call} ? 1UL : 0UL;")
+	elif kind == "scalar" and type_name == "f32":
+		out.append(f"\t\t\tresults[0] = BitConverter.SingleToUInt32Bits({call});")
+	elif kind == "scalar" and type_name == "f64":
+		out.append(f"\t\t\tresults[0] = BitConverter.DoubleToUInt64Bits({call});")
+	elif kind == "scalar":
+		out.append(f"\t\t\tresults[0] = (ulong){'(long)' if type_name in SIGNED else ''}{call};")
+	elif kind == "enum" and catalog.enums[type_name].handle:
+		out.append(f"\t\t\tresults[0] = {call}.{catalog.enums[type_name].bits};")
+	elif kind == "enum":
+		underlying = catalog.enums[type_name].underlying
+		out.append(f"\t\t\tresults[0] = (ulong){'(long)' if underlying in SIGNED else ''}({SCALARS[underlying][2]}){call};")
+	elif kind == "value":
+		out.append(f"\t\t\tSlotValues.Put(results, {call});")
+	elif kind == "string":
+		out.append(f"\t\t\tSlotCallbacks.KeepText(results, {call});")
+	elif kind == "struct":
+		out.append(f"\t\t\t*({type_name}*)results[0] = {call};")
+	elif kind == "list":
+		out.append(f"\t\t\tSlotCallbacks.{'KeepNatives' if classify(type_name, catalog)[0] == 'native' else 'KeepArray'}(results, {call});")
+	elif kind == "native":
+		handed = f'made.Give("{param.name}")' if mode == "give" else "made.Pointer"
+		out += [f"\t\t\t{type_name}? made = {call};", f"\t\t\tresults[0] = made is null ? 0UL : {handed};"]
 	else:
-		kind, type_name = classify(returns, catalog)
-		if kind == "scalar" and type_name == "bool":
-			out.append(f"\t\t\tresults[0] = {call} ? 1UL : 0UL;")
-		elif kind == "scalar" and type_name == "f32":
-			out.append(f"\t\t\tresults[0] = BitConverter.SingleToUInt32Bits({call});")
-		elif kind == "scalar" and type_name == "f64":
-			out.append(f"\t\t\tresults[0] = BitConverter.DoubleToUInt64Bits({call});")
-		elif kind == "scalar":
-			out.append(f"\t\t\tresults[0] = (ulong){'(long)' if type_name in SIGNED else ''}{call};")
-		elif kind == "enum" and catalog.enums[type_name].handle:
-			out.append(f"\t\t\tresults[0] = {call}.{catalog.enums[type_name].bits};")
-		elif kind == "enum":
-			underlying = catalog.enums[type_name].underlying
-			out.append(f"\t\t\tresults[0] = (ulong){'(long)' if underlying in SIGNED else ''}({SCALARS[underlying][2]}){call};")
-		elif kind == "value":
-			out.append(f"\t\t\tSlotValues.Put(results, {call});")
-		elif kind == "string":
-			out.append(f"\t\t\tSlotCallbacks.KeepText(results, {call});")
-		else:
-			out += [f"\t\t\t{type_name}? made = {call};", "\t\t\tresults[0] = made is null ? 0UL : made._id;"]
+		out += [f"\t\t\t{type_name}? made = {call};", "\t\t\tresults[0] = made is null ? 0UL : made._id;"]
 	out += ["\t\t};", "\t}"]
 	return out
 
@@ -1371,7 +1464,8 @@ def render_slot_thunk(function):
 		at = arguments[param.name]
 		source = f"arguments + {at}" if at else "arguments"
 		if param.kind == "span":
-			element = SCALARS[param.type][0] if param.type in SCALARS else cpp_type_of("struct", param.type, catalog)
+			element = (SCALARS[param.type][0] if param.type in SCALARS else "::Shalltear::" + param.type if param.type in VALUES else
+					   cpp_type_of("struct", param.type, catalog))
 			items = ("" if param.out else "const ") + element
 			out.append(f"{inner}const std::span<{items}> {param.name}(reinterpret_cast<{items}*>(static_cast<uintptr_t>(arguments[{at}])), "
 					   f"static_cast<size_t>(arguments[{at + 1}]));")
@@ -1391,6 +1485,11 @@ def render_slot_thunk(function):
 						   f"static_cast<size_t>(arguments[{at + 1}]));")
 		elif param.kind == "callback":
 			out += callback_thunk(param, catalog, inner, at)
+		elif param.kind == "native" and param.shared == "unique":
+			out.append(f"{inner}std::unique_ptr<{catalog.natives[param.type].cpp}> {param.name}(reinterpret_cast<{catalog.natives[param.type].cpp}*>("
+					   f"static_cast<uintptr_t>(arguments[{at}])));")
+		elif param.kind == "native" and param.shared:
+			out.append(f"{inner}const std::shared_ptr<{catalog.natives[param.type].cpp}> {param.name} = Slots::Shared<{catalog.natives[param.type].cpp}>(arguments[{at}]);")
 		elif param.kind == "native":
 			out.append(f"{inner}{catalog.natives[param.type].cpp}* const {param.name} = {cpp_slot_read(param.kind, param.type, catalog, 'arguments', at)};")
 		elif param.kind == "struct" and param.implicit:
@@ -1401,7 +1500,10 @@ def render_slot_thunk(function):
 	if function.return_kind == "void":
 		out.append(f"{inner}{function.cpp};")
 	else:
-		out.append(f"{inner}{cpp_slot_write(function.return_kind, function.returns, catalog, 'results', results[''], function.cpp, function.owns)}")
+		if function.shared:
+			out.append(f"{inner}results[{results['']}] = Slots::KeepShared<{catalog.natives[function.returns].cpp}>({function.cpp});")
+		else:
+			out.append(f"{inner}{cpp_slot_write(function.return_kind, function.returns, catalog, 'results', results[''], function.cpp, function.owns)}")
 	for param in function.params:
 		if param.out and param.kind != "span":
 			out.append(f"{inner}{cpp_slot_write(param.kind, param.type, catalog, 'results', results[param.name], param.name, boxed(param, catalog))}")
@@ -1506,6 +1608,11 @@ def cs_slot_call(area, function, setter):
 		elif param.kind == "native":
 			if param.implicit:
 				puts.append(f"slots[{at}] = Pointer;")
+			elif param.shared:
+				given = f"Give({member})" if param.shared == "unique" else f"Share({'true' if param.shared == 'take' else 'false'})"
+				if not param.optional:
+					lines.append(f"ArgumentNullException.ThrowIfNull({name});")
+				puts.append(f"slots[{at}] = {name} is null ? 0UL : {name}.{given};" if param.optional else f"slots[{at}] = {name}.{given};")
 			elif param.optional:
 				puts.append(f"slots[{at}] = {name} is null ? 0UL : {name}.Pointer;")
 			else:
@@ -1568,7 +1675,11 @@ def cs_slot_call(area, function, setter):
 		body.append("return result;")
 	elif function.return_kind != "void":
 		at = argument_count + results[""]
-		body.append(f"return {cs_slot_read(function.return_kind, function.returns, catalog, at, function.nullable, function.owns, owner)};")
+		if function.shared:
+			body.append(f"return NativeObject.WrapShared(slots[{at}], static (pointer, owned) => new {function.returns}(pointer, owned))"
+						f"{'' if function.nullable else '!'};")
+		else:
+			body.append(f"return {cs_slot_read(function.return_kind, function.returns, catalog, at, function.nullable, function.owns or function.adopts, owner)};")
 	lines += puts
 	if pinned:
 		lines += pinned[:-1] + [pinned[-1] + " {"] + ["\t" + line for line in body] + ["}"]
@@ -1611,7 +1722,9 @@ def render_native(declared, area):
 		out.append(f"/// <summary>{xml_text(declared.doc)}</summary>")
 	delete = f"owned ? {area.set.holder}.table.{camel_case(area.name)}{declared.name}Delete : null" if declared.owned else "null"
 	access = "internal" if area.test or area.internal else "public"
-	out += [f"{access} sealed unsafe partial class {declared.name} : NativeObject {{", f"\tinternal {declared.name}(nint pointer, bool owned) : base(pointer, {delete}) {{}}"]
+	out += [f"{access} sealed unsafe partial class {declared.name} : NativeObject {{", f"\tinternal {declared.name}(nint pointer, bool owned) : base(pointer, {delete}) {{}}",
+			"", "\t/// <summary>Wrapper of the C++ object at an address (not owned, null at 0).</summary>",
+			f"\tpublic static {declared.name}? FromAddress(ulong address) {{", f"\t\treturn address == 0 ? null : new {declared.name}((nint)address, false);", "\t}"]
 	if declared.create:
 		out += ["", f"\tpublic {declared.name}() : this(Create(), true) {{}}", "", "\tstatic nint Create() {", "\t\tulong* slots = stackalloc ulong[1];",
 				f"\t\tint status = {area.set.holder}.table.{camel_case(area.name)}{declared.name}New(slots, slots);", "\t\tif (status != Bridge.OK) {",
@@ -1696,7 +1809,8 @@ def render_managed_types(area):
 		out += ([f"/// <summary>{xml_text(declared.doc)}</summary>"] if declared.doc else []) + ["[EngineType(ENGINE_TYPE)]"]
 		constant = f'\tinternal {"" if declared.base in BASES else "new "}const string ENGINE_TYPE = "{declared.engine}";'
 		if declared.abstract:
-			out += [f"public abstract partial class {declared.name} : {declared.base} {{", constant, "", f"\tprivate protected {declared.name}() {{}}", "}", ""]
+			out += [f"public abstract partial class {declared.name} : {declared.base} {{", constant, "", f"\tprivate protected {declared.name}() {{}}", "}", "",
+					f"internal sealed class Opaque{declared.name} : {declared.name} {{", f"\tinternal Opaque{declared.name}(ulong id) {{", "\t\t_id = id;", "\t}", "}", ""]
 		else:
 			out += [f"public sealed partial class {declared.name} : {declared.base} {{", constant,
 					"", f"\tinternal {declared.name}(ulong id) {{", "\t\t_id = id;", "\t}", "}", ""]

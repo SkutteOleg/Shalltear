@@ -1,0 +1,32 @@
+{
+	"area": "EngineStringHash",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.EngineStringHash",
+	"instance": "EngineStringHash",
+	"structs": [
+		{
+			"name": "StringHash",
+			"cpp": "::Shalltear::StringHash",
+			"size": 8,
+			"align": 8,
+			"extern": true,
+			"fields": []
+		}
+	],
+	"natives": [{ "name": "EngineStringHash", "cpp": "::Shalltear::StringHash", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::StringHash(argument0)",
+			"returns": "EngineStringHash",
+			"params": [{ "name": "argument0", "type": "u64" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

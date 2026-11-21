@@ -1,0 +1,121 @@
+{
+	"area": "EditorVirtualRows",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorVirtualRows.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorVirtualRows",
+	"instance": "EditorVirtualRows",
+	"natives": [{ "name": "EditorVirtualRows", "cpp": "::Shalltear::EditorVirtualRows", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Attach",
+			"cpp": "self->Attach(*context, viewport, build, realized, buildTail)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "viewport", "type": "UIElementHandle" },
+				{ "name": "build", "type": "fn<UIElementHandle;u32>", "optional": true, "cpp": "std::function<Shalltear::UI::ElementHandle (unsigned int)>" },
+				{ "name": "realized", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" },
+				{ "name": "buildTail", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "Attach", "kind": "method" }
+		},
+		{
+			"id": "Detach",
+			"cpp": "self->Detach()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Detach", "kind": "method" }
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset(count)",
+			"returns": "void",
+			"params": [{ "name": "count", "type": "u32" }],
+			"csharp": { "member": "Reset", "kind": "method" }
+		},
+		{
+			"id": "Appended",
+			"cpp": "self->Appended(dropped, appended)",
+			"returns": "void",
+			"params": [
+				{ "name": "dropped", "type": "u32" },
+				{ "name": "appended", "type": "u32" }
+			],
+			"csharp": { "member": "Appended", "kind": "method" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->GetCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "GetFirstRealized",
+			"cpp": "self->GetFirstRealized()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "FirstRealized", "kind": "getter" }
+		},
+		{
+			"id": "GetRealizedCount",
+			"cpp": "self->GetRealizedCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RealizedCount", "kind": "getter" }
+		},
+		{
+			"id": "IsRealized",
+			"cpp": "self->IsRealized(index)",
+			"returns": "bool",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "IsRealized", "kind": "method" }
+		},
+		{
+			"id": "GetElement",
+			"cpp": "self->GetElement(index)",
+			"returns": "UIElementHandle",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetElement", "kind": "method" }
+		},
+		{
+			"id": "HeightOf",
+			"cpp": "self->HeightOf(index)",
+			"returns": "f32",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "HeightOf", "kind": "method" }
+		},
+		{
+			"id": "ContentTopOf",
+			"cpp": "self->ContentTopOf(index)",
+			"returns": "f32",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "ContentTopOf", "kind": "method" }
+		},
+		{
+			"id": "ContentHeight",
+			"cpp": "self->ContentHeight()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ContentHeight", "kind": "method" }
+		},
+		{
+			"id": "ScrollIntoView",
+			"cpp": "self->ScrollIntoView(index)",
+			"returns": "void",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "ScrollIntoView", "kind": "method" }
+		},
+		{
+			"id": "GetBand",
+			"cpp": "self->GetBand()",
+			"returns": "UIRect",
+			"params": [],
+			"csharp": { "member": "Band", "kind": "getter" }
+		}
+	]
+}

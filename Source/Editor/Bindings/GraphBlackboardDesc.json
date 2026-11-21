@@ -1,0 +1,98 @@
+{
+	"area": "GraphBlackboardDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphBlackboard.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.GraphBlackboardDesc",
+	"instance": "GraphBlackboardDesc",
+	"functions": [
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetKinds",
+			"cpp": "self->kinds",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Kinds", "kind": "getter" }
+		},
+		{
+			"id": "SetKinds",
+			"cpp": "self->kinds = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Kinds", "kind": "setter" }
+		},
+		{
+			"id": "SetOnAdd",
+			"cpp": "self->onAdd = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<u64;u32>", "optional": true, "cpp": "std::function<uint64_t (unsigned int)>" }],
+			"csharp": { "member": "SetOnAdd", "kind": "method" }
+		},
+		{
+			"id": "SetOnRename",
+			"cpp": "self->onRename = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<u64;u64;string>", "optional": true, "cpp": "std::function<uint64_t (uint64_t, std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetOnRename", "kind": "method" }
+		},
+		{
+			"id": "SetOnMove",
+			"cpp": "self->onMove = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<u64;u64;u32>", "optional": true, "cpp": "std::function<uint64_t (uint64_t, unsigned int)>" }
+			],
+			"csharp": { "member": "SetOnMove", "kind": "method" }
+		},
+		{
+			"id": "SetOnDelete",
+			"cpp": "self->onDelete = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;list<u64>>", "optional": true, "cpp": "std::function<void (std::span<const uint64_t>)>" }
+			],
+			"csharp": { "member": "SetOnDelete", "kind": "method" }
+		},
+		{
+			"id": "SetOnSelectionChanged",
+			"cpp": "self->onSelectionChanged = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;list<u64>>", "optional": true, "cpp": "std::function<void (std::span<const uint64_t>)>" }
+			],
+			"csharp": { "member": "SetOnSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "SetOnBuildSubtitle",
+			"cpp": "self->onBuildSubtitle = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnBuildSubtitle", "kind": "method" }
+		}
+	]
+}

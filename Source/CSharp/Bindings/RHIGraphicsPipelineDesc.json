@@ -1,0 +1,277 @@
+{
+	"area": "RHIGraphicsPipelineDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHIGraphicsPipelineDesc",
+	"instance": "RHIGraphicsPipelineDesc",
+	"functions": [
+		{
+			"id": "GetVertexSpirv",
+			"cpp": "self->vertexSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "VertexSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetVertexSpirv",
+			"cpp": "self->vertexSpirv = Slots::KeepFieldSpan(self, 0xb6c3f96e64187b4cull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "VertexSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetPixelSpirv",
+			"cpp": "self->pixelSpirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "PixelSpirv", "kind": "getter" }
+		},
+		{
+			"id": "SetPixelSpirv",
+			"cpp": "self->pixelSpirv = Slots::KeepFieldSpan(self, 0xbbaaaf938da92af6ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "PixelSpirv", "kind": "setter" }
+		},
+		{
+			"id": "GetPixelConstants",
+			"cpp": "self->pixelConstants",
+			"returns": "list<RHISpecializationConstant>",
+			"params": [],
+			"csharp": { "member": "PixelConstants", "kind": "getter" }
+		},
+		{
+			"id": "SetPixelConstants",
+			"cpp": "self->pixelConstants = Slots::KeepFieldSpan(self, 0xddcec958ac8f34cdull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHISpecializationConstant>" }],
+			"csharp": { "member": "PixelConstants", "kind": "setter" }
+		},
+		{
+			"id": "GetBindingsField",
+			"cpp": "self->bindings",
+			"returns": "list<RHIDescriptorBindingDesc>",
+			"params": [],
+			"csharp": { "member": "BindingsField", "kind": "getter" }
+		},
+		{
+			"id": "SetBindingsField",
+			"cpp": "self->bindings = Slots::KeepFieldSpan(self, 0x83d5ae73ff3b43b6ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIDescriptorBindingDesc>" }],
+			"csharp": { "member": "BindingsField", "kind": "setter" }
+		},
+		{
+			"id": "GetPushConstantSize",
+			"cpp": "self->pushConstantSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PushConstantSize", "kind": "getter" }
+		},
+		{
+			"id": "SetPushConstantSize",
+			"cpp": "self->pushConstantSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PushConstantSize", "kind": "setter" }
+		},
+		{
+			"id": "GetBlend",
+			"cpp": "self->blend",
+			"returns": "RHIBlendMode",
+			"params": [],
+			"csharp": { "member": "Blend", "kind": "getter" }
+		},
+		{
+			"id": "SetBlend",
+			"cpp": "self->blend = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIBlendMode" }],
+			"csharp": { "member": "Blend", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "RHIDepthMode",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIDepthMode" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetCull",
+			"cpp": "self->cull",
+			"returns": "RHICullMode",
+			"params": [],
+			"csharp": { "member": "Cull", "kind": "getter" }
+		},
+		{
+			"id": "SetCull",
+			"cpp": "self->cull = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHICullMode" }],
+			"csharp": { "member": "Cull", "kind": "setter" }
+		},
+		{
+			"id": "GetTopology",
+			"cpp": "self->topology",
+			"returns": "RHIPrimitiveTopology",
+			"params": [],
+			"csharp": { "member": "Topology", "kind": "getter" }
+		},
+		{
+			"id": "SetTopology",
+			"cpp": "self->topology = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIPrimitiveTopology" }],
+			"csharp": { "member": "Topology", "kind": "setter" }
+		},
+		{
+			"id": "GetFill",
+			"cpp": "self->fill",
+			"returns": "RHIFillMode",
+			"params": [],
+			"csharp": { "member": "Fill", "kind": "getter" }
+		},
+		{
+			"id": "SetFill",
+			"cpp": "self->fill = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFillMode" }],
+			"csharp": { "member": "Fill", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthBiasConstant",
+			"cpp": "self->depthBiasConstant",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DepthBiasConstant", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthBiasConstant",
+			"cpp": "self->depthBiasConstant = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DepthBiasConstant", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthBiasSlope",
+			"cpp": "self->depthBiasSlope",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DepthBiasSlope", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthBiasSlope",
+			"cpp": "self->depthBiasSlope = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DepthBiasSlope", "kind": "setter" }
+		},
+		{
+			"id": "GetDynamicDepthBias",
+			"cpp": "self->dynamicDepthBias",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "DynamicDepthBias", "kind": "getter" }
+		},
+		{
+			"id": "SetDynamicDepthBias",
+			"cpp": "self->dynamicDepthBias = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "DynamicDepthBias", "kind": "setter" }
+		},
+		{
+			"id": "GetColorFormats",
+			"cpp": "self->colorFormats",
+			"returns": "list<RHIFormat>",
+			"params": [],
+			"csharp": { "member": "ColorFormats", "kind": "getter" }
+		},
+		{
+			"id": "SetColorFormats",
+			"cpp": "Slots::Assign(self->colorFormats, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIFormat>" }],
+			"csharp": { "member": "ColorFormats", "kind": "setter" }
+		},
+		{
+			"id": "GetColorFormatCount",
+			"cpp": "self->colorFormatCount",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ColorFormatCount", "kind": "getter" }
+		},
+		{
+			"id": "SetColorFormatCount",
+			"cpp": "self->colorFormatCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ColorFormatCount", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthFormat",
+			"cpp": "self->depthFormat",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "DepthFormat", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthFormat",
+			"cpp": "self->depthFormat = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFormat" }],
+			"csharp": { "member": "DepthFormat", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugName",
+			"cpp": "self->debugName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DebugName", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugName",
+			"cpp": "self->debugName = Slots::KeepFieldText(self, 0x115d472c548a64e4ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DebugName", "kind": "setter" }
+		},
+		{
+			"id": "GetSamples",
+			"cpp": "self->samples",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Samples", "kind": "getter" }
+		},
+		{
+			"id": "SetSamples",
+			"cpp": "self->samples = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Samples", "kind": "setter" }
+		},
+		{
+			"id": "GetDepthCompare",
+			"cpp": "self->depthCompare",
+			"returns": "RHIDepthCompare",
+			"params": [],
+			"csharp": { "member": "DepthCompare", "kind": "getter" }
+		},
+		{
+			"id": "SetDepthCompare",
+			"cpp": "self->depthCompare = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIDepthCompare" }],
+			"csharp": { "member": "DepthCompare", "kind": "setter" }
+		}
+	]
+}

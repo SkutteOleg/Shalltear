@@ -1,0 +1,49 @@
+{
+	"area": "FramePassPlan",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h",
+		"Shalltear/Core/Graphics/Camera.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.FramePassPlan",
+	"instance": "FramePassPlan",
+	"functions": [
+		{
+			"id": "AddStep",
+			"cpp": "self->AddStep()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AddStep", "kind": "method" }
+		},
+		{
+			"id": "Read",
+			"cpp": "self->Read(buffer, state)",
+			"returns": "void",
+			"params": [
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "state", "type": "RHIResourceState" }
+			],
+			"csharp": { "member": "Read", "kind": "method" }
+		},
+		{
+			"id": "Write",
+			"cpp": "self->Write(buffer, state)",
+			"returns": "void",
+			"params": [
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "state", "type": "RHIResourceState" }
+			],
+			"csharp": { "member": "Write", "kind": "method" }
+		},
+		{
+			"id": "ReadCameraDepth",
+			"cpp": "self->ReadCameraDepth(::Shalltear::Handle<::Shalltear::Camera>(camera))",
+			"returns": "CameraDepth",
+			"params": [{ "name": "camera", "type": "Camera", "optional": true }],
+			"csharp": { "member": "ReadCameraDepth", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

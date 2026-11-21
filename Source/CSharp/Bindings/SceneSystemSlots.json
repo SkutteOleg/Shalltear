@@ -1,0 +1,274 @@
+{
+	"area": "SceneSystemSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/SceneSystem.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/FileSystem.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneLoadOperation.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.SceneSystem",
+	"functions": [
+		{
+			"id": "IsInitialized",
+			"cpp": "::Shalltear::SceneSystem::IsInitialized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInitialized", "kind": "getter" }
+		},
+		{
+			"id": "CreateIsolatedScene",
+			"cpp": "::Shalltear::SceneSystem::CreateIsolatedScene(name)",
+			"returns": "Scene",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "CreateIsolatedScene", "kind": "method" }
+		},
+		{
+			"id": "GetIsolatedSceneCount",
+			"cpp": "::Shalltear::SceneSystem::GetIsolatedSceneCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "IsolatedSceneCount", "kind": "getter" }
+		},
+		{
+			"id": "LoadScene",
+			"cpp": "::Shalltear::SceneSystem::LoadScene(::Shalltear::Path(str(path)))",
+			"returns": "Scene",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "LoadSceneFile", "kind": "method" }
+		},
+		{
+			"id": "LoadSceneByGuid",
+			"cpp": "::Shalltear::SceneSystem::LoadSceneByGuid(assetId)",
+			"returns": "Scene",
+			"params": [{ "name": "assetId", "type": "EngineGuid" }],
+			"csharp": { "member": "LoadSceneByGuid", "kind": "method" }
+		},
+		{
+			"id": "LoadSceneAsync",
+			"cpp": "(::Shalltear::SceneSystem::LoadSceneAsync(::Shalltear::Path(str(path)))).Get()",
+			"returns": "SceneLoadOperation",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "LoadSceneAsync", "kind": "method" }
+		},
+		{
+			"id": "SetAsyncLoadBudget",
+			"cpp": "::Shalltear::SceneSystem::SetAsyncLoadBudget(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f64" }],
+			"csharp": { "member": "AsyncLoadBudget", "kind": "setter" }
+		},
+		{
+			"id": "GetAsyncLoadBudget",
+			"cpp": "::Shalltear::SceneSystem::GetAsyncLoadBudget()",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "AsyncLoadBudget", "kind": "getter" }
+		},
+		{
+			"id": "CancelAsyncLoads",
+			"cpp": "::Shalltear::SceneSystem::CancelAsyncLoads()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "CancelAsyncLoads", "kind": "method" }
+		},
+		{
+			"id": "UnloadAllScenes",
+			"cpp": "::Shalltear::SceneSystem::UnloadAllScenes()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "UnloadAllScenes", "kind": "method" }
+		},
+		{
+			"id": "SetPlaying",
+			"cpp": "::Shalltear::SceneSystem::SetPlaying(playing)",
+			"returns": "void",
+			"params": [{ "name": "playing", "type": "bool" }],
+			"csharp": { "member": "SetPlaying", "kind": "method" }
+		},
+		{
+			"id": "GetLoadedScenes",
+			"cpp": "::Shalltear::SceneSystem::GetLoadedScenes()",
+			"returns": "list<Scene>",
+			"params": [],
+			"csharp": { "member": "LoadedScenes", "kind": "getter" }
+		},
+		{
+			"id": "SaveScene",
+			"cpp": "::Shalltear::SceneSystem::SaveScene(::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Path(str(path)), binary)",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "path", "type": "string" },
+				{ "name": "binary", "type": "bool" }
+			],
+			"csharp": { "member": "SaveScene", "kind": "method" }
+		},
+		{
+			"id": "SaveSceneToMemory",
+			"cpp": "::Shalltear::SceneSystem::SaveSceneToMemory(::Shalltear::Handle<::Shalltear::Scene>(scene), *outSnapshot)",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "outSnapshot", "type": "EngineBuffer" }
+			],
+			"csharp": { "member": "SaveSceneToMemory", "kind": "method" }
+		},
+		{
+			"id": "LoadSceneFromMemory",
+			"cpp": "::Shalltear::SceneSystem::LoadSceneFromMemory(*snapshot)",
+			"returns": "Scene",
+			"params": [{ "name": "snapshot", "type": "EngineBuffer" }],
+			"csharp": { "member": "LoadSceneFromMemory", "kind": "method" }
+		},
+		{
+			"id": "HoldUnresolvedComponentReports",
+			"cpp": "::Shalltear::SceneSystem::HoldUnresolvedComponentReports()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "HoldUnresolvedComponentReports", "kind": "method" }
+		},
+		{
+			"id": "ReleaseUnresolvedComponentReports",
+			"cpp": "::Shalltear::SceneSystem::ReleaseUnresolvedComponentReports()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ReleaseUnresolvedComponentReports", "kind": "method" }
+		},
+		{
+			"id": "InstantiateDetached",
+			"cpp": "::Shalltear::SceneSystem::InstantiateDetached(prefabId)",
+			"returns": "SceneObject",
+			"params": [{ "name": "prefabId", "type": "EngineGuid" }],
+			"csharp": { "member": "InstantiateDetached", "kind": "method" }
+		},
+		{
+			"id": "DestroyDetached",
+			"cpp": "::Shalltear::SceneSystem::DestroyDetached(::Shalltear::Handle<::Shalltear::SceneObject>(root))",
+			"returns": "void",
+			"params": [{ "name": "root", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "DestroyDetached", "kind": "method" }
+		},
+		{
+			"id": "ApplyDetachedToPrefab",
+			"cpp": "::Shalltear::SceneSystem::ApplyDetachedToPrefab(::Shalltear::Handle<::Shalltear::SceneObject>(root), prefabId)",
+			"returns": "bool",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "prefabId", "type": "EngineGuid" }
+			],
+			"csharp": { "member": "ApplyDetachedToPrefab", "kind": "method" }
+		},
+		{
+			"id": "Destroy",
+			"cpp": "::Shalltear::SceneSystem::Destroy(::Shalltear::Handle<::Shalltear::SceneObject>(objectValue))",
+			"returns": "void",
+			"params": [{ "name": "objectValue", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Destroy", "kind": "method" }
+		},
+		{
+			"id": "Destroy2",
+			"cpp": "::Shalltear::SceneSystem::Destroy(::Shalltear::Handle<::Shalltear::Component>(component))",
+			"returns": "void",
+			"params": [{ "name": "component", "type": "Component", "optional": true }],
+			"csharp": { "member": "Destroy", "kind": "method" }
+		},
+		{
+			"id": "SavePrefab",
+			"cpp": "::Shalltear::SceneSystem::SavePrefab(::Shalltear::Handle<::Shalltear::SceneObject>(root), ::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "SavePrefab", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabVariant",
+			"cpp": "::Shalltear::SceneSystem::CreatePrefabVariant(basePrefab, ::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "basePrefab", "type": "EngineGuid" },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "CreatePrefabVariant", "kind": "method" }
+		},
+		{
+			"id": "SavePrefabVariant",
+			"cpp": "::Shalltear::SceneSystem::SavePrefabVariant(::Shalltear::Handle<::Shalltear::SceneObject>(instanceRoot), ::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "instanceRoot", "type": "SceneObject", "optional": true },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "SavePrefabVariant", "kind": "method" }
+		},
+		{
+			"id": "ApplyInstanceOverridesToBase",
+			"cpp": "::Shalltear::SceneSystem::ApplyInstanceOverridesToBase(::Shalltear::Handle<::Shalltear::SceneObject>(instanceRoot))",
+			"returns": "bool",
+			"params": [{ "name": "instanceRoot", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "ApplyInstanceOverridesToBase", "kind": "method" }
+		},
+		{
+			"id": "RevertInstanceOverrides",
+			"cpp": "::Shalltear::SceneSystem::RevertInstanceOverrides(::Shalltear::Handle<::Shalltear::SceneObject>(instanceRoot))",
+			"returns": "bool",
+			"params": [{ "name": "instanceRoot", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "RevertInstanceOverrides", "kind": "method" }
+		},
+		{
+			"id": "DiffPrefabInstance",
+			"cpp": "::Shalltear::SceneSystem::DiffPrefabInstance(::Shalltear::Handle<::Shalltear::SceneObject>(instanceRoot), *outValue, against)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instanceRoot", "type": "SceneObject", "optional": true },
+				{ "name": "outValue", "type": "PrefabInstanceDiff" },
+				{ "name": "against", "type": "EngineGuid" }
+			],
+			"csharp": { "member": "DiffPrefabInstance", "kind": "method" }
+		},
+		{
+			"id": "RevertInstanceOverrides2",
+			"cpp": "::Shalltear::SceneSystem::RevertInstanceOverrides(::Shalltear::Handle<::Shalltear::SceneObject>(instanceRoot), std::span<const ::Shalltear::PrefabTargetPath>(Slots::Copies<::Shalltear::Vector<::Shalltear::PrefabTargetPath>>(rows)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "instanceRoot", "type": "SceneObject", "optional": true },
+				{ "name": "rows", "type": "list<PrefabTargetPath>" }
+			],
+			"csharp": { "member": "RevertInstanceOverrides", "kind": "method" }
+		},
+		{
+			"id": "NotifyPrefabChanged",
+			"cpp": "::Shalltear::SceneSystem::NotifyPrefabChanged(prefabId)",
+			"returns": "void",
+			"params": [{ "name": "prefabId", "type": "EngineGuid" }],
+			"csharp": { "member": "NotifyPrefabChanged", "kind": "method" }
+		},
+		{
+			"id": "GetPrefabEpoch",
+			"cpp": "::Shalltear::SceneSystem::GetPrefabEpoch()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PrefabEpoch", "kind": "getter" }
+		},
+		{
+			"id": "FixedUpdateAll",
+			"cpp": "::Shalltear::SceneSystem::FixedUpdateAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "FixedUpdateAll", "kind": "method" }
+		},
+		{
+			"id": "LateUpdateAll",
+			"cpp": "::Shalltear::SceneSystem::LateUpdateAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "LateUpdateAll", "kind": "method" }
+		}
+	]
+}

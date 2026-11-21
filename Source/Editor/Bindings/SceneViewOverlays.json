@@ -1,0 +1,75 @@
+{
+	"area": "SceneViewOverlays",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SceneViewOverlays.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.SceneViewOverlays",
+	"natives": [{ "name": "ActionUIContextFn", "cpp": "std::function<void (Shalltear::UI::Context &)>", "owned": true }],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::SceneViewOverlays::Register(title, component, build, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "title", "type": "string" },
+				{ "name": "component", "type": "StringHash" },
+				{
+					"name": "build",
+					"type": "fn<copy:ActionUIContextFn;UIContext;UIElementHandle;list<Component>>",
+					"optional": true,
+					"cpp": "std::function<std::function<void (Shalltear::UI::Context &)> (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, std::span<const Shalltear::Handle<Shalltear::Component>>)>"
+				}
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::SceneViewOverlays::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "KeyFor",
+			"cpp": "::Shalltear::SceneViewOverlays::KeyFor(std::span<const ::Shalltear::Handle<::Shalltear::Object>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::Object>>(selection)))",
+			"returns": "u64",
+			"params": [{ "name": "selection", "type": "list<EngineObject>" }],
+			"csharp": { "member": "KeyFor", "kind": "method" }
+		},
+		{
+			"id": "Build",
+			"cpp": "::Shalltear::SceneViewOverlays::Build(*context, parent, std::span<const ::Shalltear::Handle<::Shalltear::Object>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::Object>>(selection)), reinterpret_cast<const void*>(static_cast<uintptr_t>(view)))",
+			"returns": "u32",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "selection", "type": "list<EngineObject>" },
+				{ "name": "view", "type": "u64" }
+			],
+			"csharp": { "member": "Build", "kind": "method" }
+		},
+		{
+			"id": "Refresh",
+			"cpp": "::Shalltear::SceneViewOverlays::Refresh(*context, reinterpret_cast<const void*>(static_cast<uintptr_t>(view)))",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "view", "type": "u64" }
+			],
+			"csharp": { "member": "Refresh", "kind": "method" }
+		},
+		{
+			"id": "Release",
+			"cpp": "::Shalltear::SceneViewOverlays::Release(reinterpret_cast<const void*>(static_cast<uintptr_t>(view)))",
+			"returns": "void",
+			"params": [{ "name": "view", "type": "u64" }],
+			"csharp": { "member": "Release", "kind": "method" }
+		}
+	]
+}

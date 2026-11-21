@@ -1,0 +1,25 @@
+{
+	"area": "LensFlareAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/LensFlareAsset.h"
+	],
+	"class": "Shalltear.LensFlareAsset",
+	"instance": "LensFlareAsset",
+	"functions": [
+		{
+			"id": "GetElements",
+			"cpp": "self->elements",
+			"returns": "list<LensFlareElement>",
+			"params": [],
+			"csharp": { "member": "Elements", "kind": "getter" }
+		},
+		{
+			"id": "SetElements",
+			"cpp": "self->elements = Slots::Copies<::Shalltear::Vector<::Shalltear::LensFlareElement>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<LensFlareElement>" }],
+			"csharp": { "member": "Elements", "kind": "setter" }
+		}
+	]
+}

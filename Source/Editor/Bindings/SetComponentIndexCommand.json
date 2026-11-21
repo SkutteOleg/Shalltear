@@ -1,0 +1,34 @@
+{
+	"area": "SetComponentIndexCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Editor/UndoSystem.h"
+	],
+	"class": "Shalltear.Editor.SetComponentIndexCommand",
+	"instance": "SetComponentIndexCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::SetComponentIndexCommand(::Shalltear::Handle<::Shalltear::Component>(component), newIndex)",
+			"returns": "SetComponentIndexCommand",
+			"params": [
+				{ "name": "component", "type": "Component", "optional": true },
+				{ "name": "newIndex", "type": "u32" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

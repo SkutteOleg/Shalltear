@@ -1,0 +1,39 @@
+{
+	"area": "ScriptFunctionsFound",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ScriptFunctions.h"
+	],
+	"class": "Shalltear.ScriptFunctionsFound",
+	"instance": "ScriptFunctionsFound",
+	"functions": [
+		{
+			"id": "GetThunk",
+			"cpp": "Slots::Bits(self->thunk)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Thunk", "kind": "getter" }
+		},
+		{
+			"id": "SetThunk",
+			"cpp": "self->thunk = Slots::FromBits<void (*)(uint64_t, const uint64_t *, uint64_t *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Thunk", "kind": "setter" }
+		},
+		{
+			"id": "GetContext",
+			"cpp": "self->context",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Context", "kind": "getter" }
+		},
+		{
+			"id": "SetContext",
+			"cpp": "self->context = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Context", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,48 @@
+{
+	"area": "PhysicsSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Physics.h",
+		"Shalltear/Physics3D/PhysicsListener.h"
+	],
+	"class": "Shalltear.Physics",
+	"structs": [
+		{
+			"name": "PhysicsContactPoint",
+			"cpp": "::Shalltear::PhysicsContactPoint",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "point", "type": "Vec3", "offset": 0 },
+				{ "name": "normal", "type": "Vec3", "offset": 12 },
+				{ "name": "separation", "type": "f32", "offset": 24 },
+				{ "name": "normalImpulse", "type": "f32", "offset": 28 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EngineRaycastHit", "cpp": "::Shalltear::RaycastHit", "owned": true, "create": true },
+		{ "name": "EnginePhysicsQueryFilter", "cpp": "::Shalltear::PhysicsQueryFilter", "owned": true, "create": true },
+		{ "name": "PhysicsListener", "cpp": "::Shalltear::PhysicsListener", "owned": true, "create": true },
+		{ "name": "EngineCollision", "cpp": "::Shalltear::Collision", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "MAX_LISTENER_RESOLVERS", "cpp": "::Shalltear::Physics::MAX_LISTENER_RESOLVERS", "type": "u32", "value": 4 }
+	],
+	"functions": [
+		{
+			"id": "AddListenerResolver",
+			"cpp": "::Shalltear::Physics::AddListenerResolver(Slots::FromBits<Shalltear::PhysicsListener *(*)(Shalltear::Component &)>(resolver))",
+			"returns": "void",
+			"params": [{ "name": "resolver", "type": "u64" }],
+			"csharp": { "member": "AddListenerResolver", "kind": "method" }
+		},
+		{
+			"id": "RemoveListenerResolver",
+			"cpp": "::Shalltear::Physics::RemoveListenerResolver(Slots::FromBits<Shalltear::PhysicsListener *(*)(Shalltear::Component &)>(resolver))",
+			"returns": "void",
+			"params": [{ "name": "resolver", "type": "u64" }],
+			"csharp": { "member": "RemoveListenerResolver", "kind": "method" }
+		}
+	]
+}

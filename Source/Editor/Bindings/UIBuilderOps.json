@@ -1,0 +1,304 @@
+{
+	"area": "UIBuilderOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIBuilderOps.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UIDocument.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/Style.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderOps",
+	"enums": [
+		{
+			"name": "UIBuilderOpsDeclarationLayout",
+			"cpp": "::Shalltear::UIBuilderOps::DeclarationLayout",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Block", "value": 0 },
+				{ "name": "Inline", "value": 1 }
+			]
+		},
+		{
+			"name": "UIBuilderOpsCodeLanguage",
+			"cpp": "::Shalltear::UIBuilderOps::CodeLanguage",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Markup", "value": 0 },
+				{ "name": "Style", "value": 1 }
+			]
+		},
+		{
+			"name": "UIBuilderOpsCodeToken",
+			"cpp": "::Shalltear::UIBuilderOps::CodeToken",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Text", "value": 0 },
+				{ "name": "Punctuation", "value": 1 },
+				{ "name": "Tag", "value": 2 },
+				{ "name": "Attribute", "value": 3 },
+				{ "name": "Value", "value": 4 },
+				{ "name": "Comment", "value": 5 }
+			]
+		},
+		{
+			"name": "UIBuilderOpsSubject",
+			"cpp": "::Shalltear::UIBuilderOps::Subject",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Element", "value": 1 },
+				{ "name": "Selector", "value": 2 },
+				{ "name": "Canvas", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "UIBuilderOpsCanvasView",
+			"cpp": "::Shalltear::UIBuilderOps::CanvasView",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "zoom", "type": "f32", "offset": 0 },
+				{ "name": "pan", "type": "Vec2", "offset": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIBuilderOpsRow", "cpp": "::Shalltear::UIBuilderOps::Row", "owned": true, "create": true },
+		{ "name": "UIBuilderOpsLibraryGroup", "cpp": "::Shalltear::UIBuilderOps::LibraryGroup", "owned": true, "create": true },
+		{ "name": "UIBuilderOpsSheetRow", "cpp": "::Shalltear::UIBuilderOps::SheetRow", "owned": true, "create": true },
+		{ "name": "UIBuilderOpsPropertyRow", "cpp": "::Shalltear::UIBuilderOps::PropertyRow", "owned": true, "create": true },
+		{ "name": "UIBuilderOpsMatchingSelector", "cpp": "::Shalltear::UIBuilderOps::MatchingSelector", "owned": true, "create": true },
+		{ "name": "UIBuilderOpsCodeLine", "cpp": "::Shalltear::UIBuilderOps::CodeLine", "owned": true, "create": true },
+		{ "name": "UIBuilderOpsCodeSpan", "cpp": "::Shalltear::UIBuilderOps::CodeSpan", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "INVALID_NODE", "cpp": "::Shalltear::UIBuilderOps::INVALID_NODE", "type": "u32", "value": 4294967295 },
+		{ "name": "MIN_CANVAS_ZOOM", "cpp": "::Shalltear::UIBuilderOps::MIN_CANVAS_ZOOM", "type": "f32", "value": "0x1.47ae140000000p-6" },
+		{ "name": "MAX_CANVAS_ZOOM", "cpp": "::Shalltear::UIBuilderOps::MAX_CANVAS_ZOOM", "type": "f32", "value": "0x1.0000000000000p+1" }
+	],
+	"functions": [
+		{
+			"id": "OpenDocumentInBuilder",
+			"cpp": "::Shalltear::UIBuilderOps::OpenDocumentInBuilder(virtualPath)",
+			"returns": "bool",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "OpenDocumentInBuilder", "kind": "method" }
+		},
+		{
+			"id": "ShowSheetRuleInBuilder",
+			"cpp": "::Shalltear::UIBuilderOps::ShowSheetRuleInBuilder(sheetVirtualPath, rule, selector)",
+			"returns": "bool",
+			"params": [
+				{ "name": "sheetVirtualPath", "type": "string" },
+				{ "name": "rule", "type": "u32" },
+				{ "name": "selector", "type": "string" }
+			],
+			"csharp": { "member": "ShowSheetRuleInBuilder", "kind": "method" }
+		},
+		{
+			"id": "BuildRows",
+			"cpp": "::Shalltear::UIBuilderOps::BuildRows(*document, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "outValue", "type": "list<UIBuilderOpsRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIBuilderOps::Row>" }
+			],
+			"csharp": { "member": "BuildRows", "kind": "method" }
+		},
+		{
+			"id": "RowLabel",
+			"cpp": "::Shalltear::UIBuilderOps::RowLabel(*node)",
+			"returns": "string",
+			"params": [{ "name": "node", "type": "UIDocumentNode" }],
+			"csharp": { "member": "RowLabel", "kind": "method" }
+		},
+		{
+			"id": "ElementForNode",
+			"cpp": "::Shalltear::UIBuilderOps::ElementForNode(std::span<const ::Shalltear::UIInstantiateMapping>(Slots::Copies<::Shalltear::Vector<::Shalltear::UIInstantiateMapping>>(mapping)), node)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "mapping", "type": "list<UIInstantiateMapping>" },
+				{ "name": "node", "type": "UIDocumentNode", "optional": true }
+			],
+			"csharp": { "member": "ElementForNode", "kind": "method" }
+		},
+		{
+			"id": "NodeForElement",
+			"cpp": "::Shalltear::UIBuilderOps::NodeForElement(*context, *document, std::span<const ::Shalltear::UIInstantiateMapping>(Slots::Copies<::Shalltear::Vector<::Shalltear::UIInstantiateMapping>>(mapping)), element)",
+			"returns": "u32",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "mapping", "type": "list<UIInstantiateMapping>" },
+				{ "name": "element", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "NodeForElement", "kind": "method" }
+		},
+		{
+			"id": "BuildLibrary",
+			"cpp": "::Shalltear::UIBuilderOps::BuildLibrary(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<UIBuilderOpsLibraryGroup>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIBuilderOps::LibraryGroup>" }
+			],
+			"csharp": { "member": "BuildLibrary", "kind": "method" }
+		},
+		{
+			"id": "BuildSheetRows",
+			"cpp": "::Shalltear::UIBuilderOps::BuildSheetRows(*document, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "outValue", "type": "list<UIBuilderOpsSheetRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIBuilderOps::SheetRow>" }
+			],
+			"csharp": { "member": "BuildSheetRows", "kind": "method" }
+		},
+		{
+			"id": "BuildPropertyRows",
+			"cpp": "::Shalltear::UIBuilderOps::BuildPropertyRows(std::span<const ::Shalltear::UI::StyleDeclarationSource>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::StyleDeclarationSource>>(declarations)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "declarations", "type": "list<UIStyleDeclarationSource>" },
+				{ "name": "outValue", "type": "list<UIBuilderOpsPropertyRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIBuilderOps::PropertyRow>" }
+			],
+			"csharp": { "member": "BuildPropertyRows", "kind": "method" }
+		},
+		{
+			"id": "BuildMatchingSelectors",
+			"cpp": "::Shalltear::UIBuilderOps::BuildMatchingSelectors(*document, *node, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "node", "type": "UIDocumentNode" },
+				{
+					"name": "outValue",
+					"type": "list<UIBuilderOpsMatchingSelector>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::UIBuilderOps::MatchingSelector>"
+				}
+			],
+			"csharp": { "member": "BuildMatchingSelectors", "kind": "method" }
+		},
+		{
+			"id": "NodeAt",
+			"cpp": "::Shalltear::UIBuilderOps::NodeAt(*document, index)",
+			"returns": "UIDocumentNode",
+			"params": [
+				{ "name": "document", "type": "UIDocumentAsset" },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "NodeAt", "kind": "method" }
+		},
+		{
+			"id": "EraseRuns",
+			"cpp": "::Shalltear::UIBuilderOps::EraseRuns(source, std::span<const std::string_view>(runs))",
+			"returns": "string",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "runs", "type": "list<string>" }
+			],
+			"csharp": { "member": "EraseRuns", "kind": "method" }
+		},
+		{
+			"id": "SetDeclaration",
+			"cpp": "::Shalltear::UIBuilderOps::SetDeclaration(source, region, std::span<const ::Shalltear::UI::StyleDeclarationSource>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::StyleDeclarationSource>>(declarations)), property, valueValue, layout)",
+			"returns": "string",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "region", "type": "string" },
+				{ "name": "declarations", "type": "list<UIStyleDeclarationSource>" },
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "string" },
+				{ "name": "layout", "type": "UIBuilderOpsDeclarationLayout" }
+			],
+			"csharp": { "member": "SetDeclaration", "kind": "method" }
+		},
+		{
+			"id": "AppendRule",
+			"cpp": "::Shalltear::UIBuilderOps::AppendRule(source, selector, std::span<const std::string_view>(runs))",
+			"returns": "string",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "selector", "type": "string" },
+				{ "name": "runs", "type": "list<string>" }
+			],
+			"csharp": { "member": "AppendRule", "kind": "method" }
+		},
+		{
+			"id": "TokenizeCode",
+			"cpp": "::Shalltear::UIBuilderOps::TokenizeCode(source, language, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "source", "type": "string" },
+				{ "name": "language", "type": "UIBuilderOpsCodeLanguage" },
+				{ "name": "outValue", "type": "list<UIBuilderOpsCodeLine>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIBuilderOps::CodeLine>" }
+			],
+			"csharp": { "member": "TokenizeCode", "kind": "method" }
+		},
+		{
+			"id": "CanvasRectFor",
+			"cpp": "::Shalltear::UIBuilderOps::CanvasRectFor(viewport, canvasWidth, canvasHeight, view)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "viewport", "type": "UIRect" },
+				{ "name": "canvasWidth", "type": "i32" },
+				{ "name": "canvasHeight", "type": "i32" },
+				{ "name": "view", "type": "UIBuilderOpsCanvasView" }
+			],
+			"csharp": { "member": "CanvasRectFor", "kind": "method" }
+		},
+		{
+			"id": "ZoomToFit",
+			"cpp": "::Shalltear::UIBuilderOps::ZoomToFit(viewport, canvasWidth, canvasHeight)",
+			"returns": "f32",
+			"params": [
+				{ "name": "viewport", "type": "UIRect" },
+				{ "name": "canvasWidth", "type": "i32" },
+				{ "name": "canvasHeight", "type": "i32" }
+			],
+			"csharp": { "member": "ZoomToFit", "kind": "method" }
+		},
+		{
+			"id": "ZoomAtPoint",
+			"cpp": "::Shalltear::UIBuilderOps::ZoomAtPoint(viewport, canvasWidth, canvasHeight, view, point, notches)",
+			"returns": "UIBuilderOpsCanvasView",
+			"params": [
+				{ "name": "viewport", "type": "UIRect" },
+				{ "name": "canvasWidth", "type": "i32" },
+				{ "name": "canvasHeight", "type": "i32" },
+				{ "name": "view", "type": "UIBuilderOpsCanvasView" },
+				{ "name": "point", "type": "Vec2" },
+				{ "name": "notches", "type": "f32" }
+			],
+			"csharp": { "member": "ZoomAtPoint", "kind": "method" }
+		},
+		{
+			"id": "PanBy",
+			"cpp": "::Shalltear::UIBuilderOps::PanBy(viewport, canvasWidth, canvasHeight, view, deltaPx)",
+			"returns": "UIBuilderOpsCanvasView",
+			"params": [
+				{ "name": "viewport", "type": "UIRect" },
+				{ "name": "canvasWidth", "type": "i32" },
+				{ "name": "canvasHeight", "type": "i32" },
+				{ "name": "view", "type": "UIBuilderOpsCanvasView" },
+				{ "name": "deltaPx", "type": "Vec2" }
+			],
+			"csharp": { "member": "PanBy", "kind": "method" }
+		},
+		{
+			"id": "ClampView",
+			"cpp": "::Shalltear::UIBuilderOps::ClampView(viewport, canvasWidth, canvasHeight, view)",
+			"returns": "UIBuilderOpsCanvasView",
+			"params": [
+				{ "name": "viewport", "type": "UIRect" },
+				{ "name": "canvasWidth", "type": "i32" },
+				{ "name": "canvasHeight", "type": "i32" },
+				{ "name": "view", "type": "UIBuilderOpsCanvasView" }
+			],
+			"csharp": { "member": "ClampView", "kind": "method" }
+		}
+	]
+}

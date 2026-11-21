@@ -1,0 +1,57 @@
+{
+	"area": "RuntimeViewToolbar",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/RuntimeViewToolbar.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.RuntimeViewToolbar",
+	"natives": [{ "name": "RuntimeViewToggle", "cpp": "::Shalltear::RuntimeViewToggle", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "RegisterToggle",
+			"cpp": "::Shalltear::RuntimeViewToolbar::RegisterToggle(id, *toggle, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "toggle", "type": "RuntimeViewToggle" }
+			],
+			"csharp": { "member": "RegisterToggle", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::RuntimeViewToolbar::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "ForEachToggle",
+			"cpp": "::Shalltear::RuntimeViewToolbar::ForEachToggle(visit)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "visit",
+					"type": "fn<void;StringHash;RuntimeViewToggle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::StringHash, const Shalltear::RuntimeViewToggle &)>"
+				}
+			],
+			"csharp": { "member": "ForEachToggle", "kind": "method" }
+		},
+		{
+			"id": "FindToggle",
+			"cpp": "::Shalltear::RuntimeViewToolbar::FindToggle(id)",
+			"returns": "RuntimeViewToggle",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "FindToggle", "kind": "method" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "::Shalltear::RuntimeViewToolbar::GetVersion()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		}
+	]
+}

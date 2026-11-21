@@ -1,0 +1,24 @@
+{
+	"area": "CubeFace",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/CubeFace.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.CubeFace",
+	"constants": [{ "name": "CUBE_FACE_COUNT", "cpp": "::Shalltear::CUBE_FACE_COUNT", "type": "u32", "value": 6 }],
+	"functions": [
+		{
+			"id": "CubeFaceView",
+			"cpp": "::Shalltear::CubeFaceView(face, eye)",
+			"returns": "Mat4",
+			"params": [
+				{ "name": "face", "type": "u32" },
+				{ "name": "eye", "type": "Vec3" }
+			],
+			"csharp": { "member": "CubeFaceView", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

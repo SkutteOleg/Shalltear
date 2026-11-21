@@ -1,0 +1,81 @@
+{
+	"area": "GraphGroupDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h"
+	],
+	"class": "Shalltear.Editor.GraphGroupDesc",
+	"instance": "GraphGroupDesc",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetNodes",
+			"cpp": "self->nodes",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Nodes", "kind": "getter" }
+		},
+		{
+			"id": "SetNodes",
+			"cpp": "self->nodes = Slots::ToVector<GraphNodeId>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u64>" }],
+			"csharp": { "member": "Nodes", "kind": "setter" }
+		},
+		{
+			"id": "GetNotes",
+			"cpp": "self->notes",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "Notes", "kind": "getter" }
+		},
+		{
+			"id": "SetNotes",
+			"cpp": "self->notes = Slots::ToVector<u64>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u64>" }],
+			"csharp": { "member": "Notes", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		}
+	]
+}

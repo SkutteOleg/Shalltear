@@ -1,0 +1,533 @@
+{
+	"area": "EditorSceneOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorSceneOps.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Graphics/PrimitiveMesh.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Widgets.h"
+	],
+	"class": "Shalltear.Editor.EditorSceneOps",
+	"enums": [
+		{
+			"name": "EditorSceneOpsComponentDropKind",
+			"cpp": "::Shalltear::EditorSceneOps::ComponentDropKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Reorder", "value": 1 },
+				{ "name": "Move", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorSceneOpsValueStep",
+			"cpp": "::Shalltear::EditorSceneOps::ValueStep",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "element", "type": "i32", "offset": 0 },
+				{ "name": "field", "type": "StringHash", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorSceneOpsPreservedRowSurvey", "cpp": "::Shalltear::EditorSceneOps::PreservedRowSurvey", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "COMPONENT_INDEX_END", "cpp": "::Shalltear::EditorSceneOps::COMPONENT_INDEX_END", "type": "u32", "value": 4294967295 }
+	],
+	"functions": [
+		{
+			"id": "MarkDirty",
+			"cpp": "::Shalltear::EditorSceneOps::MarkDirty(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "void",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "MarkDirty", "kind": "method" }
+		},
+		{
+			"id": "MarkClean",
+			"cpp": "::Shalltear::EditorSceneOps::MarkClean(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "void",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "MarkClean", "kind": "method" }
+		},
+		{
+			"id": "IsDirty",
+			"cpp": "::Shalltear::EditorSceneOps::IsDirty(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "IsDirty", "kind": "method" }
+		},
+		{
+			"id": "AnyDirty",
+			"cpp": "::Shalltear::EditorSceneOps::AnyDirty()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AnyDirty", "kind": "method" }
+		},
+		{
+			"id": "GetScenePath",
+			"cpp": "(::Shalltear::EditorSceneOps::GetScenePath(::Shalltear::Handle<::Shalltear::Scene>(scene))).ToString()",
+			"returns": "string",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "GetScenePath", "kind": "method" }
+		},
+		{
+			"id": "NewScene",
+			"cpp": "::Shalltear::EditorSceneOps::NewScene(name)",
+			"returns": "Scene",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "NewScene", "kind": "method" }
+		},
+		{
+			"id": "PopulateNewScene",
+			"cpp": "::Shalltear::EditorSceneOps::PopulateNewScene(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "void",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "PopulateNewScene", "kind": "method" }
+		},
+		{
+			"id": "OpenScene",
+			"cpp": "::Shalltear::EditorSceneOps::OpenScene(::Shalltear::Path(str(path)))",
+			"returns": "Scene",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "OpenScene", "kind": "method" }
+		},
+		{
+			"id": "LoadSceneAdditive",
+			"cpp": "::Shalltear::EditorSceneOps::LoadSceneAdditive(::Shalltear::Path(str(path)))",
+			"returns": "Scene",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "LoadSceneAdditive", "kind": "method" }
+		},
+		{
+			"id": "SaveScene",
+			"cpp": "::Shalltear::EditorSceneOps::SaveScene(::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "SaveScene", "kind": "method" }
+		},
+		{
+			"id": "GetRecentScenes",
+			"cpp": "::Shalltear::EditorSceneOps::GetRecentScenes(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetRecentScenes", "kind": "method" }
+		},
+		{
+			"id": "AddRecentScene",
+			"cpp": "::Shalltear::EditorSceneOps::AddRecentScene(path)",
+			"returns": "void",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "AddRecentScene", "kind": "method" }
+		},
+		{
+			"id": "GetSceneSetup",
+			"cpp": "::Shalltear::EditorSceneOps::GetSceneSetup(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetSceneSetup", "kind": "method" }
+		},
+		{
+			"id": "ChooseStartupScene",
+			"cpp": "::Shalltear::EditorSceneOps::ChooseStartupScene(str(projectPath), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(remembered)))",
+			"returns": "string",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "remembered", "type": "list<string>" }
+			],
+			"csharp": { "member": "ChooseStartupScene", "kind": "method" }
+		},
+		{
+			"id": "GetSelectedObjects",
+			"cpp": "::Shalltear::EditorSceneOps::GetSelectedObjects(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<SceneObject>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::SceneObject>>" }
+			],
+			"csharp": { "member": "GetSelectedObjects", "kind": "method" }
+		},
+		{
+			"id": "DeleteObjects",
+			"cpp": "::Shalltear::EditorSceneOps::DeleteObjects(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)))",
+			"returns": "u32",
+			"params": [{ "name": "objects", "type": "list<SceneObject>" }],
+			"csharp": { "member": "DeleteObjects", "kind": "method" }
+		},
+		{
+			"id": "DeleteSelectedObjects",
+			"cpp": "::Shalltear::EditorSceneOps::DeleteSelectedObjects()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "DeleteSelectedObjects", "kind": "method" }
+		},
+		{
+			"id": "DuplicateObjects",
+			"cpp": "::Shalltear::EditorSceneOps::DuplicateObjects(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)))",
+			"returns": "u32",
+			"params": [{ "name": "objects", "type": "list<SceneObject>" }],
+			"csharp": { "member": "DuplicateObjects", "kind": "method" }
+		},
+		{
+			"id": "DuplicateSelectedObjects",
+			"cpp": "::Shalltear::EditorSceneOps::DuplicateSelectedObjects()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "DuplicateSelectedObjects", "kind": "method" }
+		},
+		{
+			"id": "GetOutermostInTreeOrder",
+			"cpp": "::Shalltear::EditorSceneOps::GetOutermostInTreeOrder(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "outValue", "type": "list<SceneObject>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::SceneObject>>" }
+			],
+			"csharp": { "member": "GetOutermostInTreeOrder", "kind": "method" }
+		},
+		{
+			"id": "CanMoveObjects",
+			"cpp": "::Shalltear::EditorSceneOps::CanMoveObjects(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), ::Shalltear::Handle<::Shalltear::SceneObject>(newParent), ::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "newParent", "type": "SceneObject", "optional": true },
+				{ "name": "scene", "type": "Scene", "optional": true }
+			],
+			"csharp": { "member": "CanMoveObjects", "kind": "method" }
+		},
+		{
+			"id": "MoveObjects",
+			"cpp": "::Shalltear::EditorSceneOps::MoveObjects(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), ::Shalltear::Handle<::Shalltear::SceneObject>(newParent), ::Shalltear::Handle<::Shalltear::Scene>(scene), index)",
+			"returns": "bool",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "newParent", "type": "SceneObject", "optional": true },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "MoveObjects", "kind": "method" }
+		},
+		{
+			"id": "CanCreateEmptyParent",
+			"cpp": "::Shalltear::EditorSceneOps::CanCreateEmptyParent(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)))",
+			"returns": "bool",
+			"params": [{ "name": "objects", "type": "list<SceneObject>" }],
+			"csharp": { "member": "CanCreateEmptyParent", "kind": "method" }
+		},
+		{
+			"id": "CreateEmptyParent",
+			"cpp": "::Shalltear::EditorSceneOps::CreateEmptyParent(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)), ::Shalltear::Handle<::Shalltear::SceneObject>(active))",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "objects", "type": "list<SceneObject>" },
+				{ "name": "active", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "CreateEmptyParent", "kind": "method" }
+		},
+		{
+			"id": "CreatePrimitiveObject",
+			"cpp": "::Shalltear::EditorSceneOps::CreatePrimitiveObject(shape, ::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent))",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "shape", "type": "PrimitiveShape" },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "CreatePrimitiveObject", "kind": "method" }
+		},
+		{
+			"id": "BuildCreateMenu",
+			"cpp": "::Shalltear::EditorSceneOps::BuildCreateMenu(::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "outValue", "type": "list<UIWidgetsMenuItem>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UI::Widgets::MenuItem>" }
+			],
+			"csharp": { "member": "BuildCreateMenu", "kind": "method" }
+		},
+		{
+			"id": "BuildCreateSubmenu",
+			"cpp": "::Shalltear::EditorSceneOps::BuildCreateSubmenu(label, ::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent))",
+			"returns": "UIWidgetsMenuItem",
+			"params": [
+				{ "name": "label", "type": "string" },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "BuildCreateSubmenu", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "RegisterCreateEntry",
+			"cpp": "::Shalltear::EditorSceneOps::RegisterCreateEntry(group, label, component, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "group", "type": "string" },
+				{ "name": "label", "type": "string" },
+				{ "name": "component", "type": "StringHash" }
+			],
+			"csharp": { "member": "RegisterCreateEntry", "kind": "method" }
+		},
+		{
+			"id": "UnregisterCreateEntriesOwnedBy",
+			"cpp": "::Shalltear::EditorSceneOps::UnregisterCreateEntriesOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterCreateEntriesOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "BindDefaultMaterials",
+			"cpp": "::Shalltear::EditorSceneOps::BindDefaultMaterials(::Shalltear::Handle<::Shalltear::Object>(renderer), meshInstanceId)",
+			"returns": "u32",
+			"params": [
+				{ "name": "renderer", "type": "EngineObject", "optional": true },
+				{ "name": "meshInstanceId", "type": "u64" }
+			],
+			"csharp": { "member": "BindDefaultMaterials", "kind": "method" }
+		},
+		{
+			"id": "OpenPrefab",
+			"cpp": "::Shalltear::EditorSceneOps::OpenPrefab(prefabId)",
+			"returns": "Scene",
+			"params": [{ "name": "prefabId", "type": "EngineGuid" }],
+			"csharp": { "member": "OpenPrefab", "kind": "method" }
+		},
+		{
+			"id": "GetPrefabStage",
+			"cpp": "::Shalltear::EditorSceneOps::GetPrefabStage()",
+			"returns": "Scene",
+			"params": [],
+			"csharp": { "member": "PrefabStage", "kind": "getter" }
+		},
+		{
+			"id": "GetStageScenes",
+			"cpp": "::Shalltear::EditorSceneOps::GetStageScenes(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<Scene>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::Scene>>" }
+			],
+			"csharp": { "member": "GetStageScenes", "kind": "method" }
+		},
+		{
+			"id": "GetDefaultParent",
+			"cpp": "::Shalltear::EditorSceneOps::GetDefaultParent(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "SceneObject",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "GetDefaultParent", "kind": "method" }
+		},
+		{
+			"id": "LeavePrefabStage",
+			"cpp": "::Shalltear::EditorSceneOps::LeavePrefabStage()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "LeavePrefabStage", "kind": "method" }
+		},
+		{
+			"id": "GetPrefabTarget",
+			"cpp": "::Shalltear::EditorSceneOps::GetPrefabTarget(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "EngineGuid",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "GetPrefabTarget", "kind": "method" }
+		},
+		{
+			"id": "AcceptsPrefabInstances",
+			"cpp": "::Shalltear::EditorSceneOps::AcceptsPrefabInstances(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "AcceptsPrefabInstances", "kind": "method" }
+		},
+		{
+			"id": "SavePrefabScene",
+			"cpp": "::Shalltear::EditorSceneOps::SavePrefabScene(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "bool",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "SavePrefabScene", "kind": "method" }
+		},
+		{
+			"id": "GetPrefabPreviewRoot",
+			"cpp": "::Shalltear::EditorSceneOps::GetPrefabPreviewRoot(prefabId)",
+			"returns": "SceneObject",
+			"params": [{ "name": "prefabId", "type": "EngineGuid" }],
+			"csharp": { "member": "GetPrefabPreviewRoot", "kind": "method" }
+		},
+		{
+			"id": "ResolvePrefabRow",
+			"cpp": "::Shalltear::EditorSceneOps::ResolvePrefabRow(prefabId, rowKey)",
+			"returns": "EngineObject",
+			"params": [
+				{ "name": "prefabId", "type": "EngineGuid" },
+				{ "name": "rowKey", "type": "u64" }
+			],
+			"csharp": { "member": "ResolvePrefabRow", "kind": "method" }
+		},
+		{
+			"id": "MarkPrefabPreviewEdited",
+			"cpp": "::Shalltear::EditorSceneOps::MarkPrefabPreviewEdited(prefabId)",
+			"returns": "void",
+			"params": [{ "name": "prefabId", "type": "EngineGuid" }],
+			"csharp": { "member": "MarkPrefabPreviewEdited", "kind": "method" }
+		},
+		{
+			"id": "FlushPrefabPreview",
+			"cpp": "::Shalltear::EditorSceneOps::FlushPrefabPreview()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "FlushPrefabPreview", "kind": "method" }
+		},
+		{
+			"id": "ReleasePrefabPreview",
+			"cpp": "::Shalltear::EditorSceneOps::ReleasePrefabPreview()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ReleasePrefabPreview", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabFrom",
+			"cpp": "::Shalltear::EditorSceneOps::CreatePrefabFrom(::Shalltear::Handle<::Shalltear::SceneObject>(root), ::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "CreatePrefabFrom", "kind": "method" }
+		},
+		{
+			"id": "CanCreatePrefabVariantFrom",
+			"cpp": "::Shalltear::EditorSceneOps::CanCreatePrefabVariantFrom(::Shalltear::Handle<::Shalltear::SceneObject>(root))",
+			"returns": "bool",
+			"params": [{ "name": "root", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "CanCreatePrefabVariantFrom", "kind": "method" }
+		},
+		{
+			"id": "PrefabOverridesFor",
+			"cpp": "::Shalltear::EditorSceneOps::PrefabOverridesFor(::Shalltear::Handle<::Shalltear::SceneObject>(row), *outValue, Slots::HandleOut<::Shalltear::SceneObject>(outRoot).Address())",
+			"returns": "bool",
+			"params": [
+				{ "name": "row", "type": "SceneObject", "optional": true },
+				{ "name": "outValue", "type": "PrefabInstanceDiff" },
+				{ "name": "outRoot", "type": "SceneObject", "out": true }
+			],
+			"csharp": { "member": "PrefabOverridesFor", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabVariantFrom",
+			"cpp": "::Shalltear::EditorSceneOps::CreatePrefabVariantFrom(::Shalltear::Handle<::Shalltear::SceneObject>(root), ::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "CreatePrefabVariantFrom", "kind": "method" }
+		},
+		{
+			"id": "CreatePrefabVariantOf",
+			"cpp": "::Shalltear::EditorSceneOps::CreatePrefabVariantOf(basePrefab, ::Shalltear::Path(str(path)))",
+			"returns": "EngineGuid",
+			"params": [
+				{ "name": "basePrefab", "type": "EngineGuid" },
+				{ "name": "path", "type": "string" }
+			],
+			"csharp": { "member": "CreatePrefabVariantOf", "kind": "method" }
+		},
+		{
+			"id": "ClassifyComponentDrop",
+			"cpp": "::Shalltear::EditorSceneOps::ClassifyComponentDrop(::Shalltear::Handle<::Shalltear::Component>(component), ::Shalltear::Handle<::Shalltear::SceneObject>(target))",
+			"returns": "EditorSceneOpsComponentDropKind",
+			"params": [
+				{ "name": "component", "type": "Component", "optional": true },
+				{ "name": "target", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "ClassifyComponentDrop", "kind": "method" }
+		},
+		{
+			"id": "RemovePreservedComponent",
+			"cpp": "::Shalltear::EditorSceneOps::RemovePreservedComponent(::Shalltear::Handle<::Shalltear::Component>(component))",
+			"returns": "bool",
+			"params": [{ "name": "component", "type": "Component", "optional": true }],
+			"csharp": { "member": "RemovePreservedComponent", "kind": "method" }
+		},
+		{
+			"id": "SurveyPreservedComponents",
+			"cpp": "::Shalltear::EditorSceneOps::SurveyPreservedComponents(::Shalltear::Handle<::Shalltear::Scene>(scene))",
+			"returns": "EditorSceneOpsPreservedRowSurvey",
+			"params": [{ "name": "scene", "type": "Scene", "optional": true }],
+			"csharp": { "member": "SurveyPreservedComponents", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "DropComponentOn",
+			"cpp": "::Shalltear::EditorSceneOps::DropComponentOn(::Shalltear::Handle<::Shalltear::Component>(component), ::Shalltear::Handle<::Shalltear::SceneObject>(target), index)",
+			"returns": "bool",
+			"params": [
+				{ "name": "component", "type": "Component", "optional": true },
+				{ "name": "target", "type": "SceneObject", "optional": true },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "DropComponentOn", "kind": "method" }
+		},
+		{
+			"id": "DiffersFromDefault",
+			"cpp": "::Shalltear::EditorSceneOps::DiffersFromDefault(*target, field, steps)",
+			"returns": "bool",
+			"params": [
+				{ "name": "target", "type": "EditTarget" },
+				{ "name": "field", "type": "StringHash" },
+				{ "name": "steps", "type": "list<EditorSceneOpsValueStep>" }
+			],
+			"csharp": { "member": "DiffersFromDefault", "kind": "method" }
+		},
+		{
+			"id": "ResetToDefault",
+			"cpp": "::Shalltear::EditorSceneOps::ResetToDefault(*target, field, steps, label)",
+			"returns": "bool",
+			"params": [
+				{ "name": "target", "type": "EditTarget" },
+				{ "name": "field", "type": "StringHash" },
+				{ "name": "steps", "type": "list<EditorSceneOpsValueStep>" },
+				{ "name": "label", "type": "string" }
+			],
+			"csharp": { "member": "ResetToDefault", "kind": "method" }
+		},
+		{
+			"id": "ResetFieldsToDefaults",
+			"cpp": "::Shalltear::EditorSceneOps::ResetFieldsToDefaults(*target, fields, label)",
+			"returns": "u32",
+			"params": [
+				{ "name": "target", "type": "EditTarget" },
+				{ "name": "fields", "type": "list<StringHash>" },
+				{ "name": "label", "type": "string" }
+			],
+			"csharp": { "member": "ResetFieldsToDefaults", "kind": "method" }
+		},
+		{
+			"id": "ResetComponentToDefaults",
+			"cpp": "::Shalltear::EditorSceneOps::ResetComponentToDefaults(*component)",
+			"returns": "u32",
+			"params": [{ "name": "component", "type": "EditTarget" }],
+			"csharp": { "member": "ResetComponentToDefaults", "kind": "method" }
+		},
+		{
+			"id": "EulerForDisplay",
+			"cpp": "::Shalltear::EditorSceneOps::EulerForDisplay(rotation)",
+			"returns": "Vec3",
+			"params": [{ "name": "rotation", "type": "Quat" }],
+			"csharp": { "member": "EulerForDisplay", "kind": "method" }
+		}
+	]
+}

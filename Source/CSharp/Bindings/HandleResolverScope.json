@@ -1,0 +1,53 @@
+{
+	"area": "HandleResolverScope",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/HandleResolver.h"
+	],
+	"class": "Shalltear.HandleResolverScope",
+	"instance": "HandleResolverScope",
+	"functions": [
+		{
+			"id": "GetToGuid",
+			"cpp": "Slots::Bits(self->toGuid)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ToGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetToGuid",
+			"cpp": "self->toGuid = Slots::FromBits<bool (*)(void *, uint64_t, Shalltear::Guid *, Shalltear::StringHash *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ToGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetToHandle",
+			"cpp": "Slots::Bits(self->toHandle)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ToHandle", "kind": "getter" }
+		},
+		{
+			"id": "SetToHandle",
+			"cpp": "self->toHandle = Slots::FromBits<bool (*)(void *, const Shalltear::Guid &, Shalltear::StringHash, uint64_t *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ToHandle", "kind": "setter" }
+		},
+		{
+			"id": "GetUser",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->user))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "User", "kind": "getter" }
+		},
+		{
+			"id": "SetUser",
+			"cpp": "self->user = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "User", "kind": "setter" }
+		}
+	]
+}

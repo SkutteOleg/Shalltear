@@ -1,0 +1,74 @@
+{
+	"area": "PakStringTable",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.PakStringTable",
+	"instance": "PakStringTable",
+	"functions": [
+		{
+			"id": "Get",
+			"cpp": "self->Get(index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "Get", "kind": "method" }
+		},
+		{
+			"id": "GetOffsets",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->offsets))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Offsets", "kind": "getter" }
+		},
+		{
+			"id": "SetOffsets",
+			"cpp": "self->offsets = reinterpret_cast<const ::Shalltear::u32*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Offsets", "kind": "setter" }
+		},
+		{
+			"id": "GetBlob",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->blob))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Blob", "kind": "getter" }
+		},
+		{
+			"id": "SetBlob",
+			"cpp": "self->blob = reinterpret_cast<const ::Shalltear::u8*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Blob", "kind": "setter" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->count",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "SetCount",
+			"cpp": "self->count = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Count", "kind": "setter" }
+		},
+		{
+			"id": "GetBlobSize",
+			"cpp": "self->blobSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BlobSize", "kind": "getter" }
+		},
+		{
+			"id": "SetBlobSize",
+			"cpp": "self->blobSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "BlobSize", "kind": "setter" }
+		}
+	]
+}

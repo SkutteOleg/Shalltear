@@ -1,0 +1,17 @@
+{
+	"area": "GraphicsEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/GraphicsEvents.h"
+	],
+	"class": "Shalltear.GraphicsEvents",
+	"functions": [
+		{
+			"id": "SubscribeDeviceRestored",
+			"cpp": "EventBridge::Subscribe(::Shalltear::GraphicsEvents::DeviceRestored, handler)",
+			"returns": "u64",
+			"params": [{ "name": "handler", "type": "fn<void>", "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SubscribeDeviceRestored", "kind": "method" }
+		}
+	]
+}

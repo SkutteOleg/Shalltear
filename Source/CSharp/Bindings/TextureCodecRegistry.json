@@ -1,0 +1,53 @@
+{
+	"area": "TextureCodecRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/TextureCodecs.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.TextureCodecRegistry",
+	"instance": "TextureCodecRegistry",
+	"enums": [
+		{
+			"name": "TexelMeaning",
+			"cpp": "::Shalltear::TexelMeaning",
+			"underlying": "u8",
+			"values": [
+				{ "name": "sRGBColor", "value": 0 },
+				{ "name": "Linear", "value": 1 },
+				{ "name": "Normal", "value": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "TextureCodecRegistry", "cpp": "::Shalltear::TextureCodecRegistry", "owned": true, "create": true },
+		{ "name": "TextureCodec", "cpp": "::Shalltear::TextureCodec", "owned": true, "create": true },
+		{ "name": "TextureEncodeInput", "cpp": "::Shalltear::TextureEncodeInput", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "self->Register(format, *codec, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "format", "type": "RHIFormat" },
+				{ "name": "codec", "type": "TextureCodec" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "self->UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "self->Find(format)",
+			"returns": "TextureCodec",
+			"params": [{ "name": "format", "type": "RHIFormat" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		}
+	]
+}

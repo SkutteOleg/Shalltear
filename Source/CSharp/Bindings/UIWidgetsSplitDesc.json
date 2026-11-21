@@ -1,0 +1,89 @@
+{
+	"area": "UIWidgetsSplitDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIWidgetsSplitDesc",
+	"instance": "UIWidgetsSplitDesc",
+	"functions": [
+		{
+			"id": "GetAxis",
+			"cpp": "self->axis",
+			"returns": "UIFlexDirection",
+			"params": [],
+			"csharp": { "member": "Axis", "kind": "getter" }
+		},
+		{
+			"id": "SetAxis",
+			"cpp": "self->axis = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIFlexDirection" }],
+			"csharp": { "member": "Axis", "kind": "setter" }
+		},
+		{
+			"id": "GetSizing",
+			"cpp": "self->sizing",
+			"returns": "UIWidgetsSplitSizing",
+			"params": [],
+			"csharp": { "member": "Sizing", "kind": "getter" }
+		},
+		{
+			"id": "SetSizing",
+			"cpp": "self->sizing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIWidgetsSplitSizing" }],
+			"csharp": { "member": "Sizing", "kind": "setter" }
+		},
+		{
+			"id": "GetPosition",
+			"cpp": "self->position",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Position", "kind": "getter" }
+		},
+		{
+			"id": "SetPosition",
+			"cpp": "self->position = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Position", "kind": "setter" }
+		},
+		{
+			"id": "GetMinFirstPx",
+			"cpp": "self->minFirstPx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MinFirstPx", "kind": "getter" }
+		},
+		{
+			"id": "SetMinFirstPx",
+			"cpp": "self->minFirstPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MinFirstPx", "kind": "setter" }
+		},
+		{
+			"id": "GetMinSecondPx",
+			"cpp": "self->minSecondPx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MinSecondPx", "kind": "getter" }
+		},
+		{
+			"id": "SetMinSecondPx",
+			"cpp": "self->minSecondPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MinSecondPx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnPositionChanged",
+			"cpp": "self->onPositionChanged = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;f32>", "optional": true, "cpp": "std::function<void (float)>" }],
+			"csharp": { "member": "SetOnPositionChanged", "kind": "method" }
+		}
+	]
+}

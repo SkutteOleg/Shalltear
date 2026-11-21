@@ -1,0 +1,51 @@
+{
+	"area": "BehaviorUtility",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Behavior.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.BehaviorUtility",
+	"enums": [
+		{
+			"name": "BehaviorTick",
+			"cpp": "::Shalltear::BehaviorTick",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Update", "value": 1 },
+				{ "name": "FixedUpdate", "value": 2 },
+				{ "name": "LateUpdate", "value": 4 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "BehaviorTick" },
+				{ "name": "flags", "type": "BehaviorTick" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "BehaviorTick" },
+				{ "name": "flags", "type": "BehaviorTick" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "GetBehaviorTicksAttribute",
+			"cpp": "::Shalltear::BehaviorTicksAttribute",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "BehaviorTicksAttribute", "kind": "getter" }
+		}
+	]
+}

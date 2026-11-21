@@ -1,0 +1,53 @@
+{
+	"area": "UIStyleRuleSource",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Style.h"
+	],
+	"class": "Shalltear.UIStyleRuleSource",
+	"instance": "UIStyleRuleSource",
+	"functions": [
+		{
+			"id": "GetSelector",
+			"cpp": "self->selector",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Selector", "kind": "getter" }
+		},
+		{
+			"id": "SetSelector",
+			"cpp": "self->selector = Slots::KeepFieldText(self, 0xb9329bbd16066a0aull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Selector", "kind": "setter" }
+		},
+		{
+			"id": "GetBody",
+			"cpp": "self->body",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Body", "kind": "getter" }
+		},
+		{
+			"id": "SetBody",
+			"cpp": "self->body = Slots::KeepFieldText(self, 0x08e573baacb6a183ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Body", "kind": "setter" }
+		},
+		{
+			"id": "GetDeclarations",
+			"cpp": "self->declarations",
+			"returns": "list<UIStyleDeclarationSource>",
+			"params": [],
+			"csharp": { "member": "Declarations", "kind": "getter" }
+		},
+		{
+			"id": "SetDeclarations",
+			"cpp": "self->declarations = Slots::Copies<::Shalltear::Vector<::Shalltear::UI::StyleDeclarationSource>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIStyleDeclarationSource>" }],
+			"csharp": { "member": "Declarations", "kind": "setter" }
+		}
+	]
+}

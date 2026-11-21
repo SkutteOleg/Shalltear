@@ -1,0 +1,96 @@
+{
+	"area": "ModelContributorDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelContributors.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.ModelContributorDesc",
+	"instance": "ModelContributorDesc",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetVersion",
+			"cpp": "self->version",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Version", "kind": "getter" }
+		},
+		{
+			"id": "SetVersion",
+			"cpp": "self->version = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Version", "kind": "setter" }
+		},
+		{
+			"id": "GetWantsTracks",
+			"cpp": "self->wantsTracks",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "WantsTracks", "kind": "getter" }
+		},
+		{
+			"id": "SetWantsTracks",
+			"cpp": "self->wantsTracks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "WantsTracks", "kind": "setter" }
+		},
+		{
+			"id": "GetContribute",
+			"cpp": "Slots::Bits(self->contribute)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Contribute", "kind": "getter" }
+		},
+		{
+			"id": "SetContribute",
+			"cpp": "self->contribute = Slots::FromBits<void (*)(const Shalltear::ModelContribution &)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Contribute", "kind": "setter" }
+		},
+		{
+			"id": "GetUser",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->user))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "User", "kind": "getter" }
+		},
+		{
+			"id": "SetUser",
+			"cpp": "self->user = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "User", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerField",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->owner))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = reinterpret_cast<const void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		}
+	]
+}

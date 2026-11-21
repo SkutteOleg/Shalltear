@@ -1,0 +1,61 @@
+{
+	"area": "ColliderProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Colliders.h",
+		"DerivedTypes.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.ColliderProxy",
+	"instance": "ColliderProxy",
+	"prelude": [
+		"class ColliderProxy final : public ::Shalltear::Collider {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::Collider::GetType(); }",
+		"\t~ColliderProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<bool(const Shalltear::Vec3Generic<float> &, Shalltear::PhysicsShapeRequest &)> describeShape;",
+		"\tbool DescribeShape(const Shalltear::Vec3Generic<float> & a0, Shalltear::PhysicsShapeRequest & a1) const override {",
+		"\t\treturn describeShape ? describeShape(a0, a1) : Slots::ResultOf<decltype(describeShape)>();",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "ColliderProxy", "cpp": "ColliderProxy" }],
+	"functions": [
+		{
+			"id": "SetDescribeShape",
+			"cpp": "self->describeShape = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<bool;Vec3;PhysicsShapeRequest>",
+					"optional": true,
+					"cpp": "std::function<bool(const Shalltear::Vec3Generic<float> &, Shalltear::PhysicsShapeRequest &)>"
+				}
+			],
+			"csharp": { "member": "SetDescribeShape", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::Collider*>(self)",
+			"returns": "Collider",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<ColliderProxy, ::Shalltear::Collider>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;ColliderProxy>", "cpp": "std::function<void(ColliderProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

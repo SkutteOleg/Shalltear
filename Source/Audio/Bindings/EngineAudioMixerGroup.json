@@ -1,0 +1,165 @@
+{
+	"area": "EngineAudioMixerGroup",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMixer.h"
+	],
+	"class": "Shalltear.EngineAudioMixerGroup",
+	"instance": "EngineAudioMixerGroup",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetClock",
+			"cpp": "self->clock",
+			"returns": "AudioMixerGroupClock",
+			"params": [],
+			"csharp": { "member": "Clock", "kind": "getter" }
+		},
+		{
+			"id": "SetClock",
+			"cpp": "self->clock = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioMixerGroupClock" }],
+			"csharp": { "member": "Clock", "kind": "setter" }
+		},
+		{
+			"id": "GetFollowTimeScale",
+			"cpp": "self->followTimeScale",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "FollowTimeScale", "kind": "getter" }
+		},
+		{
+			"id": "SetFollowTimeScale",
+			"cpp": "self->followTimeScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "FollowTimeScale", "kind": "setter" }
+		},
+		{
+			"id": "GetMute",
+			"cpp": "self->mute",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Mute", "kind": "getter" }
+		},
+		{
+			"id": "SetMute",
+			"cpp": "self->mute = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Mute", "kind": "setter" }
+		},
+		{
+			"id": "GetSolo",
+			"cpp": "self->solo",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Solo", "kind": "getter" }
+		},
+		{
+			"id": "SetSolo",
+			"cpp": "self->solo = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Solo", "kind": "setter" }
+		},
+		{
+			"id": "GetBypassEffects",
+			"cpp": "self->bypassEffects",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BypassEffects", "kind": "getter" }
+		},
+		{
+			"id": "SetBypassEffects",
+			"cpp": "self->bypassEffects = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BypassEffects", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->color",
+			"returns": "AudioMixerGroupColor",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioMixerGroupColor" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		},
+		{
+			"id": "GetShownIn",
+			"cpp": "self->shownIn",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ShownIn", "kind": "getter" }
+		},
+		{
+			"id": "SetShownIn",
+			"cpp": "self->shownIn = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ShownIn", "kind": "setter" }
+		},
+		{
+			"id": "GetUnits",
+			"cpp": "self->units",
+			"returns": "list<AudioMixerUnit>",
+			"params": [],
+			"csharp": { "member": "Units", "kind": "getter" }
+		},
+		{
+			"id": "SetUnits",
+			"cpp": "self->units = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioMixer::Unit>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioMixerUnit>" }],
+			"csharp": { "member": "Units", "kind": "setter" }
+		}
+	]
+}

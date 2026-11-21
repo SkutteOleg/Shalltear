@@ -1,0 +1,57 @@
+{
+	"area": "ProceduralRenderer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ProceduralRenderer.h",
+		"Shalltear/Core/Graphics/FramePass.h"
+	],
+	"class": "Shalltear.ProceduralRenderer",
+	"instance": "ProceduralRenderer",
+	"functions": [
+		{
+			"id": "Declare",
+			"cpp": "self->Declare(*plan)",
+			"returns": "void",
+			"params": [{ "name": "plan", "type": "ProceduralPlan" }],
+			"csharp": { "member": "Declare", "kind": "method" }
+		},
+		{
+			"id": "Record",
+			"cpp": "self->Record(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "ProceduralContext" }],
+			"csharp": { "member": "Record", "kind": "method" }
+		},
+		{
+			"id": "RecordView",
+			"cpp": "self->RecordView(*context, *view)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "ComputeContext" },
+				{ "name": "view", "type": "ProceduralView" }
+			],
+			"csharp": { "member": "RecordView", "kind": "method" }
+		},
+		{
+			"id": "IsCulled",
+			"cpp": "self->IsCulled()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsCulled", "kind": "getter" }
+		},
+		{
+			"id": "GetRenderingLayerMask",
+			"cpp": "self->GetRenderingLayerMask()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RenderingLayerMask", "kind": "getter" }
+		},
+		{
+			"id": "SetRenderingLayerMask",
+			"cpp": "self->SetRenderingLayerMask(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "RenderingLayerMask", "kind": "setter" }
+		}
+	]
+}

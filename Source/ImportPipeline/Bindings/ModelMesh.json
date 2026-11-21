@@ -1,0 +1,125 @@
+{
+	"area": "ModelMesh",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Graphics/MeshAsset.h"
+	],
+	"class": "Shalltear.ModelMesh",
+	"instance": "ModelMesh",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetVertices",
+			"cpp": "self->vertices",
+			"returns": "list<MeshVertex>",
+			"params": [],
+			"csharp": { "member": "Vertices", "kind": "getter" }
+		},
+		{
+			"id": "SetVertices",
+			"cpp": "self->vertices = Slots::ToVector<::Shalltear::MeshVertex>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MeshVertex>" }],
+			"csharp": { "member": "Vertices", "kind": "setter" }
+		},
+		{
+			"id": "GetIndices",
+			"cpp": "self->indices",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "Indices", "kind": "getter" }
+		},
+		{
+			"id": "SetIndices",
+			"cpp": "self->indices = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "Indices", "kind": "setter" }
+		},
+		{
+			"id": "GetSubmeshes",
+			"cpp": "self->submeshes",
+			"returns": "list<SubMesh>",
+			"params": [],
+			"csharp": { "member": "Submeshes", "kind": "getter" }
+		},
+		{
+			"id": "SetSubmeshes",
+			"cpp": "self->submeshes = Slots::ToVector<::Shalltear::SubMesh>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<SubMesh>" }],
+			"csharp": { "member": "Submeshes", "kind": "setter" }
+		},
+		{
+			"id": "GetBounds",
+			"cpp": "self->bounds",
+			"returns": "AABB",
+			"params": [],
+			"csharp": { "member": "Bounds", "kind": "getter" }
+		},
+		{
+			"id": "SetBounds",
+			"cpp": "self->bounds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AABB" }],
+			"csharp": { "member": "Bounds", "kind": "setter" }
+		},
+		{
+			"id": "GetMaterials",
+			"cpp": "self->materials",
+			"returns": "list<i32>",
+			"params": [],
+			"csharp": { "member": "Materials", "kind": "getter" }
+		},
+		{
+			"id": "SetMaterials",
+			"cpp": "self->materials = Slots::ToVector<i32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i32>" }],
+			"csharp": { "member": "Materials", "kind": "setter" }
+		},
+		{
+			"id": "GetInfluences",
+			"cpp": "self->influences",
+			"returns": "list<MeshSkinInfluence>",
+			"params": [],
+			"csharp": { "member": "Influences", "kind": "getter" }
+		},
+		{
+			"id": "SetInfluences",
+			"cpp": "self->influences = Slots::Copies<::Shalltear::Vector<::Shalltear::MeshSkinInfluence>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MeshSkinInfluence>" }],
+			"csharp": { "member": "Influences", "kind": "setter" }
+		},
+		{
+			"id": "GetBlendChannels",
+			"cpp": "self->blendChannels",
+			"returns": "list<ModelBlendChannel>",
+			"params": [],
+			"csharp": { "member": "BlendChannels", "kind": "getter" }
+		},
+		{
+			"id": "SetBlendChannels",
+			"cpp": "self->blendChannels = Slots::Copies<::Shalltear::Vector<::Shalltear::ModelBlendChannel>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<ModelBlendChannel>" }],
+			"csharp": { "member": "BlendChannels", "kind": "setter" }
+		}
+	]
+}

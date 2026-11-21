@@ -1,0 +1,21 @@
+{
+	"area": "ScopedHandleResolver",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/HandleResolver.h"
+	],
+	"class": "Shalltear.ScopedHandleResolver",
+	"instance": "ScopedHandleResolver",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::ScopedHandleResolver(*scope)",
+			"returns": "ScopedHandleResolver",
+			"params": [{ "name": "scope", "type": "HandleResolverScope" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

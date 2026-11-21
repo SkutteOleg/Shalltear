@@ -1,0 +1,73 @@
+{
+	"area": "MeshSkinInfluence",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MeshAsset.h"
+	],
+	"class": "Shalltear.MeshSkinInfluence",
+	"instance": "MeshSkinInfluence",
+	"structs": [
+		{
+			"name": "MeshVertex",
+			"cpp": "::Shalltear::MeshVertex",
+			"size": 52,
+			"align": 4,
+			"fields": [
+				{ "name": "position", "type": "Vec3", "offset": 0 },
+				{ "name": "u", "type": "f32", "offset": 12 },
+				{ "name": "normal", "type": "Vec3", "offset": 16 },
+				{ "name": "v", "type": "f32", "offset": 28 },
+				{ "name": "tangent", "type": "Vec3", "offset": 32 },
+				{ "name": "tangentSign", "type": "f32", "offset": 44 },
+				{ "name": "color", "type": "Color32", "offset": 48 }
+			]
+		},
+		{
+			"name": "SubMesh",
+			"cpp": "::Shalltear::SubMesh",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "firstIndex", "type": "u32", "offset": 0 },
+				{ "name": "indexCount", "type": "u32", "offset": 4 },
+				{ "name": "materialSlot", "type": "u32", "offset": 8 },
+				{ "name": "bounds", "type": "AABB", "offset": 12 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "MeshSkinInfluence", "cpp": "::Shalltear::MeshSkinInfluence", "owned": true, "create": true },
+		{ "name": "MeshBlendShapeFrame", "cpp": "::Shalltear::MeshBlendShapeFrame", "owned": true, "create": true },
+		{ "name": "MeshBlendShape", "cpp": "::Shalltear::MeshBlendShape", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetJoints",
+			"cpp": "self->joints",
+			"returns": "list<u16>",
+			"params": [],
+			"csharp": { "member": "Joints", "kind": "getter" }
+		},
+		{
+			"id": "SetJoints",
+			"cpp": "Slots::Assign(self->joints, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u16>" }],
+			"csharp": { "member": "Joints", "kind": "setter" }
+		},
+		{
+			"id": "GetWeights",
+			"cpp": "self->weights",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Weights", "kind": "getter" }
+		},
+		{
+			"id": "SetWeights",
+			"cpp": "Slots::Assign(self->weights, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Weights", "kind": "setter" }
+		}
+	]
+}

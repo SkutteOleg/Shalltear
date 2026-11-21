@@ -1,0 +1,80 @@
+{
+	"area": "EditorPreviewOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/RenderSystem.h"
+	],
+	"class": "Shalltear.Editor.EditorPreviewOps",
+	"functions": [
+		{
+			"id": "FitImage",
+			"cpp": "::Shalltear::EditorPreviewOps::FitImage(imageSize, available)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "imageSize", "type": "Vec2I" },
+				{ "name": "available", "type": "Vec2" }
+			],
+			"csharp": { "member": "FitImage", "kind": "method" }
+		},
+		{
+			"id": "DescribeTexture",
+			"cpp": "::Shalltear::EditorPreviewOps::DescribeTexture(size, format)",
+			"returns": "string",
+			"params": [
+				{ "name": "size", "type": "Vec2I" },
+				{ "name": "format", "type": "RHIFormat" }
+			],
+			"csharp": { "member": "DescribeTexture", "kind": "method" }
+		},
+		{
+			"id": "FitCameraToBounds",
+			"cpp": "::Shalltear::EditorPreviewOps::FitCameraToBounds(bounds, aspect, verticalFOVDegrees, marginScale, orbit, *outDesc)",
+			"returns": "bool",
+			"params": [
+				{ "name": "bounds", "type": "AABB" },
+				{ "name": "aspect", "type": "f32" },
+				{ "name": "verticalFOVDegrees", "type": "f32" },
+				{ "name": "marginScale", "type": "f32" },
+				{ "name": "orbit", "type": "AssetPreviewOrbit" },
+				{ "name": "outDesc", "type": "ViewDesc" }
+			],
+			"csharp": { "member": "FitCameraToBounds", "kind": "method" }
+		},
+		{
+			"id": "OrbitAfterDrag",
+			"cpp": "::Shalltear::EditorPreviewOps::OrbitAfterDrag(from, dragPx)",
+			"returns": "AssetPreviewOrbit",
+			"params": [
+				{ "name": "from", "type": "AssetPreviewOrbit" },
+				{ "name": "dragPx", "type": "Vec2" }
+			],
+			"csharp": { "member": "OrbitAfterDrag", "kind": "method" }
+		},
+		{
+			"id": "OrbitAfterZoom",
+			"cpp": "::Shalltear::EditorPreviewOps::OrbitAfterZoom(from, wheelTicks)",
+			"returns": "AssetPreviewOrbit",
+			"params": [
+				{ "name": "from", "type": "AssetPreviewOrbit" },
+				{ "name": "wheelTicks", "type": "f32" }
+			],
+			"csharp": { "member": "OrbitAfterZoom", "kind": "method" }
+		},
+		{
+			"id": "ResampleToRGBA8",
+			"cpp": "::Shalltear::EditorPreviewOps::ResampleToRGBA8(src, srcSize, srcFormat, dstSize, outValue)",
+			"returns": "RHIFormat",
+			"params": [
+				{ "name": "src", "type": "list<u8>" },
+				{ "name": "srcSize", "type": "Vec2I" },
+				{ "name": "srcFormat", "type": "RHIFormat" },
+				{ "name": "dstSize", "type": "Vec2I" },
+				{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" }
+			],
+			"csharp": { "member": "ResampleToRGBA8", "kind": "method" }
+		}
+	]
+}

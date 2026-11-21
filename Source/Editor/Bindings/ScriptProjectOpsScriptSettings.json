@@ -1,0 +1,53 @@
+{
+	"area": "ScriptProjectOpsScriptSettings",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ScriptProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ScriptProjectOpsScriptSettings",
+	"instance": "ScriptProjectOpsScriptSettings",
+	"functions": [
+		{
+			"id": "GetModuleName",
+			"cpp": "self->moduleName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ModuleName", "kind": "getter" }
+		},
+		{
+			"id": "SetModuleName",
+			"cpp": "self->moduleName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ModuleName", "kind": "setter" }
+		},
+		{
+			"id": "GetCompileCommand",
+			"cpp": "self->compileCommand",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "CompileCommand", "kind": "getter" }
+		},
+		{
+			"id": "SetCompileCommand",
+			"cpp": "self->compileCommand = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "CompileCommand", "kind": "setter" }
+		},
+		{
+			"id": "GetCompileCommandIsLegacy",
+			"cpp": "self->compileCommandIsLegacy",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CompileCommandIsLegacy", "kind": "getter" }
+		},
+		{
+			"id": "SetCompileCommandIsLegacy",
+			"cpp": "self->compileCommandIsLegacy = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "CompileCommandIsLegacy", "kind": "setter" }
+		}
+	]
+}

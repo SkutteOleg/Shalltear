@@ -1,0 +1,27 @@
+{
+	"area": "EditorExtensions",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorExtensions.h"
+	],
+	"class": "Shalltear.Editor.EditorExtensions",
+	"constants": [
+		{ "name": "REGISTER_SYMBOL", "cpp": "::Shalltear::EditorExtensions::REGISTER_SYMBOL", "type": "string", "value": "ShalltearRegisterEditorExtensions" }
+	],
+	"functions": [
+		{
+			"id": "Load",
+			"cpp": "::Shalltear::EditorExtensions::Load(reinterpret_cast<const void*>(static_cast<uintptr_t>(moduleBase)))",
+			"returns": "bool",
+			"params": [{ "name": "moduleBase", "type": "u64" }],
+			"csharp": { "member": "Load", "kind": "method" }
+		},
+		{
+			"id": "Unload",
+			"cpp": "::Shalltear::EditorExtensions::Unload(reinterpret_cast<const void*>(static_cast<uintptr_t>(moduleBase)))",
+			"returns": "u32",
+			"params": [{ "name": "moduleBase", "type": "u64" }],
+			"csharp": { "member": "Unload", "kind": "method" }
+		}
+	]
+}

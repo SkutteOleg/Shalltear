@@ -1,0 +1,126 @@
+{
+	"area": "EngineControllerColliderHit",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/CharacterController.h",
+		"Shalltear/Physics3D/Colliders.h",
+		"Shalltear/Physics3D/Rigidbody.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.EngineControllerColliderHit",
+	"instance": "EngineControllerColliderHit",
+	"functions": [
+		{
+			"id": "GetController",
+			"cpp": "self->controller",
+			"returns": "CharacterController",
+			"params": [],
+			"csharp": { "member": "Controller", "kind": "getter" }
+		},
+		{
+			"id": "SetController",
+			"cpp": "self->controller = ::Shalltear::Handle<::Shalltear::CharacterController>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CharacterController", "optional": true }],
+			"csharp": { "member": "Controller", "kind": "setter" }
+		},
+		{
+			"id": "GetCollider",
+			"cpp": "self->collider",
+			"returns": "Collider",
+			"params": [],
+			"csharp": { "member": "Collider", "kind": "getter" }
+		},
+		{
+			"id": "SetCollider",
+			"cpp": "self->collider = ::Shalltear::Handle<::Shalltear::Collider>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Collider", "optional": true }],
+			"csharp": { "member": "Collider", "kind": "setter" }
+		},
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetRigidbody",
+			"cpp": "self->rigidbody",
+			"returns": "Rigidbody",
+			"params": [],
+			"csharp": { "member": "Rigidbody", "kind": "getter" }
+		},
+		{
+			"id": "SetRigidbody",
+			"cpp": "self->rigidbody = ::Shalltear::Handle<::Shalltear::Rigidbody>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Rigidbody", "optional": true }],
+			"csharp": { "member": "Rigidbody", "kind": "setter" }
+		},
+		{
+			"id": "GetPoint",
+			"cpp": "self->point",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Point", "kind": "getter" }
+		},
+		{
+			"id": "SetPoint",
+			"cpp": "self->point = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Point", "kind": "setter" }
+		},
+		{
+			"id": "GetNormal",
+			"cpp": "self->normal",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Normal", "kind": "getter" }
+		},
+		{
+			"id": "SetNormal",
+			"cpp": "self->normal = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Normal", "kind": "setter" }
+		},
+		{
+			"id": "GetMoveDirection",
+			"cpp": "self->moveDirection",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "MoveDirection", "kind": "getter" }
+		},
+		{
+			"id": "SetMoveDirection",
+			"cpp": "self->moveDirection = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "MoveDirection", "kind": "setter" }
+		},
+		{
+			"id": "GetMoveLength",
+			"cpp": "self->moveLength",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MoveLength", "kind": "getter" }
+		},
+		{
+			"id": "SetMoveLength",
+			"cpp": "self->moveLength = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MoveLength", "kind": "setter" }
+		}
+	]
+}

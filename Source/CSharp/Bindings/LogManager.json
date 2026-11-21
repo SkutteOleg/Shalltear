@@ -1,0 +1,52 @@
+{
+	"area": "LogManager",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.LogManager",
+	"functions": [
+		{
+			"id": "AddSink",
+			"cpp": "::Shalltear::LogManager::AddSink(sink)",
+			"returns": "void",
+			"params": [{ "name": "sink", "type": "ILogSink", "optional": true, "shared": "take" }],
+			"csharp": { "member": "AddSink", "kind": "method" }
+		},
+		{
+			"id": "RemoveSink",
+			"cpp": "::Shalltear::LogManager::RemoveSink(sink)",
+			"returns": "bool",
+			"params": [{ "name": "sink", "type": "ILogSink", "optional": true, "shared": "alias" }],
+			"csharp": { "member": "RemoveSink", "kind": "method" }
+		},
+		{
+			"id": "RemoveAllSinks",
+			"cpp": "::Shalltear::LogManager::RemoveAllSinks()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RemoveAllSinks", "kind": "method" }
+		},
+		{
+			"id": "DrainBeforeImageUnload",
+			"cpp": "::Shalltear::LogManager::DrainBeforeImageUnload()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DrainBeforeImageUnload", "kind": "method" }
+		},
+		{
+			"id": "SetGlobalLevel",
+			"cpp": "::Shalltear::LogManager::SetGlobalLevel(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LogLevel" }],
+			"csharp": { "member": "GlobalLevel", "kind": "setter" }
+		},
+		{
+			"id": "GetGlobalLevel",
+			"cpp": "::Shalltear::LogManager::GetGlobalLevel()",
+			"returns": "LogLevel",
+			"params": [],
+			"csharp": { "member": "GlobalLevel", "kind": "getter" }
+		}
+	]
+}

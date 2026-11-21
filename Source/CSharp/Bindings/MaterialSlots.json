@@ -1,0 +1,277 @@
+{
+	"area": "MaterialSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h",
+		"Shalltear/Core/Graphics/ShaderReflection.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Material",
+	"instance": "Material",
+	"natives": [
+		{ "name": "MaterialAssetParam", "cpp": "::Shalltear::MaterialAsset::Param", "owned": true, "create": true },
+		{ "name": "MaterialInstanceSlots", "cpp": "::Shalltear::MaterialInstanceSlots", "owned": true, "create": true },
+		{ "name": "MaterialAssetTextureParam", "cpp": "::Shalltear::MaterialAsset::TextureParam", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "ResolveRenderState",
+			"cpp": "self->ResolveRenderState(shaderState)",
+			"returns": "RHIShaderRenderState",
+			"params": [{ "name": "shaderState", "type": "RHIShaderRenderState" }],
+			"csharp": { "member": "ResolveRenderState", "kind": "method" }
+		},
+		{
+			"id": "GetEffectiveKeywords",
+			"cpp": "self->GetEffectiveKeywords(outValue)",
+			"returns": "void",
+			"params": [{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "GetEffectiveKeywords", "kind": "method" }
+		},
+		{
+			"id": "SetKeywords",
+			"cpp": "self->SetKeywords(std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(enabled)))",
+			"returns": "void",
+			"params": [{ "name": "enabled", "type": "list<string>" }],
+			"csharp": { "member": "SetKeywords", "kind": "method" }
+		},
+		{
+			"id": "FindParam",
+			"cpp": "self->FindParam(name)",
+			"returns": "MaterialAssetParam",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "FindParam", "kind": "method" }
+		},
+		{
+			"id": "SetParam",
+			"cpp": "self->SetParam(name, *valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "valueValue", "type": "MaterialAssetParam" }
+			],
+			"csharp": { "member": "SetParam", "kind": "method" }
+		},
+		{
+			"id": "MakeParam",
+			"cpp": "::Shalltear::MaterialAsset::MakeParam(kind)",
+			"returns": "MaterialAssetParam",
+			"params": [{ "name": "kind", "type": "UniformMemberType" }],
+			"csharp": { "member": "MakeParam", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "MakeParam2",
+			"cpp": "::Shalltear::MaterialAsset::MakeParam(kind, *declared)",
+			"returns": "MaterialAssetParam",
+			"params": [
+				{ "name": "kind", "type": "UniformMemberType" },
+				{ "name": "declared", "type": "ShaderMemberDefault" }
+			],
+			"csharp": { "member": "MakeParam", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "PackBlock",
+			"cpp": "self->PackBlock(*layout, outValue, std::span<const ::Shalltear::ShaderMemberDefault>(Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberDefault>>(defaults)))",
+			"returns": "void",
+			"params": [
+				{ "name": "layout", "type": "UniformBlockLayout" },
+				{ "name": "outValue", "type": "span<u8>", "out": true },
+				{ "name": "defaults", "type": "list<ShaderMemberDefault>" }
+			],
+			"csharp": { "member": "PackBlock", "kind": "method" }
+		},
+		{
+			"id": "SyncToLayout",
+			"cpp": "self->SyncToLayout(layout, std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(textureSlots)), std::span<const ::Shalltear::ShaderMemberDefault>(Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderMemberDefault>>(defaults)))",
+			"returns": "u32",
+			"params": [
+				{ "name": "layout", "type": "UniformBlockLayout", "optional": true },
+				{ "name": "textureSlots", "type": "list<string>" },
+				{ "name": "defaults", "type": "list<ShaderMemberDefault>" }
+			],
+			"csharp": { "member": "SyncToLayout", "kind": "method" }
+		},
+		{
+			"id": "ApplyKeywordBindings",
+			"cpp": "self->ApplyKeywordBindings(std::span<const ::Shalltear::ShaderKeywordBinding>(Slots::Copies<::Shalltear::Vector<::Shalltear::ShaderKeywordBinding>>(bindings)))",
+			"returns": "void",
+			"params": [{ "name": "bindings", "type": "list<ShaderKeywordBinding>" }],
+			"csharp": { "member": "ApplyKeywordBindings", "kind": "method" }
+		},
+		{
+			"id": "IsOrphanParam",
+			"cpp": "::Shalltear::MaterialAsset::IsOrphanParam(name, layout, std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(textureSlots)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "layout", "type": "UniformBlockLayout", "optional": true },
+				{ "name": "textureSlots", "type": "list<string>" }
+			],
+			"csharp": { "member": "IsOrphanParam", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetShaderGuid",
+			"cpp": "self->shaderGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "ShaderGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetShaderGuid",
+			"cpp": "self->shaderGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "ShaderGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetShader",
+			"cpp": "self->shader",
+			"returns": "ShaderAsset",
+			"params": [],
+			"csharp": { "member": "Shader", "kind": "getter" }
+		},
+		{
+			"id": "SetShader",
+			"cpp": "self->shader = ::Shalltear::Handle<::Shalltear::ShaderAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ShaderAsset", "optional": true }],
+			"csharp": { "member": "Shader", "kind": "setter" }
+		},
+		{
+			"id": "GetParams",
+			"cpp": "self->params",
+			"returns": "list<MaterialAssetParam>",
+			"params": [],
+			"csharp": { "member": "Params", "kind": "getter" }
+		},
+		{
+			"id": "SetParams",
+			"cpp": "self->params = Slots::Copies<::Shalltear::Vector<::Shalltear::MaterialAsset::Param>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MaterialAssetParam>" }],
+			"csharp": { "member": "Params", "kind": "setter" }
+		},
+		{
+			"id": "GetTextures",
+			"cpp": "self->textures",
+			"returns": "list<MaterialAssetTextureParam>",
+			"params": [],
+			"csharp": { "member": "Textures", "kind": "getter" }
+		},
+		{
+			"id": "SetTextures",
+			"cpp": "self->textures = Slots::Copies<::Shalltear::Vector<::Shalltear::MaterialAsset::TextureParam>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MaterialAssetTextureParam>" }],
+			"csharp": { "member": "Textures", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywordsField",
+			"cpp": "self->keywords",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "KeywordsField", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywordsField",
+			"cpp": "self->keywords = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "KeywordsField", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywordHash",
+			"cpp": "self->keywordHash",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "KeywordHash", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywordHash",
+			"cpp": "self->keywordHash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "KeywordHash", "kind": "setter" }
+		},
+		{
+			"id": "TryGetBlend",
+			"cpp": "Slots::Take(self->blend, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "RHIBlendMode", "out": true }],
+			"csharp": { "member": "TryGetBlend", "kind": "method" }
+		},
+		{
+			"id": "ClearBlend",
+			"cpp": "self->blend.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearBlend", "kind": "method" }
+		},
+		{
+			"id": "SetBlend",
+			"cpp": "self->blend = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIBlendMode" }],
+			"csharp": { "member": "SetBlend", "kind": "method" }
+		},
+		{
+			"id": "TryGetCull",
+			"cpp": "Slots::Take(self->cull, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "RHICullMode", "out": true }],
+			"csharp": { "member": "TryGetCull", "kind": "method" }
+		},
+		{
+			"id": "ClearCull",
+			"cpp": "self->cull.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearCull", "kind": "method" }
+		},
+		{
+			"id": "SetCull",
+			"cpp": "self->cull = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHICullMode" }],
+			"csharp": { "member": "SetCull", "kind": "method" }
+		},
+		{
+			"id": "GetAlphaClipThresholdField",
+			"cpp": "self->alphaClipThreshold",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "AlphaClipThresholdField", "kind": "getter" }
+		},
+		{
+			"id": "SetAlphaClipThresholdField",
+			"cpp": "self->alphaClipThreshold = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "AlphaClipThresholdField", "kind": "setter" }
+		},
+		{
+			"id": "GetSortingPriorityField",
+			"cpp": "self->sortingPriority",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "SortingPriorityField", "kind": "getter" }
+		},
+		{
+			"id": "SetSortingPriorityField",
+			"cpp": "self->sortingPriority = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SortingPriorityField", "kind": "setter" }
+		}
+	]
+}

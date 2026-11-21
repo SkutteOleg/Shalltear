@@ -1,0 +1,27 @@
+{
+	"area": "EditorFrameCost",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCost",
+	"constants": [
+		{ "name": "STAGE_COUNT", "cpp": "::Shalltear::EditorFrameCost::STAGE_COUNT", "type": "u32", "value": 5 },
+		{ "name": "CLASS_COUNT", "cpp": "::Shalltear::EditorFrameCost::CLASS_COUNT", "type": "u32", "value": 3 },
+		{ "name": "EXCLUSION_COUNT", "cpp": "::Shalltear::EditorFrameCost::EXCLUSION_COUNT", "type": "u32", "value": 3 },
+		{ "name": "COUNTER_COUNT", "cpp": "::Shalltear::EditorFrameCost::COUNTER_COUNT", "type": "u32", "value": 22 },
+		{ "name": "WARMUP_FRAMES", "cpp": "::Shalltear::EditorFrameCost::WARMUP_FRAMES", "type": "u64", "value": 60 },
+		{ "name": "DEFAULT_EPOCH_SECONDS", "cpp": "::Shalltear::EditorFrameCost::DEFAULT_EPOCH_SECONDS", "type": "f64", "value": "0x1.4000000000000p+4" },
+		{ "name": "BUCKET_COUNT", "cpp": "::Shalltear::EditorFrameCost::BUCKET_COUNT", "type": "u32", "value": 128 },
+		{ "name": "BUCKETS_PER_MS", "cpp": "::Shalltear::EditorFrameCost::BUCKETS_PER_MS", "type": "u64", "value": 10 }
+	],
+	"functions": [
+		{
+			"id": "GetCounterIsLevel",
+			"cpp": "::Shalltear::EditorFrameCost::COUNTER_IS_LEVEL",
+			"returns": "list<bool>",
+			"params": [],
+			"csharp": { "member": "COUNTER_IS_LEVEL", "kind": "getter" }
+		}
+	]
+}

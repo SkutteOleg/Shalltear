@@ -1,0 +1,39 @@
+{
+	"area": "UIWidgetsMenuBarItemDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h"
+	],
+	"class": "Shalltear.UIWidgetsMenuBarItemDesc",
+	"instance": "UIWidgetsMenuBarItemDesc",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "SetFill",
+			"cpp": "self->fill = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIWidgetsMenuItemList>",
+					"optional": true,
+					"cpp": "std::function<void (std::vector<Shalltear::UI::Widgets::MenuItem, std::pmr::polymorphic_allocator<Shalltear::UI::Widgets::MenuItem>> &)>"
+				}
+			],
+			"csharp": { "member": "SetFill", "kind": "method" }
+		}
+	]
+}

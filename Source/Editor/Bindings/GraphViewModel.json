@@ -1,0 +1,668 @@
+{
+	"area": "GraphViewModel",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Editor/EditorTheme.h",
+		"Shalltear/Editor/GraphSearch.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.Editor.GraphViewModel",
+	"instance": "GraphViewModel",
+	"enums": [
+		{
+			"name": "GraphWireStyle",
+			"cpp": "::Shalltear::GraphWireStyle",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Arrow", "value": 0 },
+				{ "name": "Curve", "value": 1 },
+				{ "name": "Flow", "value": 2 }
+			]
+		},
+		{
+			"name": "GraphItemKind",
+			"cpp": "::Shalltear::GraphItemKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Node", "value": 0 },
+				{ "name": "Wire", "value": 1 },
+				{ "name": "Group", "value": 2 },
+				{ "name": "Note", "value": 3 },
+				{ "name": "Block", "value": 4 }
+			]
+		},
+		{
+			"name": "GraphCommand",
+			"cpp": "::Shalltear::GraphCommand",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Group", "value": 0 },
+				{ "name": "Ungroup", "value": 1 },
+				{ "name": "Copy", "value": 2 },
+				{ "name": "Cut", "value": 3 },
+				{ "name": "Paste", "value": 4 }
+			]
+		},
+		{
+			"name": "GraphInlineKind",
+			"cpp": "::Shalltear::GraphInlineKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Numbers", "value": 1 },
+				{ "name": "Color", "value": 2 },
+				{ "name": "Toggle", "value": 3 },
+				{ "name": "Label", "value": 4 },
+				{ "name": "Curve", "value": 5 },
+				{ "name": "Gradient", "value": 6 }
+			]
+		},
+		{
+			"name": "GraphSettingEdit",
+			"cpp": "::Shalltear::GraphSettingEdit",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Menu", "value": 0 },
+				{ "name": "Text", "value": 1 }
+			]
+		},
+		{
+			"name": "GraphNodePreview",
+			"cpp": "::Shalltear::GraphNodePreview",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Expanded", "value": 1 },
+				{ "name": "Collapsed", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "GraphPortRef",
+			"cpp": "::Shalltear::GraphPortRef",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "node", "type": "u64", "offset": 0 },
+				{ "name": "side", "type": "GraphPortSide", "offset": 8 },
+				{ "name": "port", "type": "u32", "offset": 12 }
+			]
+		},
+		{
+			"name": "GraphWireDesc",
+			"cpp": "::Shalltear::GraphWireDesc",
+			"size": 56,
+			"align": 8,
+			"fields": [
+				{ "name": "id", "type": "u64", "offset": 0 },
+				{ "name": "style", "type": "GraphWireStyle", "offset": 8 },
+				{ "name": "from", "type": "GraphPortRef", "offset": 16 },
+				{ "name": "to", "type": "GraphPortRef", "offset": 32 },
+				{ "name": "fan", "type": "i32", "offset": 48 },
+				{ "name": "color", "type": "EditorThemeColorToken", "offset": 52 }
+			]
+		},
+		{
+			"name": "GraphItem",
+			"cpp": "::Shalltear::GraphItem",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "kind", "type": "GraphItemKind", "offset": 0 },
+				{ "name": "id", "type": "u64", "offset": 8 }
+			]
+		},
+		{
+			"name": "GraphCanvasDesc",
+			"cpp": "::Shalltear::GraphCanvasDesc",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "minZoom", "type": "f32", "offset": 0 },
+				{ "name": "maxZoom", "type": "f32", "offset": 4 },
+				{ "name": "fieldsInside", "type": "bool", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "GraphViewModel", "cpp": "::Shalltear::GraphViewModel" },
+		{ "name": "GraphNodeDesc", "cpp": "::Shalltear::GraphNodeDesc", "owned": true, "create": true },
+		{ "name": "GraphGroupDesc", "cpp": "::Shalltear::GraphGroupDesc", "owned": true, "create": true },
+		{ "name": "GraphNoteDesc", "cpp": "::Shalltear::GraphNoteDesc", "owned": true, "create": true },
+		{ "name": "GraphOutlineDesc", "cpp": "::Shalltear::GraphOutlineDesc", "owned": true, "create": true },
+		{ "name": "GraphCanvas", "cpp": "::Shalltear::GraphCanvas", "owned": true, "create": true },
+		{ "name": "GraphInlineValue", "cpp": "::Shalltear::GraphInlineValue", "owned": true, "create": true },
+		{ "name": "GraphPortDesc", "cpp": "::Shalltear::GraphPortDesc", "owned": true, "create": true },
+		{ "name": "GraphSettingDesc", "cpp": "::Shalltear::GraphSettingDesc", "owned": true, "create": true },
+		{ "name": "GraphFlowPortDesc", "cpp": "::Shalltear::GraphFlowPortDesc", "owned": true, "create": true },
+		{ "name": "GraphBlockDesc", "cpp": "::Shalltear::GraphBlockDesc", "owned": true, "create": true },
+		{ "name": "GraphNodeDescList", "cpp": "::Shalltear::Vector<::Shalltear::GraphNodeDesc>" },
+		{ "name": "GraphWireDescList", "cpp": "::Shalltear::Vector<::Shalltear::GraphWireDesc>" },
+		{ "name": "GraphSearchEntryList", "cpp": "::Shalltear::Vector<::Shalltear::GraphSearchEntry>" },
+		{ "name": "GraphGroupDescList", "cpp": "::Shalltear::Vector<::Shalltear::GraphGroupDesc>" },
+		{ "name": "GraphNoteDescList", "cpp": "::Shalltear::Vector<::Shalltear::GraphNoteDesc>" },
+		{ "name": "GraphOutlineDescList", "cpp": "::Shalltear::Vector<::Shalltear::GraphOutlineDesc>" }
+	],
+	"functions": [
+		{
+			"id": "GetNodes",
+			"cpp": "self->GetNodes(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<GraphNodeDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphNodeDesc>" }
+			],
+			"csharp": { "member": "GetNodes", "kind": "method" }
+		},
+		{
+			"id": "GetNodePosition",
+			"cpp": "self->GetNodePosition(node, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "node", "type": "u64" },
+				{ "name": "outValue", "type": "Vec2", "out": true }
+			],
+			"csharp": { "member": "GetNodePosition", "kind": "method" }
+		},
+		{
+			"id": "GetWires",
+			"cpp": "self->GetWires(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<GraphWireDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphWireDesc>" }
+			],
+			"csharp": { "member": "GetWires", "kind": "method" }
+		},
+		{
+			"id": "GetNodeBorder",
+			"cpp": "self->GetNodeBorder(node)",
+			"returns": "EditorThemeColorToken",
+			"params": [{ "name": "node", "type": "u64" }],
+			"csharp": { "member": "GetNodeBorder", "kind": "method" }
+		},
+		{
+			"id": "GetNodeTooltip",
+			"cpp": "self->GetNodeTooltip(node)",
+			"returns": "string",
+			"params": [{ "name": "node", "type": "u64" }],
+			"csharp": { "member": "GetNodeTooltip", "kind": "method" }
+		},
+		{
+			"id": "PaintNode",
+			"cpp": "self->PaintNode(*context, element, *paint, node)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "paint", "type": "UIPaintScope" },
+				{ "name": "node", "type": "u64" }
+			],
+			"csharp": { "member": "PaintNode", "kind": "method" }
+		},
+		{
+			"id": "PaintNodePreview",
+			"cpp": "self->PaintNodePreview(*context, *paint, node, well)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "paint", "type": "UIPaintScope" },
+				{ "name": "node", "type": "u64" },
+				{ "name": "well", "type": "UIRect" }
+			],
+			"csharp": { "member": "PaintNodePreview", "kind": "method" }
+		},
+		{
+			"id": "SetNodePreviewExpanded",
+			"cpp": "self->SetNodePreviewExpanded(node, expanded)",
+			"returns": "void",
+			"params": [
+				{ "name": "node", "type": "u64" },
+				{ "name": "expanded", "type": "bool" }
+			],
+			"csharp": { "member": "SetNodePreviewExpanded", "kind": "method" }
+		},
+		{
+			"id": "SetInlineValue",
+			"cpp": "self->SetInlineValue(input, values)",
+			"returns": "void",
+			"params": [
+				{ "name": "input", "type": "GraphPortRef" },
+				{ "name": "values", "type": "list<f32>" }
+			],
+			"csharp": { "member": "SetInlineValue", "kind": "method" }
+		},
+		{
+			"id": "OnInlineEditBegin",
+			"cpp": "self->OnInlineEditBegin()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnInlineEditBegin", "kind": "method" }
+		},
+		{
+			"id": "OnInlineEditEnd",
+			"cpp": "self->OnInlineEditEnd()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnInlineEditEnd", "kind": "method" }
+		},
+		{
+			"id": "OpenInlineEditor",
+			"cpp": "self->OpenInlineEditor(*context, input, field)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "input", "type": "GraphPortRef" },
+				{ "name": "field", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "OpenInlineEditor", "kind": "method" }
+		},
+		{
+			"id": "OnSelectionChanged",
+			"cpp": "self->OnSelectionChanged()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "OnMoveBegin",
+			"cpp": "self->OnMoveBegin()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnMoveBegin", "kind": "method" }
+		},
+		{
+			"id": "MoveNode",
+			"cpp": "self->MoveNode(node, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "node", "type": "u64" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "MoveNode", "kind": "method" }
+		},
+		{
+			"id": "OnMoveEnd",
+			"cpp": "self->OnMoveEnd()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "OnMoveEnd", "kind": "method" }
+		},
+		{
+			"id": "OnNodeClick",
+			"cpp": "self->OnNodeClick(node)",
+			"returns": "void",
+			"params": [{ "name": "node", "type": "u64" }],
+			"csharp": { "member": "OnNodeClick", "kind": "method" }
+		},
+		{
+			"id": "OnNodeDoubleClick",
+			"cpp": "self->OnNodeDoubleClick(node)",
+			"returns": "void",
+			"params": [{ "name": "node", "type": "u64" }],
+			"csharp": { "member": "OnNodeDoubleClick", "kind": "method" }
+		},
+		{
+			"id": "OnNodeContextMenu",
+			"cpp": "self->OnNodeContextMenu(*context, node)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "node", "type": "u64" }
+			],
+			"csharp": { "member": "OnNodeContextMenu", "kind": "method" }
+		},
+		{
+			"id": "AcceptsNodeDrop",
+			"cpp": "self->AcceptsNodeDrop(node, *payload)",
+			"returns": "bool",
+			"params": [
+				{ "name": "node", "type": "u64" },
+				{ "name": "payload", "type": "UIDragPayload" }
+			],
+			"csharp": { "member": "AcceptsNodeDrop", "kind": "method" }
+		},
+		{
+			"id": "OnNodeDrop",
+			"cpp": "self->OnNodeDrop(node, *payload)",
+			"returns": "void",
+			"params": [
+				{ "name": "node", "type": "u64" },
+				{ "name": "payload", "type": "UIDragPayload" }
+			],
+			"csharp": { "member": "OnNodeDrop", "kind": "method" }
+		},
+		{
+			"id": "OnCanvasContextMenu",
+			"cpp": "self->OnCanvasContextMenu(*context, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "OnCanvasContextMenu", "kind": "method" }
+		},
+		{
+			"id": "AcceptsDrop",
+			"cpp": "self->AcceptsDrop(*payload)",
+			"returns": "bool",
+			"params": [{ "name": "payload", "type": "UIDragPayload" }],
+			"csharp": { "member": "AcceptsDrop", "kind": "method" }
+		},
+		{
+			"id": "OnDrop",
+			"cpp": "self->OnDrop(*payload, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "OnDrop", "kind": "method" }
+		},
+		{
+			"id": "GetPendingWire",
+			"cpp": "self->GetPendingWire(from)",
+			"returns": "bool",
+			"params": [{ "name": "from", "type": "u64", "out": true }],
+			"csharp": { "member": "GetPendingWire", "kind": "method" }
+		},
+		{
+			"id": "CancelPendingWire",
+			"cpp": "self->CancelPendingWire()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "CancelPendingWire", "kind": "method" }
+		},
+		{
+			"id": "CanConnect",
+			"cpp": "self->CanConnect(output, input)",
+			"returns": "bool",
+			"params": [
+				{ "name": "output", "type": "GraphPortRef" },
+				{ "name": "input", "type": "GraphPortRef" }
+			],
+			"csharp": { "member": "CanConnect", "kind": "method" }
+		},
+		{
+			"id": "Connect",
+			"cpp": "self->Connect(output, input)",
+			"returns": "void",
+			"params": [
+				{ "name": "output", "type": "GraphPortRef" },
+				{ "name": "input", "type": "GraphPortRef" }
+			],
+			"csharp": { "member": "Connect", "kind": "method" }
+		},
+		{
+			"id": "GetSearchEntries",
+			"cpp": "self->GetSearchEntries(Slots::OptionalPointer<::Shalltear::GraphPortRef>(from), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "from", "type": "list<GraphPortRef>" },
+				{ "name": "outValue", "type": "list<GraphSearchEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphSearchEntry>" }
+			],
+			"csharp": { "member": "GetSearchEntries", "kind": "method" }
+		},
+		{
+			"id": "OnSearchPick",
+			"cpp": "self->OnSearchPick(*entry, graph, Slots::OptionalPointer<::Shalltear::GraphPortRef>(from))",
+			"returns": "void",
+			"params": [
+				{ "name": "entry", "type": "GraphSearchEntry" },
+				{ "name": "graph", "type": "Vec2" },
+				{ "name": "from", "type": "list<GraphPortRef>" }
+			],
+			"csharp": { "member": "OnSearchPick", "kind": "method" }
+		},
+		{
+			"id": "GetGroups",
+			"cpp": "self->GetGroups(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<GraphGroupDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphGroupDesc>" }
+			],
+			"csharp": { "member": "GetGroups", "kind": "method" }
+		},
+		{
+			"id": "GetNotes",
+			"cpp": "self->GetNotes(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<GraphNoteDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphNoteDesc>" }
+			],
+			"csharp": { "member": "GetNotes", "kind": "method" }
+		},
+		{
+			"id": "MoveNote",
+			"cpp": "self->MoveNote(note, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "note", "type": "u64" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "MoveNote", "kind": "method" }
+		},
+		{
+			"id": "MoveGroup",
+			"cpp": "self->MoveGroup(group, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "group", "type": "u64" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "MoveGroup", "kind": "method" }
+		},
+		{
+			"id": "ResizeNote",
+			"cpp": "self->ResizeNote(note, size)",
+			"returns": "void",
+			"params": [
+				{ "name": "note", "type": "u64" },
+				{ "name": "size", "type": "Vec2" }
+			],
+			"csharp": { "member": "ResizeNote", "kind": "method" }
+		},
+		{
+			"id": "SetGroupOf",
+			"cpp": "self->SetGroupOf(items, group)",
+			"returns": "void",
+			"params": [
+				{ "name": "items", "type": "list<GraphItem>" },
+				{ "name": "group", "type": "u64" }
+			],
+			"csharp": { "member": "SetGroupOf", "kind": "method" }
+		},
+		{
+			"id": "RenameGroup",
+			"cpp": "self->RenameGroup(group, title)",
+			"returns": "void",
+			"params": [
+				{ "name": "group", "type": "u64" },
+				{ "name": "title", "type": "string" }
+			],
+			"csharp": { "member": "RenameGroup", "kind": "method" }
+		},
+		{
+			"id": "EditNote",
+			"cpp": "self->EditNote(note, title, body)",
+			"returns": "void",
+			"params": [
+				{ "name": "note", "type": "u64" },
+				{ "name": "title", "type": "string" },
+				{ "name": "body", "type": "string" }
+			],
+			"csharp": { "member": "EditNote", "kind": "method" }
+		},
+		{
+			"id": "OnGroupContextMenu",
+			"cpp": "self->OnGroupContextMenu(*context, group)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "group", "type": "u64" }
+			],
+			"csharp": { "member": "OnGroupContextMenu", "kind": "method" }
+		},
+		{
+			"id": "OnNoteContextMenu",
+			"cpp": "self->OnNoteContextMenu(*context, note)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "note", "type": "u64" }
+			],
+			"csharp": { "member": "OnNoteContextMenu", "kind": "method" }
+		},
+		{
+			"id": "OnWireContextMenu",
+			"cpp": "self->OnWireContextMenu(*context, wire, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "wire", "type": "u64" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "OnWireContextMenu", "kind": "method" }
+		},
+		{
+			"id": "OnWireDoubleClick",
+			"cpp": "self->OnWireDoubleClick(wire, graph)",
+			"returns": "void",
+			"params": [
+				{ "name": "wire", "type": "u64" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "OnWireDoubleClick", "kind": "method" }
+		},
+		{
+			"id": "OnGraphCommand",
+			"cpp": "self->OnGraphCommand(command)",
+			"returns": "bool",
+			"params": [{ "name": "command", "type": "GraphCommand" }],
+			"csharp": { "member": "OnGraphCommand", "kind": "method" }
+		},
+		{
+			"id": "GetOutlines",
+			"cpp": "self->GetOutlines(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<GraphOutlineDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphOutlineDesc>" }
+			],
+			"csharp": { "member": "GetOutlines", "kind": "method" }
+		},
+		{
+			"id": "RenameOutline",
+			"cpp": "self->RenameOutline(outline, title)",
+			"returns": "void",
+			"params": [
+				{ "name": "outline", "type": "u64" },
+				{ "name": "title", "type": "string" }
+			],
+			"csharp": { "member": "RenameOutline", "kind": "method" }
+		},
+		{
+			"id": "OnSettingClick",
+			"cpp": "self->OnSettingClick(*context, owner, setting)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "owner", "type": "u64" },
+				{ "name": "setting", "type": "u32" }
+			],
+			"csharp": { "member": "OnSettingClick", "kind": "method" }
+		},
+		{
+			"id": "SetSettingText",
+			"cpp": "self->SetSettingText(owner, setting, text)",
+			"returns": "void",
+			"params": [
+				{ "name": "owner", "type": "u64" },
+				{ "name": "setting", "type": "u32" },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "SetSettingText", "kind": "method" }
+		},
+		{
+			"id": "OnSettingAction",
+			"cpp": "self->OnSettingAction(owner, setting)",
+			"returns": "void",
+			"params": [
+				{ "name": "owner", "type": "u64" },
+				{ "name": "setting", "type": "u32" }
+			],
+			"csharp": { "member": "OnSettingAction", "kind": "method" }
+		},
+		{
+			"id": "SetBlockEnabled",
+			"cpp": "self->SetBlockEnabled(block, enabled)",
+			"returns": "void",
+			"params": [
+				{ "name": "block", "type": "u64" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetBlockEnabled", "kind": "method" }
+		},
+		{
+			"id": "OnPortSpaceClick",
+			"cpp": "self->OnPortSpaceClick(input)",
+			"returns": "void",
+			"params": [{ "name": "input", "type": "GraphPortRef" }],
+			"csharp": { "member": "OnPortSpaceClick", "kind": "method" }
+		},
+		{
+			"id": "OnBlockContextMenu",
+			"cpp": "self->OnBlockContextMenu(*context, block)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "block", "type": "u64" }
+			],
+			"csharp": { "member": "OnBlockContextMenu", "kind": "method" }
+		},
+		{
+			"id": "CanMoveBlocks",
+			"cpp": "self->CanMoveBlocks(blocks, stack)",
+			"returns": "bool",
+			"params": [
+				{ "name": "blocks", "type": "list<u64>" },
+				{ "name": "stack", "type": "u64" }
+			],
+			"csharp": { "member": "CanMoveBlocks", "kind": "method" }
+		},
+		{
+			"id": "MoveBlocks",
+			"cpp": "self->MoveBlocks(blocks, stack, index)",
+			"returns": "void",
+			"params": [
+				{ "name": "blocks", "type": "list<u64>" },
+				{ "name": "stack", "type": "u64" },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "MoveBlocks", "kind": "method" }
+		},
+		{
+			"id": "GetBlockSearchEntries",
+			"cpp": "self->GetBlockSearchEntries(stack, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "stack", "type": "u64" },
+				{ "name": "outValue", "type": "list<GraphSearchEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::GraphSearchEntry>" }
+			],
+			"csharp": { "member": "GetBlockSearchEntries", "kind": "method" }
+		},
+		{
+			"id": "OnBlockSearchPick",
+			"cpp": "self->OnBlockSearchPick(*entry, stack, index)",
+			"returns": "void",
+			"params": [
+				{ "name": "entry", "type": "GraphSearchEntry" },
+				{ "name": "stack", "type": "u64" },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "OnBlockSearchPick", "kind": "method" }
+		}
+	]
+}

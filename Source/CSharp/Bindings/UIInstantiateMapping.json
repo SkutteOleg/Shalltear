@@ -1,0 +1,54 @@
+{
+	"area": "UIInstantiateMapping",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIDocument.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIInstantiateMapping",
+	"instance": "UIInstantiateMapping",
+	"functions": [
+		{
+			"id": "GetDocument",
+			"cpp": "self->document",
+			"returns": "UIDocumentAsset",
+			"params": [],
+			"csharp": { "member": "Document", "kind": "getter" }
+		},
+		{
+			"id": "SetDocument",
+			"cpp": "self->document = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDocumentAsset", "optional": true }],
+			"csharp": { "member": "Document", "kind": "setter" }
+		},
+		{
+			"id": "GetNode",
+			"cpp": "self->node",
+			"returns": "UIDocumentNode",
+			"params": [],
+			"csharp": { "member": "Node", "kind": "getter" }
+		},
+		{
+			"id": "SetNode",
+			"cpp": "self->node = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIDocumentNode", "optional": true }],
+			"csharp": { "member": "Node", "kind": "setter" }
+		},
+		{
+			"id": "GetElement",
+			"cpp": "self->element",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Element", "kind": "getter" }
+		},
+		{
+			"id": "SetElement",
+			"cpp": "self->element = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementHandle" }],
+			"csharp": { "member": "Element", "kind": "setter" }
+		}
+	]
+}

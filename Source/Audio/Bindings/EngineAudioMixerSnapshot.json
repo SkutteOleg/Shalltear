@@ -1,0 +1,67 @@
+{
+	"area": "EngineAudioMixerSnapshot",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMixer.h"
+	],
+	"class": "Shalltear.EngineAudioMixerSnapshot",
+	"instance": "EngineAudioMixerSnapshot",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetValues",
+			"cpp": "self->values",
+			"returns": "list<AudioMixerValue>",
+			"params": [],
+			"csharp": { "member": "Values", "kind": "getter" }
+		},
+		{
+			"id": "SetValues",
+			"cpp": "self->values = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioMixer::Value>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioMixerValue>" }],
+			"csharp": { "member": "Values", "kind": "setter" }
+		},
+		{
+			"id": "GetTransitions",
+			"cpp": "self->transitions",
+			"returns": "list<AudioMixerTransitionOverride>",
+			"params": [],
+			"csharp": { "member": "Transitions", "kind": "getter" }
+		},
+		{
+			"id": "SetTransitions",
+			"cpp": "self->transitions = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioMixer::TransitionOverride>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioMixerTransitionOverride>" }],
+			"csharp": { "member": "Transitions", "kind": "setter" }
+		}
+	]
+}

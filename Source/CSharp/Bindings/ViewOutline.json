@@ -1,0 +1,41 @@
+{
+	"area": "ViewOutline",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderSystem.h",
+		"Shalltear/Core/Math/Color.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.ViewOutline",
+	"instance": "ViewOutline",
+	"functions": [
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->color",
+			"returns": "Color32",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color32" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,197 @@
+{
+	"area": "UIShapedRun",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.UIShapedRun",
+	"instance": "UIShapedRun",
+	"functions": [
+		{
+			"id": "StopForByte",
+			"cpp": "self->StopForByte(byteOffset)",
+			"returns": "UICaretStop",
+			"params": [{ "name": "byteOffset", "type": "u32" }],
+			"csharp": { "member": "StopForByte", "kind": "method" }
+		},
+		{
+			"id": "CaretXForByte",
+			"cpp": "self->CaretXForByte(byteOffset)",
+			"returns": "f32",
+			"params": [{ "name": "byteOffset", "type": "u32" }],
+			"csharp": { "member": "CaretXForByte", "kind": "method" }
+		},
+		{
+			"id": "ByteForCaret",
+			"cpp": "self->ByteForCaret(x, line)",
+			"returns": "u32",
+			"params": [
+				{ "name": "x", "type": "f32" },
+				{ "name": "line", "type": "u32" }
+			],
+			"csharp": { "member": "ByteForCaret", "kind": "method" }
+		},
+		{
+			"id": "LineCount",
+			"cpp": "self->LineCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LineCount", "kind": "method" }
+		},
+		{
+			"id": "GetGlyphs",
+			"cpp": "self->glyphs",
+			"returns": "list<UIShapedGlyph>",
+			"params": [],
+			"csharp": { "member": "Glyphs", "kind": "getter" }
+		},
+		{
+			"id": "SetGlyphs",
+			"cpp": "self->glyphs = Slots::ToVector<::Shalltear::UI::ShapedGlyph>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIShapedGlyph>" }],
+			"csharp": { "member": "Glyphs", "kind": "setter" }
+		},
+		{
+			"id": "GetOutlineGlyphs",
+			"cpp": "self->outlineGlyphs",
+			"returns": "list<UIShapedGlyph>",
+			"params": [],
+			"csharp": { "member": "OutlineGlyphs", "kind": "getter" }
+		},
+		{
+			"id": "SetOutlineGlyphs",
+			"cpp": "self->outlineGlyphs = Slots::ToVector<::Shalltear::UI::ShapedGlyph>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIShapedGlyph>" }],
+			"csharp": { "member": "OutlineGlyphs", "kind": "setter" }
+		},
+		{
+			"id": "GetCaretStops",
+			"cpp": "self->caretStops",
+			"returns": "list<UICaretStop>",
+			"params": [],
+			"csharp": { "member": "CaretStops", "kind": "getter" }
+		},
+		{
+			"id": "SetCaretStops",
+			"cpp": "self->caretStops = Slots::ToVector<::Shalltear::UI::CaretStop>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UICaretStop>" }],
+			"csharp": { "member": "CaretStops", "kind": "setter" }
+		},
+		{
+			"id": "GetSpans",
+			"cpp": "self->spans",
+			"returns": "list<UIShapedSpan>",
+			"params": [],
+			"csharp": { "member": "Spans", "kind": "getter" }
+		},
+		{
+			"id": "SetSpans",
+			"cpp": "self->spans = Slots::ToVector<::Shalltear::UI::ShapedSpan>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIShapedSpan>" }],
+			"csharp": { "member": "Spans", "kind": "setter" }
+		},
+		{
+			"id": "GetDecorations",
+			"cpp": "self->decorations",
+			"returns": "list<UIShapedDecoration>",
+			"params": [],
+			"csharp": { "member": "Decorations", "kind": "getter" }
+		},
+		{
+			"id": "SetDecorations",
+			"cpp": "self->decorations = Slots::ToVector<::Shalltear::UI::ShapedDecoration>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIShapedDecoration>" }],
+			"csharp": { "member": "Decorations", "kind": "setter" }
+		},
+		{
+			"id": "GetExtent",
+			"cpp": "self->extent",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "Extent", "kind": "getter" }
+		},
+		{
+			"id": "SetExtent",
+			"cpp": "self->extent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "Extent", "kind": "setter" }
+		},
+		{
+			"id": "GetLineHeight",
+			"cpp": "self->lineHeight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LineHeight", "kind": "getter" }
+		},
+		{
+			"id": "SetLineHeight",
+			"cpp": "self->lineHeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LineHeight", "kind": "setter" }
+		},
+		{
+			"id": "GetHalfLeading",
+			"cpp": "self->halfLeading",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "HalfLeading", "kind": "getter" }
+		},
+		{
+			"id": "SetHalfLeading",
+			"cpp": "self->halfLeading = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "HalfLeading", "kind": "setter" }
+		},
+		{
+			"id": "GetMultiline",
+			"cpp": "self->multiline",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Multiline", "kind": "getter" }
+		},
+		{
+			"id": "SetMultiline",
+			"cpp": "self->multiline = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Multiline", "kind": "setter" }
+		},
+		{
+			"id": "GetTruncated",
+			"cpp": "self->truncated",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Truncated", "kind": "getter" }
+		},
+		{
+			"id": "SetTruncated",
+			"cpp": "self->truncated = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Truncated", "kind": "setter" }
+		},
+		{
+			"id": "GetAtlas",
+			"cpp": "self->atlas",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "Atlas", "kind": "getter" }
+		},
+		{
+			"id": "SetAtlas",
+			"cpp": "self->atlas = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureHandle" }],
+			"csharp": { "member": "Atlas", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,67 @@
+{
+	"area": "CompilerDiagnosticParser",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileService.h"
+	],
+	"class": "Shalltear.Editor.CompilerDiagnosticParser",
+	"enums": [
+		{
+			"name": "CompilerDiagnosticSeverity",
+			"cpp": "::Shalltear::CompilerDiagnosticSeverity",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Note", "value": 0 },
+				{ "name": "Warning", "value": 1 },
+				{ "name": "Error", "value": 2 }
+			]
+		},
+		{
+			"name": "CompileState",
+			"cpp": "::Shalltear::CompileState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Idle", "value": 0 },
+				{ "name": "Configuring", "value": 1 },
+				{ "name": "Compiling", "value": 2 },
+				{ "name": "Succeeded", "value": 3 },
+				{ "name": "Failed", "value": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "CompilerDiagnostic", "cpp": "::Shalltear::CompilerDiagnostic", "owned": true, "create": true },
+		{ "name": "CompileControlText", "cpp": "::Shalltear::CompileControlText", "owned": true, "create": true },
+		{ "name": "CompileService", "cpp": "::Shalltear::CompileService", "owned": true, "create": true },
+		{ "name": "CompileRequest", "cpp": "::Shalltear::CompileRequest", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "ParseDiagnosticLine",
+			"cpp": "::Shalltear::CompilerDiagnosticParser::ParseDiagnosticLine(line, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "line", "type": "string" },
+				{ "name": "outValue", "type": "CompilerDiagnostic" }
+			],
+			"csharp": { "member": "ParseDiagnosticLine", "kind": "method" }
+		},
+		{
+			"id": "AppendContinuation",
+			"cpp": "::Shalltear::CompilerDiagnosticParser::AppendContinuation(*open, line)",
+			"returns": "bool",
+			"params": [
+				{ "name": "open", "type": "CompilerDiagnostic" },
+				{ "name": "line", "type": "string" }
+			],
+			"csharp": { "member": "AppendContinuation", "kind": "method" }
+		},
+		{
+			"id": "StripAnsi",
+			"cpp": "::Shalltear::CompilerDiagnosticParser::StripAnsi(line)",
+			"returns": "string",
+			"params": [{ "name": "line", "type": "string" }],
+			"csharp": { "member": "StripAnsi", "kind": "method" }
+		}
+	]
+}

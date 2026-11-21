@@ -1,0 +1,76 @@
+{
+	"area": "Asset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Asset",
+	"instance": "Asset",
+	"types": [{ "name": "Asset", "cpp": "::Shalltear::Asset", "extern": true }],
+	"functions": [
+		{
+			"id": "AddRef",
+			"cpp": "self->AddRef()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "AddRef", "kind": "method" }
+		},
+		{
+			"id": "ReleaseRef",
+			"cpp": "self->ReleaseRef()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "ReleaseRef", "kind": "method" }
+		},
+		{
+			"id": "SetLoadState",
+			"cpp": "self->SetLoadState(state)",
+			"returns": "void",
+			"params": [{ "name": "state", "type": "AssetLoadState" }],
+			"csharp": { "member": "SetLoadState", "kind": "method" }
+		},
+		{
+			"id": "NotifyLoaded",
+			"cpp": "self->NotifyLoaded()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NotifyLoaded", "kind": "method" }
+		},
+		{
+			"id": "NotifyUnloaded",
+			"cpp": "self->NotifyUnloaded()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "NotifyUnloaded", "kind": "method" }
+		},
+		{
+			"id": "GetAssetIdField",
+			"cpp": "self->assetId",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "AssetIdField", "kind": "getter" }
+		},
+		{
+			"id": "SetAssetIdField",
+			"cpp": "self->assetId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "AssetIdField", "kind": "setter" }
+		},
+		{
+			"id": "GetVirtualPath",
+			"cpp": "self->virtualPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "VirtualPath", "kind": "getter" }
+		},
+		{
+			"id": "SetVirtualPath",
+			"cpp": "self->virtualPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "VirtualPath", "kind": "setter" }
+		}
+	]
+}

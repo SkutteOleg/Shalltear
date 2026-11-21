@@ -1,0 +1,30 @@
+{
+	"area": "TaggedMemoryResource",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Containers.h",
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.TaggedMemoryResource",
+	"instance": "TaggedMemoryResource",
+	"natives": [{ "name": "TaggedMemoryResource", "cpp": "::Shalltear::TaggedMemoryResource", "owned": true }],
+	"functions": [
+		{
+			"id": "GetTag",
+			"cpp": "self->GetTag()",
+			"returns": "MemTag",
+			"params": [],
+			"csharp": { "member": "Tag", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::TaggedMemoryResource(tag)",
+			"returns": "TaggedMemoryResource",
+			"params": [{ "name": "tag", "type": "MemTag" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,98 @@
+{
+	"area": "NetAddress",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/Address.h"
+	],
+	"class": "Shalltear.NetAddress",
+	"instance": "NetAddress",
+	"natives": [{ "name": "NetAddress", "cpp": "::Shalltear::Net::Address", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Loopback",
+			"cpp": "::Shalltear::Net::Address::Loopback(port, v6)",
+			"returns": "NetAddress",
+			"params": [
+				{ "name": "port", "type": "u16" },
+				{ "name": "v6", "type": "bool" }
+			],
+			"csharp": { "member": "Loopback", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Any",
+			"cpp": "::Shalltear::Net::Address::Any(port, v6)",
+			"returns": "NetAddress",
+			"params": [
+				{ "name": "port", "type": "u16" },
+				{ "name": "v6", "type": "bool" }
+			],
+			"csharp": { "member": "Any", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "Parse",
+			"cpp": "::Shalltear::Net::Address::Parse(text, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "text", "type": "string" },
+				{ "name": "outValue", "type": "NetAddress" }
+			],
+			"csharp": { "member": "Parse", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "ToString",
+			"cpp": "self->ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ToText", "kind": "method" }
+		},
+		{
+			"id": "GetBytes",
+			"cpp": "self->bytes",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Bytes", "kind": "getter" }
+		},
+		{
+			"id": "SetBytes",
+			"cpp": "Slots::Assign(self->bytes, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Bytes", "kind": "setter" }
+		},
+		{
+			"id": "GetPort",
+			"cpp": "self->port",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "Port", "kind": "getter" }
+		},
+		{
+			"id": "SetPort",
+			"cpp": "self->port = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "Port", "kind": "setter" }
+		},
+		{
+			"id": "GetV6",
+			"cpp": "self->v6",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "V6", "kind": "getter" }
+		},
+		{
+			"id": "SetV6",
+			"cpp": "self->v6 = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "V6", "kind": "setter" }
+		}
+	]
+}

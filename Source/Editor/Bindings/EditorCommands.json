@@ -1,0 +1,79 @@
+{
+	"area": "EditorCommands",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Editor.EditorCommands",
+	"natives": [
+		{ "name": "CapturedObject", "cpp": "::Shalltear::CapturedObject", "owned": true, "create": true },
+		{ "name": "CreateObjectCommand", "cpp": "::Shalltear::CreateObjectCommand", "owned": true },
+		{ "name": "DuplicateObjectCommand", "cpp": "::Shalltear::DuplicateObjectCommand", "owned": true },
+		{ "name": "InstantiatePrefabCommand", "cpp": "::Shalltear::InstantiatePrefabCommand", "owned": true },
+		{ "name": "AddComponentCommand", "cpp": "::Shalltear::AddComponentCommand", "owned": true },
+		{ "name": "RevertRemovedComponentCommand", "cpp": "::Shalltear::RevertRemovedComponentCommand", "owned": true },
+		{ "name": "SetFieldStateCommand", "cpp": "::Shalltear::SetFieldStateCommand", "owned": true },
+		{ "name": "CapturedComponent", "cpp": "::Shalltear::CapturedComponent", "owned": true, "create": true },
+		{ "name": "DestroyObjectCommand", "cpp": "::Shalltear::DestroyObjectCommand", "owned": true },
+		{ "name": "ReparentCommand", "cpp": "::Shalltear::ReparentCommand", "owned": true },
+		{ "name": "SetSiblingIndexCommand", "cpp": "::Shalltear::SetSiblingIndexCommand", "owned": true },
+		{ "name": "SetActiveCommand", "cpp": "::Shalltear::SetActiveCommand", "owned": true },
+		{ "name": "SetEnabledCommand", "cpp": "::Shalltear::SetEnabledCommand", "owned": true },
+		{ "name": "SetRawFieldCommand", "cpp": "::Shalltear::SetRawFieldCommand", "owned": true },
+		{ "name": "SetContainerElementCommand", "cpp": "::Shalltear::SetContainerElementCommand", "owned": true },
+		{ "name": "RemoveContainerElementCommand", "cpp": "::Shalltear::RemoveContainerElementCommand", "owned": true },
+		{ "name": "ScopedLiveHandles", "cpp": "::Shalltear::ScopedLiveHandles", "owned": true, "create": true },
+		{ "name": "RemoveComponentCommand", "cpp": "::Shalltear::RemoveComponentCommand", "owned": true },
+		{ "name": "SetComponentIndexCommand", "cpp": "::Shalltear::SetComponentIndexCommand", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "CaptureObjectSubtree",
+			"cpp": "::Shalltear::CaptureObjectSubtree(::Shalltear::Handle<::Shalltear::SceneObject>(root), *outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "root", "type": "SceneObject", "optional": true },
+				{ "name": "outValue", "type": "CapturedObject" }
+			],
+			"csharp": { "member": "CaptureObjectSubtree", "kind": "method" }
+		},
+		{
+			"id": "ReviveObjectSubtree",
+			"cpp": "::Shalltear::ReviveObjectSubtree(*data, ::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent), siblingIndex)",
+			"returns": "SceneObject",
+			"params": [
+				{ "name": "data", "type": "CapturedObject" },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "siblingIndex", "type": "u32" }
+			],
+			"csharp": { "member": "ReviveObjectSubtree", "kind": "method" }
+		},
+		{
+			"id": "CaptureFieldState",
+			"cpp": "::Shalltear::CaptureFieldState(*objectValue, field)",
+			"returns": "string",
+			"params": [
+				{ "name": "objectValue", "type": "EngineObject" },
+				{ "name": "field", "type": "StringHash" }
+			],
+			"csharp": { "member": "CaptureFieldState", "kind": "method" }
+		},
+		{
+			"id": "CaptureFieldState2",
+			"cpp": "::Shalltear::CaptureFieldState(reinterpret_cast<const void*>(static_cast<uintptr_t>(instance)), type, field)",
+			"returns": "string",
+			"params": [
+				{ "name": "instance", "type": "u64" },
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "field", "type": "StringHash" }
+			],
+			"csharp": { "member": "CaptureFieldState", "kind": "method" }
+		}
+	]
+}

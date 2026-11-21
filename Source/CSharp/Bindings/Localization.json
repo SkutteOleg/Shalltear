@@ -1,0 +1,97 @@
+{
+	"area": "Localization",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Localization.h"
+	],
+	"class": "Shalltear.Localization",
+	"functions": [
+		{
+			"id": "SetLanguage",
+			"cpp": "::Shalltear::Localization::SetLanguage(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Language", "kind": "setter" }
+		},
+		{
+			"id": "UseSystemLanguage",
+			"cpp": "::Shalltear::Localization::UseSystemLanguage()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "UseSystemLanguage", "kind": "method" }
+		},
+		{
+			"id": "GetLanguage",
+			"cpp": "::Shalltear::Localization::GetLanguage()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Language", "kind": "getter" }
+		},
+		{
+			"id": "GetSystemLanguage",
+			"cpp": "::Shalltear::Localization::GetSystemLanguage()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SystemLanguage", "kind": "getter" }
+		},
+		{
+			"id": "GetDefaultLanguage",
+			"cpp": "::Shalltear::Localization::GetDefaultLanguage()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultLanguage", "kind": "getter" }
+		},
+		{
+			"id": "TryTranslate",
+			"cpp": "::Shalltear::Localization::TryTranslate(key, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "outValue", "type": "string", "out": true }
+			],
+			"csharp": { "member": "TryTranslate", "kind": "method" }
+		},
+		{
+			"id": "Translate",
+			"cpp": "::Shalltear::Localization::Translate(key)",
+			"returns": "string",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "Translate", "kind": "method" }
+		},
+		{
+			"id": "AddTable",
+			"cpp": "::Shalltear::Localization::AddTable(::Shalltear::Handle<::Shalltear::StringTableAsset>(table))",
+			"returns": "void",
+			"params": [{ "name": "table", "type": "StringTableAsset", "optional": true }],
+			"csharp": { "member": "AddTable", "kind": "method" }
+		},
+		{
+			"id": "RemoveTable",
+			"cpp": "::Shalltear::Localization::RemoveTable(::Shalltear::Handle<::Shalltear::StringTableAsset>(table))",
+			"returns": "void",
+			"params": [{ "name": "table", "type": "StringTableAsset", "optional": true }],
+			"csharp": { "member": "RemoveTable", "kind": "method" }
+		},
+		{
+			"id": "ReloadTables",
+			"cpp": "::Shalltear::Localization::ReloadTables()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ReloadTables", "kind": "method" }
+		},
+		{
+			"id": "GetGeneration",
+			"cpp": "::Shalltear::Localization::GetGeneration()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Generation", "kind": "getter" }
+		},
+		{
+			"id": "NormalizeLanguage",
+			"cpp": "::Shalltear::Localization::NormalizeLanguage(code)",
+			"returns": "string",
+			"params": [{ "name": "code", "type": "string" }],
+			"csharp": { "member": "NormalizeLanguage", "kind": "method" }
+		}
+	]
+}

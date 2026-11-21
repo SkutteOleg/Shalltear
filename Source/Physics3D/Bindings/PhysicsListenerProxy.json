@@ -1,0 +1,166 @@
+{
+	"area": "PhysicsListenerProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/PhysicsListener.h",
+		"Shalltear/Physics3D/Colliders.h",
+		"Shalltear/Physics3D/CharacterController.h"
+	],
+	"class": "Shalltear.PhysicsListenerProxy",
+	"instance": "PhysicsListenerProxy",
+	"prelude": [
+		"class PhysicsListenerProxy final : public ::Shalltear::PhysicsListener {",
+		"public:",
+		"\tstd::function<void(const Shalltear::Collision &)> onCollisionEnter;",
+		"\tvoid OnCollisionEnter(const Shalltear::Collision & a0) override {",
+		"\t\tif (onCollisionEnter) {",
+		"\t\t\tonCollisionEnter(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnCollisionEnter(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::Collision &)> onCollisionStay;",
+		"\tvoid OnCollisionStay(const Shalltear::Collision & a0) override {",
+		"\t\tif (onCollisionStay) {",
+		"\t\t\tonCollisionStay(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnCollisionStay(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::Collision &)> onCollisionExit;",
+		"\tvoid OnCollisionExit(const Shalltear::Collision & a0) override {",
+		"\t\tif (onCollisionExit) {",
+		"\t\t\tonCollisionExit(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnCollisionExit(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::Handle<Shalltear::Collider>)> onTriggerEnter;",
+		"\tvoid OnTriggerEnter(Shalltear::Handle<Shalltear::Collider> a0) override {",
+		"\t\tif (onTriggerEnter) {",
+		"\t\t\tonTriggerEnter(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnTriggerEnter(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::Handle<Shalltear::Collider>)> onTriggerStay;",
+		"\tvoid OnTriggerStay(Shalltear::Handle<Shalltear::Collider> a0) override {",
+		"\t\tif (onTriggerStay) {",
+		"\t\t\tonTriggerStay(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnTriggerStay(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::Handle<Shalltear::Collider>)> onTriggerExit;",
+		"\tvoid OnTriggerExit(Shalltear::Handle<Shalltear::Collider> a0) override {",
+		"\t\tif (onTriggerExit) {",
+		"\t\t\tonTriggerExit(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnTriggerExit(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(float)> onJointBreak;",
+		"\tvoid OnJointBreak(float a0) override {",
+		"\t\tif (onJointBreak) {",
+		"\t\t\tonJointBreak(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnJointBreak(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::ControllerColliderHit &)> onControllerColliderHit;",
+		"\tvoid OnControllerColliderHit(const Shalltear::ControllerColliderHit & a0) override {",
+		"\t\tif (onControllerColliderHit) {",
+		"\t\t\tonControllerColliderHit(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::PhysicsListener::OnControllerColliderHit(a0);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "PhysicsListenerProxy", "cpp": "PhysicsListenerProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetOnCollisionEnter",
+			"cpp": "self->onCollisionEnter = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EngineCollision>", "optional": true, "cpp": "std::function<void(const Shalltear::Collision &)>" }
+			],
+			"csharp": { "member": "SetOnCollisionEnter", "kind": "method" }
+		},
+		{
+			"id": "SetOnCollisionStay",
+			"cpp": "self->onCollisionStay = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EngineCollision>", "optional": true, "cpp": "std::function<void(const Shalltear::Collision &)>" }
+			],
+			"csharp": { "member": "SetOnCollisionStay", "kind": "method" }
+		},
+		{
+			"id": "SetOnCollisionExit",
+			"cpp": "self->onCollisionExit = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;EngineCollision>", "optional": true, "cpp": "std::function<void(const Shalltear::Collision &)>" }
+			],
+			"csharp": { "member": "SetOnCollisionExit", "kind": "method" }
+		},
+		{
+			"id": "SetOnTriggerEnter",
+			"cpp": "self->onTriggerEnter = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;Collider>", "optional": true, "cpp": "std::function<void(Shalltear::Handle<Shalltear::Collider>)>" }
+			],
+			"csharp": { "member": "SetOnTriggerEnter", "kind": "method" }
+		},
+		{
+			"id": "SetOnTriggerStay",
+			"cpp": "self->onTriggerStay = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;Collider>", "optional": true, "cpp": "std::function<void(Shalltear::Handle<Shalltear::Collider>)>" }
+			],
+			"csharp": { "member": "SetOnTriggerStay", "kind": "method" }
+		},
+		{
+			"id": "SetOnTriggerExit",
+			"cpp": "self->onTriggerExit = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;Collider>", "optional": true, "cpp": "std::function<void(Shalltear::Handle<Shalltear::Collider>)>" }
+			],
+			"csharp": { "member": "SetOnTriggerExit", "kind": "method" }
+		},
+		{
+			"id": "SetOnJointBreak",
+			"cpp": "self->onJointBreak = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void;f32>", "optional": true, "cpp": "std::function<void(float)>" }],
+			"csharp": { "member": "SetOnJointBreak", "kind": "method" }
+		},
+		{
+			"id": "SetOnControllerColliderHit",
+			"cpp": "self->onControllerColliderHit = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;EngineControllerColliderHit>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::ControllerColliderHit &)>"
+				}
+			],
+			"csharp": { "member": "SetOnControllerColliderHit", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::PhysicsListener*>(self)",
+			"returns": "PhysicsListener",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

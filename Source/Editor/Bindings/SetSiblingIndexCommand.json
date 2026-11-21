@@ -1,0 +1,34 @@
+{
+	"area": "SetSiblingIndexCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.SetSiblingIndexCommand",
+	"instance": "SetSiblingIndexCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::SetSiblingIndexCommand(::Shalltear::Handle<::Shalltear::SceneObject>(argument0), newIndex)",
+			"returns": "SetSiblingIndexCommand",
+			"params": [
+				{ "name": "argument0", "type": "SceneObject", "optional": true },
+				{ "name": "newIndex", "type": "u32" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

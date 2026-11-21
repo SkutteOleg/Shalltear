@@ -1,0 +1,25 @@
+{
+	"area": "EditorTransformGesture",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorTransformGesture.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.EditorTransformGesture",
+	"functions": [
+		{
+			"id": "Begin",
+			"cpp": "::Shalltear::EditorTransformGesture::Begin(std::span<const ::Shalltear::Handle<::Shalltear::SceneObject>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::SceneObject>>(objects)))",
+			"returns": "void",
+			"params": [{ "name": "objects", "type": "list<SceneObject>" }],
+			"csharp": { "member": "Begin", "kind": "method" }
+		},
+		{
+			"id": "End",
+			"cpp": "::Shalltear::EditorTransformGesture::End()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "End", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,50 @@
+{
+	"area": "PropertyDrawerFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyDrawers.h",
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Core/Reflection/TypeRegistry.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.PropertyDrawerFn",
+	"instance": "PropertyDrawerFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)(*argument0, argument1, *argument2, *argument3)",
+			"returns": "void",
+			"params": [
+				{ "name": "argument0", "type": "UIContext" },
+				{ "name": "argument1", "type": "UIElementHandle" },
+				{ "name": "argument2", "type": "FieldRef" },
+				{ "name": "argument3", "type": "EditTarget" }
+			],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::FieldRef, Shalltear::EditTarget)>(std::move(handler))",
+			"returns": "PropertyDrawerFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIElementHandle;FieldRef;EditTarget>",
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::FieldRef, Shalltear::EditTarget)>"
+				}
+			],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

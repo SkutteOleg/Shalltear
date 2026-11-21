@@ -1,0 +1,289 @@
+{
+	"area": "PakFormat",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.PakFormat",
+	"enums": [
+		{
+			"name": "PakDocumentKind",
+			"cpp": "::Shalltear::PakDocumentKind",
+			"underlying": "u32",
+			"values": [
+				{ "name": "BootManifest", "value": 1 },
+				{ "name": "ProjectSettings", "value": 2 },
+				{ "name": "Icon", "value": 3 }
+			]
+		},
+		{
+			"name": "PakResidency",
+			"cpp": "::Shalltear::PakResidency",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Resident", "value": 0 },
+				{ "name": "Hot", "value": 1 },
+				{ "name": "Streamed", "value": 2 }
+			]
+		},
+		{
+			"name": "PakFeatureRequired",
+			"cpp": "::Shalltear::PakFeatureRequired",
+			"underlying": "u64",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "MphfIndex", "value": 1 },
+				{ "name": "ExternalPages", "value": 2 },
+				{ "name": "EncryptedPages", "value": 4 },
+				{ "name": "VariableSizePages", "value": 8 }
+			]
+		},
+		{
+			"name": "PakFeatureOptional",
+			"cpp": "::Shalltear::PakFeatureOptional",
+			"underlying": "u64",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "DebugNames", "value": 1 },
+				{ "name": "PageHashes", "value": 2 },
+				{ "name": "Signed", "value": 4 },
+				{ "name": "StringTable", "value": 8 },
+				{ "name": "Documents", "value": 16 }
+			]
+		},
+		{
+			"name": "PakCodec",
+			"cpp": "::Shalltear::PakCodec",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "LZ4", "value": 1 }
+			]
+		},
+		{
+			"name": "PakAssetFlags",
+			"cpp": "::Shalltear::PakAssetFlags",
+			"underlying": "u16",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "HasPayload", "value": 1 },
+				{ "name": "InlineDesc", "value": 2 },
+				{ "name": "Generated", "value": 4 },
+				{ "name": "EditorOnly", "value": 8 }
+			]
+		},
+		{
+			"name": "PakRefKind",
+			"cpp": "::Shalltear::PakRefKind",
+			"underlying": "u32",
+			"values": [
+				{ "name": "Hard", "value": 0 },
+				{ "name": "Soft", "value": 1 },
+				{ "name": "Weak", "value": 2 },
+				{ "name": "EditorOnly", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "PakSection",
+			"cpp": "::Shalltear::PakSection",
+			"size": 32,
+			"align": 8,
+			"fields": [
+				{ "name": "fourcc", "type": "u32", "offset": 0 },
+				{ "name": "flags", "type": "u32", "offset": 4 },
+				{ "name": "offset", "type": "u64", "offset": 8 },
+				{ "name": "size", "type": "u64", "offset": 16 },
+				{ "name": "elemCount", "type": "u32", "offset": 24 },
+				{ "name": "elemStride", "type": "u32", "offset": 28 }
+			]
+		},
+		{
+			"name": "PakTypeEntry",
+			"cpp": "::Shalltear::PakTypeEntry",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "typeNameHash", "type": "u64", "offset": 0 },
+				{ "name": "recordVersion", "type": "u16", "offset": 8 },
+				{ "name": "flags", "type": "u16", "offset": 10 },
+				{ "name": "descStride", "type": "u32", "offset": 12 },
+				{ "name": "layoutHash", "type": "u64", "offset": 16 }
+			]
+		},
+		{
+			"name": "PakAssetEntry",
+			"cpp": "::Shalltear::PakAssetEntry",
+			"size": 40,
+			"align": 8,
+			"fields": [
+				{ "name": "guid", "type": "EngineGuid", "offset": 0 },
+				{ "name": "descOffset", "type": "u32", "offset": 16 },
+				{ "name": "descSize", "type": "u32", "offset": 20 },
+				{ "name": "regionIndex", "type": "u32", "offset": 24 },
+				{ "name": "typeIndex", "type": "u16", "offset": 28 },
+				{ "name": "flags", "type": "u16", "offset": 30 },
+				{ "name": "reserved", "type": "u64", "offset": 32 }
+			]
+		},
+		{
+			"name": "PakRegion",
+			"cpp": "::Shalltear::PakRegion",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "sizeRaw", "type": "u64", "offset": 0 },
+				{ "name": "firstPage", "type": "u32", "offset": 8 },
+				{ "name": "pageCount", "type": "u32", "offset": 12 },
+				{ "name": "alignment", "type": "u32", "offset": 16 },
+				{ "name": "codec", "type": "u8", "offset": 20 },
+				{ "name": "residency", "type": "u8", "offset": 21 },
+				{ "name": "flags", "type": "u8", "offset": 22 },
+				{ "name": "pad", "type": "u8", "offset": 23 }
+			]
+		},
+		{
+			"name": "PakPage",
+			"cpp": "::Shalltear::PakPage",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "offset", "type": "u64", "offset": 0 },
+				{ "name": "sizeComp", "type": "u32", "offset": 8 },
+				{ "name": "sizeRaw", "type": "u32", "offset": 12 }
+			]
+		},
+		{
+			"name": "PakDepEdge",
+			"cpp": "::Shalltear::PakDepEdge",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "targetAsset", "type": "u32", "offset": 0 },
+				{ "name": "flags", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "PakIconImage",
+			"cpp": "::Shalltear::PakIconImage",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "width", "type": "u32", "offset": 0 },
+				{ "name": "height", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "PakDocumentEntry",
+			"cpp": "::Shalltear::PakDocumentEntry",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "kind", "type": "u32", "offset": 0 },
+				{ "name": "reserved", "type": "u32", "offset": 4 },
+				{ "name": "offset", "type": "u32", "offset": 8 },
+				{ "name": "size", "type": "u32", "offset": 12 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "PakStringTable", "cpp": "::Shalltear::PakStringTable", "owned": true, "create": true },
+		{ "name": "PakStringPool", "cpp": "::Shalltear::PakStringPool", "owned": true, "create": true },
+		{ "name": "CookWriter", "cpp": "::Shalltear::CookWriter", "owned": true },
+		{ "name": "CookReader", "cpp": "::Shalltear::CookReader", "owned": true, "create": true },
+		{ "name": "PakPayloadLocator", "cpp": "::Shalltear::PakPayloadLocator", "owned": true, "create": true },
+		{ "name": "PakSuperblock", "cpp": "::Shalltear::PakSuperblock", "owned": true, "create": true },
+		{ "name": "U8List", "cpp": "::Shalltear::Vector<u8>", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "PAK_SUPPORTED_REQUIRED", "cpp": "::Shalltear::PAK_SUPPORTED_REQUIRED", "type": "u64", "value": 0 },
+		{ "name": "LZ4_MIN_MATCH", "cpp": "::Shalltear::LZ4_MIN_MATCH", "type": "u32", "value": 4 },
+		{ "name": "LZ4_LAST_LITERALS", "cpp": "::Shalltear::LZ4_LAST_LITERALS", "type": "u32", "value": 5 },
+		{ "name": "LZ4_MATCH_FLOOR", "cpp": "::Shalltear::LZ4_MATCH_FLOOR", "type": "u32", "value": 12 },
+		{ "name": "LZ4_MAX_OFFSET", "cpp": "::Shalltear::LZ4_MAX_OFFSET", "type": "u32", "value": 65535 },
+		{ "name": "LZ4_MAX_RATIO", "cpp": "::Shalltear::LZ4_MAX_RATIO", "type": "u64", "value": 255 },
+		{ "name": "PAK_VERSION_MAJOR", "cpp": "::Shalltear::PAK_VERSION_MAJOR", "type": "u16", "value": 1 },
+		{ "name": "PAK_VERSION_MINOR", "cpp": "::Shalltear::PAK_VERSION_MINOR", "type": "u16", "value": 1 },
+		{ "name": "PAK_HEADER_SIZE", "cpp": "::Shalltear::PAK_HEADER_SIZE", "type": "u32", "value": 4096 },
+		{ "name": "PAK_SECTOR_SIZE", "cpp": "::Shalltear::PAK_SECTOR_SIZE", "type": "u32", "value": 4096 },
+		{ "name": "PAK_DEFAULT_PAGE_SIZE", "cpp": "::Shalltear::PAK_DEFAULT_PAGE_SIZE", "type": "u32", "value": 131072 },
+		{ "name": "PAK_RECORD_VERSION", "cpp": "::Shalltear::PAK_RECORD_VERSION", "type": "u16", "value": 11 },
+		{ "name": "PAK_NO_REGION", "cpp": "::Shalltear::PAK_NO_REGION", "type": "u32", "value": 4294967295 },
+		{ "name": "PAK_INVALID_INDEX", "cpp": "::Shalltear::PAK_INVALID_INDEX", "type": "u32", "value": 4294967294 },
+		{ "name": "PAK_SECT", "cpp": "::Shalltear::PAK_SECT", "type": "u32", "value": 1413694803 },
+		{ "name": "PAK_TYPE", "cpp": "::Shalltear::PAK_TYPE", "type": "u32", "value": 1162893652 },
+		{ "name": "PAK_IDX0", "cpp": "::Shalltear::PAK_IDX0", "type": "u32", "value": 811091017 },
+		{ "name": "PAK_DESC", "cpp": "::Shalltear::PAK_DESC", "type": "u32", "value": 1129530692 },
+		{ "name": "PAK_STRS", "cpp": "::Shalltear::PAK_STRS", "type": "u32", "value": 1397904467 },
+		{ "name": "PAK_DEPS", "cpp": "::Shalltear::PAK_DEPS", "type": "u32", "value": 1397769540 },
+		{ "name": "PAK_PLDM", "cpp": "::Shalltear::PAK_PLDM", "type": "u32", "value": 1296321616 },
+		{ "name": "PAK_PAGE", "cpp": "::Shalltear::PAK_PAGE", "type": "u32", "value": 1162297680 },
+		{ "name": "PAK_NAMS", "cpp": "::Shalltear::PAK_NAMS", "type": "u32", "value": 1397571918 },
+		{ "name": "PAK_DOCS", "cpp": "::Shalltear::PAK_DOCS", "type": "u32", "value": 1396920132 }
+	],
+	"functions": [
+		{
+			"id": "PakFourCC",
+			"cpp": "::Shalltear::PakFourCC(a, b, c, d)",
+			"returns": "u32",
+			"params": [
+				{ "name": "a", "type": "i8" },
+				{ "name": "b", "type": "i8" },
+				{ "name": "c", "type": "i8" },
+				{ "name": "d", "type": "i8" }
+			],
+			"csharp": { "member": "PakFourCC", "kind": "method" }
+		},
+		{
+			"id": "PakCrc32c",
+			"cpp": "::Shalltear::PakCrc32c(reinterpret_cast<const void*>(static_cast<uintptr_t>(data)), size, seed)",
+			"returns": "u32",
+			"params": [
+				{ "name": "data", "type": "u64" },
+				{ "name": "size", "type": "u64" },
+				{ "name": "seed", "type": "u32" }
+			],
+			"csharp": { "member": "PakCrc32c", "kind": "method" }
+		},
+		{
+			"id": "PakContentHash",
+			"cpp": "::Shalltear::PakContentHash(reinterpret_cast<const void*>(static_cast<uintptr_t>(data)), size, seed)",
+			"returns": "u64",
+			"params": [
+				{ "name": "data", "type": "u64" },
+				{ "name": "size", "type": "u64" },
+				{ "name": "seed", "type": "u64" }
+			],
+			"csharp": { "member": "PakContentHash", "kind": "method" }
+		},
+		{
+			"id": "PakWriteStringBlob",
+			"cpp": "::Shalltear::PakWriteStringBlob(outValue, Slots::ToVector<str>(texts))",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "::Shalltear::Vector<u8>" },
+				{ "name": "texts", "type": "list<string>" }
+			],
+			"csharp": { "member": "PakWriteStringBlob", "kind": "method" }
+		},
+		{
+			"id": "PakReadStringBlob",
+			"cpp": "::Shalltear::PakReadStringBlob(reinterpret_cast<const u8*>(static_cast<uintptr_t>(data)), size, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "data", "type": "u64" },
+				{ "name": "size", "type": "u64" },
+				{ "name": "outValue", "type": "PakStringTable" }
+			],
+			"csharp": { "member": "PakReadStringBlob", "kind": "method" }
+		},
+		{
+			"id": "GetPakMagic",
+			"cpp": "::Shalltear::PAK_MAGIC",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "PAK_MAGIC", "kind": "getter" }
+		}
+	]
+}

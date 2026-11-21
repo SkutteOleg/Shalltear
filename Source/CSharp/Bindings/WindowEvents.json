@@ -1,0 +1,225 @@
+{
+	"area": "WindowEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowEvents.h"
+	],
+	"class": "Shalltear.WindowEvents",
+	"functions": [
+		{
+			"id": "SubscribeCreated",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::Created, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowCreatedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowCreatedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeCreated", "kind": "method" }
+		},
+		{
+			"id": "PublishCreated",
+			"cpp": "::Shalltear::WindowEvents::Created.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowCreatedEvent" }],
+			"csharp": { "member": "PublishCreated", "kind": "method" }
+		},
+		{
+			"id": "SubscribeCloseRequested",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::CloseRequested, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowCloseRequestedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowCloseRequestedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeCloseRequested", "kind": "method" }
+		},
+		{
+			"id": "PublishCloseRequested",
+			"cpp": "::Shalltear::WindowEvents::CloseRequested.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowCloseRequestedEvent" }],
+			"csharp": { "member": "PublishCloseRequested", "kind": "method" }
+		},
+		{
+			"id": "SubscribeDestroying",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::Destroying, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowDestroyingEvent>", "cpp": "std::function<void(const ::Shalltear::WindowDestroyingEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeDestroying", "kind": "method" }
+		},
+		{
+			"id": "PublishDestroying",
+			"cpp": "::Shalltear::WindowEvents::Destroying.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowDestroyingEvent" }],
+			"csharp": { "member": "PublishDestroying", "kind": "method" }
+		},
+		{
+			"id": "SubscribeDestroyed",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::Destroyed, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowDestroyedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowDestroyedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeDestroyed", "kind": "method" }
+		},
+		{
+			"id": "PublishDestroyed",
+			"cpp": "::Shalltear::WindowEvents::Destroyed.Publish(::Shalltear::EventBus::GetGlobal(), payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowDestroyedEvent" }],
+			"csharp": { "member": "PublishDestroyed", "kind": "method" }
+		},
+		{
+			"id": "SubscribeResized",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::Resized, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowResizedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowResizedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeResized", "kind": "method" }
+		},
+		{
+			"id": "PublishResized",
+			"cpp": "::Shalltear::WindowEvents::Resized.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowResizedEvent" }],
+			"csharp": { "member": "PublishResized", "kind": "method" }
+		},
+		{
+			"id": "SubscribeMoved",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::Moved, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowMovedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowMovedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeMoved", "kind": "method" }
+		},
+		{
+			"id": "PublishMoved",
+			"cpp": "::Shalltear::WindowEvents::Moved.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowMovedEvent" }],
+			"csharp": { "member": "PublishMoved", "kind": "method" }
+		},
+		{
+			"id": "SubscribeDPIChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::DPIChanged, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowDPIChangedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowDPIChangedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeDPIChanged", "kind": "method" }
+		},
+		{
+			"id": "PublishDPIChanged",
+			"cpp": "::Shalltear::WindowEvents::DPIChanged.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowDPIChangedEvent" }],
+			"csharp": { "member": "PublishDPIChanged", "kind": "method" }
+		},
+		{
+			"id": "SubscribeFocus",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::Focus, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowFocusEvent>", "cpp": "std::function<void(const ::Shalltear::WindowFocusEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeFocus", "kind": "method" }
+		},
+		{
+			"id": "PublishFocus",
+			"cpp": "::Shalltear::WindowEvents::Focus.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowFocusEvent" }],
+			"csharp": { "member": "PublishFocus", "kind": "method" }
+		},
+		{
+			"id": "SubscribeStateChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::StateChanged, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowStateEvent>", "cpp": "std::function<void(const ::Shalltear::WindowStateEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeStateChanged", "kind": "method" }
+		},
+		{
+			"id": "PublishStateChanged",
+			"cpp": "::Shalltear::WindowEvents::StateChanged.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowStateEvent" }],
+			"csharp": { "member": "PublishStateChanged", "kind": "method" }
+		},
+		{
+			"id": "SubscribeDragBegan",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::DragBegan, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowDragBeganEvent>", "cpp": "std::function<void(const ::Shalltear::WindowDragBeganEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeDragBegan", "kind": "method" }
+		},
+		{
+			"id": "PublishDragBegan",
+			"cpp": "::Shalltear::WindowEvents::DragBegan.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowDragBeganEvent" }],
+			"csharp": { "member": "PublishDragBegan", "kind": "method" }
+		},
+		{
+			"id": "SubscribeDragMoved",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::DragMoved, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowDragMovedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowDragMovedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeDragMoved", "kind": "method" }
+		},
+		{
+			"id": "PublishDragMoved",
+			"cpp": "::Shalltear::WindowEvents::DragMoved.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowDragMovedEvent" }],
+			"csharp": { "member": "PublishDragMoved", "kind": "method" }
+		},
+		{
+			"id": "SubscribeDragEnded",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::DragEnded, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;WindowDragEndedEvent>", "cpp": "std::function<void(const ::Shalltear::WindowDragEndedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeDragEnded", "kind": "method" }
+		},
+		{
+			"id": "PublishDragEnded",
+			"cpp": "::Shalltear::WindowEvents::DragEnded.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "WindowDragEndedEvent" }],
+			"csharp": { "member": "PublishDragEnded", "kind": "method" }
+		},
+		{
+			"id": "SubscribeFilesDropped",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::FilesDropped, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;FilesDroppedEvent>", "cpp": "std::function<void(const ::Shalltear::FilesDroppedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeFilesDropped", "kind": "method" }
+		},
+		{
+			"id": "PublishFilesDropped",
+			"cpp": "::Shalltear::WindowEvents::FilesDropped.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "FilesDroppedEvent" }],
+			"csharp": { "member": "PublishFilesDropped", "kind": "method" }
+		},
+		{
+			"id": "SubscribeMonitorsChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::WindowEvents::MonitorsChanged, handler)",
+			"returns": "u64",
+			"params": [{ "name": "handler", "type": "fn<void>", "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SubscribeMonitorsChanged", "kind": "method" }
+		}
+	]
+}

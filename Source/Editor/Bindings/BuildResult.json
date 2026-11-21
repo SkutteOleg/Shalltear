@@ -1,0 +1,39 @@
+{
+	"area": "BuildResult",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h"
+	],
+	"class": "Shalltear.Editor.BuildResult",
+	"instance": "BuildResult",
+	"functions": [
+		{
+			"id": "AllSucceeded",
+			"cpp": "self->AllSucceeded()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AllSucceeded", "kind": "method" }
+		},
+		{
+			"id": "FailureCount",
+			"cpp": "self->FailureCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "FailureCount", "kind": "method" }
+		},
+		{
+			"id": "GetProfiles",
+			"cpp": "self->profiles",
+			"returns": "list<BuildProfileResult>",
+			"params": [],
+			"csharp": { "member": "Profiles", "kind": "getter" }
+		},
+		{
+			"id": "SetProfiles",
+			"cpp": "self->profiles = Slots::Copies<::Shalltear::Vector<::Shalltear::BuildProfileResult>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<BuildProfileResult>" }],
+			"csharp": { "member": "Profiles", "kind": "setter" }
+		}
+	]
+}

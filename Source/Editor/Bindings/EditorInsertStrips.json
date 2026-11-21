@@ -1,0 +1,80 @@
+{
+	"area": "EditorInsertStrips",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorInsertStrips.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorInsertStrips",
+	"instance": "EditorInsertStrips",
+	"natives": [
+		{ "name": "EditorInsertStrips", "cpp": "::Shalltear::EditorInsertStrips", "owned": true, "create": true },
+		{ "name": "EditorInsertStripDesc", "cpp": "::Shalltear::EditorInsertStripDesc", "owned": true, "create": true },
+		{ "name": "ActionUIContextUIElementHandleFn", "cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "BeginBuild",
+			"cpp": "self->BeginBuild(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "BeginBuild", "kind": "method" }
+		},
+		{
+			"id": "PendStrip",
+			"cpp": "self->PendStrip(*desc)",
+			"returns": "void",
+			"params": [{ "name": "desc", "type": "EditorInsertStripDesc" }],
+			"csharp": { "member": "PendStrip", "kind": "method" }
+		},
+		{
+			"id": "PendInFlow",
+			"cpp": "self->PendInFlow(build)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "build",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "PendInFlow", "kind": "method" }
+		},
+		{
+			"id": "Take",
+			"cpp": "self->Take()",
+			"returns": "ActionUIContextUIElementHandleFn",
+			"params": [],
+			"csharp": { "member": "Take", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "DrainInto",
+			"cpp": "self->DrainInto(*context, host)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "host", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "DrainInto", "kind": "method" }
+		},
+		{
+			"id": "SyncHits",
+			"cpp": "self->SyncHits(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "SyncHits", "kind": "method" }
+		},
+		{
+			"id": "HeightPx",
+			"cpp": "::Shalltear::EditorInsertStrips::HeightPx()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "HeightPx", "kind": "method" },
+			"static": true
+		}
+	]
+}

@@ -1,0 +1,910 @@
+{
+	"area": "UISlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/Docking.h",
+		"Shalltear/Core/UI/Element.h",
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/RenderList.h",
+		"Shalltear/Core/UI/Style.h",
+		"Shalltear/Core/UI/UIAtlas.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.UI",
+	"enums": [
+		{
+			"name": "UIPopupFlags",
+			"cpp": "::Shalltear::UI::PopupFlags",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "NoOutsideDismiss", "value": 1 },
+				{ "name": "Center", "value": 2 },
+				{ "name": "Scrim", "value": 4 }
+			]
+		},
+		{
+			"name": "UIDisplay",
+			"cpp": "::Shalltear::UI::Display",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Flex", "value": 0 },
+				{ "name": "None", "value": 1 }
+			]
+		},
+		{
+			"name": "UIPosition",
+			"cpp": "::Shalltear::UI::Position",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Relative", "value": 0 },
+				{ "name": "Absolute", "value": 1 }
+			]
+		},
+		{
+			"name": "UIFlexDirection",
+			"cpp": "::Shalltear::UI::FlexDirection",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Row", "value": 0 },
+				{ "name": "Column", "value": 1 }
+			]
+		},
+		{
+			"name": "UIAlign",
+			"cpp": "::Shalltear::UI::Align",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Auto", "value": 0 },
+				{ "name": "Start", "value": 1 },
+				{ "name": "Center", "value": 2 },
+				{ "name": "End", "value": 3 },
+				{ "name": "Stretch", "value": 4 },
+				{ "name": "SpaceBetween", "value": 5 },
+				{ "name": "SpaceAround", "value": 6 }
+			]
+		},
+		{
+			"name": "UIOverflow",
+			"cpp": "::Shalltear::UI::Overflow",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Visible", "value": 0 },
+				{ "name": "Hidden", "value": 1 },
+				{ "name": "Scroll", "value": 2 }
+			]
+		},
+		{
+			"name": "UILengthUnit",
+			"cpp": "::Shalltear::UI::Length::Unit",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Auto", "value": 0 },
+				{ "name": "Pixel", "value": 1 },
+				{ "name": "Percent", "value": 2 }
+			]
+		},
+		{
+			"name": "UIHitTestMode",
+			"cpp": "::Shalltear::UI::HitTestMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Box", "value": 0 },
+				{ "name": "Precise", "value": 1 }
+			]
+		},
+		{
+			"name": "UIDockZone",
+			"cpp": "::Shalltear::UI::DockZone",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Center", "value": 1 },
+				{ "name": "Left", "value": 2 },
+				{ "name": "Right", "value": 3 },
+				{ "name": "Top", "value": 4 },
+				{ "name": "Bottom", "value": 5 }
+			]
+		},
+		{
+			"name": "UIDockSplit",
+			"cpp": "::Shalltear::UI::DockSplit",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Horizontal", "value": 1 },
+				{ "name": "Vertical", "value": 2 }
+			]
+		},
+		{
+			"name": "UIElementFlags",
+			"cpp": "::Shalltear::UI::ElementFlags",
+			"underlying": "u16",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "DirtyStyle", "value": 1 },
+				{ "name": "DirtyLayout", "value": 2 },
+				{ "name": "Visible", "value": 4 },
+				{ "name": "Hoverable", "value": 8 },
+				{ "name": "Focusable", "value": 16 },
+				{ "name": "Pressed", "value": 32 },
+				{ "name": "Hovered", "value": 64 },
+				{ "name": "Focused", "value": 128 },
+				{ "name": "DropHover", "value": 256 },
+				{ "name": "ContentDirty", "value": 512 },
+				{ "name": "HasIcon", "value": 1024 },
+				{ "name": "HasImage", "value": 2048 },
+				{ "name": "InheritsPointerState", "value": 4096 },
+				{ "name": "DirtyInherit", "value": 8192 },
+				{ "name": "InheritQueued", "value": 16384 },
+				{ "name": "RichText", "value": 32768 }
+			]
+		},
+		{
+			"name": "UITextDecoration",
+			"cpp": "::Shalltear::UI::TextDecoration",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Underline", "value": 1 },
+				{ "name": "Strikethrough", "value": 2 },
+				{ "name": "Mark", "value": 4 }
+			]
+		},
+		{
+			"name": "UIAtlasFormat",
+			"cpp": "::Shalltear::UI::AtlasFormat",
+			"underlying": "u8",
+			"values": [
+				{ "name": "R8", "value": 0 },
+				{ "name": "RGBA8", "value": 1 }
+			]
+		},
+		{
+			"name": "UISamplerKind",
+			"cpp": "::Shalltear::UI::SamplerKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "LinearClamp", "value": 0 },
+				{ "name": "LinearWrap", "value": 1 },
+				{ "name": "NearestClamp", "value": 2 },
+				{ "name": "NearestWrap", "value": 3 },
+				{ "name": "BilinearClamp", "value": 4 },
+				{ "name": "Count", "value": 5 }
+			]
+		},
+		{
+			"name": "UITexelEncoding",
+			"cpp": "::Shalltear::UI::TexelEncoding",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Straight", "value": 0 },
+				{ "name": "Premultiplied", "value": 1 },
+				{ "name": "Coverage", "value": 2 }
+			]
+		},
+		{
+			"name": "UILineCap",
+			"cpp": "::Shalltear::UI::LineCap",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Butt", "value": 0 },
+				{ "name": "Round", "value": 1 }
+			]
+		},
+		{
+			"name": "UIBrushType",
+			"cpp": "::Shalltear::UI::BrushType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Solid", "value": 1 },
+				{ "name": "Image", "value": 2 },
+				{ "name": "LinearGradient", "value": 3 }
+			]
+		},
+		{
+			"name": "UIImageFillMethod",
+			"cpp": "::Shalltear::UI::ImageFillMethod",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "Horizontal", "value": 1 },
+				{ "name": "Vertical", "value": 2 },
+				{ "name": "Radial90", "value": 3 },
+				{ "name": "Radial180", "value": 4 },
+				{ "name": "Radial360", "value": 5 }
+			]
+		},
+		{
+			"name": "UIImageFillOrigin",
+			"cpp": "::Shalltear::UI::ImageFillOrigin",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Left", "value": 0 },
+				{ "name": "Right", "value": 1 },
+				{ "name": "Top", "value": 2 },
+				{ "name": "Bottom", "value": 3 },
+				{ "name": "TopLeft", "value": 4 },
+				{ "name": "TopRight", "value": 5 },
+				{ "name": "BottomLeft", "value": 6 },
+				{ "name": "BottomRight", "value": 7 }
+			]
+		},
+		{
+			"name": "UIImageScaleMode",
+			"cpp": "::Shalltear::UI::ImageScaleMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "StretchToFill", "value": 0 },
+				{ "name": "ScaleAndCrop", "value": 1 },
+				{ "name": "ScaleToFit", "value": 2 },
+				{ "name": "Sliced", "value": 3 },
+				{ "name": "Tiled", "value": 4 }
+			]
+		},
+		{
+			"name": "UIFontStyle",
+			"cpp": "::Shalltear::UI::FontStyle",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Normal", "value": 0 },
+				{ "name": "Italic", "value": 1 }
+			]
+		},
+		{
+			"name": "UITextScript",
+			"cpp": "::Shalltear::UI::TextScript",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Baseline", "value": 0 },
+				{ "name": "Sub", "value": 1 },
+				{ "name": "Super", "value": 2 }
+			]
+		},
+		{
+			"name": "UITextCase",
+			"cpp": "::Shalltear::UI::TextCase",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Normal", "value": 0 },
+				{ "name": "Upper", "value": 1 },
+				{ "name": "Lower", "value": 2 },
+				{ "name": "SmallCaps", "value": 3 }
+			]
+		},
+		{
+			"name": "UITextOverflow",
+			"cpp": "::Shalltear::UI::TextOverflow",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Wrap", "value": 0 },
+				{ "name": "Clip", "value": 1 },
+				{ "name": "Ellipsis", "value": 2 }
+			]
+		},
+		{
+			"name": "UICommandKind",
+			"cpp": "::Shalltear::UI::UICommandKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Quads", "value": 0 },
+				{ "name": "PushLayer", "value": 1 },
+				{ "name": "PopLayer", "value": 2 },
+				{ "name": "PushShadow", "value": 3 },
+				{ "name": "PopShadow", "value": 4 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "UIElementHandle",
+			"cpp": "::Shalltear::UI::ElementHandle",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "index", "type": "u32", "offset": 0 },
+				{ "name": "generation", "type": "u32", "offset": 4 },
+				{ "name": "context", "type": "u32", "offset": 8 }
+			]
+		},
+		{
+			"name": "UILength",
+			"cpp": "::Shalltear::UI::Length",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "unit", "type": "UILengthUnit", "offset": 0 },
+				{ "name": "value", "type": "f32", "offset": 4 }
+			]
+		},
+		{
+			"name": "UIEdges",
+			"cpp": "::Shalltear::UI::Edges",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "left", "type": "f32", "offset": 0 },
+				{ "name": "top", "type": "f32", "offset": 4 },
+				{ "name": "right", "type": "f32", "offset": 8 },
+				{ "name": "bottom", "type": "f32", "offset": 12 }
+			]
+		},
+		{
+			"name": "UIRect",
+			"cpp": "::Shalltear::UI::Rect",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "x", "type": "f32", "offset": 0 },
+				{ "name": "y", "type": "f32", "offset": 4 },
+				{ "name": "w", "type": "f32", "offset": 8 },
+				{ "name": "h", "type": "f32", "offset": 12 }
+			]
+		},
+		{
+			"name": "UILayoutData",
+			"cpp": "::Shalltear::UI::LayoutData",
+			"size": 76,
+			"align": 4,
+			"fields": [
+				{ "name": "desiredSize", "type": "Vec2", "offset": 0 },
+				{ "name": "autoWidth", "type": "bool", "offset": 8 },
+				{ "name": "autoHeight", "type": "bool", "offset": 9 },
+				{ "name": "content", "type": "UIRect", "offset": 12 },
+				{ "name": "paddingBox", "type": "UIRect", "offset": 28 },
+				{ "name": "borderBox", "type": "UIRect", "offset": 44 },
+				{ "name": "marginBox", "type": "UIRect", "offset": 60 }
+			]
+		},
+		{
+			"name": "UILayoutStats",
+			"cpp": "::Shalltear::UI::LayoutStats",
+			"size": 40,
+			"align": 8,
+			"fields": [
+				{ "name": "measureCalls", "type": "u64", "offset": 0 },
+				{ "name": "measureWork", "type": "u64", "offset": 8 },
+				{ "name": "arrangeCalls", "type": "u64", "offset": 16 },
+				{ "name": "arrangeWork", "type": "u64", "offset": 24 },
+				{ "name": "passes", "type": "u64", "offset": 32 }
+			]
+		},
+		{
+			"name": "UIPaintStats",
+			"cpp": "::Shalltear::UI::PaintStats",
+			"size": 32,
+			"align": 8,
+			"fields": [
+				{ "name": "elementsVisited", "type": "u64", "offset": 0 },
+				{ "name": "elementsPainted", "type": "u64", "offset": 8 },
+				{ "name": "scopesWalked", "type": "u64", "offset": 16 },
+				{ "name": "scopesSorted", "type": "u64", "offset": 24 }
+			]
+		},
+		{
+			"name": "UITreeStats",
+			"cpp": "::Shalltear::UI::TreeStats",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "linkOps", "type": "u64", "offset": 0 },
+				{ "name": "linkWork", "type": "u64", "offset": 8 }
+			]
+		},
+		{
+			"name": "UIStyleStats",
+			"cpp": "::Shalltear::UI::StyleStats",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "recalcs", "type": "u64", "offset": 0 },
+				{ "name": "ruleTests", "type": "u64", "offset": 8 }
+			]
+		},
+		{
+			"name": "UIDockDropTarget",
+			"cpp": "::Shalltear::UI::DockDropTarget",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "node", "type": "u32", "offset": 0 },
+				{ "name": "zone", "type": "UIDockZone", "offset": 4 }
+			]
+		},
+		{
+			"name": "UICaretStop",
+			"cpp": "::Shalltear::UI::CaretStop",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "byteOffset", "type": "u32", "offset": 0 },
+				{ "name": "x", "type": "f32", "offset": 4 },
+				{ "name": "line", "type": "u32", "offset": 8 }
+			]
+		},
+		{
+			"name": "UIFontFaceInfo",
+			"cpp": "::Shalltear::UI::FontFaceInfo",
+			"size": 6,
+			"align": 2,
+			"fields": [
+				{ "name": "weightMin", "type": "u16", "offset": 0 },
+				{ "name": "weightMax", "type": "u16", "offset": 2 },
+				{ "name": "italic", "type": "bool", "offset": 4 },
+				{ "name": "variableItalic", "type": "bool", "offset": 5 }
+			]
+		},
+		{
+			"name": "UIAtlasPage",
+			"cpp": "::Shalltear::UI::AtlasPage",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "texture", "type": "RHITextureHandle", "offset": 0 },
+				{ "name": "size", "type": "Vec2I", "offset": 8 },
+				{ "name": "format", "type": "UIAtlasFormat", "offset": 16 },
+				{ "name": "entries", "type": "u32", "offset": 20 },
+				{ "name": "full", "type": "bool", "offset": 24 }
+			]
+		},
+		{
+			"name": "UITextStats",
+			"cpp": "::Shalltear::UI::TextStats",
+			"size": 24,
+			"align": 8,
+			"fields": [
+				{ "name": "walks", "type": "u64", "offset": 0 },
+				{ "name": "glyphsResolved", "type": "u64", "offset": 8 },
+				{ "name": "runsBuilt", "type": "u64", "offset": 16 }
+			]
+		},
+		{
+			"name": "UIRadii",
+			"cpp": "::Shalltear::UI::Radii",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "topLeft", "type": "f32", "offset": 0 },
+				{ "name": "topRight", "type": "f32", "offset": 4 },
+				{ "name": "bottomRight", "type": "f32", "offset": 8 },
+				{ "name": "bottomLeft", "type": "f32", "offset": 12 }
+			]
+		},
+		{
+			"name": "UIBoxShadow",
+			"cpp": "::Shalltear::UI::BoxShadow",
+			"size": 36,
+			"align": 4,
+			"fields": [
+				{ "name": "x", "type": "f32", "offset": 0 },
+				{ "name": "y", "type": "f32", "offset": 4 },
+				{ "name": "blur", "type": "f32", "offset": 8 },
+				{ "name": "spread", "type": "f32", "offset": 12 },
+				{ "name": "color", "type": "Color", "offset": 16 },
+				{ "name": "inset", "type": "bool", "offset": 32 }
+			]
+		},
+		{
+			"name": "UIBrush",
+			"cpp": "::Shalltear::UI::Brush",
+			"size": 72,
+			"align": 4,
+			"fields": [
+				{ "name": "type", "type": "UIBrushType", "offset": 0 },
+				{ "name": "solid", "type": "Color", "offset": 4 },
+				{ "name": "image", "type": "RHITextureHandle", "offset": 20 },
+				{ "name": "sampler", "type": "UISamplerKind", "offset": 28 },
+				{ "name": "gradient0", "type": "Color", "offset": 32 },
+				{ "name": "gradient1", "type": "Color", "offset": 48 },
+				{ "name": "gradientDirection", "type": "Vec2", "offset": 64 }
+			]
+		},
+		{
+			"name": "UIRasterizedIcon",
+			"cpp": "::Shalltear::UI::RasterizedIcon",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "atlas", "type": "RHITextureHandle", "offset": 0 },
+				{ "name": "uv", "type": "UIRect", "offset": 8 },
+				{ "name": "sizePx", "type": "Vec2", "offset": 24 }
+			]
+		},
+		{
+			"name": "UIVectorIconSystemStats",
+			"cpp": "::Shalltear::UI::IVectorIconSystem::Stats",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "entries", "type": "u32", "offset": 0 },
+				{ "name": "rasterizations", "type": "u32", "offset": 4 },
+				{ "name": "compactions", "type": "u32", "offset": 8 },
+				{ "name": "atlasBytes", "type": "u32", "offset": 12 }
+			]
+		},
+		{
+			"name": "UIScrollBand",
+			"cpp": "::Shalltear::UI::ScrollBand",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "shown", "type": "UIRect", "offset": 0 },
+				{ "name": "extent", "type": "Vec2", "offset": 16 }
+			]
+		},
+		{
+			"name": "UIImageFill",
+			"cpp": "::Shalltear::UI::ImageFill",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "method", "type": "UIImageFillMethod", "offset": 0 },
+				{ "name": "origin", "type": "UIImageFillOrigin", "offset": 1 },
+				{ "name": "amount", "type": "f32", "offset": 4 },
+				{ "name": "clockwise", "type": "bool", "offset": 8 }
+			]
+		},
+		{
+			"name": "UIShapedGlyph",
+			"cpp": "::Shalltear::UI::ShapedGlyph",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "rect", "type": "UIRect", "offset": 0 },
+				{ "name": "uv", "type": "UIRect", "offset": 16 }
+			]
+		},
+		{
+			"name": "UIShapedSpan",
+			"cpp": "::Shalltear::UI::ShapedSpan",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "glyph", "type": "u32", "offset": 0 },
+				{ "name": "outlineGlyph", "type": "u32", "offset": 4 },
+				{ "name": "paint", "type": "u16", "offset": 8 }
+			]
+		},
+		{
+			"name": "UIShapedDecoration",
+			"cpp": "::Shalltear::UI::ShapedDecoration",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "rect", "type": "UIRect", "offset": 0 },
+				{ "name": "paint", "type": "u16", "offset": 16 },
+				{ "name": "kind", "type": "UITextDecoration", "offset": 18 }
+			]
+		},
+		{
+			"name": "UIQuad",
+			"cpp": "::Shalltear::UI::UIQuad",
+			"size": 128,
+			"align": 4,
+			"fields": [
+				{ "name": "rect", "type": "UIRect", "offset": 0 },
+				{ "name": "uv", "type": "UIRect", "offset": 16 },
+				{ "name": "color0", "type": "Color", "offset": 32 },
+				{ "name": "color1", "type": "Color", "offset": 48 },
+				{ "name": "radii", "type": "UIRadii", "offset": 64 },
+				{ "name": "clipRect", "type": "UIRect", "offset": 80 },
+				{ "name": "clipRadii", "type": "UIRadii", "offset": 96 },
+				{ "name": "softness", "type": "f32", "offset": 112 },
+				{ "name": "flags", "type": "u32", "offset": 116 },
+				{ "name": "rotation", "type": "f32", "offset": 120 },
+				{ "name": "pad0", "type": "f32", "offset": 124 }
+			]
+		},
+		{
+			"name": "UICommand",
+			"cpp": "::Shalltear::UI::UICommand",
+			"size": 64,
+			"align": 4,
+			"fields": [
+				{ "name": "kind", "type": "UICommandKind", "offset": 0 },
+				{ "name": "sampler", "type": "UISamplerKind", "offset": 1 },
+				{ "name": "z", "type": "i32", "offset": 4 },
+				{ "name": "texture", "type": "RHITextureHandle", "offset": 8 },
+				{ "name": "firstQuad", "type": "u32", "offset": 16 },
+				{ "name": "quadCount", "type": "u32", "offset": 20 },
+				{ "name": "layerBounds", "type": "UIRect", "offset": 24 },
+				{ "name": "layerRadii", "type": "UIRadii", "offset": 40 },
+				{ "name": "layerOpacity", "type": "f32", "offset": 56 },
+				{ "name": "shadowCaster", "type": "u32", "offset": 60 }
+			]
+		},
+		{
+			"name": "UIShadowCaster",
+			"cpp": "::Shalltear::UI::UIShadowCaster",
+			"size": 40,
+			"align": 4,
+			"fields": [
+				{ "name": "source", "type": "UIRect", "offset": 0 },
+				{ "name": "slot", "type": "RectI", "offset": 16 },
+				{ "name": "marginPx", "type": "i32", "offset": 32 },
+				{ "name": "blurPx", "type": "f32", "offset": 36 }
+			]
+		},
+		{
+			"name": "UIDropShadow",
+			"cpp": "::Shalltear::UI::DropShadow",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "x", "type": "f32", "offset": 0 },
+				{ "name": "y", "type": "f32", "offset": 4 },
+				{ "name": "blur", "type": "f32", "offset": 8 },
+				{ "name": "color", "type": "Color", "offset": 12 }
+			]
+		},
+		{
+			"name": "UITransformOrigin",
+			"cpp": "::Shalltear::UI::TransformOrigin",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "x", "type": "UILength", "offset": 0 },
+				{ "name": "y", "type": "UILength", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIContext", "cpp": "::Shalltear::UI::Context", "owned": true },
+		{ "name": "EngineUIElement", "cpp": "::Shalltear::UI::Element", "owned": true, "create": true },
+		{ "name": "UIStyle", "cpp": "::Shalltear::UI::Style", "owned": true, "create": true },
+		{ "name": "UIStyleVarDesc", "cpp": "::Shalltear::UI::StyleVarDesc", "owned": true, "create": true },
+		{ "name": "UIStyleVars", "cpp": "::Shalltear::UI::StyleVars", "owned": true, "create": true },
+		{ "name": "UIContextShapedTextView", "cpp": "::Shalltear::UI::Context::ShapedTextView", "owned": true, "create": true },
+		{ "name": "UIIconPalette", "cpp": "::Shalltear::UI::IconPalette", "owned": true, "create": true },
+		{ "name": "UIImageDesc", "cpp": "::Shalltear::UI::ImageDesc", "owned": true, "create": true },
+		{ "name": "UIElementEvents", "cpp": "::Shalltear::UI::ElementEvents", "owned": true, "create": true },
+		{ "name": "UIRenderList", "cpp": "::Shalltear::UI::RenderList", "owned": true, "create": true },
+		{ "name": "UIFontSystem", "cpp": "::Shalltear::UI::IFontSystem" },
+		{ "name": "UIDockManager", "cpp": "::Shalltear::UI::DockManager", "owned": true },
+		{ "name": "UIDockTabIcon", "cpp": "::Shalltear::UI::DockTabIcon", "owned": true, "create": true },
+		{ "name": "UIDockNodeDesc", "cpp": "::Shalltear::UI::DockNodeDesc", "owned": true, "create": true },
+		{ "name": "UIShapedRun", "cpp": "::Shalltear::UI::ShapedRun", "owned": true, "create": true },
+		{ "name": "UITextQuery", "cpp": "::Shalltear::UI::TextQuery", "owned": true, "create": true },
+		{ "name": "UIRenderer", "cpp": "::Shalltear::UI::IRenderer" },
+		{ "name": "UISubmitInfo", "cpp": "::Shalltear::UI::SubmitInfo", "owned": true, "create": true },
+		{ "name": "UIPaintScope", "cpp": "::Shalltear::UI::PaintScope" },
+		{ "name": "UIStyleSheet", "cpp": "::Shalltear::UI::StyleSheet", "owned": true, "create": true },
+		{ "name": "UIStyleRuleSource", "cpp": "::Shalltear::UI::StyleRuleSource", "owned": true, "create": true },
+		{ "name": "UIStyleDeclarationSource", "cpp": "::Shalltear::UI::StyleDeclarationSource", "owned": true, "create": true },
+		{ "name": "UIStyleRule", "cpp": "::Shalltear::UI::StyleRule", "owned": true, "create": true },
+		{ "name": "UIAtlasBackend", "cpp": "::Shalltear::UI::IAtlasBackend" },
+		{ "name": "UIVectorIconSystem", "cpp": "::Shalltear::UI::IVectorIconSystem" },
+		{ "name": "UIIconQuery", "cpp": "::Shalltear::UI::IconQuery", "owned": true, "create": true },
+		{ "name": "UIContextDesc", "cpp": "::Shalltear::UI::ContextDesc", "owned": true, "create": true },
+		{ "name": "UITextRun", "cpp": "::Shalltear::UI::TextRun", "owned": true, "create": true },
+		{ "name": "UIStyleProperty", "cpp": "::Shalltear::UI::StyleProperty", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "MAX_IMAGE_TILES", "cpp": "::Shalltear::UI::MAX_IMAGE_TILES", "type": "u32", "value": 4096 },
+		{ "name": "INVALID_DOCK_NODE", "cpp": "::Shalltear::UI::INVALID_DOCK_NODE", "type": "u32", "value": 4294967295 },
+		{ "name": "MAX_ELEMENT_CLASSES", "cpp": "::Shalltear::UI::MAX_ELEMENT_CLASSES", "type": "u32", "value": 4 },
+		{ "name": "QUAD_FLAG_GLYPH", "cpp": "::Shalltear::UI::QUAD_FLAG_GLYPH", "type": "u32", "value": 1 },
+		{ "name": "QUAD_FLAG_DITHER", "cpp": "::Shalltear::UI::QUAD_FLAG_DITHER", "type": "u32", "value": 2 },
+		{ "name": "QUAD_FLAG_GRADIENT_VERTICAL", "cpp": "::Shalltear::UI::QUAD_FLAG_GRADIENT_VERTICAL", "type": "u32", "value": 4 },
+		{ "name": "QUAD_FLAG_SDF_FROM_UV", "cpp": "::Shalltear::UI::QUAD_FLAG_SDF_FROM_UV", "type": "u32", "value": 8 },
+		{ "name": "QUAD_FLAG_PREMULTIPLIED", "cpp": "::Shalltear::UI::QUAD_FLAG_PREMULTIPLIED", "type": "u32", "value": 16 },
+		{ "name": "QUAD_FLAG_RING", "cpp": "::Shalltear::UI::QUAD_FLAG_RING", "type": "u32", "value": 32 },
+		{ "name": "QUAD_FLAG_ROTATED", "cpp": "::Shalltear::UI::QUAD_FLAG_ROTATED", "type": "u32", "value": 64 },
+		{ "name": "QUAD_FLAG_RADIAL_FILL", "cpp": "::Shalltear::UI::QUAD_FLAG_RADIAL_FILL", "type": "u32", "value": 128 },
+		{ "name": "QUAD_FLAG_SUBPIXEL", "cpp": "::Shalltear::UI::QUAD_FLAG_SUBPIXEL", "type": "u32", "value": 256 },
+		{ "name": "MAX_STYLE_VALUE_TEXT", "cpp": "::Shalltear::UI::MAX_STYLE_VALUE_TEXT", "type": "u64", "value": 256 },
+		{ "name": "PSEUDO_NONE", "cpp": "::Shalltear::UI::PSEUDO_NONE", "type": "u8", "value": 0 },
+		{ "name": "PSEUDO_HOVER", "cpp": "::Shalltear::UI::PSEUDO_HOVER", "type": "u8", "value": 1 },
+		{ "name": "PSEUDO_ACTIVE", "cpp": "::Shalltear::UI::PSEUDO_ACTIVE", "type": "u8", "value": 2 },
+		{ "name": "PSEUDO_FOCUS", "cpp": "::Shalltear::UI::PSEUDO_FOCUS", "type": "u8", "value": 3 },
+		{ "name": "PSEUDO_DROP", "cpp": "::Shalltear::UI::PSEUDO_DROP", "type": "u8", "value": 4 },
+		{ "name": "INVALID_UI_INDEX", "cpp": "::Shalltear::UI::INVALID_UI_INDEX", "type": "u32", "value": 4294967295 },
+		{ "name": "MAX_ICON_SLOTS", "cpp": "::Shalltear::UI::MAX_ICON_SLOTS", "type": "u32", "value": 4 },
+		{ "name": "MAX_ICON_PX", "cpp": "::Shalltear::UI::MAX_ICON_PX", "type": "f32", "value": "0x1.0000000000000p+9" }
+	],
+	"functions": [
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::UI::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UIPopupFlags" },
+				{ "name": "flags", "type": "UIPopupFlags" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::UI::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UIPopupFlags" },
+				{ "name": "flags", "type": "UIPopupFlags" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "HasFlag2",
+			"cpp": "::Shalltear::UI::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UIElementFlags" },
+				{ "name": "flags", "type": "UIElementFlags" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag2",
+			"cpp": "::Shalltear::UI::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UIElementFlags" },
+				{ "name": "flags", "type": "UIElementFlags" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "HasFlag3",
+			"cpp": "::Shalltear::UI::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UITextDecoration" },
+				{ "name": "flags", "type": "UITextDecoration" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag3",
+			"cpp": "::Shalltear::UI::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UITextDecoration" },
+				{ "name": "flags", "type": "UITextDecoration" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "GetStylePropertyNames",
+			"cpp": "::Shalltear::UI::GetStylePropertyNames()",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "StylePropertyNames", "kind": "getter" }
+		},
+		{
+			"id": "IsInheritedStyleProperty",
+			"cpp": "::Shalltear::UI::IsInheritedStyleProperty(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "IsInheritedStyleProperty", "kind": "method" }
+		},
+		{
+			"id": "ReadStyleProperty",
+			"cpp": "::Shalltear::UI::ReadStyleProperty(*style, name, reinterpret_cast<char*>(static_cast<uintptr_t>(buffer)), capacity)",
+			"returns": "string",
+			"params": [
+				{ "name": "style", "type": "UIStyle" },
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "buffer", "type": "u64" },
+				{ "name": "capacity", "type": "u64" }
+			],
+			"csharp": { "member": "ReadStyleProperty", "kind": "method" }
+		},
+		{
+			"id": "ApplyStyleDeclaration",
+			"cpp": "::Shalltear::UI::ApplyStyleDeclaration(*style, name, valueValue, vars)",
+			"returns": "bool",
+			"params": [
+				{ "name": "style", "type": "UIStyle" },
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "valueValue", "type": "string" },
+				{ "name": "vars", "type": "UIStyleVars", "optional": true }
+			],
+			"csharp": { "member": "ApplyStyleDeclaration", "kind": "method" }
+		},
+		{
+			"id": "GetDefaultStyleVars",
+			"cpp": "::Shalltear::UI::GetDefaultStyleVars()",
+			"returns": "list<UIStyleVarDesc>",
+			"params": [],
+			"csharp": { "member": "DefaultStyleVars", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "AtlasBytesPerTexel",
+			"cpp": "::Shalltear::UI::AtlasBytesPerTexel(format)",
+			"returns": "u32",
+			"params": [{ "name": "format", "type": "UIAtlasFormat" }],
+			"csharp": { "member": "AtlasBytesPerTexel", "kind": "method" }
+		},
+		{
+			"id": "RectIntersect",
+			"cpp": "::Shalltear::UI::RectIntersect(a, b)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "a", "type": "UIRect" },
+				{ "name": "b", "type": "UIRect" }
+			],
+			"csharp": { "member": "RectIntersect", "kind": "method" }
+		},
+		{
+			"id": "SnapToPixel",
+			"cpp": "::Shalltear::UI::SnapToPixel(v)",
+			"returns": "f32",
+			"params": [{ "name": "v", "type": "f32" }],
+			"csharp": { "member": "SnapToPixel", "kind": "method" }
+		},
+		{
+			"id": "SnapRectToPixels",
+			"cpp": "::Shalltear::UI::SnapRectToPixels(r)",
+			"returns": "UIRect",
+			"params": [{ "name": "r", "type": "UIRect" }],
+			"csharp": { "member": "SnapRectToPixels", "kind": "method" }
+		},
+		{
+			"id": "SnapLengthToPixels",
+			"cpp": "::Shalltear::UI::SnapLengthToPixels(logicalLength, scale)",
+			"returns": "f32",
+			"params": [
+				{ "name": "logicalLength", "type": "f32" },
+				{ "name": "scale", "type": "f32" }
+			],
+			"csharp": { "member": "SnapLengthToPixels", "kind": "method" }
+		},
+		{
+			"id": "SnapEdgesToPixels",
+			"cpp": "::Shalltear::UI::SnapEdgesToPixels(edges, scale)",
+			"returns": "UIEdges",
+			"params": [
+				{ "name": "edges", "type": "UIEdges" },
+				{ "name": "scale", "type": "f32" }
+			],
+			"csharp": { "member": "SnapEdgesToPixels", "kind": "method" }
+		},
+		{
+			"id": "DeflateRect",
+			"cpp": "::Shalltear::UI::DeflateRect(r, e)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "r", "type": "UIRect" },
+				{ "name": "e", "type": "UIEdges" }
+			],
+			"csharp": { "member": "DeflateRect", "kind": "method" }
+		},
+		{
+			"id": "DeflateRadii",
+			"cpp": "::Shalltear::UI::DeflateRadii(r, e)",
+			"returns": "UIRadii",
+			"params": [
+				{ "name": "r", "type": "UIRadii" },
+				{ "name": "e", "type": "UIEdges" }
+			],
+			"csharp": { "member": "DeflateRadii", "kind": "method" }
+		},
+		{
+			"id": "GetLayerCompositeTexture",
+			"cpp": "::Shalltear::UI::LayerCompositeTexture",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "LayerCompositeTexture", "kind": "getter" }
+		},
+		{
+			"id": "GetShadowMaskTexture",
+			"cpp": "::Shalltear::UI::ShadowMaskTexture",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "ShadowMaskTexture", "kind": "getter" }
+		},
+		{
+			"id": "GetInfiniteClip",
+			"cpp": "::Shalltear::UI::InfiniteClip",
+			"returns": "UIRect",
+			"params": [],
+			"csharp": { "member": "InfiniteClip", "kind": "getter" }
+		}
+	]
+}

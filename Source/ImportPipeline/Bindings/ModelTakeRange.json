@@ -1,0 +1,67 @@
+{
+	"area": "ModelTakeRange",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelTakeRange",
+	"instance": "ModelTakeRange",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetBegin",
+			"cpp": "self->begin",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Begin", "kind": "getter" }
+		},
+		{
+			"id": "SetBegin",
+			"cpp": "self->begin = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Begin", "kind": "setter" }
+		},
+		{
+			"id": "GetEnd",
+			"cpp": "self->end",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "End", "kind": "getter" }
+		},
+		{
+			"id": "SetEnd",
+			"cpp": "self->end = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "End", "kind": "setter" }
+		},
+		{
+			"id": "GetTracks",
+			"cpp": "self->tracks",
+			"returns": "list<i32>",
+			"params": [],
+			"csharp": { "member": "Tracks", "kind": "getter" }
+		},
+		{
+			"id": "SetTracks",
+			"cpp": "self->tracks = Slots::ToVector<i32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i32>" }],
+			"csharp": { "member": "Tracks", "kind": "setter" }
+		}
+	]
+}

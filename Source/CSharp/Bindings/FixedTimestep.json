@@ -1,0 +1,73 @@
+{
+	"area": "FixedTimestep",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/FrameLoop.h"
+	],
+	"class": "Shalltear.FixedTimestep",
+	"instance": "FixedTimestep",
+	"natives": [
+		{ "name": "FixedTimestep", "cpp": "::Shalltear::FixedTimestep", "owned": true },
+		{ "name": "FramePacer", "cpp": "::Shalltear::FramePacer", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Configure",
+			"cpp": "self->Configure(stepSeconds, maximumDeltaSeconds)",
+			"returns": "void",
+			"params": [
+				{ "name": "stepSeconds", "type": "f64" },
+				{ "name": "maximumDeltaSeconds", "type": "f64" }
+			],
+			"csharp": { "member": "Configure", "kind": "method" }
+		},
+		{
+			"id": "Advance",
+			"cpp": "self->Advance(frameDeltaSeconds)",
+			"returns": "u32",
+			"params": [{ "name": "frameDeltaSeconds", "type": "f64" }],
+			"csharp": { "member": "Advance", "kind": "method" }
+		},
+		{
+			"id": "GetAlpha",
+			"cpp": "self->GetAlpha()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Alpha", "kind": "getter" }
+		},
+		{
+			"id": "GetStepSeconds",
+			"cpp": "self->GetStepSeconds()",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "StepSeconds", "kind": "getter" }
+		},
+		{
+			"id": "GetMaxStepsPerFrame",
+			"cpp": "self->GetMaxStepsPerFrame()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MaxStepsPerFrame", "kind": "getter" }
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reset", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::FixedTimestep(stepSeconds, maximumDeltaSeconds)",
+			"returns": "FixedTimestep",
+			"params": [
+				{ "name": "stepSeconds", "type": "f64" },
+				{ "name": "maximumDeltaSeconds", "type": "f64" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

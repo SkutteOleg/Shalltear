@@ -1,0 +1,84 @@
+{
+	"area": "UIWidgetsTextFieldDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIWidgetsTextFieldDesc",
+	"instance": "UIWidgetsTextFieldDesc",
+	"functions": [
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = Slots::KeepFieldText(self, 0x07f5e16e5dad1a37ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnCommit",
+			"cpp": "self->onCommit = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;string>", "optional": true, "cpp": "std::function<void (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetOnCommit", "kind": "method" }
+		},
+		{
+			"id": "SetFilter",
+			"cpp": "self->filter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<bool;u32>", "optional": true, "cpp": "std::function<bool (char32_t)>" }],
+			"csharp": { "member": "SetFilter", "kind": "method" }
+		},
+		{
+			"id": "GetMultiline",
+			"cpp": "self->multiline",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Multiline", "kind": "getter" }
+		},
+		{
+			"id": "SetMultiline",
+			"cpp": "self->multiline = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Multiline", "kind": "setter" }
+		}
+	]
+}

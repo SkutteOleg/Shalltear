@@ -1,0 +1,39 @@
+{
+	"area": "EditorIconsIcon",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorIcons.h"
+	],
+	"class": "Shalltear.Editor.EditorIconsIcon",
+	"instance": "EditorIconsIcon",
+	"functions": [
+		{
+			"id": "GetGlyph",
+			"cpp": "self->glyph",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Glyph", "kind": "getter" }
+		},
+		{
+			"id": "SetGlyph",
+			"cpp": "self->glyph = Slots::KeepFieldText(self, 0xc3af3435abaecb93ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Glyph", "kind": "setter" }
+		},
+		{
+			"id": "GetFace",
+			"cpp": "self->face",
+			"returns": "EditorIconsFace",
+			"params": [],
+			"csharp": { "member": "Face", "kind": "getter" }
+		},
+		{
+			"id": "SetFace",
+			"cpp": "self->face = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorIconsFace" }],
+			"csharp": { "member": "Face", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"area": "ReflectionProbeBakeOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ReflectionProbeBake.h",
+		"Shalltear/Core/Graphics/ReflectionProbe.h"
+	],
+	"class": "Shalltear.Editor.ReflectionProbeBakeOps",
+	"functions": [
+		{
+			"id": "BakePath",
+			"cpp": "(::Shalltear::ReflectionProbeBakeOps::BakePath(::Shalltear::Handle<::Shalltear::ReflectionProbe>(probe))).ToString()",
+			"returns": "string",
+			"params": [{ "name": "probe", "type": "ReflectionProbe", "optional": true }],
+			"csharp": { "member": "BakePath", "kind": "method" }
+		},
+		{
+			"id": "EncodeStrip",
+			"cpp": "::Shalltear::ReflectionProbeBakeOps::EncodeStrip(faces, faceSize)",
+			"returns": "list<u8>",
+			"params": [
+				{ "name": "faces", "type": "list<u8>" },
+				{ "name": "faceSize", "type": "u32" }
+			],
+			"csharp": { "member": "EncodeStrip", "kind": "method" }
+		}
+	]
+}

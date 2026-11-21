@@ -6,7 +6,7 @@ using Shalltear.Interop;
 namespace Shalltear;
 
 /// <summary>Cameras drawn by the renderer.</summary>
-public static class RenderSystem {
+public static partial class RenderSystem {
 	/// <summary>Fill results with all enabled cameras (cleared 1st).</summary>
 	public static void GetCameras(List<Camera> results) {
 		ArgumentNullException.ThrowIfNull(results);

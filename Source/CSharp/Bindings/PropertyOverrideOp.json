@@ -1,0 +1,56 @@
+{
+	"area": "PropertyOverrideOp",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.PropertyOverrideOp",
+	"instance": "PropertyOverrideOp",
+	"functions": [
+		{
+			"id": "GetTarget",
+			"cpp": "&self->target",
+			"returns": "PrefabTargetPath",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabTargetPath" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetFieldPath",
+			"cpp": "self->fieldPath",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "FieldPath", "kind": "getter" }
+		},
+		{
+			"id": "SetFieldPath",
+			"cpp": "self->fieldPath = Slots::ToVector<::Shalltear::StringHash>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "FieldPath", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "&self->value",
+			"returns": "OverrideValue",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "OverrideValue" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		}
+	]
+}

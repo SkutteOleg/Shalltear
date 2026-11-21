@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.visualeffects.csharp",
+	"version": "1.0.0",
+	"displayName": "Visual Effects for C#",
+	"description": "The C# API of Visual Effects.",
+	"kind": "engine",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.visualeffects": "1.0.0",
+		"dev.shalltear.csharp": "1.0.0"
+	}
+}

@@ -1,0 +1,256 @@
+{
+	"area": "EditorPanelProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPanel.h",
+		"DerivedTypes.h",
+		"Shalltear/Editor/EditorIcons.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorPanelProxy",
+	"instance": "EditorPanelProxy",
+	"prelude": [
+		"class EditorPanelProxy final : public ::Shalltear::EditorPanel {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::EditorPanel::GetType(); }",
+		"\t~EditorPanelProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<std::basic_string<char>()> getTitleBase;",
+		"\tstd::basic_string<char> GetTitleBase() const override {",
+		"\t\treturn getTitleBase ? getTitleBase() : ::Shalltear::EditorPanel::GetTitleBase();",
+		"\t}",
+		"\tstd::function<Shalltear::EditorIcons::Icon()> getTabIcon;",
+		"\tShalltear::EditorIcons::Icon GetTabIcon() const override {",
+		"\t\treturn getTabIcon ? getTabIcon() : ::Shalltear::EditorPanel::GetTabIcon();",
+		"\t}",
+		"\tstd::function<void(float)> onTick;",
+		"\tvoid OnTick(float a0) override {",
+		"\t\tif (onTick) {",
+		"\t\t\tonTick(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::OnTick(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool()> wantsPlayModeTint;",
+		"\tbool WantsPlayModeTint() const override {",
+		"\t\treturn wantsPlayModeTint ? wantsPlayModeTint() : ::Shalltear::EditorPanel::WantsPlayModeTint();",
+		"\t}",
+		"\tstd::function<void(float)> onSubmitView;",
+		"\tvoid OnSubmitView(float a0) override {",
+		"\t\tif (onSubmitView) {",
+		"\t\t\tonSubmitView(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::OnSubmitView(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<unsigned int()> getPresentedSurface;",
+		"\tunsigned int GetPresentedSurface() const override {",
+		"\t\treturn getPresentedSurface ? getPresentedSurface() : ::Shalltear::EditorPanel::GetPresentedSurface();",
+		"\t}",
+		"\tstd::function<void()> onOpen;",
+		"\tvoid OnOpen() override {",
+		"\t\tif (onOpen) {",
+		"\t\t\tonOpen();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::OnOpen();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onClose;",
+		"\tvoid OnClose() override {",
+		"\t\tif (onClose) {",
+		"\t\t\tonClose();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::OnClose();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onSelectionChanged;",
+		"\tvoid OnSelectionChanged() override {",
+		"\t\tif (onSelectionChanged) {",
+		"\t\t\tonSelectionChanged();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::OnSelectionChanged();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool()> hasUnsavedChanges;",
+		"\tbool HasUnsavedChanges() const override {",
+		"\t\treturn hasUnsavedChanges ? hasUnsavedChanges() : ::Shalltear::EditorPanel::HasUnsavedChanges();",
+		"\t}",
+		"\tstd::function<std::basic_string<char>()> getSaveChangesMessage;",
+		"\tstd::basic_string<char> GetSaveChangesMessage() const override {",
+		"\t\treturn getSaveChangesMessage ? getSaveChangesMessage() : ::Shalltear::EditorPanel::GetSaveChangesMessage();",
+		"\t}",
+		"\tstd::function<void()> saveChanges;",
+		"\tvoid SaveChanges() override {",
+		"\t\tif (saveChanges) {",
+		"\t\t\tsaveChanges();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::SaveChanges();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> discardChanges;",
+		"\tvoid DiscardChanges() override {",
+		"\t\tif (discardChanges) {",
+		"\t\t\tdiscardChanges();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::EditorPanel::DiscardChanges();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(Shalltear::PanelCommand)> onCommand;",
+		"\tbool OnCommand(Shalltear::PanelCommand a0) override {",
+		"\t\treturn onCommand ? onCommand(a0) : ::Shalltear::EditorPanel::OnCommand(a0);",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, Shalltear::UI::ElementHandle)> onBuildContent;",
+		"\tvoid OnBuildContent(Shalltear::UI::Context & a0, Shalltear::UI::ElementHandle a1) override {",
+		"\t\tif (onBuildContent) {",
+		"\t\t\tonBuildContent(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "EditorPanelProxy", "cpp": "EditorPanelProxy" }],
+	"functions": [
+		{
+			"id": "SetGetTitleBase",
+			"cpp": "self->getTitleBase = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string<char>()>" }
+			],
+			"csharp": { "member": "SetGetTitleBase", "kind": "method" }
+		},
+		{
+			"id": "SetGetTabIcon",
+			"cpp": "self->getTabIcon = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<copy:EditorIconsIcon>", "optional": true, "cpp": "std::function<Shalltear::EditorIcons::Icon()>" }
+			],
+			"csharp": { "member": "SetGetTabIcon", "kind": "method" }
+		},
+		{
+			"id": "SetOnTick",
+			"cpp": "self->onTick = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void;f32>", "optional": true, "cpp": "std::function<void(float)>" }],
+			"csharp": { "member": "SetOnTick", "kind": "method" }
+		},
+		{
+			"id": "SetWantsPlayModeTint",
+			"cpp": "self->wantsPlayModeTint = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetWantsPlayModeTint", "kind": "method" }
+		},
+		{
+			"id": "SetOnSubmitView",
+			"cpp": "self->onSubmitView = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void;f32>", "optional": true, "cpp": "std::function<void(float)>" }],
+			"csharp": { "member": "SetOnSubmitView", "kind": "method" }
+		},
+		{
+			"id": "SetGetPresentedSurface",
+			"cpp": "self->getPresentedSurface = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<u32>", "optional": true, "cpp": "std::function<unsigned int()>" }],
+			"csharp": { "member": "SetGetPresentedSurface", "kind": "method" }
+		},
+		{
+			"id": "SetOnOpen",
+			"cpp": "self->onOpen = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnOpen", "kind": "method" }
+		},
+		{
+			"id": "SetOnClose",
+			"cpp": "self->onClose = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnClose", "kind": "method" }
+		},
+		{
+			"id": "SetOnSelectionChanged",
+			"cpp": "self->onSelectionChanged = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "SetHasUnsavedChanges",
+			"cpp": "self->hasUnsavedChanges = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetHasUnsavedChanges", "kind": "method" }
+		},
+		{
+			"id": "SetGetSaveChangesMessage",
+			"cpp": "self->getSaveChangesMessage = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string>", "optional": true, "cpp": "std::function<std::basic_string<char>()>" }
+			],
+			"csharp": { "member": "SetGetSaveChangesMessage", "kind": "method" }
+		},
+		{
+			"id": "SetSaveChanges",
+			"cpp": "self->saveChanges = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetSaveChanges", "kind": "method" }
+		},
+		{
+			"id": "SetDiscardChanges",
+			"cpp": "self->discardChanges = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetDiscardChanges", "kind": "method" }
+		},
+		{
+			"id": "SetOnCommand",
+			"cpp": "self->onCommand = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;PanelCommand>", "optional": true, "cpp": "std::function<bool(Shalltear::PanelCommand)>" }
+			],
+			"csharp": { "member": "SetOnCommand", "kind": "method" }
+		},
+		{
+			"id": "SetOnBuildContent",
+			"cpp": "self->onBuildContent = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnBuildContent", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::EditorPanel*>(self)",
+			"returns": "EditorPanel",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<EditorPanelProxy, ::Shalltear::EditorPanel>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;EditorPanelProxy>", "cpp": "std::function<void(EditorPanelProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

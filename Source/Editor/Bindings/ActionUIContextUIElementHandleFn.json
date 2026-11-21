@@ -1,0 +1,46 @@
+{
+	"area": "ActionUIContextUIElementHandleFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorInsertStrips.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.ActionUIContextUIElementHandleFn",
+	"instance": "ActionUIContextUIElementHandleFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)(*argument0, argument1)",
+			"returns": "void",
+			"params": [
+				{ "name": "argument0", "type": "UIContext" },
+				{ "name": "argument1", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>(std::move(handler))",
+			"returns": "ActionUIContextUIElementHandleFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

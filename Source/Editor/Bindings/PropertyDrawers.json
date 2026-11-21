@@ -1,0 +1,194 @@
+{
+	"area": "PropertyDrawers",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyDrawers.h",
+		"Shalltear/Editor/EditorAssetOps.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Editor/EditTarget.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Reflection/TypeRegistry.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.PropertyDrawers",
+	"natives": [
+		{
+			"name": "PropertyDrawerFn",
+			"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::FieldRef, Shalltear::EditTarget)>",
+			"owned": true
+		},
+		{
+			"name": "ComponentInspectorFn",
+			"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::Handle<Shalltear::Component>)>",
+			"owned": true
+		},
+		{
+			"name": "AssetInspectorFn",
+			"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &, Shalltear::Asset &)>",
+			"owned": true
+		},
+		{ "name": "AssetInspectorSectionDesc", "cpp": "::Shalltear::AssetInspectorSectionDesc", "owned": true, "create": true },
+		{ "name": "AssetInspectorSection", "cpp": "::Shalltear::AssetInspectorSection", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "RegisterFieldDrawer",
+			"cpp": "::Shalltear::PropertyDrawers::RegisterFieldDrawer(fieldTypeName, drawer, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "fieldTypeName", "type": "StringHash" },
+				{
+					"name": "drawer",
+					"type": "fn<void;UIContext;UIElementHandle;FieldRef;EditTarget>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::FieldRef, Shalltear::EditTarget)>"
+				}
+			],
+			"csharp": { "member": "RegisterFieldDrawer", "kind": "method" }
+		},
+		{
+			"id": "RegisterComponentInspector",
+			"cpp": "::Shalltear::PropertyDrawers::RegisterComponentInspector(componentTypeName, inspector, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "componentTypeName", "type": "StringHash" },
+				{
+					"name": "inspector",
+					"type": "fn<void;UIContext;UIElementHandle;Component>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::Handle<Shalltear::Component>)>"
+				}
+			],
+			"csharp": { "member": "RegisterComponentInspector", "kind": "method" }
+		},
+		{
+			"id": "RegisterAssetInspector",
+			"cpp": "::Shalltear::PropertyDrawers::RegisterAssetInspector(assetTypeName, inspector, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "assetTypeName", "type": "StringHash" },
+				{
+					"name": "inspector",
+					"type": "fn<void;UIContext;UIElementHandle;EngineGuid;Asset>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &, Shalltear::Asset &)>"
+				}
+			],
+			"csharp": { "member": "RegisterAssetInspector", "kind": "method" }
+		},
+		{
+			"id": "RegisterFieldDrawerFor",
+			"cpp": "::Shalltear::PropertyDrawers::RegisterFieldDrawerFor(declaringTypeName, fieldName, drawer, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "declaringTypeName", "type": "StringHash" },
+				{ "name": "fieldName", "type": "StringHash" },
+				{
+					"name": "drawer",
+					"type": "fn<void;UIContext;UIElementHandle;FieldRef;EditTarget>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::FieldRef, Shalltear::EditTarget)>"
+				}
+			],
+			"csharp": { "member": "RegisterFieldDrawerFor", "kind": "method" }
+		},
+		{
+			"id": "FindFieldDrawer",
+			"cpp": "::Shalltear::PropertyDrawers::FindFieldDrawer(fieldTypeName)",
+			"returns": "PropertyDrawerFn",
+			"params": [{ "name": "fieldTypeName", "type": "StringHash" }],
+			"csharp": { "member": "FindFieldDrawer", "kind": "method" }
+		},
+		{
+			"id": "FindFieldDrawerFor",
+			"cpp": "::Shalltear::PropertyDrawers::FindFieldDrawerFor(declaringTypeName, fieldName)",
+			"returns": "PropertyDrawerFn",
+			"params": [
+				{ "name": "declaringTypeName", "type": "StringHash" },
+				{ "name": "fieldName", "type": "StringHash" }
+			],
+			"csharp": { "member": "FindFieldDrawerFor", "kind": "method" }
+		},
+		{
+			"id": "FindComponentInspector",
+			"cpp": "::Shalltear::PropertyDrawers::FindComponentInspector(componentTypeName)",
+			"returns": "ComponentInspectorFn",
+			"params": [{ "name": "componentTypeName", "type": "StringHash" }],
+			"csharp": { "member": "FindComponentInspector", "kind": "method" }
+		},
+		{
+			"id": "FindAssetInspector",
+			"cpp": "::Shalltear::PropertyDrawers::FindAssetInspector(assetTypeName)",
+			"returns": "AssetInspectorFn",
+			"params": [{ "name": "assetTypeName", "type": "StringHash" }],
+			"csharp": { "member": "FindAssetInspector", "kind": "method" }
+		},
+		{
+			"id": "RegisterAssetInspectorSection",
+			"cpp": "::Shalltear::PropertyDrawers::RegisterAssetInspectorSection(assetTypeName, *desc, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "assetTypeName", "type": "StringHash" },
+				{ "name": "desc", "type": "AssetInspectorSectionDesc" }
+			],
+			"csharp": { "member": "RegisterAssetInspectorSection", "kind": "method" }
+		},
+		{
+			"id": "GetAssetInspectorSections",
+			"cpp": "::Shalltear::PropertyDrawers::GetAssetInspectorSections(assetTypeName, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "assetTypeName", "type": "StringHash" },
+				{ "name": "outValue", "type": "list<AssetInspectorSection>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::AssetInspectorSection>" }
+			],
+			"csharp": { "member": "GetAssetInspectorSections", "kind": "method" }
+		},
+		{
+			"id": "GetInspectorRebuilder",
+			"cpp": "::Shalltear::PropertyDrawers::GetInspectorRebuilder()",
+			"returns": "ActionFn",
+			"params": [],
+			"csharp": { "member": "InspectorRebuilder", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetRowRefresh",
+			"cpp": "::Shalltear::PropertyDrawers::SetRowRefresh(*context, row, refresh, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "row", "type": "UIElementHandle" },
+				{ "name": "refresh", "type": "fn<void;UIContext>", "optional": true, "cpp": "std::function<void (Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "SetRowRefresh", "kind": "method" }
+		},
+		{
+			"id": "RefreshRows",
+			"cpp": "::Shalltear::PropertyDrawers::RefreshRows(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "RefreshRows", "kind": "method" }
+		},
+		{
+			"id": "DropRow",
+			"cpp": "::Shalltear::PropertyDrawers::DropRow(*context, row)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "row", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "DropRow", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::PropertyDrawers::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

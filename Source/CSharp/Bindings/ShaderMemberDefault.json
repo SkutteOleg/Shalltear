@@ -1,0 +1,53 @@
+{
+	"area": "ShaderMemberDefault",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.ShaderMemberDefault",
+	"instance": "ShaderMemberDefault",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetNumbers",
+			"cpp": "self->numbers",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Numbers", "kind": "getter" }
+		},
+		{
+			"id": "SetNumbers",
+			"cpp": "Slots::Assign(self->numbers, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Numbers", "kind": "setter" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->count",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "SetCount",
+			"cpp": "self->count = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Count", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,160 @@
+{
+	"area": "MaterialInspectorOpsRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/MaterialInspectorOps.h",
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.Editor.MaterialInspectorOpsRow",
+	"instance": "MaterialInspectorOpsRow",
+	"enums": [
+		{
+			"name": "MaterialInspectorOpsRowKind",
+			"cpp": "::Shalltear::MaterialInspectorOps::RowKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Number", "value": 0 },
+				{ "name": "Slider", "value": 1 },
+				{ "name": "Toggle", "value": 2 },
+				{ "name": "Color", "value": 3 },
+				{ "name": "HDRColor", "value": 4 },
+				{ "name": "Vector", "value": 5 },
+				{ "name": "Texture", "value": 6 },
+				{ "name": "Keyword", "value": 7 },
+				{ "name": "KeywordEnum", "value": 8 },
+				{ "name": "Blend", "value": 9 },
+				{ "name": "Cull", "value": 10 },
+				{ "name": "AlphaClip", "value": 11 },
+				{ "name": "SortingPriority", "value": 12 },
+				{ "name": "Unsupported", "value": 13 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "MaterialInspectorOpsRow", "cpp": "::Shalltear::MaterialInspectorOps::Row", "owned": true, "create": true },
+		{ "name": "MaterialInspectorOpsShaderChoice", "cpp": "::Shalltear::MaterialInspectorOps::ShaderChoice", "owned": true, "create": true },
+		{ "name": "MaterialInspectorOpsGroup", "cpp": "::Shalltear::MaterialInspectorOps::Group", "owned": true, "create": true },
+		{ "name": "MaterialInspectorOpsKeywordEntry", "cpp": "::Shalltear::MaterialInspectorOps::KeywordEntry", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "DisplayName",
+			"cpp": "self->DisplayName()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "method" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "MaterialInspectorOpsRowKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "MaterialInspectorOpsRowKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetMember",
+			"cpp": "self->member",
+			"returns": "UniformMemberType",
+			"params": [],
+			"csharp": { "member": "Member", "kind": "getter" }
+		},
+		{
+			"id": "SetMember",
+			"cpp": "self->member = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UniformMemberType" }],
+			"csharp": { "member": "Member", "kind": "setter" }
+		},
+		{
+			"id": "GetMinValue",
+			"cpp": "self->minValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MinValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMinValue",
+			"cpp": "self->minValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MinValue", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxValue",
+			"cpp": "self->maxValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MaxValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxValue",
+			"cpp": "self->maxValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MaxValue", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywordMember",
+			"cpp": "self->keywordMember",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "KeywordMember", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywordMember",
+			"cpp": "self->keywordMember = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "KeywordMember", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetEntries",
+			"cpp": "self->entries",
+			"returns": "list<MaterialInspectorOpsKeywordEntry>",
+			"params": [],
+			"csharp": { "member": "Entries", "kind": "getter" }
+		},
+		{
+			"id": "SetEntries",
+			"cpp": "self->entries = Slots::Copies<::Shalltear::Vector<::Shalltear::MaterialInspectorOps::KeywordEntry>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MaterialInspectorOpsKeywordEntry>" }],
+			"csharp": { "member": "Entries", "kind": "setter" }
+		}
+	]
+}

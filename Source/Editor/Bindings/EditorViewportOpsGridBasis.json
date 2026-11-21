@@ -1,0 +1,55 @@
+{
+	"area": "EditorViewportOpsGridBasis",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorViewportOps.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.Editor.EditorViewportOpsGridBasis",
+	"instance": "EditorViewportOpsGridBasis",
+	"functions": [
+		{
+			"id": "GetGridFromWorld",
+			"cpp": "&self->gridFromWorld",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "GridFromWorld", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetGridFromWorld",
+			"cpp": "self->gridFromWorld = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "GridFromWorld", "kind": "setter" }
+		},
+		{
+			"id": "GetAlongX",
+			"cpp": "self->alongX",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AlongX", "kind": "getter" }
+		},
+		{
+			"id": "SetAlongX",
+			"cpp": "self->alongX = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "AlongX", "kind": "setter" }
+		},
+		{
+			"id": "GetAlongZ",
+			"cpp": "self->alongZ",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "AlongZ", "kind": "getter" }
+		},
+		{
+			"id": "SetAlongZ",
+			"cpp": "self->alongZ = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "AlongZ", "kind": "setter" }
+		}
+	]
+}

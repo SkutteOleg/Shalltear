@@ -1,0 +1,98 @@
+{
+	"area": "EngineRaycastHit",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Physics.h",
+		"Shalltear/Physics3D/Colliders.h",
+		"Shalltear/Physics3D/Rigidbody.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.EngineRaycastHit",
+	"instance": "EngineRaycastHit",
+	"functions": [
+		{
+			"id": "GetCollider",
+			"cpp": "self->collider",
+			"returns": "Collider",
+			"params": [],
+			"csharp": { "member": "Collider", "kind": "getter" }
+		},
+		{
+			"id": "SetCollider",
+			"cpp": "self->collider = ::Shalltear::Handle<::Shalltear::Collider>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Collider", "optional": true }],
+			"csharp": { "member": "Collider", "kind": "setter" }
+		},
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetRigidbody",
+			"cpp": "self->rigidbody",
+			"returns": "Rigidbody",
+			"params": [],
+			"csharp": { "member": "Rigidbody", "kind": "getter" }
+		},
+		{
+			"id": "SetRigidbody",
+			"cpp": "self->rigidbody = ::Shalltear::Handle<::Shalltear::Rigidbody>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Rigidbody", "optional": true }],
+			"csharp": { "member": "Rigidbody", "kind": "setter" }
+		},
+		{
+			"id": "GetPoint",
+			"cpp": "self->point",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Point", "kind": "getter" }
+		},
+		{
+			"id": "SetPoint",
+			"cpp": "self->point = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Point", "kind": "setter" }
+		},
+		{
+			"id": "GetNormal",
+			"cpp": "self->normal",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Normal", "kind": "getter" }
+		},
+		{
+			"id": "SetNormal",
+			"cpp": "self->normal = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Normal", "kind": "setter" }
+		},
+		{
+			"id": "GetDistance",
+			"cpp": "self->distance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Distance", "kind": "getter" }
+		},
+		{
+			"id": "SetDistance",
+			"cpp": "self->distance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Distance", "kind": "setter" }
+		}
+	]
+}

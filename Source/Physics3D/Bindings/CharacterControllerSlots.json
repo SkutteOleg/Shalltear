@@ -1,0 +1,36 @@
+{
+	"area": "CharacterControllerSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/CharacterController.h"
+	],
+	"class": "Shalltear.CharacterController",
+	"instance": "CharacterController",
+	"natives": [
+		{ "name": "EngineControllerColliderHit", "cpp": "::Shalltear::ControllerColliderHit", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "CollisionFlags" },
+				{ "name": "flags", "type": "CollisionFlags" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "CollisionFlags" },
+				{ "name": "flags", "type": "CollisionFlags" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" },
+			"static": true
+		}
+	]
+}

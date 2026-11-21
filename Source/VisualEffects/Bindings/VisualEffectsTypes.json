@@ -1,0 +1,12 @@
+{
+	"area": "VisualEffectsTypes",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffectAsset.h"
+	],
+	"class": "Shalltear.VisualEffectsTypes",
+	"types": [
+		{ "name": "VisualEffectAsset", "cpp": "::Shalltear::VisualEffectAsset", "engine": "VisualEffectAsset", "base": "Asset" }
+	],
+	"functions": []
+}

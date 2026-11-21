@@ -1,0 +1,67 @@
+{
+	"area": "LogInitConfig",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.LogInitConfig",
+	"instance": "LogInitConfig",
+	"functions": [
+		{
+			"id": "GetEnableConsoleSink",
+			"cpp": "self->enableConsoleSink",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnableConsoleSink", "kind": "getter" }
+		},
+		{
+			"id": "SetEnableConsoleSink",
+			"cpp": "self->enableConsoleSink = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnableConsoleSink", "kind": "setter" }
+		},
+		{
+			"id": "GetEnableFileSink",
+			"cpp": "self->enableFileSink",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EnableFileSink", "kind": "getter" }
+		},
+		{
+			"id": "SetEnableFileSink",
+			"cpp": "self->enableFileSink = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EnableFileSink", "kind": "setter" }
+		},
+		{
+			"id": "GetFileSinkPath",
+			"cpp": "self->fileSinkPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "FileSinkPath", "kind": "getter" }
+		},
+		{
+			"id": "SetFileSinkPath",
+			"cpp": "self->fileSinkPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "FileSinkPath", "kind": "setter" }
+		},
+		{
+			"id": "GetCreateConsole",
+			"cpp": "self->createConsole",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CreateConsole", "kind": "getter" }
+		},
+		{
+			"id": "SetCreateConsole",
+			"cpp": "self->createConsole = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "CreateConsole", "kind": "setter" }
+		}
+	]
+}

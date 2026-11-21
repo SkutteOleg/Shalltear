@@ -1,0 +1,193 @@
+{
+	"area": "ListRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorListView.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/Widgets.h"
+	],
+	"class": "Shalltear.Editor.ListRow",
+	"instance": "ListRow",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetSelectable",
+			"cpp": "self->selectable",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Selectable", "kind": "getter" }
+		},
+		{
+			"id": "SetSelectable",
+			"cpp": "self->selectable = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Selectable", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetHasChildren",
+			"cpp": "self->hasChildren",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasChildren", "kind": "getter" }
+		},
+		{
+			"id": "SetHasChildren",
+			"cpp": "self->hasChildren = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "HasChildren", "kind": "setter" }
+		},
+		{
+			"id": "GetExpanded",
+			"cpp": "self->expanded",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Expanded", "kind": "getter" }
+		},
+		{
+			"id": "SetExpanded",
+			"cpp": "self->expanded = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Expanded", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "SetOnDecorate",
+			"cpp": "self->onDecorate = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIWidgetsTreeRowParts>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, const Shalltear::UI::Widgets::TreeRowParts &)>"
+				}
+			],
+			"csharp": { "member": "SetOnDecorate", "kind": "method" }
+		},
+		{
+			"id": "SetOnToggleExpand",
+			"cpp": "self->onToggleExpand = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;bool>", "optional": true, "cpp": "std::function<void (bool)>" }],
+			"csharp": { "member": "SetOnToggleExpand", "kind": "method" }
+		},
+		{
+			"id": "SetOnActivate",
+			"cpp": "self->onActivate = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;UIContext>", "optional": true, "cpp": "std::function<void (Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "SetOnActivate", "kind": "method" }
+		},
+		{
+			"id": "SetOnClick",
+			"cpp": "self->onClick = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;UIContext>", "optional": true, "cpp": "std::function<void (Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "SetOnClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnRightClick",
+			"cpp": "self->onRightClick = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;UIContext>", "optional": true, "cpp": "std::function<void (Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "SetOnRightClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragRow",
+			"cpp": "self->onDragRow = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<void;Vec2>", "optional": true, "cpp": "std::function<void (Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetOnDragRow", "kind": "method" }
+		},
+		{
+			"id": "SetOnDragOver",
+			"cpp": "self->onDragOver = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;UIDragPayload>", "optional": true, "cpp": "std::function<bool (const Shalltear::UI::DragPayload &)>" }
+			],
+			"csharp": { "member": "SetOnDragOver", "kind": "method" }
+		},
+		{
+			"id": "SetOnDrop",
+			"cpp": "self->onDrop = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIDragPayload;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnDrop", "kind": "method" }
+		},
+		{
+			"id": "SetOnBuildLeading",
+			"cpp": "self->onBuildLeading = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOnBuildLeading", "kind": "method" }
+		}
+	]
+}

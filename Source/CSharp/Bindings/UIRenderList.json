@@ -1,0 +1,74 @@
+{
+	"area": "UIRenderList",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.UIRenderList",
+	"instance": "UIRenderList",
+	"functions": [
+		{
+			"id": "Clear",
+			"cpp": "self->Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "GetQuads",
+			"cpp": "self->quads",
+			"returns": "list<UIQuad>",
+			"params": [],
+			"csharp": { "member": "Quads", "kind": "getter" }
+		},
+		{
+			"id": "SetQuads",
+			"cpp": "self->quads = Slots::ToVector<::Shalltear::UI::UIQuad>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIQuad>" }],
+			"csharp": { "member": "Quads", "kind": "setter" }
+		},
+		{
+			"id": "GetCommands",
+			"cpp": "self->commands",
+			"returns": "list<UICommand>",
+			"params": [],
+			"csharp": { "member": "Commands", "kind": "getter" }
+		},
+		{
+			"id": "SetCommands",
+			"cpp": "self->commands = Slots::ToVector<::Shalltear::UI::UICommand>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UICommand>" }],
+			"csharp": { "member": "Commands", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowCasters",
+			"cpp": "self->shadowCasters",
+			"returns": "list<UIShadowCaster>",
+			"params": [],
+			"csharp": { "member": "ShadowCasters", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowCasters",
+			"cpp": "self->shadowCasters = Slots::ToVector<::Shalltear::UI::UIShadowCaster>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIShadowCaster>" }],
+			"csharp": { "member": "ShadowCasters", "kind": "setter" }
+		},
+		{
+			"id": "GetShadowAtlasSizePx",
+			"cpp": "self->shadowAtlasSizePx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "ShadowAtlasSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetShadowAtlasSizePx",
+			"cpp": "self->shadowAtlasSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "ShadowAtlasSizePx", "kind": "setter" }
+		}
+	]
+}

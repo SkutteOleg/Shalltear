@@ -1,0 +1,96 @@
+{
+	"area": "UIStyleRule",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Style.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.UIStyleRule",
+	"instance": "UIStyleRule",
+	"functions": [
+		{
+			"id": "GetTargetTag",
+			"cpp": "self->targetTag",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TargetTag", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetTag",
+			"cpp": "self->targetTag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TargetTag", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetClass",
+			"cpp": "self->targetClass",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TargetClass", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetClass",
+			"cpp": "self->targetClass = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TargetClass", "kind": "setter" }
+		},
+		{
+			"id": "GetTargetId",
+			"cpp": "self->targetId",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TargetId", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetId",
+			"cpp": "self->targetId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TargetId", "kind": "setter" }
+		},
+		{
+			"id": "GetPseudoState",
+			"cpp": "self->pseudoState",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "PseudoState", "kind": "getter" }
+		},
+		{
+			"id": "SetPseudoState",
+			"cpp": "self->pseudoState = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "PseudoState", "kind": "setter" }
+		},
+		{
+			"id": "GetSpecificity",
+			"cpp": "self->specificity",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Specificity", "kind": "getter" }
+		},
+		{
+			"id": "SetSpecificity",
+			"cpp": "self->specificity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Specificity", "kind": "setter" }
+		},
+		{
+			"id": "GetProperties",
+			"cpp": "self->properties",
+			"returns": "list<UIStyleProperty>",
+			"params": [],
+			"csharp": { "member": "Properties", "kind": "getter" }
+		},
+		{
+			"id": "SetProperties",
+			"cpp": "self->properties = Slots::Copies<::Shalltear::Vector<::Shalltear::UI::StyleProperty>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIStyleProperty>" }],
+			"csharp": { "member": "Properties", "kind": "setter" }
+		}
+	]
+}

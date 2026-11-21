@@ -1,0 +1,109 @@
+{
+	"area": "ScreenLaunch",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Screen.h"
+	],
+	"class": "Shalltear.ScreenLaunch",
+	"instance": "ScreenLaunch",
+	"functions": [
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "TryGetWidth",
+			"cpp": "Slots::Take(self->width, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "i32", "out": true }],
+			"csharp": { "member": "TryGetWidth", "kind": "method" }
+		},
+		{
+			"id": "ClearWidth",
+			"cpp": "self->width.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearWidth", "kind": "method" }
+		},
+		{
+			"id": "SetWidth",
+			"cpp": "self->width = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SetWidth", "kind": "method" }
+		},
+		{
+			"id": "TryGetHeight",
+			"cpp": "Slots::Take(self->height, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "i32", "out": true }],
+			"csharp": { "member": "TryGetHeight", "kind": "method" }
+		},
+		{
+			"id": "ClearHeight",
+			"cpp": "self->height.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearHeight", "kind": "method" }
+		},
+		{
+			"id": "SetHeight",
+			"cpp": "self->height = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SetHeight", "kind": "method" }
+		},
+		{
+			"id": "TryGetFullScreen",
+			"cpp": "Slots::Take(self->fullScreen, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "bool", "out": true }],
+			"csharp": { "member": "TryGetFullScreen", "kind": "method" }
+		},
+		{
+			"id": "ClearFullScreen",
+			"cpp": "self->fullScreen.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearFullScreen", "kind": "method" }
+		},
+		{
+			"id": "SetFullScreen",
+			"cpp": "self->fullScreen = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "SetFullScreen", "kind": "method" }
+		},
+		{
+			"id": "TryGetMonitor",
+			"cpp": "Slots::Take(self->monitor, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "i32", "out": true }],
+			"csharp": { "member": "TryGetMonitor", "kind": "method" }
+		},
+		{
+			"id": "ClearMonitor",
+			"cpp": "self->monitor.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearMonitor", "kind": "method" }
+		},
+		{
+			"id": "SetMonitor",
+			"cpp": "self->monitor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "SetMonitor", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,195 @@
+{
+	"area": "UITextQuery",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UITextQuery",
+	"instance": "UITextQuery",
+	"functions": [
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetSizePx",
+			"cpp": "self->sizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetSizePx",
+			"cpp": "self->sizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetUTF8",
+			"cpp": "self->utf8",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "UTF8", "kind": "getter" }
+		},
+		{
+			"id": "SetUTF8",
+			"cpp": "self->utf8 = Slots::KeepFieldText(self, 0xfd3a8310d4b67ce7ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "UTF8", "kind": "setter" }
+		},
+		{
+			"id": "GetWrapWidth",
+			"cpp": "self->wrapWidth",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "WrapWidth", "kind": "getter" }
+		},
+		{
+			"id": "SetWrapWidth",
+			"cpp": "self->wrapWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "WrapWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetOverflow",
+			"cpp": "self->overflow",
+			"returns": "UITextOverflow",
+			"params": [],
+			"csharp": { "member": "Overflow", "kind": "getter" }
+		},
+		{
+			"id": "SetOverflow",
+			"cpp": "self->overflow = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UITextOverflow" }],
+			"csharp": { "member": "Overflow", "kind": "setter" }
+		},
+		{
+			"id": "GetAlign",
+			"cpp": "self->align",
+			"returns": "UIAlign",
+			"params": [],
+			"csharp": { "member": "Align", "kind": "getter" }
+		},
+		{
+			"id": "SetAlign",
+			"cpp": "self->align = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAlign" }],
+			"csharp": { "member": "Align", "kind": "setter" }
+		},
+		{
+			"id": "GetEditable",
+			"cpp": "self->editable",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Editable", "kind": "getter" }
+		},
+		{
+			"id": "SetEditable",
+			"cpp": "self->editable = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Editable", "kind": "setter" }
+		},
+		{
+			"id": "GetOutlineWidth",
+			"cpp": "self->outlineWidth",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "OutlineWidth", "kind": "getter" }
+		},
+		{
+			"id": "SetOutlineWidth",
+			"cpp": "self->outlineWidth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "OutlineWidth", "kind": "setter" }
+		},
+		{
+			"id": "GetLetterSpacing",
+			"cpp": "self->letterSpacing",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LetterSpacing", "kind": "getter" }
+		},
+		{
+			"id": "SetLetterSpacing",
+			"cpp": "self->letterSpacing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LetterSpacing", "kind": "setter" }
+		},
+		{
+			"id": "GetLineHeight",
+			"cpp": "self->lineHeight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "LineHeight", "kind": "getter" }
+		},
+		{
+			"id": "SetLineHeight",
+			"cpp": "self->lineHeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "LineHeight", "kind": "setter" }
+		},
+		{
+			"id": "GetFontWeight",
+			"cpp": "self->fontWeight",
+			"returns": "u16",
+			"params": [],
+			"csharp": { "member": "FontWeight", "kind": "getter" }
+		},
+		{
+			"id": "SetFontWeight",
+			"cpp": "self->fontWeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u16" }],
+			"csharp": { "member": "FontWeight", "kind": "setter" }
+		},
+		{
+			"id": "GetFontStyle",
+			"cpp": "self->fontStyle",
+			"returns": "UIFontStyle",
+			"params": [],
+			"csharp": { "member": "FontStyle", "kind": "getter" }
+		},
+		{
+			"id": "SetFontStyle",
+			"cpp": "self->fontStyle = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIFontStyle" }],
+			"csharp": { "member": "FontStyle", "kind": "setter" }
+		},
+		{
+			"id": "GetRuns",
+			"cpp": "self->runs",
+			"returns": "list<UITextRun>",
+			"params": [],
+			"csharp": { "member": "Runs", "kind": "getter" }
+		},
+		{
+			"id": "SetRuns",
+			"cpp": "self->runs = Slots::KeepFieldCopies(self, 0x3b0782f873e4e632ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UITextRun>" }],
+			"csharp": { "member": "Runs", "kind": "setter" }
+		}
+	]
+}

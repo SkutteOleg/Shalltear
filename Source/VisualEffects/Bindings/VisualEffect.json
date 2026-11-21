@@ -1,0 +1,239 @@
+{
+	"area": "VisualEffect",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffect.h",
+		"Shalltear/VisualEffects/VisualEffectAsset.h"
+	],
+	"class": "Shalltear.VisualEffect",
+	"instance": "VisualEffect",
+	"functions": [
+		{
+			"id": "Play",
+			"cpp": "self->Play()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Play", "kind": "method" }
+		},
+		{
+			"id": "Stop",
+			"cpp": "self->Stop()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Stop", "kind": "method" }
+		},
+		{
+			"id": "SendEvent",
+			"cpp": "self->SendEvent(name)",
+			"returns": "void",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "SendEvent", "kind": "method" }
+		},
+		{
+			"id": "SendEvent2",
+			"cpp": "self->SendEvent(name, *attributes)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "attributes", "type": "VisualEffectEventAttributes" }
+			],
+			"csharp": { "member": "SendEvent", "kind": "method" }
+		},
+		{
+			"id": "Reinit",
+			"cpp": "self->Reinit()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reinit", "kind": "method" }
+		},
+		{
+			"id": "SetFloat",
+			"cpp": "self->SetFloat(property, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "SetFloat", "kind": "method" }
+		},
+		{
+			"id": "SetInt",
+			"cpp": "self->SetInt(property, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "i32" }
+			],
+			"csharp": { "member": "SetInt", "kind": "method" }
+		},
+		{
+			"id": "SetBool",
+			"cpp": "self->SetBool(property, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "bool" }
+			],
+			"csharp": { "member": "SetBool", "kind": "method" }
+		},
+		{
+			"id": "SetVector2",
+			"cpp": "self->SetVector2(property, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "Vec2" }
+			],
+			"csharp": { "member": "SetVector2", "kind": "method" }
+		},
+		{
+			"id": "SetVector3",
+			"cpp": "self->SetVector3(property, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "Vec3" }
+			],
+			"csharp": { "member": "SetVector3", "kind": "method" }
+		},
+		{
+			"id": "SetVector4",
+			"cpp": "self->SetVector4(property, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "property", "type": "string" },
+				{ "name": "valueValue", "type": "Vec4" }
+			],
+			"csharp": { "member": "SetVector4", "kind": "method" }
+		},
+		{
+			"id": "GetParticleCount",
+			"cpp": "self->GetParticleCount(system)",
+			"returns": "u32",
+			"params": [{ "name": "system", "type": "string" }],
+			"csharp": { "member": "GetParticleCount", "kind": "method" }
+		},
+		{
+			"id": "GetParticles",
+			"cpp": "self->GetParticles(system, attribute, outValue, offset)",
+			"returns": "u32",
+			"params": [
+				{ "name": "system", "type": "string" },
+				{ "name": "attribute", "type": "string" },
+				{ "name": "outValue", "type": "span<f32>", "out": true },
+				{ "name": "offset", "type": "u32" }
+			],
+			"csharp": { "member": "GetParticles", "kind": "method" }
+		},
+		{
+			"id": "GetParticles2",
+			"cpp": "self->GetParticles(system, attribute, outValue, offset)",
+			"returns": "u32",
+			"params": [
+				{ "name": "system", "type": "string" },
+				{ "name": "attribute", "type": "string" },
+				{ "name": "outValue", "type": "span<Vec3>", "out": true },
+				{ "name": "offset", "type": "u32" }
+			],
+			"csharp": { "member": "GetParticles", "kind": "method" }
+		},
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "VisualEffectAsset",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = ::Shalltear::Handle<::Shalltear::VisualEffectAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "VisualEffectAsset", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		},
+		{
+			"id": "GetStartSeed",
+			"cpp": "self->startSeed",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "StartSeed", "kind": "getter" }
+		},
+		{
+			"id": "SetStartSeed",
+			"cpp": "self->startSeed = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "StartSeed", "kind": "setter" }
+		},
+		{
+			"id": "GetResetSeedOnPlay",
+			"cpp": "self->resetSeedOnPlay",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ResetSeedOnPlay", "kind": "getter" }
+		},
+		{
+			"id": "SetResetSeedOnPlay",
+			"cpp": "self->resetSeedOnPlay = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ResetSeedOnPlay", "kind": "setter" }
+		},
+		{
+			"id": "GetInitialEventName",
+			"cpp": "self->initialEventName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "InitialEventName", "kind": "getter" }
+		},
+		{
+			"id": "SetInitialEventName",
+			"cpp": "self->initialEventName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "InitialEventName", "kind": "setter" }
+		},
+		{
+			"id": "GetPlayRate",
+			"cpp": "self->playRate",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "PlayRate", "kind": "getter" }
+		},
+		{
+			"id": "SetPlayRate",
+			"cpp": "self->playRate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "PlayRate", "kind": "setter" }
+		},
+		{
+			"id": "GetAllowInstancing",
+			"cpp": "self->allowInstancing",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "AllowInstancing", "kind": "getter" }
+		},
+		{
+			"id": "SetAllowInstancing",
+			"cpp": "self->allowInstancing = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "AllowInstancing", "kind": "setter" }
+		},
+		{
+			"id": "GetProperties",
+			"cpp": "self->properties",
+			"returns": "list<VisualEffectPropertyOverride>",
+			"params": [],
+			"csharp": { "member": "Properties", "kind": "getter" }
+		},
+		{
+			"id": "SetProperties",
+			"cpp": "self->properties = Slots::Copies<::Shalltear::Vector<::Shalltear::VisualEffectPropertyOverride>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<VisualEffectPropertyOverride>" }],
+			"csharp": { "member": "Properties", "kind": "setter" }
+		}
+	]
+}

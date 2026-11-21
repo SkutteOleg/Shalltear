@@ -1,0 +1,66 @@
+{
+	"area": "EditorIconsComponentIcons",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorIcons.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.EditorIconsComponentIcons",
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::EditorIcons::ComponentIcons::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::EditorIcons::ComponentIcons::Register(componentTypeName, markPath, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "componentTypeName", "type": "StringHash" },
+				{ "name": "markPath", "type": "string" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorIcons::ComponentIcons::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "For",
+			"cpp": "::Shalltear::EditorIcons::ComponentIcons::For(componentType)",
+			"returns": "string",
+			"params": [{ "name": "componentType", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "For", "kind": "method" }
+		},
+		{
+			"id": "Add",
+			"cpp": "::Shalltear::EditorIcons::ComponentIcons::Add(*context, parent, componentType, sizePx, gapPx, lineTextPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "componentType", "type": "TypeInfo", "optional": true },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "gapPx", "type": "f32" },
+				{ "name": "lineTextPx", "type": "f32" }
+			],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "SizePx",
+			"cpp": "::Shalltear::EditorIcons::ComponentIcons::SizePx()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SizePx", "kind": "method" }
+		}
+	]
+}

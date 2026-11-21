@@ -1,0 +1,82 @@
+{
+	"area": "AnimatorControllerLayer",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h",
+		"Shalltear/Animation/AnimationLayer.h"
+	],
+	"class": "Shalltear.AnimatorControllerLayer",
+	"instance": "AnimatorControllerLayer",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetMachine",
+			"cpp": "self->machine",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Machine", "kind": "getter" }
+		},
+		{
+			"id": "SetMachine",
+			"cpp": "self->machine = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Machine", "kind": "setter" }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->weight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->weight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetBlend",
+			"cpp": "self->blend",
+			"returns": "AnimationBlendMode",
+			"params": [],
+			"csharp": { "member": "Blend", "kind": "getter" }
+		},
+		{
+			"id": "SetBlend",
+			"cpp": "self->blend = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationBlendMode" }],
+			"csharp": { "member": "Blend", "kind": "setter" }
+		},
+		{
+			"id": "GetMask",
+			"cpp": "self->mask",
+			"returns": "list<AnimatorControllerLayerMaskEntry>",
+			"params": [],
+			"csharp": { "member": "Mask", "kind": "getter" }
+		},
+		{
+			"id": "SetMask",
+			"cpp": "self->mask = Slots::Copies<::Shalltear::Vector<::Shalltear::AnimatorController::Layer::MaskEntry>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AnimatorControllerLayerMaskEntry>" }],
+			"csharp": { "member": "Mask", "kind": "setter" }
+		}
+	]
+}

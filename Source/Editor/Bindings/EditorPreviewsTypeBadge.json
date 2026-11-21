@@ -1,0 +1,41 @@
+{
+	"area": "EditorPreviewsTypeBadge",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Editor/EditorIcons.h"
+	],
+	"class": "Shalltear.Editor.EditorPreviewsTypeBadge",
+	"instance": "EditorPreviewsTypeBadge",
+	"functions": [
+		{
+			"id": "GetIcon",
+			"cpp": "&self->icon",
+			"returns": "EditorIconsIcon",
+			"params": [],
+			"csharp": { "member": "Icon", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetIcon",
+			"cpp": "self->icon = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorIconsIcon" }],
+			"csharp": { "member": "Icon", "kind": "setter" }
+		},
+		{
+			"id": "GetColor",
+			"cpp": "self->color",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "Color", "kind": "getter" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "self->color = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "Color", "kind": "setter" }
+		}
+	]
+}

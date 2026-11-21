@@ -1,0 +1,96 @@
+{
+	"area": "HandleResolver",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/HandleResolver.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.HandleResolver",
+	"natives": [
+		{ "name": "HandleResolverScope", "cpp": "::Shalltear::HandleResolverScope", "owned": true, "create": true },
+		{ "name": "ScopedHandleResolver", "cpp": "::Shalltear::ScopedHandleResolver", "owned": true }
+	],
+	"constants": [
+		{ "name": "SLT_LOCAL_SENTINEL", "cpp": "::Shalltear::SLT_LOCAL_SENTINEL", "type": "u64", "value": 6002265090102083916 },
+		{ "name": "SLT_PREFAB_KEY_SENTINEL", "cpp": "::Shalltear::SLT_PREFAB_KEY_SENTINEL", "type": "u64", "value": 6002265107130827339 }
+	],
+	"functions": [
+		{
+			"id": "IsAssetGuid",
+			"cpp": "::Shalltear::IsAssetGuid(guid)",
+			"returns": "bool",
+			"params": [{ "name": "guid", "type": "EngineGuid" }],
+			"csharp": { "member": "IsAssetGuid", "kind": "method" }
+		},
+		{
+			"id": "SetHooks",
+			"cpp": "::Shalltear::HandleResolver::SetHooks(Slots::FromBits<bool (*)(uint64_t, Shalltear::Guid *, Shalltear::StringHash *)>(toGuid), Slots::FromBits<uint64_t (*)(const Shalltear::Guid &, Shalltear::StringHash)>(toHandle))",
+			"returns": "void",
+			"params": [
+				{ "name": "toGuid", "type": "u64" },
+				{ "name": "toHandle", "type": "u64" }
+			],
+			"csharp": { "member": "SetHooks", "kind": "method" }
+		},
+		{
+			"id": "ResetHooks",
+			"cpp": "::Shalltear::HandleResolver::ResetHooks()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ResetHooks", "kind": "method" }
+		},
+		{
+			"id": "ToGuid",
+			"cpp": "::Shalltear::HandleResolver::ToGuid(instanceId, outGuid.data(), outPointeeType)",
+			"returns": "bool",
+			"params": [
+				{ "name": "instanceId", "type": "u64" },
+				{ "name": "outGuid", "type": "span<EngineGuid>", "out": true },
+				{ "name": "outPointeeType", "type": "EngineStringHash", "optional": true }
+			],
+			"csharp": { "member": "ToGuid", "kind": "method" }
+		},
+		{
+			"id": "ToHandle",
+			"cpp": "::Shalltear::HandleResolver::ToHandle(guid, pointeeType)",
+			"returns": "u64",
+			"params": [
+				{ "name": "guid", "type": "EngineGuid" },
+				{ "name": "pointeeType", "type": "StringHash" }
+			],
+			"csharp": { "member": "ToHandle", "kind": "method" }
+		},
+		{
+			"id": "PushScope",
+			"cpp": "::Shalltear::HandleResolver::PushScope(*scope)",
+			"returns": "void",
+			"params": [{ "name": "scope", "type": "HandleResolverScope" }],
+			"csharp": { "member": "PushScope", "kind": "method" }
+		},
+		{
+			"id": "PopScope",
+			"cpp": "::Shalltear::HandleResolver::PopScope()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "PopScope", "kind": "method" }
+		},
+		{
+			"id": "GetScopeDepth",
+			"cpp": "::Shalltear::HandleResolver::GetScopeDepth()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ScopeDepth", "kind": "getter" }
+		},
+		{
+			"id": "SetObserver",
+			"cpp": "::Shalltear::HandleResolver::SetObserver(Slots::FromBits<void (*)(void *, const Shalltear::Guid &, Shalltear::StringHash)>(fn), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "void",
+			"params": [
+				{ "name": "fn", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "SetObserver", "kind": "method" }
+		}
+	]
+}

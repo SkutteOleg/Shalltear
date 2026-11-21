@@ -1,0 +1,61 @@
+{
+	"area": "SceneSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Scene",
+	"instance": "Scene",
+	"enums": [
+		{
+			"name": "SceneKind",
+			"cpp": "::Shalltear::SceneKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "World", "value": 0 },
+				{ "name": "Isolated", "value": 1 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "GetKind",
+			"cpp": "self->GetKind()",
+			"returns": "SceneKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "GetSourceGuid",
+			"cpp": "self->GetSourceGuid()",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "SourceGuid", "kind": "getter" }
+		},
+		{
+			"id": "ForEachObject",
+			"cpp": "self->ForEachObject(Slots::FromBits<void (*)(Shalltear::SceneObject &, void *)>(visitor), reinterpret_cast<void*>(static_cast<uintptr_t>(user)))",
+			"returns": "void",
+			"params": [
+				{ "name": "visitor", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "ForEachObject", "kind": "method" }
+		},
+		{
+			"id": "GetNameField",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "NameField", "kind": "getter" }
+		},
+		{
+			"id": "SetNameField",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "NameField", "kind": "setter" }
+		}
+	]
+}

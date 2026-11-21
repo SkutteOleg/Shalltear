@@ -1,0 +1,50 @@
+{
+	"area": "AssetInspectorFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyDrawers.h",
+		"Shalltear/Core/Asset/Asset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.AssetInspectorFn",
+	"instance": "AssetInspectorFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)(*argument0, argument1, argument2, *argument3)",
+			"returns": "void",
+			"params": [
+				{ "name": "argument0", "type": "UIContext" },
+				{ "name": "argument1", "type": "UIElementHandle" },
+				{ "name": "argument2", "type": "EngineGuid" },
+				{ "name": "argument3", "type": "Asset" }
+			],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &, Shalltear::Asset &)>(std::move(handler))",
+			"returns": "AssetInspectorFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIElementHandle;EngineGuid;Asset>",
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, const Shalltear::Guid &, Shalltear::Asset &)>"
+				}
+			],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,468 @@
+{
+	"area": "GraphCanvasOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvasOps.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.GraphCanvasOps",
+	"enums": [
+		{
+			"name": "GraphPortSide",
+			"cpp": "::Shalltear::GraphPortSide",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Input", "value": 0 },
+				{ "name": "Output", "value": 1 },
+				{ "name": "FlowInput", "value": 2 },
+				{ "name": "FlowOutput", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "GraphView",
+			"cpp": "::Shalltear::GraphView",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "pan", "type": "Vec2", "offset": 0 },
+				{ "name": "zoom", "type": "f32", "offset": 8 }
+			]
+		},
+		{
+			"name": "GraphCubic",
+			"cpp": "::Shalltear::GraphCubic",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "p0", "type": "Vec2", "offset": 0 },
+				{ "name": "p1", "type": "Vec2", "offset": 8 },
+				{ "name": "p2", "type": "Vec2", "offset": 16 },
+				{ "name": "p3", "type": "Vec2", "offset": 24 }
+			]
+		},
+		{
+			"name": "GraphCanvasOpsGraphNodeLayout",
+			"cpp": "::Shalltear::GraphCanvasOps::GraphNodeLayout",
+			"size": 20,
+			"align": 4,
+			"fields": [
+				{ "name": "header", "type": "f32", "offset": 0 },
+				{ "name": "settings", "type": "f32", "offset": 4 },
+				{ "name": "rows", "type": "f32", "offset": 8 },
+				{ "name": "stack", "type": "f32", "offset": 12 },
+				{ "name": "height", "type": "f32", "offset": 16 }
+			]
+		}
+	],
+	"constants": [
+		{ "name": "NODE_HEADER_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::NODE_HEADER_HEIGHT", "type": "f32", "value": "0x1.8000000000000p+4" },
+		{ "name": "PORT_ROW_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::PORT_ROW_HEIGHT", "type": "f32", "value": "0x1.4000000000000p+4" },
+		{ "name": "PORT_RADIUS", "cpp": "::Shalltear::GraphCanvasOps::PORT_RADIUS", "type": "f32", "value": "0x1.4000000000000p+2" },
+		{ "name": "PORT_INSET", "cpp": "::Shalltear::GraphCanvasOps::PORT_INSET", "type": "f32", "value": "0x1.4000000000000p+2" },
+		{ "name": "PORT_PICK_RADIUS", "cpp": "::Shalltear::GraphCanvasOps::PORT_PICK_RADIUS", "type": "f32", "value": "0x1.2000000000000p+3" },
+		{ "name": "WIRE_PICK_RADIUS", "cpp": "::Shalltear::GraphCanvasOps::WIRE_PICK_RADIUS", "type": "f32", "value": "0x1.c000000000000p+2" },
+		{ "name": "PREVIEW_INSET", "cpp": "::Shalltear::GraphCanvasOps::PREVIEW_INSET", "type": "f32", "value": "0x1.0000000000000p+2" },
+		{ "name": "PREVIEW_STRIP_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::PREVIEW_STRIP_HEIGHT", "type": "f32", "value": "0x1.8000000000000p+3" },
+		{ "name": "INLINE_COMPONENT_WIDTH", "cpp": "::Shalltear::GraphCanvasOps::INLINE_COMPONENT_WIDTH", "type": "f32", "value": "0x1.1000000000000p+5" },
+		{ "name": "INLINE_TOGGLE_WIDTH", "cpp": "::Shalltear::GraphCanvasOps::INLINE_TOGGLE_WIDTH", "type": "f32", "value": "0x1.0000000000000p+4" },
+		{ "name": "INLINE_LABEL_WIDTH", "cpp": "::Shalltear::GraphCanvasOps::INLINE_LABEL_WIDTH", "type": "f32", "value": "0x1.4000000000000p+5" },
+		{ "name": "INLINE_CURVE_WIDTH", "cpp": "::Shalltear::GraphCanvasOps::INLINE_CURVE_WIDTH", "type": "f32", "value": "0x1.1000000000000p+6" },
+		{ "name": "INLINE_GAP", "cpp": "::Shalltear::GraphCanvasOps::INLINE_GAP", "type": "f32", "value": "0x1.8000000000000p+2" },
+		{ "name": "GROUP_TITLE_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::GROUP_TITLE_HEIGHT", "type": "f32", "value": "0x1.c000000000000p+4" },
+		{ "name": "GROUP_PADDING", "cpp": "::Shalltear::GraphCanvasOps::GROUP_PADDING", "type": "f32", "value": "0x1.0000000000000p+4" },
+		{ "name": "GROUP_EMPTY_WIDTH", "cpp": "::Shalltear::GraphCanvasOps::GROUP_EMPTY_WIDTH", "type": "f32", "value": "0x1.9000000000000p+7" },
+		{ "name": "GROUP_EMPTY_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::GROUP_EMPTY_HEIGHT", "type": "f32", "value": "0x1.e000000000000p+5" },
+		{ "name": "NOTE_MIN_WIDTH", "cpp": "::Shalltear::GraphCanvasOps::NOTE_MIN_WIDTH", "type": "f32", "value": "0x1.4000000000000p+6" },
+		{ "name": "NOTE_MIN_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::NOTE_MIN_HEIGHT", "type": "f32", "value": "0x1.8000000000000p+5" },
+		{ "name": "NOTE_GRIP", "cpp": "::Shalltear::GraphCanvasOps::NOTE_GRIP", "type": "f32", "value": "0x1.8000000000000p+3" },
+		{ "name": "SETTING_ROW_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::SETTING_ROW_HEIGHT", "type": "f32", "value": "0x1.4000000000000p+4" },
+		{ "name": "FLOW_STRIP_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::FLOW_STRIP_HEIGHT", "type": "f32", "value": "0x1.0000000000000p+4" },
+		{ "name": "BLOCK_HEADER_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::BLOCK_HEADER_HEIGHT", "type": "f32", "value": "0x1.6000000000000p+4" },
+		{ "name": "STACK_PADDING", "cpp": "::Shalltear::GraphCanvasOps::STACK_PADDING", "type": "f32", "value": "0x1.8000000000000p+2" },
+		{ "name": "BLOCK_GAP", "cpp": "::Shalltear::GraphCanvasOps::BLOCK_GAP", "type": "f32", "value": "0x1.0000000000000p+2" },
+		{ "name": "STACK_EMPTY_HEIGHT", "cpp": "::Shalltear::GraphCanvasOps::STACK_EMPTY_HEIGHT", "type": "f32", "value": "0x1.6000000000000p+4" },
+		{ "name": "INLINE_INSIDE_INSET", "cpp": "::Shalltear::GraphCanvasOps::INLINE_INSIDE_INSET", "type": "f32", "value": "0x1.8000000000000p+2" }
+	],
+	"functions": [
+		{
+			"id": "GraphToLocal",
+			"cpp": "::Shalltear::GraphCanvasOps::GraphToLocal(view, graph)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "view", "type": "GraphView" },
+				{ "name": "graph", "type": "Vec2" }
+			],
+			"csharp": { "member": "GraphToLocal", "kind": "method" }
+		},
+		{
+			"id": "LocalToGraph",
+			"cpp": "::Shalltear::GraphCanvasOps::LocalToGraph(view, local)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "view", "type": "GraphView" },
+				{ "name": "local", "type": "Vec2" }
+			],
+			"csharp": { "member": "LocalToGraph", "kind": "method" }
+		},
+		{
+			"id": "NodeRect",
+			"cpp": "::Shalltear::GraphCanvasOps::NodeRect(view, graph, size)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "view", "type": "GraphView" },
+				{ "name": "graph", "type": "Vec2" },
+				{ "name": "size", "type": "Vec2" }
+			],
+			"csharp": { "member": "NodeRect", "kind": "method" }
+		},
+		{
+			"id": "ZoomAtPoint",
+			"cpp": "::Shalltear::GraphCanvasOps::ZoomAtPoint(view, local, notches, minZoom, maxZoom)",
+			"returns": "void",
+			"params": [
+				{ "name": "view", "type": "GraphView", "out": true },
+				{ "name": "local", "type": "Vec2" },
+				{ "name": "notches", "type": "f32" },
+				{ "name": "minZoom", "type": "f32" },
+				{ "name": "maxZoom", "type": "f32" }
+			],
+			"csharp": { "member": "ZoomAtPoint", "kind": "method" }
+		},
+		{
+			"id": "FrameBounds",
+			"cpp": "::Shalltear::GraphCanvasOps::FrameBounds(view, lower, upper, viewSize, margin, minZoom)",
+			"returns": "bool",
+			"params": [
+				{ "name": "view", "type": "GraphView", "out": true },
+				{ "name": "lower", "type": "Vec2" },
+				{ "name": "upper", "type": "Vec2" },
+				{ "name": "viewSize", "type": "Vec2" },
+				{ "name": "margin", "type": "f32" },
+				{ "name": "minZoom", "type": "f32" }
+			],
+			"csharp": { "member": "FrameBounds", "kind": "method" }
+		},
+		{
+			"id": "ClipToBox",
+			"cpp": "::Shalltear::GraphCanvasOps::ClipToBox(box, from)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "box", "type": "UIRect" },
+				{ "name": "from", "type": "Vec2" }
+			],
+			"csharp": { "member": "ClipToBox", "kind": "method" }
+		},
+		{
+			"id": "DistanceToSegment",
+			"cpp": "::Shalltear::GraphCanvasOps::DistanceToSegment(a, b, point)",
+			"returns": "f32",
+			"params": [
+				{ "name": "a", "type": "Vec2" },
+				{ "name": "b", "type": "Vec2" },
+				{ "name": "point", "type": "Vec2" }
+			],
+			"csharp": { "member": "DistanceToSegment", "kind": "method" }
+		},
+		{
+			"id": "RectBetween",
+			"cpp": "::Shalltear::GraphCanvasOps::RectBetween(a, b)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "a", "type": "Vec2" },
+				{ "name": "b", "type": "Vec2" }
+			],
+			"csharp": { "member": "RectBetween", "kind": "method" }
+		},
+		{
+			"id": "RectsOverlap",
+			"cpp": "::Shalltear::GraphCanvasOps::RectsOverlap(a, b)",
+			"returns": "bool",
+			"params": [
+				{ "name": "a", "type": "UIRect" },
+				{ "name": "b", "type": "UIRect" }
+			],
+			"csharp": { "member": "RectsOverlap", "kind": "method" }
+		},
+		{
+			"id": "SegmentTouchesRect",
+			"cpp": "::Shalltear::GraphCanvasOps::SegmentTouchesRect(a, b, box)",
+			"returns": "bool",
+			"params": [
+				{ "name": "a", "type": "Vec2" },
+				{ "name": "b", "type": "Vec2" },
+				{ "name": "box", "type": "UIRect" }
+			],
+			"csharp": { "member": "SegmentTouchesRect", "kind": "method" }
+		},
+		{
+			"id": "PortWire",
+			"cpp": "::Shalltear::GraphCanvasOps::PortWire(from, to, zoom)",
+			"returns": "GraphCubic",
+			"params": [
+				{ "name": "from", "type": "Vec2" },
+				{ "name": "to", "type": "Vec2" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "PortWire", "kind": "method" }
+		},
+		{
+			"id": "Evaluate",
+			"cpp": "::Shalltear::GraphCanvasOps::Evaluate(curve, t)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "curve", "type": "GraphCubic" },
+				{ "name": "t", "type": "f32" }
+			],
+			"csharp": { "member": "Evaluate", "kind": "method" }
+		},
+		{
+			"id": "SegmentCount",
+			"cpp": "::Shalltear::GraphCanvasOps::SegmentCount(curve, pixelsPerUnit)",
+			"returns": "u32",
+			"params": [
+				{ "name": "curve", "type": "GraphCubic" },
+				{ "name": "pixelsPerUnit", "type": "f32" }
+			],
+			"csharp": { "member": "SegmentCount", "kind": "method" }
+		},
+		{
+			"id": "Tessellate",
+			"cpp": "::Shalltear::GraphCanvasOps::Tessellate(curve, segments, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "curve", "type": "GraphCubic" },
+				{ "name": "segments", "type": "u32" },
+				{ "name": "outValue", "type": "list<Vec2>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Vec2>" }
+			],
+			"csharp": { "member": "Tessellate", "kind": "method" }
+		},
+		{
+			"id": "DistanceToCubic",
+			"cpp": "::Shalltear::GraphCanvasOps::DistanceToCubic(curve, segments, point)",
+			"returns": "f32",
+			"params": [
+				{ "name": "curve", "type": "GraphCubic" },
+				{ "name": "segments", "type": "u32" },
+				{ "name": "point", "type": "Vec2" }
+			],
+			"csharp": { "member": "DistanceToCubic", "kind": "method" }
+		},
+		{
+			"id": "PortAnchor",
+			"cpp": "::Shalltear::GraphCanvasOps::PortAnchor(nodeBox, side, row, zoom, header)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "nodeBox", "type": "UIRect" },
+				{ "name": "side", "type": "GraphPortSide" },
+				{ "name": "row", "type": "u32" },
+				{ "name": "zoom", "type": "f32" },
+				{ "name": "header", "type": "f32" }
+			],
+			"csharp": { "member": "PortAnchor", "kind": "method" }
+		},
+		{
+			"id": "PortNodeHeight",
+			"cpp": "::Shalltear::GraphCanvasOps::PortNodeHeight(rows)",
+			"returns": "f32",
+			"params": [{ "name": "rows", "type": "u32" }],
+			"csharp": { "member": "PortNodeHeight", "kind": "method" }
+		},
+		{
+			"id": "PickNearest",
+			"cpp": "::Shalltear::GraphCanvasOps::PickNearest(anchors, point, radius)",
+			"returns": "i32",
+			"params": [
+				{ "name": "anchors", "type": "list<Vec2>" },
+				{ "name": "point", "type": "Vec2" },
+				{ "name": "radius", "type": "f32" }
+			],
+			"csharp": { "member": "PickNearest", "kind": "method" }
+		},
+		{
+			"id": "PreviewNodeHeight",
+			"cpp": "::Shalltear::GraphCanvasOps::PreviewNodeHeight(rows, width, expanded)",
+			"returns": "f32",
+			"params": [
+				{ "name": "rows", "type": "u32" },
+				{ "name": "width", "type": "f32" },
+				{ "name": "expanded", "type": "bool" }
+			],
+			"csharp": { "member": "PreviewNodeHeight", "kind": "method" }
+		},
+		{
+			"id": "PreviewWell",
+			"cpp": "::Shalltear::GraphCanvasOps::PreviewWell(nodeBox, rows, zoom)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "nodeBox", "type": "UIRect" },
+				{ "name": "rows", "type": "u32" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "PreviewWell", "kind": "method" }
+		},
+		{
+			"id": "PreviewStrip",
+			"cpp": "::Shalltear::GraphCanvasOps::PreviewStrip(nodeBox, zoom)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "nodeBox", "type": "UIRect" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "PreviewStrip", "kind": "method" }
+		},
+		{
+			"id": "InlineField",
+			"cpp": "::Shalltear::GraphCanvasOps::InlineField(nodeBox, row, width, zoom, header)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "nodeBox", "type": "UIRect" },
+				{ "name": "row", "type": "u32" },
+				{ "name": "width", "type": "f32" },
+				{ "name": "zoom", "type": "f32" },
+				{ "name": "header", "type": "f32" }
+			],
+			"csharp": { "member": "InlineField", "kind": "method" }
+		},
+		{
+			"id": "GroupFrame",
+			"cpp": "::Shalltear::GraphCanvasOps::GroupFrame(members, zoom, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "members", "type": "list<UIRect>" },
+				{ "name": "zoom", "type": "f32" },
+				{ "name": "outValue", "type": "UIRect", "out": true }
+			],
+			"csharp": { "member": "GroupFrame", "kind": "method" }
+		},
+		{
+			"id": "GroupTitleBar",
+			"cpp": "::Shalltear::GraphCanvasOps::GroupTitleBar(frame, zoom)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "frame", "type": "UIRect" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "GroupTitleBar", "kind": "method" }
+		},
+		{
+			"id": "OutlineFrame",
+			"cpp": "::Shalltear::GraphCanvasOps::OutlineFrame(members, zoom, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "members", "type": "list<UIRect>" },
+				{ "name": "zoom", "type": "f32" },
+				{ "name": "outValue", "type": "UIRect", "out": true }
+			],
+			"csharp": { "member": "OutlineFrame", "kind": "method" }
+		},
+		{
+			"id": "OutlineTitleBar",
+			"cpp": "::Shalltear::GraphCanvasOps::OutlineTitleBar(frame, zoom)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "frame", "type": "UIRect" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "OutlineTitleBar", "kind": "method" }
+		},
+		{
+			"id": "NodeLayout",
+			"cpp": "::Shalltear::GraphCanvasOps::NodeLayout(flowIn, settings, rows, stackHeight, flowOut)",
+			"returns": "GraphCanvasOpsGraphNodeLayout",
+			"params": [
+				{ "name": "flowIn", "type": "bool" },
+				{ "name": "settings", "type": "u32" },
+				{ "name": "rows", "type": "u32" },
+				{ "name": "stackHeight", "type": "f32" },
+				{ "name": "flowOut", "type": "bool" }
+			],
+			"csharp": { "member": "NodeLayout", "kind": "method" }
+		},
+		{
+			"id": "BlockHeight",
+			"cpp": "::Shalltear::GraphCanvasOps::BlockHeight(settings, rows)",
+			"returns": "f32",
+			"params": [
+				{ "name": "settings", "type": "u32" },
+				{ "name": "rows", "type": "u32" }
+			],
+			"csharp": { "member": "BlockHeight", "kind": "method" }
+		},
+		{
+			"id": "StackHeight",
+			"cpp": "::Shalltear::GraphCanvasOps::StackHeight(blocks)",
+			"returns": "f32",
+			"params": [{ "name": "blocks", "type": "list<f32>" }],
+			"csharp": { "member": "StackHeight", "kind": "method" }
+		},
+		{
+			"id": "BlockTop",
+			"cpp": "::Shalltear::GraphCanvasOps::BlockTop(blocks, index)",
+			"returns": "f32",
+			"params": [
+				{ "name": "blocks", "type": "list<f32>" },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "BlockTop", "kind": "method" }
+		},
+		{
+			"id": "StackGap",
+			"cpp": "::Shalltear::GraphCanvasOps::StackGap(blocks, y)",
+			"returns": "u32",
+			"params": [
+				{ "name": "blocks", "type": "list<f32>" },
+				{ "name": "y", "type": "f32" }
+			],
+			"csharp": { "member": "StackGap", "kind": "method" }
+		},
+		{
+			"id": "StackGapLine",
+			"cpp": "::Shalltear::GraphCanvasOps::StackGapLine(blocks, gap)",
+			"returns": "f32",
+			"params": [
+				{ "name": "blocks", "type": "list<f32>" },
+				{ "name": "gap", "type": "u32" }
+			],
+			"csharp": { "member": "StackGapLine", "kind": "method" }
+		},
+		{
+			"id": "FlowAnchor",
+			"cpp": "::Shalltear::GraphCanvasOps::FlowAnchor(nodeBox, side, index, count, zoom)",
+			"returns": "Vec2",
+			"params": [
+				{ "name": "nodeBox", "type": "UIRect" },
+				{ "name": "side", "type": "GraphPortSide" },
+				{ "name": "index", "type": "u32" },
+				{ "name": "count", "type": "u32" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "FlowAnchor", "kind": "method" }
+		},
+		{
+			"id": "FlowWire",
+			"cpp": "::Shalltear::GraphCanvasOps::FlowWire(from, to, zoom)",
+			"returns": "GraphCubic",
+			"params": [
+				{ "name": "from", "type": "Vec2" },
+				{ "name": "to", "type": "Vec2" },
+				{ "name": "zoom", "type": "f32" }
+			],
+			"csharp": { "member": "FlowWire", "kind": "method" }
+		},
+		{
+			"id": "InlineFieldInside",
+			"cpp": "::Shalltear::GraphCanvasOps::InlineFieldInside(box, row, width, zoom, header)",
+			"returns": "UIRect",
+			"params": [
+				{ "name": "box", "type": "UIRect" },
+				{ "name": "row", "type": "u32" },
+				{ "name": "width", "type": "f32" },
+				{ "name": "zoom", "type": "f32" },
+				{ "name": "header", "type": "f32" }
+			],
+			"csharp": { "member": "InlineFieldInside", "kind": "method" }
+		}
+	]
+}

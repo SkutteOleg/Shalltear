@@ -1,0 +1,116 @@
+{
+	"area": "ScriptProjectOpsScaffoldOptions",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ScriptProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ScriptProjectOpsScaffoldOptions",
+	"instance": "ScriptProjectOpsScaffoldOptions",
+	"functions": [
+		{
+			"id": "GetModuleName",
+			"cpp": "self->moduleName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ModuleName", "kind": "getter" }
+		},
+		{
+			"id": "SetModuleName",
+			"cpp": "self->moduleName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ModuleName", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKRoot",
+			"cpp": "self->sdkRoot",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKRoot", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKRoot",
+			"cpp": "self->sdkRoot = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKRoot", "kind": "setter" }
+		},
+		{
+			"id": "GetEditorExecutable",
+			"cpp": "self->editorExecutable",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "EditorExecutable", "kind": "getter" }
+		},
+		{
+			"id": "SetEditorExecutable",
+			"cpp": "self->editorExecutable = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "EditorExecutable", "kind": "setter" }
+		},
+		{
+			"id": "GetToolchainDirectory",
+			"cpp": "self->toolchainDirectory",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ToolchainDirectory", "kind": "getter" }
+		},
+		{
+			"id": "SetToolchainDirectory",
+			"cpp": "self->toolchainDirectory = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ToolchainDirectory", "kind": "setter" }
+		},
+		{
+			"id": "TryGetEnabledPackages",
+			"cpp": "Slots::Take(self->enabledPackages, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }],
+			"csharp": { "member": "TryGetEnabledPackages", "kind": "method" }
+		},
+		{
+			"id": "ClearEnabledPackages",
+			"cpp": "self->enabledPackages.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearEnabledPackages", "kind": "method" }
+		},
+		{
+			"id": "SetEnabledPackages",
+			"cpp": "self->enabledPackages = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "SetEnabledPackages", "kind": "method" }
+		},
+		{
+			"id": "GetIncludeStarterComponent",
+			"cpp": "self->includeStarterComponent",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IncludeStarterComponent", "kind": "getter" }
+		},
+		{
+			"id": "SetIncludeStarterComponent",
+			"cpp": "self->includeStarterComponent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IncludeStarterComponent", "kind": "setter" }
+		},
+		{
+			"id": "GetIncludeMachineScopedFiles",
+			"cpp": "self->includeMachineScopedFiles",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IncludeMachineScopedFiles", "kind": "getter" }
+		},
+		{
+			"id": "SetIncludeMachineScopedFiles",
+			"cpp": "self->includeMachineScopedFiles = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IncludeMachineScopedFiles", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,29 @@
+{
+	"area": "FileSink",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Log.h"
+	],
+	"class": "Shalltear.FileSink",
+	"instance": "FileSink",
+	"functions": [
+		{
+			"id": "GetAsILogSink",
+			"cpp": "static_cast<::Shalltear::ILogSink*>(self)",
+			"returns": "ILogSink",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsILogSink", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::FileSink(str(filePath))",
+			"returns": "FileSink",
+			"params": [{ "name": "filePath", "type": "string" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

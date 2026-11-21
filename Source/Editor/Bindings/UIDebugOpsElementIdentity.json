@@ -1,0 +1,68 @@
+{
+	"area": "UIDebugOpsElementIdentity",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsElementIdentity",
+	"instance": "UIDebugOpsElementIdentity",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeTag",
+			"cpp": "self->typeTag",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeTag", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeTag",
+			"cpp": "self->typeTag = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeTag", "kind": "setter" }
+		},
+		{
+			"id": "GetClasses",
+			"cpp": "self->classes",
+			"returns": "list<StringHash>",
+			"params": [],
+			"csharp": { "member": "Classes", "kind": "getter" }
+		},
+		{
+			"id": "SetClasses",
+			"cpp": "Slots::Assign(self->classes, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<StringHash>" }],
+			"csharp": { "member": "Classes", "kind": "setter" }
+		},
+		{
+			"id": "GetValid",
+			"cpp": "self->valid",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Valid", "kind": "getter" }
+		},
+		{
+			"id": "SetValid",
+			"cpp": "self->valid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Valid", "kind": "setter" }
+		}
+	]
+}

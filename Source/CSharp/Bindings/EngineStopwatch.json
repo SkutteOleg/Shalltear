@@ -1,0 +1,60 @@
+{
+	"area": "EngineStopwatch",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Time.h"
+	],
+	"class": "Shalltear.EngineStopwatch",
+	"instance": "EngineStopwatch",
+	"functions": [
+		{
+			"id": "Start",
+			"cpp": "self->Start()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Start", "kind": "method" }
+		},
+		{
+			"id": "Stop",
+			"cpp": "self->Stop()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Stop", "kind": "method" }
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reset", "kind": "method" }
+		},
+		{
+			"id": "Restart",
+			"cpp": "self->Restart()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Restart", "kind": "method" }
+		},
+		{
+			"id": "GetElapsedSeconds",
+			"cpp": "self->GetElapsedSeconds()",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "ElapsedSeconds", "kind": "getter" }
+		},
+		{
+			"id": "GetElapsedMilliseconds",
+			"cpp": "self->GetElapsedMilliseconds()",
+			"returns": "f64",
+			"params": [],
+			"csharp": { "member": "ElapsedMilliseconds", "kind": "getter" }
+		},
+		{
+			"id": "IsRunning",
+			"cpp": "self->IsRunning()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsRunning", "kind": "getter" }
+		}
+	]
+}

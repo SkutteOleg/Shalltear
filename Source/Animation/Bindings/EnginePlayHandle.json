@@ -1,0 +1,46 @@
+{
+	"area": "EnginePlayHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/Animator.h"
+	],
+	"class": "Shalltear.EnginePlayHandle",
+	"instance": "EnginePlayHandle",
+	"functions": [
+		{
+			"id": "GetAnimator",
+			"cpp": "self->GetAnimator()",
+			"returns": "Animator",
+			"params": [],
+			"csharp": { "member": "Animator", "kind": "getter" }
+		},
+		{
+			"id": "GetLayer",
+			"cpp": "self->GetLayer()",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Layer", "kind": "getter" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->GetId()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::PlayHandle(::Shalltear::Handle<::Shalltear::Animator>(animator), layer, id)",
+			"returns": "EnginePlayHandle",
+			"params": [
+				{ "name": "animator", "type": "Animator", "optional": true },
+				{ "name": "layer", "type": "i32" },
+				{ "name": "id", "type": "u32" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

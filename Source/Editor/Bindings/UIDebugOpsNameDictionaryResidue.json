@@ -1,0 +1,18 @@
+{
+	"area": "UIDebugOpsNameDictionaryResidue",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsNameDictionaryResidue",
+	"instance": "UIDebugOpsNameDictionaryResidue",
+	"functions": [
+		{
+			"id": "Fraction",
+			"cpp": "self->Fraction()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Fraction", "kind": "method" }
+		}
+	]
+}

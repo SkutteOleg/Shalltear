@@ -1,0 +1,1031 @@
+{
+	"area": "GraphViewModelProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h",
+		"Shalltear/Editor/EditorTheme.h",
+		"Shalltear/Editor/GraphSearch.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.Editor.GraphViewModelProxy",
+	"instance": "GraphViewModelProxy",
+	"prelude": [
+		"class GraphViewModelProxy final : public ::Shalltear::GraphViewModel {",
+		"public:",
+		"\tstd::function<void(std::vector<Shalltear::GraphNodeDesc, std::pmr::polymorphic_allocator<Shalltear::GraphNodeDesc>> &)> getNodes;",
+		"\tvoid GetNodes(std::vector<Shalltear::GraphNodeDesc, std::pmr::polymorphic_allocator<Shalltear::GraphNodeDesc>> & a0) override {",
+		"\t\tif (getNodes) {",
+		"\t\t\tgetNodes(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(uint64_t, Shalltear::Vec2Generic<float> &)> getNodePosition;",
+		"\tbool GetNodePosition(uint64_t a0, Shalltear::Vec2Generic<float> & a1) const override {",
+		"\t\treturn getNodePosition ? getNodePosition(a0, a1) : Slots::ResultOf<decltype(getNodePosition)>();",
+		"\t}",
+		"\tstd::function<void(std::vector<Shalltear::GraphWireDesc, std::pmr::polymorphic_allocator<Shalltear::GraphWireDesc>> &)> getWires;",
+		"\tvoid GetWires(std::vector<Shalltear::GraphWireDesc, std::pmr::polymorphic_allocator<Shalltear::GraphWireDesc>> & a0) const override {",
+		"\t\tif (getWires) {",
+		"\t\t\tgetWires(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<Shalltear::EditorTheme::ColorToken(uint64_t)> getNodeBorder;",
+		"\tShalltear::EditorTheme::ColorToken GetNodeBorder(uint64_t a0) const override {",
+		"\t\treturn getNodeBorder ? getNodeBorder(a0) : ::Shalltear::GraphViewModel::GetNodeBorder(a0);",
+		"\t}",
+		"\tstd::function<std::basic_string<char>(uint64_t)> getNodeTooltip;",
+		"\tstd::basic_string<char> GetNodeTooltip(uint64_t a0) const override {",
+		"\t\treturn getNodeTooltip ? getNodeTooltip(a0) : ::Shalltear::GraphViewModel::GetNodeTooltip(a0);",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::UI::PaintScope &, uint64_t)> paintNode;",
+		"\tvoid PaintNode(Shalltear::UI::Context & a0, Shalltear::UI::ElementHandle a1, Shalltear::UI::PaintScope & a2, uint64_t a3) override {",
+		"\t\tif (paintNode) {",
+		"\t\t\tpaintNode(a0, a1, a2, a3);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::PaintNode(a0, a1, a2, a3);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, Shalltear::UI::PaintScope &, uint64_t, const Shalltear::UI::Rect &)> paintNodePreview;",
+		"\tvoid PaintNodePreview(Shalltear::UI::Context & a0, Shalltear::UI::PaintScope & a1, uint64_t a2, const Shalltear::UI::Rect & a3) override {",
+		"\t\tif (paintNodePreview) {",
+		"\t\t\tpaintNodePreview(a0, a1, a2, a3);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::PaintNodePreview(a0, a1, a2, a3);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, bool)> setNodePreviewExpanded;",
+		"\tvoid SetNodePreviewExpanded(uint64_t a0, bool a1) override {",
+		"\t\tif (setNodePreviewExpanded) {",
+		"\t\t\tsetNodePreviewExpanded(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::SetNodePreviewExpanded(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::GraphPortRef &, std::span<const float>)> setInlineValue;",
+		"\tvoid SetInlineValue(const Shalltear::GraphPortRef & a0, std::span<const float> a1) override {",
+		"\t\tif (setInlineValue) {",
+		"\t\t\tsetInlineValue(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::SetInlineValue(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onInlineEditBegin;",
+		"\tvoid OnInlineEditBegin() override {",
+		"\t\tif (onInlineEditBegin) {",
+		"\t\t\tonInlineEditBegin();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnInlineEditBegin();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onInlineEditEnd;",
+		"\tvoid OnInlineEditEnd() override {",
+		"\t\tif (onInlineEditEnd) {",
+		"\t\t\tonInlineEditEnd();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnInlineEditEnd();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, const Shalltear::GraphPortRef &, Shalltear::UI::ElementHandle)> openInlineEditor;",
+		"\tvoid OpenInlineEditor(Shalltear::UI::Context & a0, const Shalltear::GraphPortRef & a1, Shalltear::UI::ElementHandle a2) override {",
+		"\t\tif (openInlineEditor) {",
+		"\t\t\topenInlineEditor(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OpenInlineEditor(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onSelectionChanged;",
+		"\tvoid OnSelectionChanged() override {",
+		"\t\tif (onSelectionChanged) {",
+		"\t\t\tonSelectionChanged();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnSelectionChanged();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onMoveBegin;",
+		"\tvoid OnMoveBegin() override {",
+		"\t\tif (onMoveBegin) {",
+		"\t\t\tonMoveBegin();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnMoveBegin();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, Shalltear::Vec2Generic<float>)> moveNode;",
+		"\tvoid MoveNode(uint64_t a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (moveNode) {",
+		"\t\t\tmoveNode(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void()> onMoveEnd;",
+		"\tvoid OnMoveEnd() override {",
+		"\t\tif (onMoveEnd) {",
+		"\t\t\tonMoveEnd();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnMoveEnd();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t)> onNodeClick;",
+		"\tvoid OnNodeClick(uint64_t a0) override {",
+		"\t\tif (onNodeClick) {",
+		"\t\t\tonNodeClick(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnNodeClick(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t)> onNodeDoubleClick;",
+		"\tvoid OnNodeDoubleClick(uint64_t a0) override {",
+		"\t\tif (onNodeDoubleClick) {",
+		"\t\t\tonNodeDoubleClick(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnNodeDoubleClick(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, uint64_t)> onNodeContextMenu;",
+		"\tvoid OnNodeContextMenu(Shalltear::UI::Context & a0, uint64_t a1) override {",
+		"\t\tif (onNodeContextMenu) {",
+		"\t\t\tonNodeContextMenu(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnNodeContextMenu(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(uint64_t, const Shalltear::UI::DragPayload &)> acceptsNodeDrop;",
+		"\tbool AcceptsNodeDrop(uint64_t a0, const Shalltear::UI::DragPayload & a1) const override {",
+		"\t\treturn acceptsNodeDrop ? acceptsNodeDrop(a0, a1) : ::Shalltear::GraphViewModel::AcceptsNodeDrop(a0, a1);",
+		"\t}",
+		"\tstd::function<void(uint64_t, const Shalltear::UI::DragPayload &)> onNodeDrop;",
+		"\tvoid OnNodeDrop(uint64_t a0, const Shalltear::UI::DragPayload & a1) override {",
+		"\t\tif (onNodeDrop) {",
+		"\t\t\tonNodeDrop(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnNodeDrop(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, Shalltear::Vec2Generic<float>)> onCanvasContextMenu;",
+		"\tvoid OnCanvasContextMenu(Shalltear::UI::Context & a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (onCanvasContextMenu) {",
+		"\t\t\tonCanvasContextMenu(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnCanvasContextMenu(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(const Shalltear::UI::DragPayload &)> acceptsDrop;",
+		"\tbool AcceptsDrop(const Shalltear::UI::DragPayload & a0) const override {",
+		"\t\treturn acceptsDrop ? acceptsDrop(a0) : ::Shalltear::GraphViewModel::AcceptsDrop(a0);",
+		"\t}",
+		"\tstd::function<void(const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)> onDrop;",
+		"\tvoid OnDrop(const Shalltear::UI::DragPayload & a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (onDrop) {",
+		"\t\t\tonDrop(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnDrop(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(uint64_t &)> getPendingWire;",
+		"\tbool GetPendingWire(uint64_t & a0) const override {",
+		"\t\treturn getPendingWire ? getPendingWire(a0) : ::Shalltear::GraphViewModel::GetPendingWire(a0);",
+		"\t}",
+		"\tstd::function<void()> cancelPendingWire;",
+		"\tvoid CancelPendingWire() override {",
+		"\t\tif (cancelPendingWire) {",
+		"\t\t\tcancelPendingWire();",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::CancelPendingWire();",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(const Shalltear::GraphPortRef &, const Shalltear::GraphPortRef &)> canConnect;",
+		"\tbool CanConnect(const Shalltear::GraphPortRef & a0, const Shalltear::GraphPortRef & a1) const override {",
+		"\t\treturn canConnect ? canConnect(a0, a1) : ::Shalltear::GraphViewModel::CanConnect(a0, a1);",
+		"\t}",
+		"\tstd::function<void(const Shalltear::GraphPortRef &, const Shalltear::GraphPortRef &)> connect;",
+		"\tvoid Connect(const Shalltear::GraphPortRef & a0, const Shalltear::GraphPortRef & a1) override {",
+		"\t\tif (connect) {",
+		"\t\t\tconnect(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::Connect(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::GraphPortRef *, std::vector<Shalltear::GraphSearchEntry, std::pmr::polymorphic_allocator<Shalltear::GraphSearchEntry>> &)> getSearchEntries;",
+		"\tvoid GetSearchEntries(const Shalltear::GraphPortRef * a0, std::vector<Shalltear::GraphSearchEntry, std::pmr::polymorphic_allocator<Shalltear::GraphSearchEntry>> & a1) override {",
+		"\t\tif (getSearchEntries) {",
+		"\t\t\tgetSearchEntries(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::GetSearchEntries(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::GraphSearchEntry &, Shalltear::Vec2Generic<float>, const Shalltear::GraphPortRef *)> onSearchPick;",
+		"\tvoid OnSearchPick(const Shalltear::GraphSearchEntry & a0, Shalltear::Vec2Generic<float> a1, const Shalltear::GraphPortRef * a2) override {",
+		"\t\tif (onSearchPick) {",
+		"\t\t\tonSearchPick(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnSearchPick(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(std::vector<Shalltear::GraphGroupDesc, std::pmr::polymorphic_allocator<Shalltear::GraphGroupDesc>> &)> getGroups;",
+		"\tvoid GetGroups(std::vector<Shalltear::GraphGroupDesc, std::pmr::polymorphic_allocator<Shalltear::GraphGroupDesc>> & a0) const override {",
+		"\t\tif (getGroups) {",
+		"\t\t\tgetGroups(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::GetGroups(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(std::vector<Shalltear::GraphNoteDesc, std::pmr::polymorphic_allocator<Shalltear::GraphNoteDesc>> &)> getNotes;",
+		"\tvoid GetNotes(std::vector<Shalltear::GraphNoteDesc, std::pmr::polymorphic_allocator<Shalltear::GraphNoteDesc>> & a0) const override {",
+		"\t\tif (getNotes) {",
+		"\t\t\tgetNotes(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::GetNotes(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, Shalltear::Vec2Generic<float>)> moveNote;",
+		"\tvoid MoveNote(uint64_t a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (moveNote) {",
+		"\t\t\tmoveNote(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::MoveNote(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, Shalltear::Vec2Generic<float>)> moveGroup;",
+		"\tvoid MoveGroup(uint64_t a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (moveGroup) {",
+		"\t\t\tmoveGroup(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::MoveGroup(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, Shalltear::Vec2Generic<float>)> resizeNote;",
+		"\tvoid ResizeNote(uint64_t a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (resizeNote) {",
+		"\t\t\tresizeNote(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::ResizeNote(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(std::span<const Shalltear::GraphItem>, uint64_t)> setGroupOf;",
+		"\tvoid SetGroupOf(std::span<const Shalltear::GraphItem> a0, uint64_t a1) override {",
+		"\t\tif (setGroupOf) {",
+		"\t\t\tsetGroupOf(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::SetGroupOf(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, std::basic_string_view<char>)> renameGroup;",
+		"\tvoid RenameGroup(uint64_t a0, std::basic_string_view<char> a1) override {",
+		"\t\tif (renameGroup) {",
+		"\t\t\trenameGroup(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::RenameGroup(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, std::basic_string_view<char>, std::basic_string_view<char>)> editNote;",
+		"\tvoid EditNote(uint64_t a0, std::basic_string_view<char> a1, std::basic_string_view<char> a2) override {",
+		"\t\tif (editNote) {",
+		"\t\t\teditNote(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::EditNote(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, uint64_t)> onGroupContextMenu;",
+		"\tvoid OnGroupContextMenu(Shalltear::UI::Context & a0, uint64_t a1) override {",
+		"\t\tif (onGroupContextMenu) {",
+		"\t\t\tonGroupContextMenu(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnGroupContextMenu(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, uint64_t)> onNoteContextMenu;",
+		"\tvoid OnNoteContextMenu(Shalltear::UI::Context & a0, uint64_t a1) override {",
+		"\t\tif (onNoteContextMenu) {",
+		"\t\t\tonNoteContextMenu(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnNoteContextMenu(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, uint64_t, Shalltear::Vec2Generic<float>)> onWireContextMenu;",
+		"\tvoid OnWireContextMenu(Shalltear::UI::Context & a0, uint64_t a1, Shalltear::Vec2Generic<float> a2) override {",
+		"\t\tif (onWireContextMenu) {",
+		"\t\t\tonWireContextMenu(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnWireContextMenu(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, Shalltear::Vec2Generic<float>)> onWireDoubleClick;",
+		"\tvoid OnWireDoubleClick(uint64_t a0, Shalltear::Vec2Generic<float> a1) override {",
+		"\t\tif (onWireDoubleClick) {",
+		"\t\t\tonWireDoubleClick(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnWireDoubleClick(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(Shalltear::GraphCommand)> onGraphCommand;",
+		"\tbool OnGraphCommand(Shalltear::GraphCommand a0) override {",
+		"\t\treturn onGraphCommand ? onGraphCommand(a0) : ::Shalltear::GraphViewModel::OnGraphCommand(a0);",
+		"\t}",
+		"\tstd::function<void(std::vector<Shalltear::GraphOutlineDesc, std::pmr::polymorphic_allocator<Shalltear::GraphOutlineDesc>> &)> getOutlines;",
+		"\tvoid GetOutlines(std::vector<Shalltear::GraphOutlineDesc, std::pmr::polymorphic_allocator<Shalltear::GraphOutlineDesc>> & a0) const override {",
+		"\t\tif (getOutlines) {",
+		"\t\t\tgetOutlines(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::GetOutlines(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, std::basic_string_view<char>)> renameOutline;",
+		"\tvoid RenameOutline(uint64_t a0, std::basic_string_view<char> a1) override {",
+		"\t\tif (renameOutline) {",
+		"\t\t\trenameOutline(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::RenameOutline(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, uint64_t, unsigned int)> onSettingClick;",
+		"\tvoid OnSettingClick(Shalltear::UI::Context & a0, uint64_t a1, unsigned int a2) override {",
+		"\t\tif (onSettingClick) {",
+		"\t\t\tonSettingClick(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnSettingClick(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, unsigned int, std::basic_string_view<char>)> setSettingText;",
+		"\tvoid SetSettingText(uint64_t a0, unsigned int a1, std::basic_string_view<char> a2) override {",
+		"\t\tif (setSettingText) {",
+		"\t\t\tsetSettingText(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::SetSettingText(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, unsigned int)> onSettingAction;",
+		"\tvoid OnSettingAction(uint64_t a0, unsigned int a1) override {",
+		"\t\tif (onSettingAction) {",
+		"\t\t\tonSettingAction(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnSettingAction(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, bool)> setBlockEnabled;",
+		"\tvoid SetBlockEnabled(uint64_t a0, bool a1) override {",
+		"\t\tif (setBlockEnabled) {",
+		"\t\t\tsetBlockEnabled(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::SetBlockEnabled(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::GraphPortRef &)> onPortSpaceClick;",
+		"\tvoid OnPortSpaceClick(const Shalltear::GraphPortRef & a0) override {",
+		"\t\tif (onPortSpaceClick) {",
+		"\t\t\tonPortSpaceClick(a0);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnPortSpaceClick(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::UI::Context &, uint64_t)> onBlockContextMenu;",
+		"\tvoid OnBlockContextMenu(Shalltear::UI::Context & a0, uint64_t a1) override {",
+		"\t\tif (onBlockContextMenu) {",
+		"\t\t\tonBlockContextMenu(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnBlockContextMenu(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<bool(std::span<const uint64_t>, uint64_t)> canMoveBlocks;",
+		"\tbool CanMoveBlocks(std::span<const uint64_t> a0, uint64_t a1) const override {",
+		"\t\treturn canMoveBlocks ? canMoveBlocks(a0, a1) : ::Shalltear::GraphViewModel::CanMoveBlocks(a0, a1);",
+		"\t}",
+		"\tstd::function<void(std::span<const uint64_t>, uint64_t, unsigned int)> moveBlocks;",
+		"\tvoid MoveBlocks(std::span<const uint64_t> a0, uint64_t a1, unsigned int a2) override {",
+		"\t\tif (moveBlocks) {",
+		"\t\t\tmoveBlocks(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::MoveBlocks(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(uint64_t, std::vector<Shalltear::GraphSearchEntry, std::pmr::polymorphic_allocator<Shalltear::GraphSearchEntry>> &)> getBlockSearchEntries;",
+		"\tvoid GetBlockSearchEntries(uint64_t a0, std::vector<Shalltear::GraphSearchEntry, std::pmr::polymorphic_allocator<Shalltear::GraphSearchEntry>> & a1) override {",
+		"\t\tif (getBlockSearchEntries) {",
+		"\t\t\tgetBlockSearchEntries(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::GetBlockSearchEntries(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(const Shalltear::GraphSearchEntry &, uint64_t, unsigned int)> onBlockSearchPick;",
+		"\tvoid OnBlockSearchPick(const Shalltear::GraphSearchEntry & a0, uint64_t a1, unsigned int a2) override {",
+		"\t\tif (onBlockSearchPick) {",
+		"\t\t\tonBlockSearchPick(a0, a1, a2);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::GraphViewModel::OnBlockSearchPick(a0, a1, a2);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "GraphViewModelProxy", "cpp": "GraphViewModelProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetGetNodes",
+			"cpp": "self->getNodes = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphNodeDescList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::GraphNodeDesc, std::pmr::polymorphic_allocator<Shalltear::GraphNodeDesc>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetNodes", "kind": "method" }
+		},
+		{
+			"id": "SetGetNodePosition",
+			"cpp": "self->getNodePosition = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;u64;ref:Vec2>", "optional": true, "cpp": "std::function<bool(uint64_t, Shalltear::Vec2Generic<float> &)>" }
+			],
+			"csharp": { "member": "SetGetNodePosition", "kind": "method" }
+		},
+		{
+			"id": "SetGetWires",
+			"cpp": "self->getWires = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphWireDescList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::GraphWireDesc, std::pmr::polymorphic_allocator<Shalltear::GraphWireDesc>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetWires", "kind": "method" }
+		},
+		{
+			"id": "SetGetNodeBorder",
+			"cpp": "self->getNodeBorder = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<EditorThemeColorToken;u64>", "optional": true, "cpp": "std::function<Shalltear::EditorTheme::ColorToken(uint64_t)>" }
+			],
+			"csharp": { "member": "SetGetNodeBorder", "kind": "method" }
+		},
+		{
+			"id": "SetGetNodeTooltip",
+			"cpp": "self->getNodeTooltip = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<string;u64>", "optional": true, "cpp": "std::function<std::basic_string<char>(uint64_t)>" }
+			],
+			"csharp": { "member": "SetGetNodeTooltip", "kind": "method" }
+		},
+		{
+			"id": "SetPaintNode",
+			"cpp": "self->paintNode = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIElementHandle;UIPaintScope;u64>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::UI::PaintScope &, uint64_t)>"
+				}
+			],
+			"csharp": { "member": "SetPaintNode", "kind": "method" }
+		},
+		{
+			"id": "SetPaintNodePreview",
+			"cpp": "self->paintNodePreview = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIPaintScope;u64;UIRect>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, Shalltear::UI::PaintScope &, uint64_t, const Shalltear::UI::Rect &)>"
+				}
+			],
+			"csharp": { "member": "SetPaintNodePreview", "kind": "method" }
+		},
+		{
+			"id": "SetSetNodePreviewExpanded",
+			"cpp": "self->setNodePreviewExpanded = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;bool>", "optional": true, "cpp": "std::function<void(uint64_t, bool)>" }
+			],
+			"csharp": { "member": "SetSetNodePreviewExpanded", "kind": "method" }
+		},
+		{
+			"id": "SetSetInlineValue",
+			"cpp": "self->setInlineValue = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphPortRef;list<f32>>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::GraphPortRef &, std::span<const float>)>"
+				}
+			],
+			"csharp": { "member": "SetSetInlineValue", "kind": "method" }
+		},
+		{
+			"id": "SetOnInlineEditBegin",
+			"cpp": "self->onInlineEditBegin = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnInlineEditBegin", "kind": "method" }
+		},
+		{
+			"id": "SetOnInlineEditEnd",
+			"cpp": "self->onInlineEditEnd = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnInlineEditEnd", "kind": "method" }
+		},
+		{
+			"id": "SetOpenInlineEditor",
+			"cpp": "self->openInlineEditor = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;GraphPortRef;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, const Shalltear::GraphPortRef &, Shalltear::UI::ElementHandle)>"
+				}
+			],
+			"csharp": { "member": "SetOpenInlineEditor", "kind": "method" }
+		},
+		{
+			"id": "SetOnSelectionChanged",
+			"cpp": "self->onSelectionChanged = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnSelectionChanged", "kind": "method" }
+		},
+		{
+			"id": "SetOnMoveBegin",
+			"cpp": "self->onMoveBegin = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnMoveBegin", "kind": "method" }
+		},
+		{
+			"id": "SetMoveNode",
+			"cpp": "self->moveNode = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;Vec2>", "optional": true, "cpp": "std::function<void(uint64_t, Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetMoveNode", "kind": "method" }
+		},
+		{
+			"id": "SetOnMoveEnd",
+			"cpp": "self->onMoveEnd = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetOnMoveEnd", "kind": "method" }
+		},
+		{
+			"id": "SetOnNodeClick",
+			"cpp": "self->onNodeClick = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void;u64>", "optional": true, "cpp": "std::function<void(uint64_t)>" }],
+			"csharp": { "member": "SetOnNodeClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnNodeDoubleClick",
+			"cpp": "self->onNodeDoubleClick = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void;u64>", "optional": true, "cpp": "std::function<void(uint64_t)>" }],
+			"csharp": { "member": "SetOnNodeDoubleClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnNodeContextMenu",
+			"cpp": "self->onNodeContextMenu = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;UIContext;u64>", "optional": true, "cpp": "std::function<void(Shalltear::UI::Context &, uint64_t)>" }
+			],
+			"csharp": { "member": "SetOnNodeContextMenu", "kind": "method" }
+		},
+		{
+			"id": "SetAcceptsNodeDrop",
+			"cpp": "self->acceptsNodeDrop = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<bool;u64;UIDragPayload>",
+					"optional": true,
+					"cpp": "std::function<bool(uint64_t, const Shalltear::UI::DragPayload &)>"
+				}
+			],
+			"csharp": { "member": "SetAcceptsNodeDrop", "kind": "method" }
+		},
+		{
+			"id": "SetOnNodeDrop",
+			"cpp": "self->onNodeDrop = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;u64;UIDragPayload>",
+					"optional": true,
+					"cpp": "std::function<void(uint64_t, const Shalltear::UI::DragPayload &)>"
+				}
+			],
+			"csharp": { "member": "SetOnNodeDrop", "kind": "method" }
+		},
+		{
+			"id": "SetOnCanvasContextMenu",
+			"cpp": "self->onCanvasContextMenu = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnCanvasContextMenu", "kind": "method" }
+		},
+		{
+			"id": "SetAcceptsDrop",
+			"cpp": "self->acceptsDrop = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;UIDragPayload>", "optional": true, "cpp": "std::function<bool(const Shalltear::UI::DragPayload &)>" }
+			],
+			"csharp": { "member": "SetAcceptsDrop", "kind": "method" }
+		},
+		{
+			"id": "SetOnDrop",
+			"cpp": "self->onDrop = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIDragPayload;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnDrop", "kind": "method" }
+		},
+		{
+			"id": "SetGetPendingWire",
+			"cpp": "self->getPendingWire = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool;ref:u64>", "optional": true, "cpp": "std::function<bool(uint64_t &)>" }],
+			"csharp": { "member": "SetGetPendingWire", "kind": "method" }
+		},
+		{
+			"id": "SetCancelPendingWire",
+			"cpp": "self->cancelPendingWire = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void>", "optional": true, "cpp": "std::function<void()>" }],
+			"csharp": { "member": "SetCancelPendingWire", "kind": "method" }
+		},
+		{
+			"id": "SetCanConnect",
+			"cpp": "self->canConnect = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<bool;GraphPortRef;GraphPortRef>",
+					"optional": true,
+					"cpp": "std::function<bool(const Shalltear::GraphPortRef &, const Shalltear::GraphPortRef &)>"
+				}
+			],
+			"csharp": { "member": "SetCanConnect", "kind": "method" }
+		},
+		{
+			"id": "SetConnect",
+			"cpp": "self->connect = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphPortRef;GraphPortRef>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::GraphPortRef &, const Shalltear::GraphPortRef &)>"
+				}
+			],
+			"csharp": { "member": "SetConnect", "kind": "method" }
+		},
+		{
+			"id": "SetGetSearchEntries",
+			"cpp": "self->getSearchEntries = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;u64;GraphSearchEntryList>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::GraphPortRef *, std::vector<Shalltear::GraphSearchEntry, std::pmr::polymorphic_allocator<Shalltear::GraphSearchEntry>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetSearchEntries", "kind": "method" }
+		},
+		{
+			"id": "SetOnSearchPick",
+			"cpp": "self->onSearchPick = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphSearchEntry;Vec2;u64>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::GraphSearchEntry &, Shalltear::Vec2Generic<float>, const Shalltear::GraphPortRef *)>"
+				}
+			],
+			"csharp": { "member": "SetOnSearchPick", "kind": "method" }
+		},
+		{
+			"id": "SetGetGroups",
+			"cpp": "self->getGroups = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphGroupDescList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::GraphGroupDesc, std::pmr::polymorphic_allocator<Shalltear::GraphGroupDesc>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetGroups", "kind": "method" }
+		},
+		{
+			"id": "SetGetNotes",
+			"cpp": "self->getNotes = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphNoteDescList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::GraphNoteDesc, std::pmr::polymorphic_allocator<Shalltear::GraphNoteDesc>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetNotes", "kind": "method" }
+		},
+		{
+			"id": "SetMoveNote",
+			"cpp": "self->moveNote = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;Vec2>", "optional": true, "cpp": "std::function<void(uint64_t, Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetMoveNote", "kind": "method" }
+		},
+		{
+			"id": "SetMoveGroup",
+			"cpp": "self->moveGroup = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;Vec2>", "optional": true, "cpp": "std::function<void(uint64_t, Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetMoveGroup", "kind": "method" }
+		},
+		{
+			"id": "SetResizeNote",
+			"cpp": "self->resizeNote = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;Vec2>", "optional": true, "cpp": "std::function<void(uint64_t, Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetResizeNote", "kind": "method" }
+		},
+		{
+			"id": "SetSetGroupOf",
+			"cpp": "self->setGroupOf = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;list<GraphItem>;u64>",
+					"optional": true,
+					"cpp": "std::function<void(std::span<const Shalltear::GraphItem>, uint64_t)>"
+				}
+			],
+			"csharp": { "member": "SetSetGroupOf", "kind": "method" }
+		},
+		{
+			"id": "SetRenameGroup",
+			"cpp": "self->renameGroup = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;string>", "optional": true, "cpp": "std::function<void(uint64_t, std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetRenameGroup", "kind": "method" }
+		},
+		{
+			"id": "SetEditNote",
+			"cpp": "self->editNote = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;u64;string;string>",
+					"optional": true,
+					"cpp": "std::function<void(uint64_t, std::basic_string_view<char>, std::basic_string_view<char>)>"
+				}
+			],
+			"csharp": { "member": "SetEditNote", "kind": "method" }
+		},
+		{
+			"id": "SetOnGroupContextMenu",
+			"cpp": "self->onGroupContextMenu = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;UIContext;u64>", "optional": true, "cpp": "std::function<void(Shalltear::UI::Context &, uint64_t)>" }
+			],
+			"csharp": { "member": "SetOnGroupContextMenu", "kind": "method" }
+		},
+		{
+			"id": "SetOnNoteContextMenu",
+			"cpp": "self->onNoteContextMenu = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;UIContext;u64>", "optional": true, "cpp": "std::function<void(Shalltear::UI::Context &, uint64_t)>" }
+			],
+			"csharp": { "member": "SetOnNoteContextMenu", "kind": "method" }
+		},
+		{
+			"id": "SetOnWireContextMenu",
+			"cpp": "self->onWireContextMenu = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;u64;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, uint64_t, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnWireContextMenu", "kind": "method" }
+		},
+		{
+			"id": "SetOnWireDoubleClick",
+			"cpp": "self->onWireDoubleClick = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;Vec2>", "optional": true, "cpp": "std::function<void(uint64_t, Shalltear::Vec2Generic<float>)>" }
+			],
+			"csharp": { "member": "SetOnWireDoubleClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnGraphCommand",
+			"cpp": "self->onGraphCommand = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;GraphCommand>", "optional": true, "cpp": "std::function<bool(Shalltear::GraphCommand)>" }
+			],
+			"csharp": { "member": "SetOnGraphCommand", "kind": "method" }
+		},
+		{
+			"id": "SetGetOutlines",
+			"cpp": "self->getOutlines = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphOutlineDescList>",
+					"optional": true,
+					"cpp": "std::function<void(std::vector<Shalltear::GraphOutlineDesc, std::pmr::polymorphic_allocator<Shalltear::GraphOutlineDesc>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetOutlines", "kind": "method" }
+		},
+		{
+			"id": "SetRenameOutline",
+			"cpp": "self->renameOutline = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;string>", "optional": true, "cpp": "std::function<void(uint64_t, std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "SetRenameOutline", "kind": "method" }
+		},
+		{
+			"id": "SetOnSettingClick",
+			"cpp": "self->onSettingClick = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;u64;u32>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::UI::Context &, uint64_t, unsigned int)>"
+				}
+			],
+			"csharp": { "member": "SetOnSettingClick", "kind": "method" }
+		},
+		{
+			"id": "SetSetSettingText",
+			"cpp": "self->setSettingText = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;u64;u32;string>",
+					"optional": true,
+					"cpp": "std::function<void(uint64_t, unsigned int, std::basic_string_view<char>)>"
+				}
+			],
+			"csharp": { "member": "SetSetSettingText", "kind": "method" }
+		},
+		{
+			"id": "SetOnSettingAction",
+			"cpp": "self->onSettingAction = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;u32>", "optional": true, "cpp": "std::function<void(uint64_t, unsigned int)>" }
+			],
+			"csharp": { "member": "SetOnSettingAction", "kind": "method" }
+		},
+		{
+			"id": "SetSetBlockEnabled",
+			"cpp": "self->setBlockEnabled = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;u64;bool>", "optional": true, "cpp": "std::function<void(uint64_t, bool)>" }
+			],
+			"csharp": { "member": "SetSetBlockEnabled", "kind": "method" }
+		},
+		{
+			"id": "SetOnPortSpaceClick",
+			"cpp": "self->onPortSpaceClick = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;GraphPortRef>", "optional": true, "cpp": "std::function<void(const Shalltear::GraphPortRef &)>" }
+			],
+			"csharp": { "member": "SetOnPortSpaceClick", "kind": "method" }
+		},
+		{
+			"id": "SetOnBlockContextMenu",
+			"cpp": "self->onBlockContextMenu = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;UIContext;u64>", "optional": true, "cpp": "std::function<void(Shalltear::UI::Context &, uint64_t)>" }
+			],
+			"csharp": { "member": "SetOnBlockContextMenu", "kind": "method" }
+		},
+		{
+			"id": "SetCanMoveBlocks",
+			"cpp": "self->canMoveBlocks = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<bool;list<u64>;u64>", "optional": true, "cpp": "std::function<bool(std::span<const uint64_t>, uint64_t)>" }
+			],
+			"csharp": { "member": "SetCanMoveBlocks", "kind": "method" }
+		},
+		{
+			"id": "SetMoveBlocks",
+			"cpp": "self->moveBlocks = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;list<u64>;u64;u32>",
+					"optional": true,
+					"cpp": "std::function<void(std::span<const uint64_t>, uint64_t, unsigned int)>"
+				}
+			],
+			"csharp": { "member": "SetMoveBlocks", "kind": "method" }
+		},
+		{
+			"id": "SetGetBlockSearchEntries",
+			"cpp": "self->getBlockSearchEntries = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;u64;GraphSearchEntryList>",
+					"optional": true,
+					"cpp": "std::function<void(uint64_t, std::vector<Shalltear::GraphSearchEntry, std::pmr::polymorphic_allocator<Shalltear::GraphSearchEntry>> &)>"
+				}
+			],
+			"csharp": { "member": "SetGetBlockSearchEntries", "kind": "method" }
+		},
+		{
+			"id": "SetOnBlockSearchPick",
+			"cpp": "self->onBlockSearchPick = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;GraphSearchEntry;u64;u32>",
+					"optional": true,
+					"cpp": "std::function<void(const Shalltear::GraphSearchEntry &, uint64_t, unsigned int)>"
+				}
+			],
+			"csharp": { "member": "SetOnBlockSearchPick", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::GraphViewModel*>(self)",
+			"returns": "GraphViewModel",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

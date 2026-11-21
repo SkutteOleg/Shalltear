@@ -1,0 +1,75 @@
+{
+	"area": "UIWidgetsMaskDropdownDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIWidgetsMaskDropdownDesc",
+	"instance": "UIWidgetsMaskDropdownDesc",
+	"functions": [
+		{
+			"id": "GetItems",
+			"cpp": "self->items",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Items", "kind": "getter" }
+		},
+		{
+			"id": "SetItems",
+			"cpp": "self->items = Slots::KeepFieldTexts(self, 0x5f7d675dabb84f90ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Items", "kind": "setter" }
+		},
+		{
+			"id": "GetMask",
+			"cpp": "self->mask",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Mask", "kind": "getter" }
+		},
+		{
+			"id": "SetMask",
+			"cpp": "self->mask = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Mask", "kind": "setter" }
+		},
+		{
+			"id": "GetFont",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Font", "kind": "getter" }
+		},
+		{
+			"id": "SetFont",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "Font", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePx",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePx",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePx", "kind": "setter" }
+		},
+		{
+			"id": "SetOnChange",
+			"cpp": "self->onChange = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void;u64>", "optional": true, "cpp": "std::function<void (uint64_t)>" }],
+			"csharp": { "member": "SetOnChange", "kind": "method" }
+		}
+	]
+}

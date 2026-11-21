@@ -1,0 +1,55 @@
+{
+	"area": "PrefabInstanceDiffRemovedObject",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.PrefabInstanceDiffRemovedObject",
+	"instance": "PrefabInstanceDiffRemovedObject",
+	"functions": [
+		{
+			"id": "GetParent",
+			"cpp": "self->parent",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Parent", "kind": "getter" }
+		},
+		{
+			"id": "SetParent",
+			"cpp": "self->parent = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Parent", "kind": "setter" }
+		},
+		{
+			"id": "GetRow",
+			"cpp": "&self->row",
+			"returns": "PrefabTargetPath",
+			"params": [],
+			"csharp": { "member": "Row", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetRow",
+			"cpp": "self->row = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabTargetPath" }],
+			"csharp": { "member": "Row", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,18 @@
+{
+	"area": "AudioBus",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/Audio.h"
+	],
+	"class": "Shalltear.AudioBus",
+	"instance": "AudioBus",
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

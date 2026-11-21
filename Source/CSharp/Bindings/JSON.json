@@ -1,0 +1,34 @@
+{
+	"area": "JSON",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Serialization/JSON.h",
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.JSON",
+	"constants": [{ "name": "SLT_JSON_MAX_DEPTH", "cpp": "::Shalltear::SLT_JSON_MAX_DEPTH", "type": "u32", "value": 32 }],
+	"functions": [
+		{
+			"id": "JSONParse",
+			"cpp": "::Shalltear::JSONParse(text, *arena)",
+			"returns": "JSONValue",
+			"params": [
+				{ "name": "text", "type": "string" },
+				{ "name": "arena", "type": "LinearAllocator" }
+			],
+			"csharp": { "member": "JSONParse", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "JSONSerialize",
+			"cpp": "::Shalltear::JSONSerialize(*valueValue, pretty)",
+			"returns": "string",
+			"params": [
+				{ "name": "valueValue", "type": "JSONValue" },
+				{ "name": "pretty", "type": "bool" }
+			],
+			"csharp": { "member": "JSONSerialize", "kind": "method" }
+		}
+	]
+}

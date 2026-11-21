@@ -1,0 +1,67 @@
+{
+	"area": "GraphSettingDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h"
+	],
+	"class": "Shalltear.Editor.GraphSettingDesc",
+	"instance": "GraphSettingDesc",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetEdit",
+			"cpp": "self->edit",
+			"returns": "GraphSettingEdit",
+			"params": [],
+			"csharp": { "member": "Edit", "kind": "getter" }
+		},
+		{
+			"id": "SetEdit",
+			"cpp": "self->edit = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "GraphSettingEdit" }],
+			"csharp": { "member": "Edit", "kind": "setter" }
+		},
+		{
+			"id": "GetAction",
+			"cpp": "self->action",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Action", "kind": "getter" }
+		},
+		{
+			"id": "SetAction",
+			"cpp": "self->action = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Action", "kind": "setter" }
+		}
+	]
+}

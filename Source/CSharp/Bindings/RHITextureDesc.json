@@ -1,0 +1,172 @@
+{
+	"area": "RHITextureDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHITextureDesc",
+	"instance": "RHITextureDesc",
+	"functions": [
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetFormat",
+			"cpp": "self->format",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "Format", "kind": "getter" }
+		},
+		{
+			"id": "SetFormat",
+			"cpp": "self->format = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHIFormat" }],
+			"csharp": { "member": "Format", "kind": "setter" }
+		},
+		{
+			"id": "GetUsage",
+			"cpp": "self->usage",
+			"returns": "RHITextureUsage",
+			"params": [],
+			"csharp": { "member": "Usage", "kind": "getter" }
+		},
+		{
+			"id": "SetUsage",
+			"cpp": "self->usage = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureUsage" }],
+			"csharp": { "member": "Usage", "kind": "setter" }
+		},
+		{
+			"id": "GetMipLevels",
+			"cpp": "self->mipLevels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MipLevels", "kind": "getter" }
+		},
+		{
+			"id": "SetMipLevels",
+			"cpp": "self->mipLevels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "MipLevels", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugName",
+			"cpp": "self->debugName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DebugName", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugName",
+			"cpp": "self->debugName = Slots::KeepFieldText(self, 0x8e3424b793103e38ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DebugName", "kind": "setter" }
+		},
+		{
+			"id": "GetSamples",
+			"cpp": "self->samples",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Samples", "kind": "getter" }
+		},
+		{
+			"id": "SetSamples",
+			"cpp": "self->samples = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Samples", "kind": "setter" }
+		},
+		{
+			"id": "GetArrayLayers",
+			"cpp": "self->arrayLayers",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ArrayLayers", "kind": "getter" }
+		},
+		{
+			"id": "SetArrayLayers",
+			"cpp": "self->arrayLayers = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "ArrayLayers", "kind": "setter" }
+		},
+		{
+			"id": "GetCube",
+			"cpp": "self->cube",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Cube", "kind": "getter" }
+		},
+		{
+			"id": "SetCube",
+			"cpp": "self->cube = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Cube", "kind": "setter" }
+		},
+		{
+			"id": "GetCubeArray",
+			"cpp": "self->cubeArray",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CubeArray", "kind": "getter" }
+		},
+		{
+			"id": "SetCubeArray",
+			"cpp": "self->cubeArray = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "CubeArray", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "TryGetDimension",
+			"cpp": "Slots::Take(self->dimension, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "RHITextureDimension", "out": true }],
+			"csharp": { "member": "TryGetDimension", "kind": "method" }
+		},
+		{
+			"id": "ClearDimension",
+			"cpp": "self->dimension.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearDimension", "kind": "method" }
+		},
+		{
+			"id": "SetDimension",
+			"cpp": "self->dimension = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RHITextureDimension" }],
+			"csharp": { "member": "SetDimension", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,210 @@
+{
+	"area": "Mat3",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.Mat3",
+	"instance": "Mat3",
+	"natives": [
+		{ "name": "Mat4", "cpp": "::Shalltear::Mat4", "owned": true, "create": true },
+		{ "name": "Mat3", "cpp": "::Shalltear::Mat3", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Identity",
+			"cpp": "::Shalltear::Mat3::Identity()",
+			"returns": "Mat3",
+			"params": [],
+			"csharp": { "member": "Identity", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromColumns",
+			"cpp": "::Shalltear::Mat3::FromColumns(c0, c1, c2)",
+			"returns": "Mat3",
+			"params": [
+				{ "name": "c0", "type": "Vec3" },
+				{ "name": "c1", "type": "Vec3" },
+				{ "name": "c2", "type": "Vec3" }
+			],
+			"csharp": { "member": "FromColumns", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromRows",
+			"cpp": "::Shalltear::Mat3::FromRows(r0, r1, r2)",
+			"returns": "Mat3",
+			"params": [
+				{ "name": "r0", "type": "Vec3" },
+				{ "name": "r1", "type": "Vec3" },
+				{ "name": "r2", "type": "Vec3" }
+			],
+			"csharp": { "member": "FromRows", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromQuat",
+			"cpp": "::Shalltear::Mat3::FromQuat(q)",
+			"returns": "Mat3",
+			"params": [{ "name": "q", "type": "Quat" }],
+			"csharp": { "member": "FromQuat", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "FromScale",
+			"cpp": "::Shalltear::Mat3::FromScale(s)",
+			"returns": "Mat3",
+			"params": [{ "name": "s", "type": "Vec3" }],
+			"csharp": { "member": "FromScale", "kind": "method" },
+			"owns": true,
+			"nullable": false,
+			"static": true
+		},
+		{
+			"id": "At",
+			"cpp": "self->operator()(row, col)",
+			"returns": "f32",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "col", "type": "u64" }
+			],
+			"csharp": { "member": "At", "kind": "method" }
+		},
+		{
+			"id": "SetAt",
+			"cpp": "self->operator()(row, col) = value",
+			"returns": "void",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "col", "type": "u64" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetAt", "kind": "method" }
+		},
+		{
+			"id": "At2",
+			"cpp": "self->operator[](index)",
+			"returns": "f32",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "At", "kind": "method" }
+		},
+		{
+			"id": "SetAt2",
+			"cpp": "self->operator[](index) = value",
+			"returns": "void",
+			"params": [
+				{ "name": "index", "type": "u64" },
+				{ "name": "value", "type": "f32" }
+			],
+			"csharp": { "member": "SetAt", "kind": "method" }
+		},
+		{
+			"id": "GetColumn",
+			"cpp": "self->GetColumn(col)",
+			"returns": "Vec3",
+			"params": [{ "name": "col", "type": "u64" }],
+			"csharp": { "member": "GetColumn", "kind": "method" }
+		},
+		{
+			"id": "SetColumn",
+			"cpp": "self->SetColumn(col, v)",
+			"returns": "void",
+			"params": [
+				{ "name": "col", "type": "u64" },
+				{ "name": "v", "type": "Vec3" }
+			],
+			"csharp": { "member": "SetColumn", "kind": "method" }
+		},
+		{
+			"id": "GetRow",
+			"cpp": "self->GetRow(row)",
+			"returns": "Vec3",
+			"params": [{ "name": "row", "type": "u64" }],
+			"csharp": { "member": "GetRow", "kind": "method" }
+		},
+		{
+			"id": "SetRow",
+			"cpp": "self->SetRow(row, v)",
+			"returns": "void",
+			"params": [
+				{ "name": "row", "type": "u64" },
+				{ "name": "v", "type": "Vec3" }
+			],
+			"csharp": { "member": "SetRow", "kind": "method" }
+		},
+		{
+			"id": "Approximately",
+			"cpp": "::Shalltear::Mat3::Approximately(*a, *b, epsilon)",
+			"returns": "bool",
+			"params": [
+				{ "name": "a", "type": "Mat3" },
+				{ "name": "b", "type": "Mat3" },
+				{ "name": "epsilon", "type": "f32" }
+			],
+			"csharp": { "member": "Approximately", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Transposed",
+			"cpp": "self->Transposed()",
+			"returns": "Mat3",
+			"params": [],
+			"csharp": { "member": "Transposed", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Determinant",
+			"cpp": "self->Determinant()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Determinant", "kind": "method" }
+		},
+		{
+			"id": "TryInvert",
+			"cpp": "self->TryInvert(*outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "Mat3" }],
+			"csharp": { "member": "TryInvert", "kind": "method" }
+		},
+		{
+			"id": "Inverse",
+			"cpp": "self->Inverse()",
+			"returns": "Mat3",
+			"params": [],
+			"csharp": { "member": "Inverse", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "ToString",
+			"cpp": "self->ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ToText", "kind": "method" }
+		},
+		{
+			"id": "GetData",
+			"cpp": "self->data",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Data", "kind": "getter" }
+		},
+		{
+			"id": "SetData",
+			"cpp": "Slots::Assign(self->data, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Data", "kind": "setter" }
+		}
+	]
+}

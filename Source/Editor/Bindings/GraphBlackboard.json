@@ -1,0 +1,70 @@
+{
+	"area": "GraphBlackboard",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphBlackboard.h",
+		"Shalltear/Editor/EditorPanel.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.GraphBlackboard",
+	"instance": "GraphBlackboard",
+	"natives": [
+		{ "name": "GraphBlackboard", "cpp": "::Shalltear::GraphBlackboard", "owned": true, "create": true },
+		{ "name": "GraphBlackboardDesc", "cpp": "::Shalltear::GraphBlackboardDesc", "owned": true, "create": true },
+		{ "name": "GraphBlackboardItem", "cpp": "::Shalltear::GraphBlackboardItem", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Build",
+			"cpp": "self->Build(owner, *context, parent, *desc)",
+			"returns": "void",
+			"params": [
+				{ "name": "owner", "type": "EditorPanel", "optional": true },
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "desc", "type": "GraphBlackboardDesc" }
+			],
+			"csharp": { "member": "Build", "kind": "method" }
+		},
+		{
+			"id": "SetItems",
+			"cpp": "self->SetItems(std::span<const ::Shalltear::GraphBlackboardItem>(Slots::Copies<::Shalltear::Vector<::Shalltear::GraphBlackboardItem>>(items)))",
+			"returns": "void",
+			"params": [{ "name": "items", "type": "list<GraphBlackboardItem>" }],
+			"csharp": { "member": "SetItems", "kind": "method" }
+		},
+		{
+			"id": "BeginRename",
+			"cpp": "self->BeginRename(id)",
+			"returns": "bool",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "BeginRename", "kind": "method" }
+		},
+		{
+			"id": "HasFocus",
+			"cpp": "self->HasFocus()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasFocus", "kind": "getter" }
+		},
+		{
+			"id": "OwnsPayload",
+			"cpp": "self->OwnsPayload(*payload, item)",
+			"returns": "bool",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "item", "type": "u64", "out": true }
+			],
+			"csharp": { "member": "OwnsPayload", "kind": "method" }
+		},
+		{
+			"id": "Tick",
+			"cpp": "self->Tick(deltaSeconds)",
+			"returns": "void",
+			"params": [{ "name": "deltaSeconds", "type": "f32" }],
+			"csharp": { "member": "Tick", "kind": "method" }
+		}
+	]
+}

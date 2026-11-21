@@ -1,0 +1,53 @@
+{
+	"area": "VisualEffectPropertyOverride",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffect.h"
+	],
+	"class": "Shalltear.VisualEffectPropertyOverride",
+	"instance": "VisualEffectPropertyOverride",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "Vec4",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec4" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetOverridden",
+			"cpp": "self->overridden",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Overridden", "kind": "getter" }
+		},
+		{
+			"id": "SetOverridden",
+			"cpp": "self->overridden = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Overridden", "kind": "setter" }
+		}
+	]
+}

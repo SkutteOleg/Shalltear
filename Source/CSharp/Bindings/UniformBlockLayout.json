@@ -1,0 +1,67 @@
+{
+	"area": "UniformBlockLayout",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.UniformBlockLayout",
+	"instance": "UniformBlockLayout",
+	"functions": [
+		{
+			"id": "GetSet",
+			"cpp": "self->set",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Set", "kind": "getter" }
+		},
+		{
+			"id": "SetSet",
+			"cpp": "self->set = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Set", "kind": "setter" }
+		},
+		{
+			"id": "GetBinding",
+			"cpp": "self->binding",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Binding", "kind": "getter" }
+		},
+		{
+			"id": "SetBinding",
+			"cpp": "self->binding = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Binding", "kind": "setter" }
+		},
+		{
+			"id": "GetSizeBytes",
+			"cpp": "self->sizeBytes",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SizeBytes", "kind": "getter" }
+		},
+		{
+			"id": "SetSizeBytes",
+			"cpp": "self->sizeBytes = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SizeBytes", "kind": "setter" }
+		},
+		{
+			"id": "GetMembers",
+			"cpp": "self->members",
+			"returns": "list<UniformMember>",
+			"params": [],
+			"csharp": { "member": "Members", "kind": "getter" }
+		},
+		{
+			"id": "SetMembers",
+			"cpp": "self->members = Slots::Copies<::Shalltear::Vector<::Shalltear::UniformMember>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UniformMember>" }],
+			"csharp": { "member": "Members", "kind": "setter" }
+		}
+	]
+}

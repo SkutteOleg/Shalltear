@@ -1,0 +1,70 @@
+{
+	"area": "MaterialAssetTextureParam",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.MaterialAssetTextureParam",
+	"instance": "MaterialAssetTextureParam",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetHash",
+			"cpp": "self->hash",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Hash", "kind": "getter" }
+		},
+		{
+			"id": "SetHash",
+			"cpp": "self->hash = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Hash", "kind": "setter" }
+		},
+		{
+			"id": "GetTexture",
+			"cpp": "self->texture",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "self->texture = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Texture", "kind": "setter" }
+		},
+		{
+			"id": "GetResolved",
+			"cpp": "self->resolved",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "Resolved", "kind": "getter" }
+		},
+		{
+			"id": "SetResolved",
+			"cpp": "self->resolved = ::Shalltear::Handle<::Shalltear::TextureAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Texture", "optional": true }],
+			"csharp": { "member": "Resolved", "kind": "setter" }
+		}
+	]
+}

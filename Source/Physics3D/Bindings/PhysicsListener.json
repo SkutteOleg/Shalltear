@@ -1,0 +1,69 @@
+{
+	"area": "PhysicsListener",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/PhysicsListener.h",
+		"Shalltear/Physics3D/Colliders.h",
+		"Shalltear/Physics3D/CharacterController.h"
+	],
+	"class": "Shalltear.PhysicsListener",
+	"instance": "PhysicsListener",
+	"functions": [
+		{
+			"id": "OnCollisionEnter",
+			"cpp": "self->OnCollisionEnter(*collision)",
+			"returns": "void",
+			"params": [{ "name": "collision", "type": "EngineCollision" }],
+			"csharp": { "member": "OnCollisionEnter", "kind": "method" }
+		},
+		{
+			"id": "OnCollisionStay",
+			"cpp": "self->OnCollisionStay(*collision)",
+			"returns": "void",
+			"params": [{ "name": "collision", "type": "EngineCollision" }],
+			"csharp": { "member": "OnCollisionStay", "kind": "method" }
+		},
+		{
+			"id": "OnCollisionExit",
+			"cpp": "self->OnCollisionExit(*collision)",
+			"returns": "void",
+			"params": [{ "name": "collision", "type": "EngineCollision" }],
+			"csharp": { "member": "OnCollisionExit", "kind": "method" }
+		},
+		{
+			"id": "OnTriggerEnter",
+			"cpp": "self->OnTriggerEnter(::Shalltear::Handle<::Shalltear::Collider>(other))",
+			"returns": "void",
+			"params": [{ "name": "other", "type": "Collider", "optional": true }],
+			"csharp": { "member": "OnTriggerEnter", "kind": "method" }
+		},
+		{
+			"id": "OnTriggerStay",
+			"cpp": "self->OnTriggerStay(::Shalltear::Handle<::Shalltear::Collider>(other))",
+			"returns": "void",
+			"params": [{ "name": "other", "type": "Collider", "optional": true }],
+			"csharp": { "member": "OnTriggerStay", "kind": "method" }
+		},
+		{
+			"id": "OnTriggerExit",
+			"cpp": "self->OnTriggerExit(::Shalltear::Handle<::Shalltear::Collider>(other))",
+			"returns": "void",
+			"params": [{ "name": "other", "type": "Collider", "optional": true }],
+			"csharp": { "member": "OnTriggerExit", "kind": "method" }
+		},
+		{
+			"id": "OnJointBreak",
+			"cpp": "self->OnJointBreak(breakForce)",
+			"returns": "void",
+			"params": [{ "name": "breakForce", "type": "f32" }],
+			"csharp": { "member": "OnJointBreak", "kind": "method" }
+		},
+		{
+			"id": "OnControllerColliderHit",
+			"cpp": "self->OnControllerColliderHit(*hit)",
+			"returns": "void",
+			"params": [{ "name": "hit", "type": "EngineControllerColliderHit" }],
+			"csharp": { "member": "OnControllerColliderHit", "kind": "method" }
+		}
+	]
+}

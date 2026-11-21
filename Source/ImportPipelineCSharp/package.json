@@ -1,0 +1,12 @@
+{
+	"name": "dev.shalltear.importpipeline.csharp",
+	"version": "1.0.0",
+	"displayName": "Import Pipeline for C#",
+	"description": "The C# API of Import Pipeline.",
+	"kind": "tool",
+	"bridge": true,
+	"dependencies": {
+		"dev.shalltear.importpipeline": "1.0.0",
+		"dev.shalltear.csharp": "1.0.0"
+	}
+}

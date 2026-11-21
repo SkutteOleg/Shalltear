@@ -1,0 +1,67 @@
+{
+	"area": "ProfilerFrameResults",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Profiler.h"
+	],
+	"class": "Shalltear.ProfilerFrameResults",
+	"instance": "ProfilerFrameResults",
+	"functions": [
+		{
+			"id": "GetZones",
+			"cpp": "self->zones",
+			"returns": "ProfilerZoneResult",
+			"params": [],
+			"csharp": { "member": "Zones", "kind": "getter" }
+		},
+		{
+			"id": "SetZones",
+			"cpp": "self->zones = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "ProfilerZoneResult", "optional": true }],
+			"csharp": { "member": "Zones", "kind": "setter" }
+		},
+		{
+			"id": "GetCount",
+			"cpp": "self->count",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "SetCount",
+			"cpp": "self->count = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Count", "kind": "setter" }
+		},
+		{
+			"id": "GetDroppedSites",
+			"cpp": "self->droppedSites",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "DroppedSites", "kind": "getter" }
+		},
+		{
+			"id": "SetDroppedSites",
+			"cpp": "self->droppedSites = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "DroppedSites", "kind": "setter" }
+		},
+		{
+			"id": "GetDroppedDepth",
+			"cpp": "self->droppedDepth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "DroppedDepth", "kind": "getter" }
+		},
+		{
+			"id": "SetDroppedDepth",
+			"cpp": "self->droppedDepth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "DroppedDepth", "kind": "setter" }
+		}
+	]
+}

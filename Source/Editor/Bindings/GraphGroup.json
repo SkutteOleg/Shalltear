@@ -1,0 +1,67 @@
+{
+	"area": "GraphGroup",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphGroup",
+	"instance": "GraphGroup",
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetX",
+			"cpp": "self->x",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "X", "kind": "getter" }
+		},
+		{
+			"id": "SetX",
+			"cpp": "self->x = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "X", "kind": "setter" }
+		},
+		{
+			"id": "GetY",
+			"cpp": "self->y",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Y", "kind": "getter" }
+		},
+		{
+			"id": "SetY",
+			"cpp": "self->y = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Y", "kind": "setter" }
+		}
+	]
+}

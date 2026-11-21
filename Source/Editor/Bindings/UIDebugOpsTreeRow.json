@@ -1,0 +1,110 @@
+{
+	"area": "UIDebugOpsTreeRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsTreeRow",
+	"instance": "UIDebugOpsTreeRow",
+	"functions": [
+		{
+			"id": "GetElement",
+			"cpp": "self->element",
+			"returns": "UIElementHandle",
+			"params": [],
+			"csharp": { "member": "Element", "kind": "getter" }
+		},
+		{
+			"id": "SetElement",
+			"cpp": "self->element = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIElementHandle" }],
+			"csharp": { "member": "Element", "kind": "setter" }
+		},
+		{
+			"id": "GetKey",
+			"cpp": "self->key",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Key", "kind": "getter" }
+		},
+		{
+			"id": "SetKey",
+			"cpp": "self->key = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Key", "kind": "setter" }
+		},
+		{
+			"id": "GetDepth",
+			"cpp": "self->depth",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Depth", "kind": "getter" }
+		},
+		{
+			"id": "SetDepth",
+			"cpp": "self->depth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Depth", "kind": "setter" }
+		},
+		{
+			"id": "GetHasChildren",
+			"cpp": "self->hasChildren",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasChildren", "kind": "getter" }
+		},
+		{
+			"id": "SetHasChildren",
+			"cpp": "self->hasChildren = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "HasChildren", "kind": "setter" }
+		},
+		{
+			"id": "GetExpanded",
+			"cpp": "self->expanded",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Expanded", "kind": "getter" }
+		},
+		{
+			"id": "SetExpanded",
+			"cpp": "self->expanded = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Expanded", "kind": "setter" }
+		},
+		{
+			"id": "GetMatched",
+			"cpp": "self->matched",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Matched", "kind": "getter" }
+		},
+		{
+			"id": "SetMatched",
+			"cpp": "self->matched = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Matched", "kind": "setter" }
+		},
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		}
+	]
+}

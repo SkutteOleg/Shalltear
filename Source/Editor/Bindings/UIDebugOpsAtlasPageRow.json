@@ -1,0 +1,40 @@
+{
+	"area": "UIDebugOpsAtlasPageRow",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/UI/UIAtlas.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsAtlasPageRow",
+	"instance": "UIDebugOpsAtlasPageRow",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = Slots::KeepFieldText(self, 0x70fc543d865895a9ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetPage",
+			"cpp": "self->page",
+			"returns": "UIAtlasPage",
+			"params": [],
+			"csharp": { "member": "Page", "kind": "getter" }
+		},
+		{
+			"id": "SetPage",
+			"cpp": "self->page = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIAtlasPage" }],
+			"csharp": { "member": "Page", "kind": "setter" }
+		}
+	]
+}

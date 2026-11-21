@@ -58,6 +58,13 @@
 	],
 	"functions": [
 		{
+			"id": "KeptFieldCount",
+			"cpp": "static_cast<uint64_t>(Slots::CountKeptFields())",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "KeptFieldCount", "kind": "method" }
+		},
+		{
 			"id": "EchoI8",
 			"cpp": "::Shalltear::CSharpImpl::SlotProbe::EchoI8(value)",
 			"returns": "i8",
@@ -445,6 +452,125 @@
 			"returns": "void",
 			"params": [],
 			"csharp": { "member": "DropKept", "kind": "method" }
+		},
+		{
+			"id": "Tally",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Tally(handler)",
+			"returns": "i32",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;ref:i32;ref:ProbeShape;ref:ProbeTone;ref:Vec3;TextRef>",
+					"optional": true,
+					"cpp": "std::function<void(::Shalltear::i32&, ::Shalltear::CSharpImpl::SlotProbe::Shape&, ::Shalltear::CSharpImpl::SlotProbe::Tone&, ::Shalltear::Vec3&, ::Shalltear::str&)>"
+				}
+			],
+			"csharp": { "member": "Tally", "kind": "method" }
+		},
+		{
+			"id": "Scale",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Scale(handler)",
+			"returns": "f32",
+			"params": [
+				{ "name": "handler", "type": "fn<void;span<f32>>", "optional": true, "cpp": "std::function<void(std::span<::Shalltear::f32>)>" }
+			],
+			"csharp": { "member": "Scale", "kind": "method" }
+		},
+		{
+			"id": "Pass",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Pass(handler)",
+			"returns": "i32",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<i32;list<i32>;list<string>>",
+					"optional": true,
+					"cpp": "std::function<::Shalltear::i32(const ::Shalltear::Vector<::Shalltear::i32>&, std::span<const std::string_view>)>"
+				}
+			],
+			"csharp": { "member": "Pass", "kind": "method" }
+		},
+		{
+			"id": "Shaped",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Shaped(handler)",
+			"returns": "ProbeShape",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<ProbeShape;i32>",
+					"optional": true,
+					"cpp": "std::function<::Shalltear::CSharpImpl::SlotProbe::Shape(::Shalltear::i32)>"
+				}
+			],
+			"csharp": { "member": "Shaped", "kind": "method" }
+		},
+		{
+			"id": "Cook",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Cook(handler)",
+			"returns": "i32",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<give:ProbeRecipe;string>",
+					"optional": true,
+					"cpp": "std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe*(std::string_view)>"
+				}
+			],
+			"csharp": { "member": "Cook", "kind": "method" }
+		},
+		{
+			"id": "Peek",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Peek(handler)",
+			"returns": "i32",
+			"params": [
+				{ "name": "handler", "type": "fn<ProbeRecipe>", "optional": true, "cpp": "std::function<const ::Shalltear::CSharpImpl::SlotProbe::Recipe*()>" }
+			],
+			"csharp": { "member": "Peek", "kind": "method" }
+		},
+		{
+			"id": "Named",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Named(handler)",
+			"returns": "string",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<copy:ProbeRecipe;i32>",
+					"optional": true,
+					"cpp": "std::function<::Shalltear::CSharpImpl::SlotProbe::Recipe(::Shalltear::i32)>"
+				}
+			],
+			"csharp": { "member": "Named", "kind": "method" }
+		},
+		{
+			"id": "ShareRecipe",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::ShareRecipe(name)",
+			"returns": "ProbeRecipe",
+			"shared": true,
+			"nullable": false,
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "ShareRecipe", "kind": "method" }
+		},
+		{
+			"id": "CountShared",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::CountShared(recipe)",
+			"returns": "i32",
+			"params": [{ "name": "recipe", "type": "ProbeRecipe", "optional": true, "shared": "alias" }],
+			"csharp": { "member": "CountShared", "kind": "method" }
+		},
+		{
+			"id": "Gather",
+			"cpp": "::Shalltear::CSharpImpl::SlotProbe::Gather(numbers, recipes)",
+			"returns": "i32",
+			"params": [
+				{ "name": "numbers", "type": "fn<list<i32>>", "optional": true, "cpp": "std::function<::Shalltear::Vector<::Shalltear::i32>()>" },
+				{
+					"name": "recipes",
+					"type": "fn<list<ProbeRecipe>>",
+					"optional": true,
+					"cpp": "std::function<std::vector<::Shalltear::CSharpImpl::SlotProbe::Recipe>()>"
+				}
+			],
+			"csharp": { "member": "Gather", "kind": "method" }
 		}
 	]
 }

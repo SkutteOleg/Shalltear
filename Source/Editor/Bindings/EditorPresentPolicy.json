@@ -1,0 +1,45 @@
+{
+	"area": "EditorPresentPolicy",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPresentPolicy.h",
+		"Shalltear/Core/Window/WindowEvents.h"
+	],
+	"class": "Shalltear.Editor.EditorPresentPolicy",
+	"instance": "EditorPresentPolicy",
+	"enums": [
+		{
+			"name": "InteractionMode",
+			"cpp": "::Shalltear::InteractionMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Default", "value": 0 },
+				{ "name": "NoThrottling", "value": 1 }
+			]
+		}
+	],
+	"natives": [{ "name": "EditorPresentPolicy", "cpp": "::Shalltear::EditorPresentPolicy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Install",
+			"cpp": "self->Install()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Install", "kind": "method" }
+		},
+		{
+			"id": "SetMode",
+			"cpp": "self->SetMode(mode)",
+			"returns": "void",
+			"params": [{ "name": "mode", "type": "InteractionMode" }],
+			"csharp": { "member": "SetMode", "kind": "method" }
+		},
+		{
+			"id": "OnWindowCreated",
+			"cpp": "self->OnWindowCreated(*eventValue)",
+			"returns": "void",
+			"params": [{ "name": "eventValue", "type": "WindowCreatedEvent" }],
+			"csharp": { "member": "OnWindowCreated", "kind": "method" }
+		}
+	]
+}

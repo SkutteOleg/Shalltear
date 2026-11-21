@@ -1,0 +1,50 @@
+{
+	"area": "EngineAudioMusicClock",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMusicClock.h",
+		"Shalltear/Audio/AudioTime.h"
+	],
+	"class": "Shalltear.EngineAudioMusicClock",
+	"instance": "EngineAudioMusicClock",
+	"functions": [
+		{
+			"id": "HasTempo",
+			"cpp": "self->HasTempo()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "HasTempo", "kind": "getter" }
+		},
+		{
+			"id": "GetBeat",
+			"cpp": "self->GetBeat(time)",
+			"returns": "i64",
+			"params": [{ "name": "time", "type": "EngineAudioTime" }],
+			"csharp": { "member": "GetBeat", "kind": "method" }
+		},
+		{
+			"id": "GetBar",
+			"cpp": "self->GetBar(time)",
+			"returns": "i64",
+			"params": [{ "name": "time", "type": "EngineAudioTime" }],
+			"csharp": { "member": "GetBar", "kind": "method" }
+		},
+		{
+			"id": "GetBeatTime",
+			"cpp": "self->GetBeatTime(beat)",
+			"returns": "EngineAudioTime",
+			"params": [{ "name": "beat", "type": "i64" }],
+			"csharp": { "member": "GetBeatTime", "kind": "method" }
+		},
+		{
+			"id": "NextBoundary",
+			"cpp": "self->NextBoundary(boundary, after)",
+			"returns": "EngineAudioTime",
+			"params": [
+				{ "name": "boundary", "type": "AudioQuantization" },
+				{ "name": "after", "type": "EngineAudioTime" }
+			],
+			"csharp": { "member": "NextBoundary", "kind": "method" }
+		}
+	]
+}

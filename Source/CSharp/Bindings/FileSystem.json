@@ -1,0 +1,168 @@
+{
+	"area": "FileSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/FileSystem.h",
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.FileSystem",
+	"functions": [
+		{
+			"id": "Mount",
+			"cpp": "::Shalltear::FileSystem::Mount(str(scheme), ::Shalltear::Path(str(physicalPath)))",
+			"returns": "void",
+			"params": [
+				{ "name": "scheme", "type": "string" },
+				{ "name": "physicalPath", "type": "string" }
+			],
+			"csharp": { "member": "Mount", "kind": "method" }
+		},
+		{
+			"id": "Unmount",
+			"cpp": "::Shalltear::FileSystem::Unmount(str(scheme))",
+			"returns": "void",
+			"params": [{ "name": "scheme", "type": "string" }],
+			"csharp": { "member": "Unmount", "kind": "method" }
+		},
+		{
+			"id": "GetMountGeneration",
+			"cpp": "::Shalltear::FileSystem::GetMountGeneration()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "MountGeneration", "kind": "getter" }
+		},
+		{
+			"id": "Resolve",
+			"cpp": "(::Shalltear::FileSystem::Resolve(::Shalltear::Path(str(virtualPath)))).ToString()",
+			"returns": "string",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "Resolve", "kind": "method" }
+		},
+		{
+			"id": "Virtualize",
+			"cpp": "(::Shalltear::FileSystem::Virtualize(::Shalltear::Path(str(physicalPath)))).ToString()",
+			"returns": "string",
+			"params": [{ "name": "physicalPath", "type": "string" }],
+			"csharp": { "member": "Virtualize", "kind": "method" }
+		},
+		{
+			"id": "ReadFile",
+			"cpp": "::Shalltear::FileSystem::ReadFile(::Shalltear::Path(str(path)), tag)",
+			"returns": "EngineBuffer",
+			"params": [
+				{ "name": "path", "type": "string" },
+				{ "name": "tag", "type": "MemTag" }
+			],
+			"csharp": { "member": "ReadFile", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "ReadTextFile",
+			"cpp": "::Shalltear::FileSystem::ReadTextFile(::Shalltear::Path(str(path)), tag)",
+			"returns": "string",
+			"params": [
+				{ "name": "path", "type": "string" },
+				{ "name": "tag", "type": "MemTag" }
+			],
+			"csharp": { "member": "ReadTextFile", "kind": "method" }
+		},
+		{
+			"id": "WriteFile",
+			"cpp": "::Shalltear::FileSystem::WriteFile(::Shalltear::Path(str(path)), *buffer)",
+			"returns": "bool",
+			"params": [
+				{ "name": "path", "type": "string" },
+				{ "name": "buffer", "type": "EngineBuffer" }
+			],
+			"csharp": { "member": "WriteFile", "kind": "method" }
+		},
+		{
+			"id": "WriteTextFile",
+			"cpp": "::Shalltear::FileSystem::WriteTextFile(::Shalltear::Path(str(path)), str(text))",
+			"returns": "bool",
+			"params": [
+				{ "name": "path", "type": "string" },
+				{ "name": "text", "type": "string" }
+			],
+			"csharp": { "member": "WriteTextFile", "kind": "method" }
+		},
+		{
+			"id": "Exists",
+			"cpp": "::Shalltear::FileSystem::Exists(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "Exists", "kind": "method" }
+		},
+		{
+			"id": "IsDirectory",
+			"cpp": "::Shalltear::FileSystem::IsDirectory(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "IsDirectory", "kind": "method" }
+		},
+		{
+			"id": "CreateDirectory",
+			"cpp": "::Shalltear::FileSystem::CreateDirectory(::Shalltear::Path(str(path)))",
+			"returns": "bool",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "CreateDirectory", "kind": "method" }
+		},
+		{
+			"id": "GetFileSize",
+			"cpp": "::Shalltear::FileSystem::GetFileSize(::Shalltear::Path(str(path)))",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "GetFileSize", "kind": "method" }
+		},
+		{
+			"id": "GetLastWriteTime",
+			"cpp": "::Shalltear::FileSystem::GetLastWriteTime(::Shalltear::Path(str(path)))",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "GetLastWriteTime", "kind": "method" }
+		},
+		{
+			"id": "GetLastWriteTimeUnix",
+			"cpp": "::Shalltear::FileSystem::GetLastWriteTimeUnix(::Shalltear::Path(str(path)))",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "GetLastWriteTimeUnix", "kind": "method" }
+		},
+		{
+			"id": "GetCreationTimeUnix",
+			"cpp": "::Shalltear::FileSystem::GetCreationTimeUnix(::Shalltear::Path(str(path)))",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "GetCreationTimeUnix", "kind": "method" }
+		},
+		{
+			"id": "GetUserDataDirectory",
+			"cpp": "(::Shalltear::FileSystem::GetUserDataDirectory()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "UserDataDirectory", "kind": "getter" }
+		},
+		{
+			"id": "GetUserHomeDirectory",
+			"cpp": "(::Shalltear::FileSystem::GetUserHomeDirectory()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "UserHomeDirectory", "kind": "getter" }
+		},
+		{
+			"id": "GetUserPicturesDirectory",
+			"cpp": "(::Shalltear::FileSystem::GetUserPicturesDirectory()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "UserPicturesDirectory", "kind": "getter" }
+		},
+		{
+			"id": "GetExecutablePath",
+			"cpp": "(::Shalltear::FileSystem::GetExecutablePath()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ExecutablePath", "kind": "getter" }
+		}
+	]
+}

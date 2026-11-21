@@ -1,0 +1,151 @@
+{
+	"area": "EditorInputOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorInputOps.h",
+		"Shalltear/Core/Input/InputAction.h",
+		"Shalltear/Core/Input/InputEvent.h",
+		"Shalltear/Core/UI/Context.h"
+	],
+	"class": "Shalltear.Editor.EditorInputOps",
+	"enums": [
+		{
+			"name": "EditorInputOpsShortcut",
+			"cpp": "::Shalltear::EditorInputOps::Shortcut",
+			"underlying": "u8",
+			"values": [
+				{ "name": "ReloadModule", "value": 0 },
+				{ "name": "CompileModule", "value": 1 },
+				{ "name": "RecompileModule", "value": 2 },
+				{ "name": "OpenBuildProfiles", "value": 3 },
+				{ "name": "BuildAndRun", "value": 4 },
+				{ "name": "TogglePlay", "value": 5 },
+				{ "name": "TogglePause", "value": 6 },
+				{ "name": "Step", "value": 7 },
+				{ "name": "Undo", "value": 8 },
+				{ "name": "Redo", "value": 9 },
+				{ "name": "SaveScene", "value": 10 },
+				{ "name": "SaveSceneAs", "value": 11 },
+				{ "name": "DeleteSelection", "value": 12 },
+				{ "name": "RenameSelection", "value": 13 },
+				{ "name": "SelectAll", "value": 14 },
+				{ "name": "DuplicateSelection", "value": 15 },
+				{ "name": "Count", "value": 16 }
+			]
+		},
+		{
+			"name": "EditorInputOpsPanelChord",
+			"cpp": "::Shalltear::EditorInputOps::PanelChord",
+			"underlying": "u8",
+			"values": [
+				{ "name": "AssetBrowserBack", "value": 0 },
+				{ "name": "AssetBrowserForward", "value": 1 },
+				{ "name": "AssetBrowserUp", "value": 2 },
+				{ "name": "Count", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorInputOpsRouteNeeds",
+			"cpp": "::Shalltear::EditorInputOps::RouteNeeds",
+			"size": 5,
+			"align": 1,
+			"fields": [
+				{ "name": "yieldToTextField", "type": "bool", "offset": 0 },
+				{ "name": "pointerInside", "type": "bool", "offset": 1 },
+				{ "name": "gestureHeld", "type": "bool", "offset": 2 },
+				{ "name": "viewFocused", "type": "bool", "offset": 3 },
+				{ "name": "yieldToModal", "type": "bool", "offset": 4 }
+			]
+		},
+		{
+			"name": "EditorInputOpsRouteFacts",
+			"cpp": "::Shalltear::EditorInputOps::RouteFacts",
+			"size": 5,
+			"align": 1,
+			"fields": [
+				{ "name": "textFieldWantsKeyboard", "type": "bool", "offset": 0 },
+				{ "name": "pointerInside", "type": "bool", "offset": 1 },
+				{ "name": "gestureHeld", "type": "bool", "offset": 2 },
+				{ "name": "viewFocused", "type": "bool", "offset": 3 },
+				{ "name": "modalUp", "type": "bool", "offset": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorInputOpsEditorShortcuts", "cpp": "::Shalltear::EditorInputOps::EditorShortcuts", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "ShouldOpen",
+			"cpp": "::Shalltear::EditorInputOps::ShouldOpen(needs, facts)",
+			"returns": "bool",
+			"params": [
+				{ "name": "needs", "type": "EditorInputOpsRouteNeeds" },
+				{ "name": "facts", "type": "EditorInputOpsRouteFacts" }
+			],
+			"csharp": { "member": "ShouldOpen", "kind": "method" }
+		},
+		{
+			"id": "ApplyRoute",
+			"cpp": "::Shalltear::EditorInputOps::ApplyRoute(*map, needs, facts)",
+			"returns": "void",
+			"params": [
+				{ "name": "map", "type": "EngineInputActionMap" },
+				{ "name": "needs", "type": "EditorInputOpsRouteNeeds" },
+				{ "name": "facts", "type": "EditorInputOpsRouteFacts" }
+			],
+			"csharp": { "member": "ApplyRoute", "kind": "method" }
+		},
+		{
+			"id": "ApplicationFacts",
+			"cpp": "::Shalltear::EditorInputOps::ApplicationFacts()",
+			"returns": "EditorInputOpsRouteFacts",
+			"params": [],
+			"csharp": { "member": "ApplicationFacts", "kind": "method" }
+		},
+		{
+			"id": "ApplicationFacts2",
+			"cpp": "::Shalltear::EditorInputOps::ApplicationFacts(*context)",
+			"returns": "EditorInputOpsRouteFacts",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "ApplicationFacts", "kind": "method" }
+		},
+		{
+			"id": "AdvanceGamePointerArm",
+			"cpp": "::Shalltear::EditorInputOps::AdvanceGamePointerArm(armed, *eventValue, aimedAtView)",
+			"returns": "bool",
+			"params": [
+				{ "name": "armed", "type": "bool" },
+				{ "name": "eventValue", "type": "EngineInputEvent" },
+				{ "name": "aimedAtView", "type": "bool" }
+			],
+			"csharp": { "member": "AdvanceGamePointerArm", "kind": "method" }
+		},
+		{
+			"id": "ChordLabel",
+			"cpp": "::Shalltear::EditorInputOps::ChordLabel(shortcut)",
+			"returns": "string",
+			"params": [{ "name": "shortcut", "type": "EditorInputOpsShortcut" }],
+			"csharp": { "member": "ChordLabel", "kind": "method" }
+		},
+		{
+			"id": "BindPanelChord",
+			"cpp": "::Shalltear::EditorInputOps::BindPanelChord(*map, chord)",
+			"returns": "u32",
+			"params": [
+				{ "name": "map", "type": "EngineInputActionMap" },
+				{ "name": "chord", "type": "EditorInputOpsPanelChord" }
+			],
+			"csharp": { "member": "BindPanelChord", "kind": "method" }
+		},
+		{
+			"id": "ChordLabel2",
+			"cpp": "::Shalltear::EditorInputOps::ChordLabel(chord)",
+			"returns": "string",
+			"params": [{ "name": "chord", "type": "EditorInputOpsPanelChord" }],
+			"csharp": { "member": "ChordLabel", "kind": "method" }
+		}
+	]
+}

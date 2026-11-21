@@ -1,0 +1,67 @@
+{
+	"area": "ModelBlendShape",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelBlendShape",
+	"instance": "ModelBlendShape",
+	"functions": [
+		{
+			"id": "GetTargetWeight",
+			"cpp": "self->targetWeight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "TargetWeight", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetWeight",
+			"cpp": "self->targetWeight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "TargetWeight", "kind": "setter" }
+		},
+		{
+			"id": "GetOffsetVertices",
+			"cpp": "self->offsetVertices",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "OffsetVertices", "kind": "getter" }
+		},
+		{
+			"id": "SetOffsetVertices",
+			"cpp": "self->offsetVertices = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "OffsetVertices", "kind": "setter" }
+		},
+		{
+			"id": "GetPositionOffsets",
+			"cpp": "self->positionOffsets",
+			"returns": "list<Vec3>",
+			"params": [],
+			"csharp": { "member": "PositionOffsets", "kind": "getter" }
+		},
+		{
+			"id": "SetPositionOffsets",
+			"cpp": "self->positionOffsets = Slots::ToVector<::Shalltear::Vec3>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec3>" }],
+			"csharp": { "member": "PositionOffsets", "kind": "setter" }
+		},
+		{
+			"id": "GetNormalOffsets",
+			"cpp": "self->normalOffsets",
+			"returns": "list<Vec3>",
+			"params": [],
+			"csharp": { "member": "NormalOffsets", "kind": "getter" }
+		},
+		{
+			"id": "SetNormalOffsets",
+			"cpp": "self->normalOffsets = Slots::ToVector<::Shalltear::Vec3>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec3>" }],
+			"csharp": { "member": "NormalOffsets", "kind": "setter" }
+		}
+	]
+}

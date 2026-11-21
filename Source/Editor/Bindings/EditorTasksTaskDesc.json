@@ -1,0 +1,32 @@
+{
+	"area": "EditorTasksTaskDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorTasks.h"
+	],
+	"class": "Shalltear.Editor.EditorTasksTaskDesc",
+	"instance": "EditorTasksTaskDesc",
+	"functions": [
+		{
+			"id": "GetText",
+			"cpp": "self->text",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Text", "kind": "getter" }
+		},
+		{
+			"id": "SetText",
+			"cpp": "self->text = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Text", "kind": "setter" }
+		},
+		{
+			"id": "SetOnCancel",
+			"cpp": "self->onCancel = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }],
+			"csharp": { "member": "SetOnCancel", "kind": "method" }
+		}
+	]
+}

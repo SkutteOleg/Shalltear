@@ -1,0 +1,58 @@
+{
+	"area": "RHISwapChain",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHISwapChain.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHISwapChain",
+	"instance": "RHISwapChain",
+	"natives": [{ "name": "RHISwapChain", "cpp": "::Shalltear::RHI::SwapChain" }],
+	"functions": [
+		{
+			"id": "AcquireNextImage",
+			"cpp": "self->AcquireNextImage()",
+			"returns": "RHITextureHandle",
+			"params": [],
+			"csharp": { "member": "AcquireNextImage", "kind": "method" }
+		},
+		{
+			"id": "Present",
+			"cpp": "self->Present()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Present", "kind": "method" }
+		},
+		{
+			"id": "Recreate",
+			"cpp": "self->Recreate(newSizePx, vsync)",
+			"returns": "void",
+			"params": [
+				{ "name": "newSizePx", "type": "Vec2I" },
+				{ "name": "vsync", "type": "bool" }
+			],
+			"csharp": { "member": "Recreate", "kind": "method" }
+		},
+		{
+			"id": "GetFormat",
+			"cpp": "self->GetFormat()",
+			"returns": "RHIFormat",
+			"params": [],
+			"csharp": { "member": "Format", "kind": "getter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->GetSize()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "GetVSync",
+			"cpp": "self->GetVSync()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "VSync", "kind": "getter" }
+		}
+	]
+}

@@ -1,0 +1,40 @@
+{
+	"area": "AudioLayeredContainerLayer",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioContainer.h",
+		"Shalltear/Audio/AudioResource.h"
+	],
+	"class": "Shalltear.AudioLayeredContainerLayer",
+	"instance": "AudioLayeredContainerLayer",
+	"functions": [
+		{
+			"id": "GetResource",
+			"cpp": "self->resource",
+			"returns": "AudioResource",
+			"params": [],
+			"csharp": { "member": "Resource", "kind": "getter" }
+		},
+		{
+			"id": "SetResource",
+			"cpp": "self->resource = ::Shalltear::Handle<::Shalltear::AudioResource>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioResource", "optional": true }],
+			"csharp": { "member": "Resource", "kind": "setter" }
+		},
+		{
+			"id": "GetVolume",
+			"cpp": "self->volume",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Volume", "kind": "getter" }
+		},
+		{
+			"id": "SetVolume",
+			"cpp": "self->volume = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Volume", "kind": "setter" }
+		}
+	]
+}

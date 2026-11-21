@@ -1,0 +1,67 @@
+{
+	"area": "MeshBlendShapeFrame",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/MeshAsset.h"
+	],
+	"class": "Shalltear.MeshBlendShapeFrame",
+	"instance": "MeshBlendShapeFrame",
+	"functions": [
+		{
+			"id": "GetWeight",
+			"cpp": "self->weight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->weight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetVertices",
+			"cpp": "self->vertices",
+			"returns": "list<u32>",
+			"params": [],
+			"csharp": { "member": "Vertices", "kind": "getter" }
+		},
+		{
+			"id": "SetVertices",
+			"cpp": "self->vertices = Slots::ToVector<u32>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u32>" }],
+			"csharp": { "member": "Vertices", "kind": "setter" }
+		},
+		{
+			"id": "GetPositionDeltas",
+			"cpp": "self->positionDeltas",
+			"returns": "list<Vec3>",
+			"params": [],
+			"csharp": { "member": "PositionDeltas", "kind": "getter" }
+		},
+		{
+			"id": "SetPositionDeltas",
+			"cpp": "self->positionDeltas = Slots::ToVector<::Shalltear::Vec3>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec3>" }],
+			"csharp": { "member": "PositionDeltas", "kind": "setter" }
+		},
+		{
+			"id": "GetNormalDeltas",
+			"cpp": "self->normalDeltas",
+			"returns": "list<Vec3>",
+			"params": [],
+			"csharp": { "member": "NormalDeltas", "kind": "getter" }
+		},
+		{
+			"id": "SetNormalDeltas",
+			"cpp": "self->normalDeltas = Slots::ToVector<::Shalltear::Vec3>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec3>" }],
+			"csharp": { "member": "NormalDeltas", "kind": "setter" }
+		}
+	]
+}

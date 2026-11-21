@@ -1,0 +1,44 @@
+{
+	"area": "FrameTime",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Time.h"
+	],
+	"class": "Shalltear.FrameTime",
+	"instance": "FrameTime",
+	"structs": [
+		{
+			"name": "FrameTime",
+			"cpp": "::Shalltear::FrameTime",
+			"size": 56,
+			"align": 8,
+			"fields": [
+				{ "name": "deltaTime", "type": "f32", "offset": 0 },
+				{ "name": "unscaledDeltaTime", "type": "f32", "offset": 4 },
+				{ "name": "fixedDeltaTime", "type": "f32", "offset": 8 },
+				{ "name": "maximumDeltaTime", "type": "f32", "offset": 12 },
+				{ "name": "time", "type": "f64", "offset": 16 },
+				{ "name": "unscaledTime", "type": "f64", "offset": 24 },
+				{ "name": "timeScale", "type": "f32", "offset": 32 },
+				{ "name": "fixedAlpha", "type": "f32", "offset": 36 },
+				{ "name": "frameCount", "type": "u64", "offset": 40 },
+				{ "name": "inFixedTimeStep", "type": "bool", "offset": 48 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EngineStopwatch", "cpp": "::Shalltear::Stopwatch", "owned": true, "create": true },
+		{ "name": "FrameTimer", "cpp": "::Shalltear::FrameTimer", "owned": true, "create": true },
+		{ "name": "TimeFrameScope", "cpp": "::Shalltear::Time::FrameScope", "owned": true },
+		{ "name": "ScopedTimer", "cpp": "::Shalltear::ScopedTimer", "owned": true }
+	],
+	"functions": [
+		{
+			"id": "ComputeGameDelta",
+			"cpp": "self->ComputeGameDelta()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ComputeGameDelta", "kind": "method" }
+		}
+	]
+}

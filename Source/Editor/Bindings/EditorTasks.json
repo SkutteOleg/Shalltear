@@ -1,0 +1,69 @@
+{
+	"area": "EditorTasks",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorTasks.h"
+	],
+	"class": "Shalltear.Editor.EditorTasks",
+	"natives": [
+		{ "name": "EditorTasksTaskDesc", "cpp": "::Shalltear::EditorTasks::TaskDesc", "owned": true, "create": true },
+		{ "name": "EditorTasksTaskView", "cpp": "::Shalltear::EditorTasks::TaskView", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Begin",
+			"cpp": "::Shalltear::EditorTasks::Begin(*desc, ScriptRuntime::GetScriptsOwner())",
+			"returns": "u64",
+			"params": [{ "name": "desc", "type": "EditorTasksTaskDesc" }],
+			"csharp": { "member": "Begin", "kind": "method" }
+		},
+		{
+			"id": "Report",
+			"cpp": "::Shalltear::EditorTasks::Report(task, text, Slots::Optional<f32>(fraction))",
+			"returns": "void",
+			"params": [
+				{ "name": "task", "type": "u64" },
+				{ "name": "text", "type": "string" },
+				{ "name": "fraction", "type": "list<f32>" }
+			],
+			"csharp": { "member": "Report", "kind": "method" }
+		},
+		{
+			"id": "End",
+			"cpp": "::Shalltear::EditorTasks::End(task)",
+			"returns": "void",
+			"params": [{ "name": "task", "type": "u64" }],
+			"csharp": { "member": "End", "kind": "method" }
+		},
+		{
+			"id": "Cancel",
+			"cpp": "::Shalltear::EditorTasks::Cancel(task)",
+			"returns": "bool",
+			"params": [{ "name": "task", "type": "u64" }],
+			"csharp": { "member": "Cancel", "kind": "method" }
+		},
+		{
+			"id": "GetActive",
+			"cpp": "::Shalltear::EditorTasks::GetActive(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<EditorTasksTaskView>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::EditorTasks::TaskView>" }
+			],
+			"csharp": { "member": "GetActive", "kind": "method" }
+		},
+		{
+			"id": "GetGeneration",
+			"cpp": "::Shalltear::EditorTasks::GetGeneration()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Generation", "kind": "getter" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorTasks::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

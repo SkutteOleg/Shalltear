@@ -1,0 +1,56 @@
+{
+	"area": "VisualEffectEventAttributes",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffect.h"
+	],
+	"class": "Shalltear.VisualEffectEventAttributes",
+	"instance": "VisualEffectEventAttributes",
+	"types": [{ "name": "VisualEffect", "cpp": "::Shalltear::VisualEffect", "engine": "VisualEffect", "base": "Component" }],
+	"natives": [
+		{ "name": "VisualEffectEventAttributes", "cpp": "::Shalltear::VisualEffectEventAttributes", "owned": true, "create": true },
+		{ "name": "VisualEffectPropertyOverride", "cpp": "::Shalltear::VisualEffectPropertyOverride", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "SetFloat",
+			"cpp": "self->SetFloat(attribute, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "attribute", "type": "string" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "SetFloat", "kind": "method" }
+		},
+		{
+			"id": "SetVector3",
+			"cpp": "self->SetVector3(attribute, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "attribute", "type": "string" },
+				{ "name": "valueValue", "type": "Vec3" }
+			],
+			"csharp": { "member": "SetVector3", "kind": "method" }
+		},
+		{
+			"id": "SetBool",
+			"cpp": "self->SetBool(attribute, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "attribute", "type": "string" },
+				{ "name": "valueValue", "type": "bool" }
+			],
+			"csharp": { "member": "SetBool", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "self->Find(attribute, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "attribute", "type": "string" },
+				{ "name": "outValue", "type": "Vec4", "out": true }
+			],
+			"csharp": { "member": "Find", "kind": "method" }
+		}
+	]
+}

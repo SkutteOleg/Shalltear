@@ -1,0 +1,64 @@
+{
+	"area": "EditorDocuments",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDocuments.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.EditorDocuments",
+	"natives": [{ "name": "EditorDocumentDesc", "cpp": "::Shalltear::EditorDocumentDesc", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Open",
+			"cpp": "::Shalltear::EditorDocuments::Open(*desc)",
+			"returns": "bool",
+			"params": [{ "name": "desc", "type": "EditorDocumentDesc" }],
+			"csharp": { "member": "Open", "kind": "method" }
+		},
+		{
+			"id": "Close",
+			"cpp": "::Shalltear::EditorDocuments::Close(asset)",
+			"returns": "void",
+			"params": [{ "name": "asset", "type": "EngineGuid" }],
+			"csharp": { "member": "Close", "kind": "method" }
+		},
+		{
+			"id": "IsOpen",
+			"cpp": "::Shalltear::EditorDocuments::IsOpen(asset)",
+			"returns": "bool",
+			"params": [{ "name": "asset", "type": "EngineGuid" }],
+			"csharp": { "member": "IsOpen", "kind": "method" }
+		},
+		{
+			"id": "BeginEdit",
+			"cpp": "::Shalltear::EditorDocuments::BeginEdit(asset, label)",
+			"returns": "void",
+			"params": [
+				{ "name": "asset", "type": "EngineGuid" },
+				{ "name": "label", "type": "string" }
+			],
+			"csharp": { "member": "BeginEdit", "kind": "method" }
+		},
+		{
+			"id": "EndEdit",
+			"cpp": "::Shalltear::EditorDocuments::EndEdit(asset)",
+			"returns": "void",
+			"params": [{ "name": "asset", "type": "EngineGuid" }],
+			"csharp": { "member": "EndEdit", "kind": "method" }
+		},
+		{
+			"id": "GetRevision",
+			"cpp": "::Shalltear::EditorDocuments::GetRevision(asset)",
+			"returns": "u64",
+			"params": [{ "name": "asset", "type": "EngineGuid" }],
+			"csharp": { "member": "GetRevision", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorDocuments::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,31 @@
+{
+	"area": "RemoveComponentCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Editor/UndoSystem.h"
+	],
+	"class": "Shalltear.Editor.RemoveComponentCommand",
+	"instance": "RemoveComponentCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::RemoveComponentCommand(::Shalltear::Handle<::Shalltear::Component>(component))",
+			"returns": "RemoveComponentCommand",
+			"params": [{ "name": "component", "type": "Component", "optional": true }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

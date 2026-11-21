@@ -1,0 +1,53 @@
+{
+	"area": "SettingsFieldCondition",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SettingsPresentation.h"
+	],
+	"class": "Shalltear.Editor.SettingsFieldCondition",
+	"instance": "SettingsFieldCondition",
+	"functions": [
+		{
+			"id": "GetField",
+			"cpp": "self->field",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Field", "kind": "getter" }
+		},
+		{
+			"id": "SetField",
+			"cpp": "self->field = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Field", "kind": "setter" }
+		},
+		{
+			"id": "GetValue",
+			"cpp": "self->value",
+			"returns": "i64",
+			"params": [],
+			"csharp": { "member": "Value", "kind": "getter" }
+		},
+		{
+			"id": "SetValue",
+			"cpp": "self->value = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i64" }],
+			"csharp": { "member": "Value", "kind": "setter" }
+		},
+		{
+			"id": "GetEqualsField",
+			"cpp": "self->equals",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "EqualsField", "kind": "getter" }
+		},
+		{
+			"id": "SetEqualsField",
+			"cpp": "self->equals = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "EqualsField", "kind": "setter" }
+		}
+	]
+}

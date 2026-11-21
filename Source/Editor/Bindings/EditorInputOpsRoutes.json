@@ -1,0 +1,73 @@
+{
+	"area": "EditorInputOpsRoutes",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorInputOps.h"
+	],
+	"class": "Shalltear.Editor.EditorInputOpsRoutes",
+	"functions": [
+		{
+			"id": "GetGlobalShortcut",
+			"cpp": "::Shalltear::EditorInputOps::Routes::GlobalShortcut",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "GlobalShortcut", "kind": "getter" }
+		},
+		{
+			"id": "GetDocumentShortcut",
+			"cpp": "::Shalltear::EditorInputOps::Routes::DocumentShortcut",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "DocumentShortcut", "kind": "getter" }
+		},
+		{
+			"id": "GetViewportPointer",
+			"cpp": "::Shalltear::EditorInputOps::Routes::ViewportPointer",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "ViewportPointer", "kind": "getter" }
+		},
+		{
+			"id": "GetViewportKeyboard",
+			"cpp": "::Shalltear::EditorInputOps::Routes::ViewportKeyboard",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "ViewportKeyboard", "kind": "getter" }
+		},
+		{
+			"id": "GetHeldGesture",
+			"cpp": "::Shalltear::EditorInputOps::Routes::HeldGesture",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "HeldGesture", "kind": "getter" }
+		},
+		{
+			"id": "GetGameplayInput",
+			"cpp": "::Shalltear::EditorInputOps::Routes::GameplayInput",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "GameplayInput", "kind": "getter" }
+		},
+		{
+			"id": "GetGameplayPointer",
+			"cpp": "::Shalltear::EditorInputOps::Routes::GameplayPointer",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "GameplayPointer", "kind": "getter" }
+		},
+		{
+			"id": "GetPanelKeyboard",
+			"cpp": "::Shalltear::EditorInputOps::Routes::PanelKeyboard",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "PanelKeyboard", "kind": "getter" }
+		},
+		{
+			"id": "GetPanelPointer",
+			"cpp": "::Shalltear::EditorInputOps::Routes::PanelPointer",
+			"returns": "EditorInputOpsRouteNeeds",
+			"params": [],
+			"csharp": { "member": "PanelPointer", "kind": "getter" }
+		}
+	]
+}

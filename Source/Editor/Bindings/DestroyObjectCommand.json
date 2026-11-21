@@ -1,0 +1,31 @@
+{
+	"area": "DestroyObjectCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.DestroyObjectCommand",
+	"instance": "DestroyObjectCommand",
+	"functions": [
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::DestroyObjectCommand(::Shalltear::Handle<::Shalltear::SceneObject>(argument0))",
+			"returns": "DestroyObjectCommand",
+			"params": [{ "name": "argument0", "type": "SceneObject", "optional": true }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

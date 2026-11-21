@@ -1,0 +1,53 @@
+{
+	"area": "AnimatorControllerParameter",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/AnimatorController.h"
+	],
+	"class": "Shalltear.AnimatorControllerParameter",
+	"instance": "AnimatorControllerParameter",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetKind",
+			"cpp": "self->kind",
+			"returns": "AnimatorParameterKind",
+			"params": [],
+			"csharp": { "member": "Kind", "kind": "getter" }
+		},
+		{
+			"id": "SetKind",
+			"cpp": "self->kind = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimatorParameterKind" }],
+			"csharp": { "member": "Kind", "kind": "setter" }
+		},
+		{
+			"id": "GetDefaultValue",
+			"cpp": "self->defaultValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "DefaultValue", "kind": "getter" }
+		},
+		{
+			"id": "SetDefaultValue",
+			"cpp": "self->defaultValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "DefaultValue", "kind": "setter" }
+		}
+	]
+}

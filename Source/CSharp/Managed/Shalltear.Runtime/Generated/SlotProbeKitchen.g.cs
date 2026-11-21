@@ -10,9 +10,6 @@ namespace Shalltear.Interop;
 internal unsafe partial class ProbeKitchen {
 	internal ProbeRecipe Main {
 		get {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeKitchen.Main");
-			}
 			ulong* slots = stackalloc ulong[2];
 			slots[0] = Pointer;
 			int status = Bindings.table.slotProbeKitchenGetMain(slots, slots + 1);
@@ -25,9 +22,6 @@ internal unsafe partial class ProbeKitchen {
 
 	internal ProbeRecipe[] Shelf {
 		get {
-			if (Bridge.OffMainThread) {
-				Bridge.ThrowOffMainThread("ProbeKitchen.Shelf");
-			}
 			ulong* slots = stackalloc ulong[3];
 			slots[0] = Pointer;
 			int status = Bindings.table.slotProbeKitchenGetShelf(slots, slots + 1);

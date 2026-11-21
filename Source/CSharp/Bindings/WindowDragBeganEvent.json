@@ -1,0 +1,40 @@
+{
+	"area": "WindowDragBeganEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowEvents.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowDragBeganEvent",
+	"instance": "WindowDragBeganEvent",
+	"functions": [
+		{
+			"id": "GetWindow",
+			"cpp": "(self->window).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		},
+		{
+			"id": "GetScreenCursorPx",
+			"cpp": "self->screenCursorPx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "ScreenCursorPx", "kind": "getter" }
+		},
+		{
+			"id": "SetScreenCursorPx",
+			"cpp": "self->screenCursorPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "ScreenCursorPx", "kind": "setter" }
+		}
+	]
+}

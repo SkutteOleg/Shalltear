@@ -1,0 +1,35 @@
+{
+	"area": "EditorInsertStripDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorInsertStrips.h",
+		"Shalltear/Core/UI/DragDrop.h"
+	],
+	"class": "Shalltear.Editor.EditorInsertStripDesc",
+	"instance": "EditorInsertStripDesc",
+	"functions": [
+		{
+			"id": "SetOnDragOver",
+			"cpp": "self->onDragOver = value",
+			"returns": "void",
+			"params": [
+				{ "name": "value", "type": "fn<bool;UIDragPayload>", "optional": true, "cpp": "std::function<bool (const Shalltear::UI::DragPayload &)>" }
+			],
+			"csharp": { "member": "SetOnDragOver", "kind": "method" }
+		},
+		{
+			"id": "SetOnDrop",
+			"cpp": "self->onDrop = value",
+			"returns": "void",
+			"params": [
+				{
+					"name": "value",
+					"type": "fn<void;UIDragPayload;Vec2>",
+					"optional": true,
+					"cpp": "std::function<void (const Shalltear::UI::DragPayload &, Shalltear::Vec2Generic<float>)>"
+				}
+			],
+			"csharp": { "member": "SetOnDrop", "kind": "method" }
+		}
+	]
+}

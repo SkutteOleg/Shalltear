@@ -1,0 +1,16 @@
+{
+	"area": "BehaviorTicks",
+	"slots": true,
+	"internal": true,
+	"include": ["Shalltear/Core/Reflection/TypeRegistry.h", "Shalltear/Core/Scene/Behavior.h"],
+	"class": "Shalltear.Interop.BehaviorBindings",
+	"functions": [
+		{
+			"id": "GetTickMask",
+			"cpp": "::Shalltear::TypeRegistry::IsDerivedFrom(behavior->GetType(), ::Shalltear::Behavior::GetReflectType()) ? static_cast<uint32_t>(static_cast<const ::Shalltear::Behavior*>(behavior)->GetTickMask()) : 0u",
+			"returns": "u32",
+			"params": [{ "name": "behavior", "type": "Component" }],
+			"csharp": { "member": "GetTickMask", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,117 @@
+{
+	"area": "PassContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.PassContext",
+	"instance": "PassContext",
+	"functions": [
+		{
+			"id": "DrawProcedural",
+			"cpp": "self->DrawProcedural(::Shalltear::Handle<::Shalltear::ShaderAsset>(shader), pushConstants, vertexCount, instanceCount)",
+			"returns": "bool",
+			"params": [
+				{ "name": "shader", "type": "ShaderAsset", "optional": true },
+				{ "name": "pushConstants", "type": "list<u8>" },
+				{ "name": "vertexCount", "type": "u32" },
+				{ "name": "instanceCount", "type": "u32" }
+			],
+			"csharp": { "member": "DrawProcedural", "kind": "method" }
+		},
+		{
+			"id": "DrawProcedural2",
+			"cpp": "self->DrawProcedural(::Shalltear::Handle<::Shalltear::MaterialAsset>(material), pushConstants, vertexCount, instanceCount)",
+			"returns": "bool",
+			"params": [
+				{ "name": "material", "type": "Material", "optional": true },
+				{ "name": "pushConstants", "type": "list<u8>" },
+				{ "name": "vertexCount", "type": "u32" },
+				{ "name": "instanceCount", "type": "u32" }
+			],
+			"csharp": { "member": "DrawProcedural", "kind": "method" }
+		},
+		{
+			"id": "DrawObjects",
+			"cpp": "self->DrawObjects(renderingLayerMask, ::Shalltear::Handle<::Shalltear::MaterialAsset>(overrideMaterial))",
+			"returns": "bool",
+			"params": [
+				{ "name": "renderingLayerMask", "type": "u32" },
+				{ "name": "overrideMaterial", "type": "Material", "optional": true }
+			],
+			"csharp": { "member": "DrawObjects", "kind": "method" }
+		},
+		{
+			"id": "DrawObjects2",
+			"cpp": "self->DrawObjects(renderingLayerMask, ::Shalltear::Handle<::Shalltear::MaterialAsset>(overrideMaterial), *projection)",
+			"returns": "bool",
+			"params": [
+				{ "name": "renderingLayerMask", "type": "u32" },
+				{ "name": "overrideMaterial", "type": "Material", "optional": true },
+				{ "name": "projection", "type": "Mat4" }
+			],
+			"csharp": { "member": "DrawObjects", "kind": "method" }
+		},
+		{
+			"id": "DrawFullScreen",
+			"cpp": "self->DrawFullScreen(::Shalltear::Handle<::Shalltear::MaterialAsset>(material))",
+			"returns": "bool",
+			"params": [{ "name": "material", "type": "Material", "optional": true }],
+			"csharp": { "member": "DrawFullScreen", "kind": "method" }
+		},
+		{
+			"id": "GetView",
+			"cpp": "self->GetView()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "View", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetProjection",
+			"cpp": "self->GetProjection()",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Projection", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "GetCameraPosition",
+			"cpp": "self->GetCameraPosition()",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "CameraPosition", "kind": "getter" }
+		},
+		{
+			"id": "GetExtent",
+			"cpp": "self->GetExtent()",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Extent", "kind": "getter" }
+		},
+		{
+			"id": "GetSampleCount",
+			"cpp": "self->GetSampleCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SampleCount", "kind": "getter" }
+		},
+		{
+			"id": "GetStep",
+			"cpp": "self->GetStep()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Step", "kind": "getter" }
+		},
+		{
+			"id": "GetStepCount",
+			"cpp": "self->GetStepCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "StepCount", "kind": "getter" }
+		}
+	]
+}

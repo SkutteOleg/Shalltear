@@ -1,0 +1,53 @@
+{
+	"area": "ScreenCaptureResult",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ScreenCapture.h"
+	],
+	"class": "Shalltear.ScreenCaptureResult",
+	"instance": "ScreenCaptureResult",
+	"functions": [
+		{
+			"id": "GetSucceeded",
+			"cpp": "self->succeeded",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Succeeded", "kind": "getter" }
+		},
+		{
+			"id": "SetSucceeded",
+			"cpp": "self->succeeded = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Succeeded", "kind": "setter" }
+		},
+		{
+			"id": "GetPath",
+			"cpp": "self->path",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Path", "kind": "getter" }
+		},
+		{
+			"id": "SetPath",
+			"cpp": "self->path = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Path", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		}
+	]
+}

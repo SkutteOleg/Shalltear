@@ -1,0 +1,96 @@
+{
+	"area": "StringUtil",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/StringUtil.h"
+	],
+	"class": "Shalltear.StringUtil",
+	"functions": [
+		{
+			"id": "Split",
+			"cpp": "::Shalltear::StringUtil::Split(s, delimiter)",
+			"returns": "list<string>",
+			"params": [
+				{ "name": "s", "type": "string" },
+				{ "name": "delimiter", "type": "string" }
+			],
+			"csharp": { "member": "Split", "kind": "method" }
+		},
+		{
+			"id": "Join",
+			"cpp": "::Shalltear::StringUtil::Join(std::vector<str>(parts.begin(), parts.end()), delimiter)",
+			"returns": "string",
+			"params": [
+				{ "name": "parts", "type": "list<string>" },
+				{ "name": "delimiter", "type": "string" }
+			],
+			"csharp": { "member": "Join", "kind": "method" }
+		},
+		{
+			"id": "TrimLeft",
+			"cpp": "::Shalltear::StringUtil::TrimLeft(s)",
+			"returns": "string",
+			"params": [{ "name": "s", "type": "string" }],
+			"csharp": { "member": "TrimLeft", "kind": "method" }
+		},
+		{
+			"id": "TrimRight",
+			"cpp": "::Shalltear::StringUtil::TrimRight(s)",
+			"returns": "string",
+			"params": [{ "name": "s", "type": "string" }],
+			"csharp": { "member": "TrimRight", "kind": "method" }
+		},
+		{
+			"id": "Trim",
+			"cpp": "::Shalltear::StringUtil::Trim(s)",
+			"returns": "string",
+			"params": [{ "name": "s", "type": "string" }],
+			"csharp": { "member": "Trim", "kind": "method" }
+		},
+		{
+			"id": "StartsWith",
+			"cpp": "::Shalltear::StringUtil::StartsWith(s, prefix)",
+			"returns": "bool",
+			"params": [
+				{ "name": "s", "type": "string" },
+				{ "name": "prefix", "type": "string" }
+			],
+			"csharp": { "member": "StartsWith", "kind": "method" }
+		},
+		{
+			"id": "EndsWith",
+			"cpp": "::Shalltear::StringUtil::EndsWith(s, suffix)",
+			"returns": "bool",
+			"params": [
+				{ "name": "s", "type": "string" },
+				{ "name": "suffix", "type": "string" }
+			],
+			"csharp": { "member": "EndsWith", "kind": "method" }
+		},
+		{
+			"id": "ToLower",
+			"cpp": "::Shalltear::StringUtil::ToLower(s)",
+			"returns": "string",
+			"params": [{ "name": "s", "type": "string" }],
+			"csharp": { "member": "ToLower", "kind": "method" }
+		},
+		{
+			"id": "ToUpper",
+			"cpp": "::Shalltear::StringUtil::ToUpper(s)",
+			"returns": "string",
+			"params": [{ "name": "s", "type": "string" }],
+			"csharp": { "member": "ToUpper", "kind": "method" }
+		},
+		{
+			"id": "Replace",
+			"cpp": "::Shalltear::StringUtil::Replace(s, search, replace)",
+			"returns": "string",
+			"params": [
+				{ "name": "s", "type": "string" },
+				{ "name": "search", "type": "string" },
+				{ "name": "replace", "type": "string" }
+			],
+			"csharp": { "member": "Replace", "kind": "method" }
+		}
+	]
+}

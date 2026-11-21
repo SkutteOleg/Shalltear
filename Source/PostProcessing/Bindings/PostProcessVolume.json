@@ -1,0 +1,115 @@
+{
+	"area": "PostProcessVolume",
+	"slots": true,
+	"include": [
+		"Shalltear/PostProcessing/PostProcessVolume.h",
+		"Shalltear/PostProcessing/PostProcessProfile.h"
+	],
+	"class": "Shalltear.PostProcessVolume",
+	"instance": "PostProcessVolume",
+	"types": [
+		{ "name": "PostProcessVolume", "cpp": "::Shalltear::PostProcessVolume", "engine": "PostProcessVolume", "base": "Component" }
+	],
+	"functions": [
+		{
+			"id": "GetEnabledCount",
+			"cpp": "::Shalltear::PostProcessVolume::GetEnabledCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "EnabledCount", "kind": "getter" },
+			"static": true
+		},
+		{
+			"id": "GetEnabled",
+			"cpp": "::Shalltear::PostProcessVolume::GetEnabled(index)",
+			"returns": "PostProcessVolume",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetEnabled", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetIsGlobal",
+			"cpp": "self->isGlobal",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsGlobal", "kind": "getter" }
+		},
+		{
+			"id": "SetIsGlobal",
+			"cpp": "self->isGlobal = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "IsGlobal", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetBlendDistance",
+			"cpp": "self->blendDistance",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BlendDistance", "kind": "getter" }
+		},
+		{
+			"id": "SetBlendDistance",
+			"cpp": "self->blendDistance = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BlendDistance", "kind": "setter" }
+		},
+		{
+			"id": "GetWeight",
+			"cpp": "self->weight",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Weight", "kind": "getter" }
+		},
+		{
+			"id": "SetWeight",
+			"cpp": "self->weight = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Weight", "kind": "setter" }
+		},
+		{
+			"id": "GetPriority",
+			"cpp": "self->priority",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Priority", "kind": "getter" }
+		},
+		{
+			"id": "SetPriority",
+			"cpp": "self->priority = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Priority", "kind": "setter" }
+		},
+		{
+			"id": "GetProfile",
+			"cpp": "self->profile",
+			"returns": "PostProcessProfile",
+			"params": [],
+			"csharp": { "member": "Profile", "kind": "getter" }
+		},
+		{
+			"id": "SetProfile",
+			"cpp": "self->profile = ::Shalltear::Handle<::Shalltear::PostProcessProfile>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PostProcessProfile", "optional": true }],
+			"csharp": { "member": "Profile", "kind": "setter" }
+		}
+	]
+}

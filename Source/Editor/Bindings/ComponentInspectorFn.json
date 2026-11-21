@@ -1,0 +1,48 @@
+{
+	"area": "ComponentInspectorFn",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyDrawers.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.ComponentInspectorFn",
+	"instance": "ComponentInspectorFn",
+	"functions": [
+		{
+			"id": "GetIsSet",
+			"cpp": "static_cast<bool>(*self)",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsSet", "kind": "getter" }
+		},
+		{
+			"id": "Invoke",
+			"cpp": "(*self)(*argument0, argument1, ::Shalltear::Handle<::Shalltear::Component>(argument2))",
+			"returns": "void",
+			"params": [
+				{ "name": "argument0", "type": "UIContext" },
+				{ "name": "argument1", "type": "UIElementHandle" },
+				{ "name": "argument2", "type": "Component", "optional": true }
+			],
+			"csharp": { "member": "Invoke", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::Handle<Shalltear::Component>)>(std::move(handler))",
+			"returns": "ComponentInspectorFn",
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;UIContext;UIElementHandle;Component>",
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle, Shalltear::Handle<Shalltear::Component>)>"
+				}
+			],
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,45 @@
+{
+	"area": "ScriptFunctions",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ScriptFunctions.h"
+	],
+	"class": "Shalltear.ScriptFunctions",
+	"natives": [
+		{ "name": "ScriptFunctionsFound", "cpp": "::Shalltear::ScriptFunctions::Found", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::ScriptFunctions::Register(name, signature, Slots::FromBits<void (*)(uint64_t, const uint64_t *, uint64_t *)>(thunk), context, reinterpret_cast<const void*>(static_cast<uintptr_t>(ownerToken)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "signature", "type": "string" },
+				{ "name": "thunk", "type": "u64" },
+				{ "name": "context", "type": "u64" },
+				{ "name": "ownerToken", "type": "u64" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "FindRaw",
+			"cpp": "::Shalltear::ScriptFunctions::FindRaw(name, &outSignature)",
+			"returns": "ScriptFunctionsFound",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outSignature", "type": "string", "out": true }
+			],
+			"csharp": { "member": "FindRaw", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GetEpoch",
+			"cpp": "::Shalltear::ScriptFunctions::GetEpoch()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Epoch", "kind": "getter" }
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+	"area": "ReflectionProbeBake",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ReflectionProbeBake.h",
+		"Shalltear/Core/Graphics/ReflectionProbe.h"
+	],
+	"class": "Shalltear.Editor.ReflectionProbeBake",
+	"functions": [
+		{
+			"id": "WhyNotBakeable",
+			"cpp": "::Shalltear::ReflectionProbeBake::WhyNotBakeable(::Shalltear::Handle<::Shalltear::ReflectionProbe>(probe))",
+			"returns": "string",
+			"params": [{ "name": "probe", "type": "ReflectionProbe", "optional": true }],
+			"csharp": { "member": "WhyNotBakeable", "kind": "method" }
+		},
+		{
+			"id": "Request",
+			"cpp": "::Shalltear::ReflectionProbeBake::Request(::Shalltear::Handle<::Shalltear::ReflectionProbe>(probe))",
+			"returns": "bool",
+			"params": [{ "name": "probe", "type": "ReflectionProbe", "optional": true }],
+			"csharp": { "member": "Request", "kind": "method" }
+		},
+		{
+			"id": "Drain",
+			"cpp": "::Shalltear::ReflectionProbeBake::Drain()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Drain", "kind": "method" }
+		},
+		{
+			"id": "GetPendingCount",
+			"cpp": "::Shalltear::ReflectionProbeBake::GetPendingCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PendingCount", "kind": "getter" }
+		}
+	]
+}

@@ -1,0 +1,74 @@
+{
+	"area": "AssetBrowserOpsFolderHistory",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AssetBrowserOps.h"
+	],
+	"class": "Shalltear.Editor.AssetBrowserOpsFolderHistory",
+	"instance": "AssetBrowserOpsFolderHistory",
+	"constants": [
+		{ "name": "CAPACITY", "cpp": "::Shalltear::AssetBrowserOps::FolderHistory::CAPACITY", "type": "u32", "value": 50 }
+	],
+	"functions": [
+		{
+			"id": "Visit",
+			"cpp": "self->Visit(folder)",
+			"returns": "void",
+			"params": [{ "name": "folder", "type": "string" }],
+			"csharp": { "member": "Visit", "kind": "method" }
+		},
+		{
+			"id": "PeekBack",
+			"cpp": "self->PeekBack(exists)",
+			"returns": "string",
+			"params": [
+				{ "name": "exists", "type": "fn<bool;string>", "optional": true, "cpp": "std::function<bool (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "PeekBack", "kind": "method" }
+		},
+		{
+			"id": "PeekForward",
+			"cpp": "self->PeekForward(exists)",
+			"returns": "string",
+			"params": [
+				{ "name": "exists", "type": "fn<bool;string>", "optional": true, "cpp": "std::function<bool (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "PeekForward", "kind": "method" }
+		},
+		{
+			"id": "Back",
+			"cpp": "self->Back(exists)",
+			"returns": "string",
+			"params": [
+				{ "name": "exists", "type": "fn<bool;string>", "optional": true, "cpp": "std::function<bool (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "Back", "kind": "method" }
+		},
+		{
+			"id": "Forward",
+			"cpp": "self->Forward(exists)",
+			"returns": "string",
+			"params": [
+				{ "name": "exists", "type": "fn<bool;string>", "optional": true, "cpp": "std::function<bool (std::basic_string_view<char>)>" }
+			],
+			"csharp": { "member": "Forward", "kind": "method" }
+		},
+		{
+			"id": "Remap",
+			"cpp": "self->Remap(from, to)",
+			"returns": "void",
+			"params": [
+				{ "name": "from", "type": "string" },
+				{ "name": "to", "type": "string" }
+			],
+			"csharp": { "member": "Remap", "kind": "method" }
+		},
+		{
+			"id": "Current",
+			"cpp": "self->Current()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Current", "kind": "method" }
+		}
+	]
+}

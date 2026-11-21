@@ -1,0 +1,109 @@
+{
+	"area": "UIDebugOpsMatch",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOpsMatch",
+	"instance": "UIDebugOpsMatch",
+	"functions": [
+		{
+			"id": "GetSheet",
+			"cpp": "self->sheet",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Sheet", "kind": "getter" }
+		},
+		{
+			"id": "SetSheet",
+			"cpp": "self->sheet = Slots::KeepFieldText(self, 0x1575d74d33cb956eull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Sheet", "kind": "setter" }
+		},
+		{
+			"id": "GetSelector",
+			"cpp": "self->selector",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Selector", "kind": "getter" }
+		},
+		{
+			"id": "SetSelector",
+			"cpp": "self->selector = Slots::KeepFieldText(self, 0xd0b687c4b5a3a71aull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Selector", "kind": "setter" }
+		},
+		{
+			"id": "GetBody",
+			"cpp": "self->body",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Body", "kind": "getter" }
+		},
+		{
+			"id": "SetBody",
+			"cpp": "self->body = Slots::KeepFieldText(self, 0x866a78ea2397aa13ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Body", "kind": "setter" }
+		},
+		{
+			"id": "GetRule",
+			"cpp": "self->rule",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Rule", "kind": "getter" }
+		},
+		{
+			"id": "SetRule",
+			"cpp": "self->rule = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Rule", "kind": "setter" }
+		},
+		{
+			"id": "GetSpecificity",
+			"cpp": "self->specificity",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Specificity", "kind": "getter" }
+		},
+		{
+			"id": "SetSpecificity",
+			"cpp": "self->specificity = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "Specificity", "kind": "setter" }
+		},
+		{
+			"id": "GetPseudo",
+			"cpp": "self->pseudo",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "Pseudo", "kind": "getter" }
+		},
+		{
+			"id": "SetPseudo",
+			"cpp": "self->pseudo = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "Pseudo", "kind": "setter" }
+		},
+		{
+			"id": "GetApplies",
+			"cpp": "self->applies",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Applies", "kind": "getter" }
+		},
+		{
+			"id": "SetApplies",
+			"cpp": "self->applies = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Applies", "kind": "setter" }
+		}
+	]
+}

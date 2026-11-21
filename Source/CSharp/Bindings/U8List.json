@@ -1,0 +1,46 @@
+{
+	"area": "U8List",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.U8List",
+	"instance": "U8List",
+	"functions": [
+		{
+			"id": "GetCount",
+			"cpp": "static_cast<int32_t>(self->size())",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "Count", "kind": "getter" }
+		},
+		{
+			"id": "Get",
+			"cpp": "Slots::At(*self, index)",
+			"returns": "u8",
+			"params": [{ "name": "index", "type": "i32" }],
+			"csharp": { "member": "Get", "kind": "method" }
+		},
+		{
+			"id": "Add",
+			"cpp": "self->push_back(item)",
+			"returns": "void",
+			"params": [{ "name": "item", "type": "u8" }],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "self->clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "ToArray",
+			"cpp": "*self",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "ToArray", "kind": "method" }
+		}
+	]
+}

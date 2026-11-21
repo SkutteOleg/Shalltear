@@ -1,0 +1,95 @@
+{
+	"area": "CompileStatusSourceDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CompileStatus.h"
+	],
+	"class": "Shalltear.Editor.CompileStatusSourceDesc",
+	"instance": "CompileStatusSourceDesc",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetGetState",
+			"cpp": "Slots::Bits(self->getState)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "GetState", "kind": "getter" }
+		},
+		{
+			"id": "SetGetState",
+			"cpp": "self->getState = Slots::FromBits<Shalltear::CompileStatus::SourceState (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "GetState", "kind": "setter" }
+		},
+		{
+			"id": "GetCompile",
+			"cpp": "Slots::Bits(self->compile)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Compile", "kind": "getter" }
+		},
+		{
+			"id": "SetCompile",
+			"cpp": "self->compile = Slots::FromBits<void (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Compile", "kind": "setter" }
+		},
+		{
+			"id": "GetReload",
+			"cpp": "Slots::Bits(self->reload)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Reload", "kind": "getter" }
+		},
+		{
+			"id": "SetReload",
+			"cpp": "self->reload = Slots::FromBits<void (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Reload", "kind": "setter" }
+		},
+		{
+			"id": "GetGetHeading",
+			"cpp": "Slots::Bits(self->getHeading)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "GetHeading", "kind": "getter" }
+		},
+		{
+			"id": "SetGetHeading",
+			"cpp": "self->getHeading = Slots::FromBits<std::basic_string<char> (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "GetHeading", "kind": "setter" }
+		},
+		{
+			"id": "GetUser",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->user))",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "User", "kind": "getter" }
+		},
+		{
+			"id": "SetUser",
+			"cpp": "self->user = reinterpret_cast<void*>(static_cast<uintptr_t>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "User", "kind": "setter" }
+		}
+	]
+}

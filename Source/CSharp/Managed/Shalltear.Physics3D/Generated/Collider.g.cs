@@ -24,6 +24,12 @@ public abstract partial class Collider : Component {
 	private protected Collider() {}
 }
 
+internal sealed class OpaqueCollider : Collider {
+	internal OpaqueCollider(ulong id) {
+		_id = id;
+	}
+}
+
 public unsafe partial class Collider {
 	/// <summary>Reports overlaps (no collisions).</summary>
 	public bool IsTrigger {

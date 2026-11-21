@@ -1,0 +1,74 @@
+{
+	"area": "GradientEditor",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GradientEditor.h",
+		"Shalltear/Core/Math/Gradient.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.Editor.GradientEditor",
+	"functions": [
+		{
+			"id": "AddKey",
+			"cpp": "::Shalltear::GradientEditor::AddKey(*gradient, alpha, time)",
+			"returns": "i32",
+			"params": [
+				{ "name": "gradient", "type": "Gradient" },
+				{ "name": "alpha", "type": "bool" },
+				{ "name": "time", "type": "f32" }
+			],
+			"csharp": { "member": "AddKey", "kind": "method" }
+		},
+		{
+			"id": "MoveKey",
+			"cpp": "::Shalltear::GradientEditor::MoveKey(*gradient, alpha, index, time)",
+			"returns": "i32",
+			"params": [
+				{ "name": "gradient", "type": "Gradient" },
+				{ "name": "alpha", "type": "bool" },
+				{ "name": "index", "type": "i32" },
+				{ "name": "time", "type": "f32" }
+			],
+			"csharp": { "member": "MoveKey", "kind": "method" }
+		},
+		{
+			"id": "RemoveKey",
+			"cpp": "::Shalltear::GradientEditor::RemoveKey(*gradient, alpha, index)",
+			"returns": "bool",
+			"params": [
+				{ "name": "gradient", "type": "Gradient" },
+				{ "name": "alpha", "type": "bool" },
+				{ "name": "index", "type": "i32" }
+			],
+			"csharp": { "member": "RemoveKey", "kind": "method" }
+		},
+		{
+			"id": "PaintPreview",
+			"cpp": "::Shalltear::GradientEditor::PaintPreview(*context, part, *paint, *gradient)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "part", "type": "UIElementHandle" },
+				{ "name": "paint", "type": "UIPaintScope" },
+				{ "name": "gradient", "type": "Gradient" }
+			],
+			"csharp": { "member": "PaintPreview", "kind": "method" }
+		},
+		{
+			"id": "Open",
+			"cpp": "::Shalltear::GradientEditor::Open(*context, anchor, *gradient, onChange, onEditBegin, onEditEnd)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "anchor", "type": "UIElementHandle" },
+				{ "name": "gradient", "type": "Gradient" },
+				{ "name": "onChange", "type": "fn<void;Gradient>", "optional": true, "cpp": "std::function<void (const Shalltear::Gradient &)>" },
+				{ "name": "onEditBegin", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" },
+				{ "name": "onEditEnd", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "Open", "kind": "method" }
+		}
+	]
+}

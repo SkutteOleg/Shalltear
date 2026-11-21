@@ -1,0 +1,69 @@
+{
+	"area": "SceneIconPlacement",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorGizmos.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Editor.SceneIconPlacement",
+	"instance": "SceneIconPlacement",
+	"functions": [
+		{
+			"id": "GetObject",
+			"cpp": "self->object",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Object", "kind": "getter" }
+		},
+		{
+			"id": "SetObject",
+			"cpp": "self->object = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Object", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetCenterPx",
+			"cpp": "self->centerPx",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "CenterPx", "kind": "getter" }
+		},
+		{
+			"id": "SetCenterPx",
+			"cpp": "self->centerPx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "CenterPx", "kind": "setter" }
+		},
+		{
+			"id": "GetSortDepth",
+			"cpp": "self->sortDepth",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SortDepth", "kind": "getter" }
+		},
+		{
+			"id": "SetSortDepth",
+			"cpp": "self->sortDepth = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SortDepth", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,151 @@
+{
+	"area": "PropertyRows",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/PropertyRows.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/Reflection/TypeRegistry.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.PropertyRows",
+	"enums": [
+		{
+			"name": "PropertyRowsScalarRowKind",
+			"cpp": "::Shalltear::PropertyRows::ScalarRow::Kind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "ReadOnlyText", "value": 1 },
+				{ "name": "Checkbox", "value": 2 },
+				{ "name": "NumberField", "value": 3 },
+				{ "name": "Slider", "value": 4 },
+				{ "name": "TextField", "value": 5 },
+				{ "name": "Dropdown", "value": 6 },
+				{ "name": "IntegerField", "value": 7 }
+			]
+		},
+		{
+			"name": "PropertyRowsCommittedValueKind",
+			"cpp": "::Shalltear::PropertyRows::CommittedValue::Kind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Number", "value": 0 },
+				{ "name": "Bool", "value": 1 },
+				{ "name": "Text", "value": 2 },
+				{ "name": "RawBits", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "PropertyRowsValueAccess", "cpp": "::Shalltear::PropertyRows::ValueAccess", "owned": true, "create": true },
+		{ "name": "PropertyRowsScalarRow", "cpp": "::Shalltear::PropertyRows::ScalarRow", "owned": true, "create": true },
+		{ "name": "PropertyRowsCommittedValue", "cpp": "::Shalltear::PropertyRows::CommittedValue", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "NameIs",
+			"cpp": "::Shalltear::PropertyRows::NameIs(type, str(name).c_str())",
+			"returns": "bool",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "NameIs", "kind": "method" }
+		},
+		{
+			"id": "IsNumeric",
+			"cpp": "::Shalltear::PropertyRows::IsNumeric(type)",
+			"returns": "bool",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "IsNumeric", "kind": "method" }
+		},
+		{
+			"id": "IsIntegral",
+			"cpp": "::Shalltear::PropertyRows::IsIntegral(type)",
+			"returns": "bool",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "IsIntegral", "kind": "method" }
+		},
+		{
+			"id": "ReadNumber",
+			"cpp": "::Shalltear::PropertyRows::ReadNumber(type, reinterpret_cast<const void*>(static_cast<uintptr_t>(address)), outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "address", "type": "u64" },
+				{ "name": "outValue", "type": "f64", "out": true }
+			],
+			"csharp": { "member": "ReadNumber", "kind": "method" }
+		},
+		{
+			"id": "WriteNumber",
+			"cpp": "::Shalltear::PropertyRows::WriteNumber(type, reinterpret_cast<void*>(static_cast<uintptr_t>(address)), valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "type", "type": "TypeInfo", "optional": true },
+				{ "name": "address", "type": "u64" },
+				{ "name": "valueValue", "type": "f64" }
+			],
+			"csharp": { "member": "WriteNumber", "kind": "method" }
+		},
+		{
+			"id": "ReadRawBits",
+			"cpp": "::Shalltear::PropertyRows::ReadRawBits(*field, reinterpret_cast<const void*>(static_cast<uintptr_t>(address)))",
+			"returns": "u64",
+			"params": [
+				{ "name": "field", "type": "FieldInfo" },
+				{ "name": "address", "type": "u64" }
+			],
+			"csharp": { "member": "ReadRawBits", "kind": "method" }
+		},
+		{
+			"id": "IsScalarField",
+			"cpp": "::Shalltear::PropertyRows::IsScalarField(*field)",
+			"returns": "bool",
+			"params": [{ "name": "field", "type": "FieldInfo" }],
+			"csharp": { "member": "IsScalarField", "kind": "method" }
+		},
+		{
+			"id": "FieldLabel",
+			"cpp": "::Shalltear::PropertyRows::FieldLabel(*field)",
+			"returns": "string",
+			"params": [{ "name": "field", "type": "FieldInfo" }],
+			"csharp": { "member": "FieldLabel", "kind": "method" }
+		},
+		{
+			"id": "MakeDisabled",
+			"cpp": "::Shalltear::PropertyRows::MakeDisabled(*context, element)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "MakeDisabled", "kind": "method" }
+		},
+		{
+			"id": "Build",
+			"cpp": "::Shalltear::PropertyRows::Build(*context, row, *field, *access)",
+			"returns": "PropertyRowsScalarRow",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "row", "type": "UIElementHandle" },
+				{ "name": "field", "type": "FieldRef" },
+				{ "name": "access", "type": "PropertyRowsValueAccess" }
+			],
+			"csharp": { "member": "Build", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "Refresh",
+			"cpp": "::Shalltear::PropertyRows::Refresh(*context, *row)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "row", "type": "PropertyRowsScalarRow" }
+			],
+			"csharp": { "member": "Refresh", "kind": "method" }
+		}
+	]
+}

@@ -129,6 +129,7 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpEditor::EditorTestHooks* Shallt
 		&CSharpScripts::IsValidName,
 		&CSharpScripts::Create,
 		&ManagedCodeGate::Scan,
+		&EditorBindings::Register,
 		HostFxr::GetMuxerName().data(),
 		HostFxr::GetLibraryName().data(),
 	};

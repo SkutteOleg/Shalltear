@@ -1,0 +1,61 @@
+{
+	"area": "PrimitiveMesh",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/PrimitiveMesh.h",
+		"Shalltear/Core/Graphics/MeshAsset.h"
+	],
+	"class": "Shalltear.PrimitiveMesh",
+	"enums": [
+		{
+			"name": "PrimitiveShape",
+			"cpp": "::Shalltear::PrimitiveShape",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Cube", "value": 0 },
+				{ "name": "Sphere", "value": 1 },
+				{ "name": "Plane", "value": 2 },
+				{ "name": "Quad", "value": 3 },
+				{ "name": "Cylinder", "value": 4 },
+				{ "name": "Capsule", "value": 5 },
+				{ "name": "Count", "value": 6 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "PrimitiveShapeName",
+			"cpp": "::Shalltear::PrimitiveShapeName(shape)",
+			"returns": "string",
+			"params": [{ "name": "shape", "type": "PrimitiveShape" }],
+			"csharp": { "member": "PrimitiveShapeName", "kind": "method" }
+		},
+		{
+			"id": "ParsePrimitiveShape",
+			"cpp": "::Shalltear::ParsePrimitiveShape(name, outShape)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outShape", "type": "PrimitiveShape", "out": true }
+			],
+			"csharp": { "member": "ParsePrimitiveShape", "kind": "method" }
+		},
+		{
+			"id": "BuildPrimitiveMesh",
+			"cpp": "::Shalltear::BuildPrimitiveMesh(shape, *outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "shape", "type": "PrimitiveShape" },
+				{ "name": "outValue", "type": "Mesh" }
+			],
+			"csharp": { "member": "BuildPrimitiveMesh", "kind": "method" }
+		},
+		{
+			"id": "GetPrimitiveMeshPath",
+			"cpp": "::Shalltear::GetPrimitiveMeshPath(shape)",
+			"returns": "string",
+			"params": [{ "name": "shape", "type": "PrimitiveShape" }],
+			"csharp": { "member": "GetPrimitiveMeshPath", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,67 @@
+{
+	"area": "RHIComputePipelineDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHIComputePipelineDesc",
+	"instance": "RHIComputePipelineDesc",
+	"functions": [
+		{
+			"id": "GetSpirv",
+			"cpp": "self->spirv",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Spirv", "kind": "getter" }
+		},
+		{
+			"id": "SetSpirv",
+			"cpp": "self->spirv = Slots::KeepFieldSpan(self, 0x6233f92bb1ccdf3eull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Spirv", "kind": "setter" }
+		},
+		{
+			"id": "GetBindingsField",
+			"cpp": "self->bindings",
+			"returns": "list<RHIDescriptorBindingDesc>",
+			"params": [],
+			"csharp": { "member": "BindingsField", "kind": "getter" }
+		},
+		{
+			"id": "SetBindingsField",
+			"cpp": "self->bindings = Slots::KeepFieldSpan(self, 0x7872b2c0c1458986ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RHIDescriptorBindingDesc>" }],
+			"csharp": { "member": "BindingsField", "kind": "setter" }
+		},
+		{
+			"id": "GetPushConstantSize",
+			"cpp": "self->pushConstantSize",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "PushConstantSize", "kind": "getter" }
+		},
+		{
+			"id": "SetPushConstantSize",
+			"cpp": "self->pushConstantSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "PushConstantSize", "kind": "setter" }
+		},
+		{
+			"id": "GetDebugName",
+			"cpp": "self->debugName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DebugName", "kind": "getter" }
+		},
+		{
+			"id": "SetDebugName",
+			"cpp": "self->debugName = Slots::KeepFieldText(self, 0xaf09c24728342514ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DebugName", "kind": "setter" }
+		}
+	]
+}

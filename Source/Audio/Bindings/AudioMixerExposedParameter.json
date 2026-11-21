@@ -1,0 +1,81 @@
+{
+	"area": "AudioMixerExposedParameter",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMixer.h"
+	],
+	"class": "Shalltear.AudioMixerExposedParameter",
+	"instance": "AudioMixerExposedParameter",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetGroup",
+			"cpp": "self->group",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Group", "kind": "getter" }
+		},
+		{
+			"id": "SetGroup",
+			"cpp": "self->group = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Group", "kind": "setter" }
+		},
+		{
+			"id": "GetParameter",
+			"cpp": "self->parameter",
+			"returns": "AudioMixerParameter",
+			"params": [],
+			"csharp": { "member": "Parameter", "kind": "getter" }
+		},
+		{
+			"id": "SetParameter",
+			"cpp": "self->parameter = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AudioMixerParameter" }],
+			"csharp": { "member": "Parameter", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetEffectParameter",
+			"cpp": "self->effectParameter",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "EffectParameter", "kind": "getter" }
+		},
+		{
+			"id": "SetEffectParameter",
+			"cpp": "self->effectParameter = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "EffectParameter", "kind": "setter" }
+		}
+	]
+}

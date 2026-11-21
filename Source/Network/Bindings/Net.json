@@ -1,0 +1,26 @@
+{
+	"area": "Net",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/TLS.h"
+	],
+	"class": "Shalltear.Net",
+	"natives": [
+		{ "name": "NetTLSIdentity", "cpp": "::Shalltear::Net::TLSIdentity" },
+		{ "name": "NetTLSIdentityData", "cpp": "::Shalltear::Net::TLSIdentityData" },
+		{ "name": "NetTLSStream", "cpp": "::Shalltear::Net::TLSStream", "owned": true },
+		{ "name": "NetTLSOptions", "cpp": "::Shalltear::Net::TLSOptions", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "ParseCertificateHash",
+			"cpp": "::Shalltear::Net::ParseCertificateHash(hex, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "hex", "type": "string" },
+				{ "name": "outValue", "type": "list<u8>", "out": true, "cpp": "std::array<unsigned char, 32>" }
+			],
+			"csharp": { "member": "ParseCertificateHash", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,174 @@
+{
+	"area": "SettingsOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SettingsOps.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/Settings.h"
+	],
+	"class": "Shalltear.Editor.SettingsOps",
+	"natives": [{ "name": "SettingsOpsTreeNode", "cpp": "::Shalltear::SettingsOps::TreeNode", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "BuildTree",
+			"cpp": "::Shalltear::SettingsOps::BuildTree(search, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "search", "type": "string" },
+				{ "name": "outValue", "type": "list<SettingsOpsTreeNode>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::SettingsOps::TreeNode>" }
+			],
+			"csharp": { "member": "BuildTree", "kind": "method" }
+		},
+		{
+			"id": "CategoryMatches",
+			"cpp": "::Shalltear::SettingsOps::CategoryMatches(search, categoryPath)",
+			"returns": "bool",
+			"params": [
+				{ "name": "search", "type": "string" },
+				{ "name": "categoryPath", "type": "string" }
+			],
+			"csharp": { "member": "CategoryMatches", "kind": "method" }
+		},
+		{
+			"id": "ScopeName",
+			"cpp": "::Shalltear::SettingsOps::ScopeName(scope)",
+			"returns": "string",
+			"params": [{ "name": "scope", "type": "SettingScope" }],
+			"csharp": { "member": "ScopeName", "kind": "method" }
+		},
+		{
+			"id": "ScopeDescription",
+			"cpp": "::Shalltear::SettingsOps::ScopeDescription(scope)",
+			"returns": "string",
+			"params": [{ "name": "scope", "type": "SettingScope" }],
+			"csharp": { "member": "ScopeDescription", "kind": "method" }
+		},
+		{
+			"id": "SourceBadge",
+			"cpp": "::Shalltear::SettingsOps::SourceBadge(state)",
+			"returns": "string",
+			"params": [{ "name": "state", "type": "SettingFieldState" }],
+			"csharp": { "member": "SourceBadge", "kind": "method" }
+		},
+		{
+			"id": "SourceBadgeDescription",
+			"cpp": "::Shalltear::SettingsOps::SourceBadgeDescription(state)",
+			"returns": "string",
+			"params": [{ "name": "state", "type": "SettingFieldState" }],
+			"csharp": { "member": "SourceBadgeDescription", "kind": "method" }
+		},
+		{
+			"id": "ScopePrecedenceHint",
+			"cpp": "::Shalltear::SettingsOps::ScopePrecedenceHint()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ScopePrecedenceHint", "kind": "method" }
+		},
+		{
+			"id": "AudienceLine",
+			"cpp": "::Shalltear::SettingsOps::AudienceLine(categoryPath)",
+			"returns": "string",
+			"params": [{ "name": "categoryPath", "type": "string" }],
+			"csharp": { "member": "AudienceLine", "kind": "method" }
+		},
+		{
+			"id": "AnyFieldTakesEffectOnRestart",
+			"cpp": "::Shalltear::SettingsOps::AnyFieldTakesEffectOnRestart(*category)",
+			"returns": "bool",
+			"params": [{ "name": "category", "type": "SettingsCategoryInfo" }],
+			"csharp": { "member": "AnyFieldTakesEffectOnRestart", "kind": "method" }
+		},
+		{
+			"id": "RestartLine",
+			"cpp": "::Shalltear::SettingsOps::RestartLine(categoryPath)",
+			"returns": "string",
+			"params": [{ "name": "categoryPath", "type": "string" }],
+			"csharp": { "member": "RestartLine", "kind": "method" }
+		},
+		{
+			"id": "IsFieldShown",
+			"cpp": "::Shalltear::SettingsOps::IsFieldShown(*category, *field)",
+			"returns": "bool",
+			"params": [
+				{ "name": "category", "type": "SettingsCategoryInfo" },
+				{ "name": "field", "type": "FieldInfo" }
+			],
+			"csharp": { "member": "IsFieldShown", "kind": "method" }
+		},
+		{
+			"id": "MutabilityBadge",
+			"cpp": "::Shalltear::SettingsOps::MutabilityBadge(mutability)",
+			"returns": "string",
+			"params": [{ "name": "mutability", "type": "MutabilityClass" }],
+			"csharp": { "member": "MutabilityBadge", "kind": "method" }
+		},
+		{
+			"id": "MutabilityLine",
+			"cpp": "::Shalltear::SettingsOps::MutabilityLine(mutability)",
+			"returns": "string",
+			"params": [{ "name": "mutability", "type": "MutabilityClass" }],
+			"csharp": { "member": "MutabilityLine", "kind": "method" }
+		},
+		{
+			"id": "FieldMutabilityBadge",
+			"cpp": "::Shalltear::SettingsOps::FieldMutabilityBadge(*field)",
+			"returns": "string",
+			"params": [{ "name": "field", "type": "FieldInfo" }],
+			"csharp": { "member": "FieldMutabilityBadge", "kind": "method" }
+		},
+		{
+			"id": "FieldMutabilityLine",
+			"cpp": "::Shalltear::SettingsOps::FieldMutabilityLine(*field)",
+			"returns": "string",
+			"params": [{ "name": "field", "type": "FieldInfo" }],
+			"csharp": { "member": "FieldMutabilityLine", "kind": "method" }
+		},
+		{
+			"id": "FieldLabelFor",
+			"cpp": "::Shalltear::SettingsOps::FieldLabelFor(categoryPath, *field)",
+			"returns": "string",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "field", "type": "FieldInfo" }
+			],
+			"csharp": { "member": "FieldLabelFor", "kind": "method" }
+		},
+		{
+			"id": "FieldTooltipFor",
+			"cpp": "::Shalltear::SettingsOps::FieldTooltipFor(categoryPath, *field)",
+			"returns": "string",
+			"params": [
+				{ "name": "categoryPath", "type": "string" },
+				{ "name": "field", "type": "FieldInfo" }
+			],
+			"csharp": { "member": "FieldTooltipFor", "kind": "method" }
+		},
+		{
+			"id": "MigrateLegacyEngineIni",
+			"cpp": "::Shalltear::SettingsOps::MigrateLegacyEngineIni(::Shalltear::Path(str(legacyFile)), ::Shalltear::Path(str(projectDocument)))",
+			"returns": "u32",
+			"params": [
+				{ "name": "legacyFile", "type": "string" },
+				{ "name": "projectDocument", "type": "string" }
+			],
+			"csharp": { "member": "MigrateLegacyEngineIni", "kind": "method" }
+		},
+		{
+			"id": "ListProjectQualityProfiles",
+			"cpp": "::Shalltear::SettingsOps::ListProjectQualityProfiles()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ListProjectQualityProfiles", "kind": "method" }
+		},
+		{
+			"id": "CollectSettingsAssetRoots",
+			"cpp": "::Shalltear::SettingsOps::CollectSettingsAssetRoots(outValue)",
+			"returns": "u32",
+			"params": [
+				{ "name": "outValue", "type": "list<EngineGuid>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Guid>" }
+			],
+			"csharp": { "member": "CollectSettingsAssetRoots", "kind": "method" }
+		}
+	]
+}

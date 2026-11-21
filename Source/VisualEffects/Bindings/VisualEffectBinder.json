@@ -1,0 +1,68 @@
+{
+	"area": "VisualEffectBinder",
+	"slots": true,
+	"include": [
+		"Shalltear/VisualEffects/VisualEffectBinder.h",
+		"Shalltear/VisualEffects/VisualEffect.h"
+	],
+	"class": "Shalltear.VisualEffectBinder",
+	"instance": "VisualEffectBinder",
+	"types": [
+		{ "name": "VisualEffectBinder", "cpp": "::Shalltear::VisualEffectBinder", "engine": "VisualEffectBinder", "base": "Component", "abstract": true },
+		{ "name": "VisualEffectPositionBinder", "cpp": "::Shalltear::VisualEffectPositionBinder", "engine": "VisualEffectPositionBinder", "base": "Component" },
+		{
+			"name": "VisualEffectPreviousPositionBinder",
+			"cpp": "::Shalltear::VisualEffectPreviousPositionBinder",
+			"engine": "VisualEffectPreviousPositionBinder",
+			"base": "Component"
+		},
+		{ "name": "VisualEffectVelocityBinder", "cpp": "::Shalltear::VisualEffectVelocityBinder", "engine": "VisualEffectVelocityBinder", "base": "Component" },
+		{
+			"name": "VisualEffectTransformBinder",
+			"cpp": "::Shalltear::VisualEffectTransformBinder",
+			"engine": "VisualEffectTransformBinder",
+			"base": "Component"
+		},
+		{ "name": "VisualEffectEnabledBinder", "cpp": "::Shalltear::VisualEffectEnabledBinder", "engine": "VisualEffectEnabledBinder", "base": "Component" }
+	],
+	"enums": [
+		{
+			"name": "VisualEffectBinderSpace",
+			"cpp": "::Shalltear::VisualEffectBinderSpace",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Automatic", "value": 0 },
+				{ "name": "World", "value": 1 },
+				{ "name": "Local", "value": 2 }
+			]
+		},
+		{
+			"name": "VisualEffectEnabledCheck",
+			"cpp": "::Shalltear::VisualEffectEnabledCheck",
+			"underlying": "u8",
+			"values": [
+				{ "name": "ActiveInHierarchy", "value": 0 },
+				{ "name": "ActiveSelf", "value": 1 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid(*effect)",
+			"returns": "bool",
+			"params": [{ "name": "effect", "type": "VisualEffect" }],
+			"csharp": { "member": "IsValid", "kind": "method" }
+		},
+		{
+			"id": "UpdateBinding",
+			"cpp": "self->UpdateBinding(*effect, deltaTime)",
+			"returns": "void",
+			"params": [
+				{ "name": "effect", "type": "VisualEffect" },
+				{ "name": "deltaTime", "type": "f32" }
+			],
+			"csharp": { "member": "UpdateBinding", "kind": "method" }
+		}
+	]
+}

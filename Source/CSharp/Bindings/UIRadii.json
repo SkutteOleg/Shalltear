@@ -1,0 +1,26 @@
+{
+	"area": "UIRadii",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIRadii",
+	"instance": "UIRadii",
+	"functions": [
+		{
+			"id": "All",
+			"cpp": "::Shalltear::UI::Radii::All(v)",
+			"returns": "UIRadii",
+			"params": [{ "name": "v", "type": "f32" }],
+			"csharp": { "member": "All", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "IsZero",
+			"cpp": "self->IsZero()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsZero", "kind": "getter" }
+		}
+	]
+}

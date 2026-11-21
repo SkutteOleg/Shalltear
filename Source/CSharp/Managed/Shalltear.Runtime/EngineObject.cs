@@ -39,7 +39,11 @@ public abstract class EngineObject {
 		return _id.GetHashCode();
 	}
 
-	bool IsAlive => _id != 0 && ObjectBindings.IsAlive(_id);
+	/// <summary>False once destroyed by engine.</summary>
+	public bool IsAlive => _id != 0 && ObjectBindings.IsAlive(_id);
+
+	/// <summary>Id of the engine object (as Object::GetInstanceId in C++).</summary>
+	public ulong InstanceId => _id;
 }
 
 /// <summary>Thrown when a member of a destroyed object is used.</summary>

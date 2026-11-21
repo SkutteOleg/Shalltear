@@ -1,0 +1,10 @@
+{
+	"area": "InputAction",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Input/InputAction.h"
+	],
+	"class": "Shalltear.InputAction",
+	"constants": [{ "name": "INVALID_ACTION_ID", "cpp": "::Shalltear::INVALID_ACTION_ID", "type": "u32", "value": 4294967295 }],
+	"functions": []
+}

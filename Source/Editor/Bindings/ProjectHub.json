@@ -1,0 +1,161 @@
+{
+	"area": "ProjectHub",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ProjectHub.h",
+		"Shalltear/Editor/EditorPanel.h",
+		"Shalltear/Editor/ProjectOps.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/Window/WindowEvents.h"
+	],
+	"class": "Shalltear.Editor.ProjectHub",
+	"instance": "ProjectHub",
+	"natives": [{ "name": "ProjectHub", "cpp": "::Shalltear::ProjectHub", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Refresh",
+			"cpp": "self->Refresh()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Refresh", "kind": "method" }
+		},
+		{
+			"id": "SetFilter",
+			"cpp": "self->SetFilter(str(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Filter", "kind": "setter" }
+		},
+		{
+			"id": "GetFilter",
+			"cpp": "self->GetFilter()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Filter", "kind": "getter" }
+		},
+		{
+			"id": "Select",
+			"cpp": "self->Select(str(projectPath))",
+			"returns": "void",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "Select", "kind": "method" }
+		},
+		{
+			"id": "GetSelectedPath",
+			"cpp": "self->GetSelectedPath()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SelectedPath", "kind": "getter" }
+		},
+		{
+			"id": "Choose",
+			"cpp": "self->Choose(str(projectPath))",
+			"returns": "void",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "Choose", "kind": "method" }
+		},
+		{
+			"id": "GetChosenPath",
+			"cpp": "self->GetChosenPath()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ChosenPath", "kind": "getter" }
+		},
+		{
+			"id": "OnCommand",
+			"cpp": "self->OnCommand(command)",
+			"returns": "bool",
+			"params": [{ "name": "command", "type": "PanelCommand" }],
+			"csharp": { "member": "OnCommand", "kind": "method" }
+		},
+		{
+			"id": "GetEntries",
+			"cpp": "self->GetEntries()",
+			"returns": "list<ProjectOpsProjectEntry>",
+			"params": [],
+			"csharp": { "member": "Entries", "kind": "getter" }
+		},
+		{
+			"id": "GetVisibleCount",
+			"cpp": "self->GetVisibleCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "VisibleCount", "kind": "getter" }
+		},
+		{
+			"id": "GetDefaultLocation",
+			"cpp": "self->GetDefaultLocation()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultLocation", "kind": "getter" }
+		},
+		{
+			"id": "CreateAndAdd",
+			"cpp": "self->CreateAndAdd(str(parentDirectory), str(name), includeCppModule, std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(optInPackages)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "parentDirectory", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "includeCppModule", "type": "bool" },
+				{ "name": "optInPackages", "type": "list<string>" }
+			],
+			"csharp": { "member": "CreateAndAdd", "kind": "method" }
+		},
+		{
+			"id": "AddExisting",
+			"cpp": "self->AddExisting(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "AddExisting", "kind": "method" }
+		},
+		{
+			"id": "Remove",
+			"cpp": "self->Remove(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "Remove", "kind": "method" }
+		},
+		{
+			"id": "DeleteFromDisk",
+			"cpp": "self->DeleteFromDisk(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "DeleteFromDisk", "kind": "method" }
+		},
+		{
+			"id": "BuildContent",
+			"cpp": "self->BuildContent(*context, root)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "root", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "BuildContent", "kind": "method" }
+		},
+		{
+			"id": "OnCloseRequested",
+			"cpp": "self->OnCloseRequested(*eventValue)",
+			"returns": "void",
+			"params": [{ "name": "eventValue", "type": "WindowCloseRequestedEvent" }],
+			"csharp": { "member": "OnCloseRequested", "kind": "method" }
+		},
+		{
+			"id": "OnWindowDestroyed",
+			"cpp": "self->OnWindowDestroyed(eventValue)",
+			"returns": "void",
+			"params": [{ "name": "eventValue", "type": "WindowDestroyedEvent" }],
+			"csharp": { "member": "OnWindowDestroyed", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::ProjectHub(::Shalltear::Path(str(registryPath)))",
+			"returns": "ProjectHub",
+			"params": [{ "name": "registryPath", "type": "string" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

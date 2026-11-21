@@ -457,6 +457,32 @@ class BindingsTest(unittest.TestCase):
 		found[0] = bindings.BindingSet("", core, self.directory / "native", self.directory / "managed")
 		return found
 
+	def test_native_fields_cross_on_any_thread(self):
+		recipe = {"name": "Recipe", "cpp": "::Game::Recipe", "owned": True}
+		weight = {"id": "GetWeight", "cpp": "self->weight", "returns": "f32", "params": [], "csharp": {"member": "Weight", "kind": "getter"}}
+		weigh = {"id": "SetWeight", "cpp": "self->weight = value", "returns": "void", "params": [{"name": "value", "type": "f32"}],
+				 "csharp": {"member": "Weight", "kind": "setter"}}
+		cook = {"id": "Cook", "cpp": "self->Cook()", "returns": "void", "params": [], "csharp": {"member": "Cook", "kind": "method"}}
+		chef = {"id": "GetChef", "cpp": "self->chef", "returns": "SceneObject", "params": [], "csharp": {"member": "Chef", "kind": "getter"}}
+		size = {"id": "GetSize", "cpp": "self->items.size()", "returns": "u64", "params": [], "csharp": {"member": "Size", "kind": "getter"}}
+		pinned = dict(weight, id="GetHeat", thread="main", csharp={"member": "Heat", "kind": "getter"})
+		area = bindings.parse_area(self.write([weight, weigh, cook, chef, size, pinned], slots=True, natives=[recipe], instance="Recipe",
+											  **{"class": "Shalltear.Recipe"}))
+		self.assertEqual([True, True, False, False, False, False], [function.any_thread for function in area.functions[:6]])
+		managed = bindings.render_managed_area(area)
+		self.assertNotIn('ThrowOffMainThread("Recipe.Weight")', managed)
+		self.assertIn('ThrowOffMainThread("Recipe.Cook")', managed)
+		self.assertIn('ThrowOffMainThread("Recipe.Chef")', managed)
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\tint32_t GameGetWeight(const uint64_t* arguments, uint64_t* results) noexcept {\n\t\t\treturn ScriptRuntime::Guard([&] {\n", native)
+		self.assertIn("\t\t\t\tself->Cook();\n\t\t\t});\n\t\t\tManagedTypes::FlushDirty();\n", native)
+
+	def test_package_test_area_stubs_its_table(self):
+		sets = self.package_sets([GETTER], test=True)
+		files = bindings.render_sets(bindings.load_sets(sets), 7)
+		thunks = files[sets[1].native / "Game.generated.cpp"]
+		self.assertIn("#else\n\nnamespace Shalltear::CSharpImpl::Generated {\n\n\tvoid FillGameBindings(SltGameBindings&) {}\n", thunks)
+
 	def test_package_set_gets_its_table(self):
 		sets = self.package_sets([GETTER, SETTER])
 		core, game = sets
@@ -516,7 +542,8 @@ class BindingsTest(unittest.TestCase):
 					  bindings.render_managed_area(derived))
 		self.assertIn("\t\t\t::Game::Shape* const self = ResolveObject<::Game::Shape>(selfId);\n", bindings.render_native_area(base))
 		wrappers = bindings.render_managed_wrappers([derived, base])
-		self.assertIn("\t\tWrap(Box.ENGINE_TYPE, static id => new Box(id));\n\t\tDeclare<Shape>(Shape.ENGINE_TYPE);\n", wrappers)
+		self.assertIn("\t\tWrap(Box.ENGINE_TYPE, static id => new Box(id));\n\t\tWrap<Shape>(Shape.ENGINE_TYPE, static id => new OpaqueShape(id));\n", wrappers)
+		self.assertIn("internal sealed class OpaqueShape : Shape {\n\tinternal OpaqueShape(ulong id) {\n\t\t_id = id;\n\t}\n}\n", bindings.render_managed_area(base))
 		self.assertEqual("Game.json: Lid: 'base' is 'Box'. Use EngineObject, Asset, Component or an abstract type",
 						 self.refusal([GETTER], types=[box, shape, dict(box, name="Lid", base="Box")]))
 
@@ -610,14 +637,16 @@ class BindingsTest(unittest.TestCase):
 		self.assertIn("\t\t\t\tSlots::KeepList<::Game::Shape>(results, ::Game::Mix(*recipe, parts, names));\n", native)
 		self.assertIn("\t\t\t\tresults[0] = Slots::Box<::Game::Recipe>(::Game::Make());\n", native)
 		self.assertIn("\t\tint32_t GameRecipeNew([[maybe_unused]] const uint64_t* arguments, uint64_t* results) noexcept {\n", native)
-		self.assertIn("\t\t\t\tDelete(target);\n", native)
+		self.assertIn("\t\t\t\tSlots::ForgetFields(target), delete target;\n", native)
+		self.assertIn("\t\t\t\tresults[0] = Slots::Pointer<::Game::Recipe>(new ::Game::Recipe());\n", native)
 
 		managed = bindings.render_managed_area(area)
 		self.assertIn("#pragma warning disable CS1591\n", managed)
 		self.assertIn("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit, Size = 16)]\npublic partial struct Shape {\n", managed)
 		self.assertIn("\t[System.Runtime.InteropServices.FieldOffset(4)]\n\tpublic Vec3 at;\n", managed)
 		self.assertIn("public sealed unsafe partial class Recipe : NativeObject {\n\tinternal Recipe(nint pointer, bool owned) : base(pointer, owned ? Bindings.table.gameRecipeDelete : null) {}\n\n"
-					  "\tpublic Recipe() : this(Create(), true) {}\n", managed)
+					  "\t/// <summary>Wrapper of the C++ object at an address (not owned, null at 0).</summary>\n\tpublic static Recipe? FromAddress(ulong address) {\n"
+					  "\t\treturn address == 0 ? null : new Recipe((nint)address, false);\n\t}\n\n\tpublic Recipe() : this(Create(), true) {}\n", managed)
 		self.assertIn("\tpublic static Shape Grow(in Shape shape, Tone tone, out short count, out string label) {\n", managed)
 		self.assertIn("\t\tShape shapeCopy = shape;\n\t\tulong* slots = stackalloc ulong[6];\n", managed)
 		self.assertIn("\t\tslots[1] = (ulong)(long)(sbyte)tone;\n", managed)
@@ -700,11 +729,112 @@ class BindingsTest(unittest.TestCase):
 					  managed)
 		self.assertIn("\t\tif (status != Bridge.OK) {\n\t\t\tSlotCallbacks.Drop(slots[1]);\n\t\t\tSlotCallbacks.Drop(slots[2]);\n", managed)
 		self.assertIn("\tstatic SlotCallback VisitVisitorCallback(Func<SceneObject, Shape, Tone, string, bool> handler) {\n\t\treturn (slots, results) => {\n"
-					  "\t\t\tresults[0] = handler(ObjectCache.SceneObject(slots[0])!, *(Shape*)slots[1], (Tone)(sbyte)slots[2], SlotValues.Text(slots + 3)) ? 1UL : 0UL;\n",
+					  "\t\t\tresults[0] = handler(ObjectCache.SceneObject(slots[0])!, (slots[1] == 0 ? default : *(Shape*)slots[1]), (Tone)(sbyte)slots[2], "
+					  "SlotValues.Text(slots + 3)) ? 1UL : 0UL;\n",
 					  managed)
 		self.assertIn("\tstatic SlotCallback VisitDoneCallback(Action handler) {\n\t\treturn (slots, results) => {\n\t\t\thandler();\n", managed)
 		self.assertIn("\t\t\tSlotCallbacks.KeepText(results, handler(NativeObject.Wrap(slots[0], false, static (pointer, owned) => new Recipe(pointer, owned), null)!, "
 					  "SlotValues.Vec3(slots + 1)));\n", managed)
+
+	def test_callbacks_take_written_values_and_return_structs_and_natives(self):
+		recipe = {"name": "Recipe", "cpp": "::Game::Recipe", "owned": True}
+		shape = {"name": "Shape", "cpp": "::Game::Shape", "size": 8, "align": 4,
+				 "fields": [{"name": "width", "type": "f32", "offset": 0}, {"name": "count", "type": "i32", "offset": 4}]}
+
+		def taking(name, token, cpp):
+			return {"id": name, "cpp": f"::Game::{name}(handler)", "returns": "void", "params": [{"name": "handler", "type": token, "cpp": cpp}],
+					"csharp": {"member": name, "kind": "method"}}
+
+		fill = taking("Fill", "fn<void;ref:i32;ref:Shape;span<f32>;list<i32>;u64>",
+					  "std::function<void(int&, ::Game::Shape&, std::span<float>, const std::vector<int>&, const void*)>")
+		shaped = taking("Shaped", "fn<Shape;i32>", "std::function<::Game::Shape(int)>")
+		cook = taking("Cook", "fn<give:Recipe>", "std::function<::Game::Recipe*()>")
+		named = taking("Named", "fn<copy:Recipe>", "std::function<::Game::Recipe()>")
+		peek = taking("Peek", "fn<u64;Recipe>", "std::function<void*(const ::Game::Recipe&)>")
+		counts = taking("Counts", "fn<list<i32>>", "std::function<std::vector<int>()>")
+		books = taking("Books", "fn<list<Recipe>>", "std::function<std::vector<::Game::Recipe>()>")
+		area = bindings.parse_area(self.write([fill, shaped, cook, named, peek, counts, books], slots=True, structs=[shape], natives=[recipe]))
+
+		native = bindings.render_native_area(area)
+		self.assertIn("\t\t\t\t\thandler = [handlerHold](auto& a0, auto& a1, const auto& a2, const auto& a3, const auto& a4) -> ", native)
+		self.assertIn("\t\t\t\t\t\tcallArguments[0] = Slots::Bits(&a0);\n\t\t\t\t\t\tcallArguments[1] = Slots::Bits(&a1);\n"
+					  "\t\t\t\t\t\tcallArguments[2] = Slots::Bits(a2.data());\n\t\t\t\t\t\tcallArguments[3] = a2.size();\n"
+					  "\t\t\t\t\t\tSlots::KeepList<int32_t>(callArguments + 4, a3);\n\t\t\t\t\t\tcallArguments[6] = Slots::Bits(a4);\n", native)
+		self.assertIn("\t\t\t\t\t\t::Game::Shape made{};\n\t\t\t\t\t\tcallResults[0] = Slots::Bits(&made);\n", native)
+		self.assertIn("\t\t\t\t\t\treturn static_cast<Slots::ResultOf<std::function<::Game::Shape(int)>>>(made);\n", native)
+		self.assertIn("\t\t\t\t\t\treturn static_cast<Slots::ResultOf<std::function<::Game::Recipe*()>>>(reinterpret_cast<::Game::Recipe*>("
+					  "static_cast<uintptr_t>(callResults[0])));\n", native)
+		self.assertIn("\t\t\t\t\t\tconst auto* const made = reinterpret_cast<::Game::Recipe*>(static_cast<uintptr_t>(callResults[0]));\n"
+					  "\t\t\t\t\t\treturn made ? static_cast<Slots::ResultOf<std::function<::Game::Recipe()>>>(*made) : "
+					  "Slots::ResultOf<std::function<::Game::Recipe()>>();\n", native)
+		self.assertIn("\t\t\t\t\t\treturn Slots::FromBits<Slots::ResultOf<std::function<void*(const ::Game::Recipe&)>>>(callResults[0]);\n", native)
+
+		self.assertIn("\t\t\t\t\t\tconst auto* const items = reinterpret_cast<const int32_t*>(static_cast<uintptr_t>(callResults[0]));\n"
+					  "\t\t\t\t\t\treturn Slots::ResultOf<std::function<std::vector<int>()>>(items, items + callResults[1]);\n", native)
+		self.assertIn("\t\t\t\t\t\treturn Slots::Copies<Slots::ResultOf<std::function<std::vector<::Game::Recipe>()>>>(std::span<::Game::Recipe* const>("
+					  "reinterpret_cast<::Game::Recipe* const*>(static_cast<uintptr_t>(callResults[0])), static_cast<size_t>(callResults[1])));\n", native)
+
+		managed = bindings.render_managed_area(area)
+		self.assertIn("\tpublic static void Counts(Func<int[]?> handler) {\n", managed)
+		self.assertIn("\t\t\tSlotCallbacks.KeepArray(results, handler());\n", managed)
+		self.assertIn("\t\t\tSlotCallbacks.KeepNatives(results, handler());\n", managed)
+		self.assertIn("\tpublic static void Fill(Action<Ref<int>, Ref<Shape>, Span<float>, int[], ulong> handler) {\n", managed)
+		self.assertIn("\t\t\thandler(new Ref<int>(slots[0]), new Ref<Shape>(slots[1]), new Span<float>((void*)slots[2], (int)slots[3]), "
+					  "SlotValues.Array<int>(slots + 4), (ulong)slots[6]);\n", managed)
+		self.assertIn("\tpublic static void Shaped(Func<int, Shape> handler) {\n", managed)
+		self.assertIn("\t\t\t*(Shape*)results[0] = handler((int)slots[0]);\n", managed)
+		self.assertIn("\tpublic static void Cook(Func<Recipe?> handler) {\n", managed)
+		self.assertIn("\t\t\tRecipe? made = handler();\n\t\t\tresults[0] = made is null ? 0UL : made.Give(\"handler\");\n", managed)
+		self.assertIn("\t\t\tRecipe? made = handler();\n\t\t\tresults[0] = made is null ? 0UL : made.Pointer;\n", managed)
+
+		for token in ("fn<give:Shape>", "fn<copy:i32>", "fn<void;ref:string>", "fn<void;ref:Recipe>", "fn<void;list<Shape>;give:Recipe>"):
+			message = self.refusal([dict(cook, params=[dict(cook["params"][0], type=token)])], slots=True, structs=[shape], natives=[recipe])
+			self.assertTrue(message.startswith(f"Game.json: Cook: unknown type '{token}'. Use bool, i32,"), message)
+
+	def test_natives_are_shared_adopted_borrowed_and_found_by_address(self):
+		recipe = {"name": "Recipe", "cpp": "::Game::Recipe", "owned": True, "create": True}
+		share = {"id": "Share", "cpp": "::Game::Share()", "returns": "Recipe", "params": [], "shared": True, "csharp": {"member": "Share", "kind": "method"}}
+		adopt = {"id": "Adopt", "cpp": "::Game::Adopt().release()", "returns": "Recipe", "params": [], "adopts": True, "csharp": {"member": "Adopt", "kind": "method"}}
+		keep = {"id": "Keep", "cpp": "::Game::Keep(first, second, std::move(third))", "returns": "void",
+				"params": [{"name": "first", "type": "Recipe", "optional": True, "shared": "take"},
+						   {"name": "second", "type": "Recipe", "optional": True, "shared": "alias"},
+						   {"name": "third", "type": "Recipe", "optional": True, "shared": "unique"}],
+				"csharp": {"member": "Keep", "kind": "method"}}
+		found = {"id": "Found", "cpp": "::Game::Found(recipes)", "returns": "void",
+				 "params": [{"name": "recipes", "type": "list<Recipe>", "out": True, "cpp": "std::vector<const ::Game::Recipe*>", "borrowed": True}],
+				 "csharp": {"member": "Found", "kind": "method"}}
+		points = {"id": "Points", "cpp": "::Game::Points(points)", "returns": "void", "params": [{"name": "points", "type": "span<Vec3>", "out": True}],
+				  "csharp": {"member": "Points", "kind": "method"}}
+		prelude = ["class GameSink final : public ::Game::Sink {", "};"]
+		area = bindings.parse_area(self.write([share, adopt, keep, found, points], slots=True, natives=[recipe], prelude=prelude))
+
+		native = bindings.render_native_area(area)
+		self.assertIn("\tnamespace {\n\n\t\tclass GameSink final : public ::Game::Sink {\n\t\t};\n\n\t} // anonymous namespace\n", native)
+		self.assertIn("\t\t\t\tresults[0] = Slots::KeepShared<::Game::Recipe>(::Game::Share());\n", native)
+		self.assertIn("\t\t\t\tresults[0] = Slots::Pointer<::Game::Recipe>(::Game::Adopt().release());\n", native)
+		self.assertIn("\t\t\t\tconst std::shared_ptr<::Game::Recipe> first = Slots::Shared<::Game::Recipe>(arguments[0]);\n"
+					  "\t\t\t\tconst std::shared_ptr<::Game::Recipe> second = Slots::Shared<::Game::Recipe>(arguments[1]);\n"
+					  "\t\t\t\tstd::unique_ptr<::Game::Recipe> third(reinterpret_cast<::Game::Recipe*>(static_cast<uintptr_t>(arguments[2])));\n", native)
+		self.assertIn("\t\t\t\tstd::vector<const ::Game::Recipe*> recipes{};\n\t\t\t\t::Game::Found(recipes);\n"
+					  "\t\t\t\tSlots::KeepPointers(results, recipes);\n", native)
+		self.assertIn("\t\t\t\tconst std::span<::Shalltear::Vec3> points(reinterpret_cast<::Shalltear::Vec3*>(static_cast<uintptr_t>(arguments[0])), "
+					  "static_cast<size_t>(arguments[1]));\n", native)
+
+		managed = bindings.render_managed_area(area)
+		self.assertIn("\t\treturn NativeObject.WrapShared(slots[0], static (pointer, owned) => new Recipe(pointer, owned));\n", managed)
+		self.assertIn("\t\treturn NativeObject.Wrap(slots[0], true, static (pointer, owned) => new Recipe(pointer, owned), null);\n", managed)
+		self.assertIn("\t\tslots[0] = first is null ? 0UL : first.Share(true);\n", managed)
+		self.assertIn("\t\tslots[1] = second is null ? 0UL : second.Share(false);\n", managed)
+		self.assertIn("\t\tslots[2] = third is null ? 0UL : third.Give(\"Game.Keep\");\n", managed)
+		self.assertIn("\t\trecipes = SlotValues.Natives(slots, static (pointer, owned) => new Recipe(pointer, owned), false, null);\n", managed)
+		self.assertIn("\tpublic static void Points(Span<Vec3> points) {\n", managed)
+
+		self.assertEqual("Game.json: Share: 'shared' is for a returned shared_ptr of a native, without 'owns' and 'adopts'",
+						 self.refusal([dict(share, owns=True)], slots=True, natives=[recipe]))
+		self.assertEqual("Game.json: Found: Recipe is copied for the script. Mark the native 'owned'",
+						 self.refusal([dict(found, params=[dict(found["params"][0], borrowed=False)])], slots=True, natives=[dict(recipe, owned=False, create=False)]))
+		self.assertNotEqual(bindings.layout_hash([area]),
+							bindings.layout_hash([bindings.parse_area(self.write([dict(share, shared=False), adopt, keep, found, points], slots=True, natives=[recipe]))]))
 
 	def test_callback_constant_and_out_list_rules(self):
 		recipe = {"name": "Recipe", "cpp": "::Game::Recipe"}
@@ -714,7 +844,7 @@ class BindingsTest(unittest.TestCase):
 						 self.refusal([dict(walk, params=[{"name": "step", "type": "fn<void;i32>"}])], slots=True))
 		self.assertEqual("Game.json: Walk: a callback needs a method", self.refusal([dict(walk, csharp={"member": "Walk", "kind": "setter"})], slots=True))
 		self.assertIn("Game.json: Walk: unknown type 'fn<void;i32>'.", self.refusal([dict(walk, doc="Walks.")]))
-		self.assertIn("Game.json: Walk: unknown type 'fn<list<i32>>'.", self.refusal([dict(walk, params=[{"name": "step", "type": "fn<list<i32>>", "cpp": "x"}])], slots=True))
+		self.assertIn("Game.json: Walk: unknown type 'fn<list<string>>'.", self.refusal([dict(walk, params=[{"name": "step", "type": "fn<list<string>>", "cpp": "x"}])], slots=True))
 		count = {"id": "Count", "cpp": "::Game::Count(value)", "returns": "void", "params": [{"name": "value", "type": "i32", "cpp": "int"}],
 				 "csharp": {"member": "Count", "kind": "method"}}
 		self.assertEqual("Game.json: Count: 'cpp' is the container of an out list or the type of a callback, 'value' is i32", self.refusal([count], slots=True))

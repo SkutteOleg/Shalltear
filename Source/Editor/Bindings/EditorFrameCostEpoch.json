@@ -1,0 +1,125 @@
+{
+	"area": "EditorFrameCostEpoch",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameCost.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameCostEpoch",
+	"instance": "EditorFrameCostEpoch",
+	"functions": [
+		{
+			"id": "GetIndex",
+			"cpp": "self->index",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Index", "kind": "getter" }
+		},
+		{
+			"id": "SetIndex",
+			"cpp": "self->index = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Index", "kind": "setter" }
+		},
+		{
+			"id": "GetFrames",
+			"cpp": "self->frames",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Frames", "kind": "getter" }
+		},
+		{
+			"id": "SetFrames",
+			"cpp": "self->frames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Frames", "kind": "setter" }
+		},
+		{
+			"id": "GetPointerFrames",
+			"cpp": "self->pointerFrames",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "PointerFrames", "kind": "getter" }
+		},
+		{
+			"id": "SetPointerFrames",
+			"cpp": "self->pointerFrames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "PointerFrames", "kind": "setter" }
+		},
+		{
+			"id": "GetSpanTicks",
+			"cpp": "self->spanTicks",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SpanTicks", "kind": "getter" }
+		},
+		{
+			"id": "SetSpanTicks",
+			"cpp": "self->spanTicks = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "SpanTicks", "kind": "setter" }
+		},
+		{
+			"id": "GetStages",
+			"cpp": "self->stages",
+			"returns": "list<EditorFrameCostDistribution>",
+			"params": [],
+			"csharp": { "member": "Stages", "kind": "getter" }
+		},
+		{
+			"id": "SetStages",
+			"cpp": "Slots::AssignAll(self->stages, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EditorFrameCostDistribution>" }],
+			"csharp": { "member": "Stages", "kind": "setter" }
+		},
+		{
+			"id": "GetCounters",
+			"cpp": "&self->counters",
+			"returns": "EditorFrameCostCounters",
+			"params": [],
+			"csharp": { "member": "Counters", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetCounters",
+			"cpp": "self->counters = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorFrameCostCounters" }],
+			"csharp": { "member": "Counters", "kind": "setter" }
+		},
+		{
+			"id": "GetDelta",
+			"cpp": "&self->delta",
+			"returns": "EditorFrameCostCounters",
+			"params": [],
+			"csharp": { "member": "Delta", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetDelta",
+			"cpp": "self->delta = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EditorFrameCostCounters" }],
+			"csharp": { "member": "Delta", "kind": "setter" }
+		},
+		{
+			"id": "GetClosedAtShutdown",
+			"cpp": "self->closedAtShutdown",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ClosedAtShutdown", "kind": "getter" }
+		},
+		{
+			"id": "SetClosedAtShutdown",
+			"cpp": "self->closedAtShutdown = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "ClosedAtShutdown", "kind": "setter" }
+		}
+	]
+}

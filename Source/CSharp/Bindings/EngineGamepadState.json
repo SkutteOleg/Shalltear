@@ -1,0 +1,69 @@
+{
+	"area": "EngineGamepadState",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Input/Input.h",
+		"Shalltear/Core/Input/InputCodes.h"
+	],
+	"class": "Shalltear.EngineGamepadState",
+	"instance": "EngineGamepadState",
+	"natives": [{ "name": "EngineGamepadState", "cpp": "::Shalltear::GamepadState", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "IsDown",
+			"cpp": "self->IsDown(button)",
+			"returns": "bool",
+			"params": [{ "name": "button", "type": "GamepadButton" }],
+			"csharp": { "member": "IsDown", "kind": "method" }
+		},
+		{
+			"id": "GetAxis",
+			"cpp": "self->GetAxis(axis)",
+			"returns": "f32",
+			"params": [{ "name": "axis", "type": "GamepadAxis" }],
+			"csharp": { "member": "GetAxis", "kind": "method" }
+		},
+		{
+			"id": "GetConnected",
+			"cpp": "self->connected",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Connected", "kind": "getter" }
+		},
+		{
+			"id": "SetConnected",
+			"cpp": "self->connected = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Connected", "kind": "setter" }
+		},
+		{
+			"id": "GetButtons",
+			"cpp": "self->buttons",
+			"returns": "list<bool>",
+			"params": [],
+			"csharp": { "member": "Buttons", "kind": "getter" }
+		},
+		{
+			"id": "SetButtons",
+			"cpp": "Slots::Assign(self->buttons, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<bool>" }],
+			"csharp": { "member": "Buttons", "kind": "setter" }
+		},
+		{
+			"id": "GetAxes",
+			"cpp": "self->axes",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Axes", "kind": "getter" }
+		},
+		{
+			"id": "SetAxes",
+			"cpp": "Slots::Assign(self->axes, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Axes", "kind": "setter" }
+		}
+	]
+}

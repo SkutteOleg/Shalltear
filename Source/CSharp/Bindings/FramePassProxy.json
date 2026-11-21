@@ -1,0 +1,55 @@
+{
+	"area": "FramePassProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h"
+	],
+	"class": "Shalltear.FramePassProxy",
+	"instance": "FramePassProxy",
+	"prelude": [
+		"class FramePassProxy final : public ::Shalltear::FramePass {",
+		"public:",
+		"\tstd::function<void(Shalltear::FramePassPlan &)> declare;",
+		"\tvoid Declare(Shalltear::FramePassPlan & a0) override {",
+		"\t\tif (declare) {",
+		"\t\t\tdeclare(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::ComputeContext &)> record;",
+		"\tvoid Record(Shalltear::ComputeContext & a0) override {",
+		"\t\tif (record) {",
+		"\t\t\trecord(a0);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "FramePassProxy", "cpp": "FramePassProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetDeclare",
+			"cpp": "self->declare = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;FramePassPlan>", "optional": true, "cpp": "std::function<void(Shalltear::FramePassPlan &)>" }
+			],
+			"csharp": { "member": "SetDeclare", "kind": "method" }
+		},
+		{
+			"id": "SetRecord",
+			"cpp": "self->record = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;ComputeContext>", "optional": true, "cpp": "std::function<void(Shalltear::ComputeContext &)>" }
+			],
+			"csharp": { "member": "SetRecord", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::FramePass*>(self)",
+			"returns": "FramePass",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

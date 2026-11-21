@@ -1,0 +1,268 @@
+{
+	"area": "UIDockManager",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Docking.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIDockManager",
+	"instance": "UIDockManager",
+	"functions": [
+		{
+			"id": "EnsureSkin",
+			"cpp": "::Shalltear::UI::DockManager::EnsureSkin(*context)",
+			"returns": "void",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "EnsureSkin", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetDefaultSkinSource",
+			"cpp": "::Shalltear::UI::DockManager::GetDefaultSkinSource()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultSkinSource", "kind": "getter" },
+			"static": true
+		},
+		{
+			"id": "RegisterPanel",
+			"cpp": "self->RegisterPanel(id, title, build, *icon)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "title", "type": "string" },
+				{
+					"name": "build",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				},
+				{ "name": "icon", "type": "UIDockTabIcon" }
+			],
+			"csharp": { "member": "RegisterPanel", "kind": "method" }
+		},
+		{
+			"id": "SetPanelTitle",
+			"cpp": "self->SetPanelTitle(id, title)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "title", "type": "string" }
+			],
+			"csharp": { "member": "SetPanelTitle", "kind": "method" }
+		},
+		{
+			"id": "UnregisterPanel",
+			"cpp": "self->UnregisterPanel(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "UnregisterPanel", "kind": "method" }
+		},
+		{
+			"id": "HasPanel",
+			"cpp": "self->HasPanel(id)",
+			"returns": "bool",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "HasPanel", "kind": "method" }
+		},
+		{
+			"id": "IsPanelDocked",
+			"cpp": "self->IsPanelDocked(id)",
+			"returns": "bool",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "IsPanelDocked", "kind": "method" }
+		},
+		{
+			"id": "GetDockedPanels",
+			"cpp": "self->GetDockedPanels(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<StringHash>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::StringHash>" }
+			],
+			"csharp": { "member": "GetDockedPanels", "kind": "method" }
+		},
+		{
+			"id": "Reset",
+			"cpp": "self->Reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Reset", "kind": "method" }
+		},
+		{
+			"id": "DockPanel",
+			"cpp": "self->DockPanel(id, targetNode, zone)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "targetNode", "type": "u32" },
+				{ "name": "zone", "type": "UIDockZone" }
+			],
+			"csharp": { "member": "DockPanel", "kind": "method" }
+		},
+		{
+			"id": "UndockPanel",
+			"cpp": "self->UndockPanel(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "UndockPanel", "kind": "method" }
+		},
+		{
+			"id": "GetRootNode",
+			"cpp": "self->GetRootNode()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RootNode", "kind": "getter" }
+		},
+		{
+			"id": "FindNodeOfPanel",
+			"cpp": "self->FindNodeOfPanel(id)",
+			"returns": "u32",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "FindNodeOfPanel", "kind": "method" }
+		},
+		{
+			"id": "ActivatePanel",
+			"cpp": "self->ActivatePanel(id)",
+			"returns": "bool",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "ActivatePanel", "kind": "method" }
+		},
+		{
+			"id": "GetActivePanel",
+			"cpp": "self->GetActivePanel(node)",
+			"returns": "StringHash",
+			"params": [{ "name": "node", "type": "u32" }],
+			"csharp": { "member": "GetActivePanel", "kind": "method" }
+		},
+		{
+			"id": "SaveLayout",
+			"cpp": "self->SaveLayout(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<UIDockNodeDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UI::DockNodeDesc>" }
+			],
+			"csharp": { "member": "SaveLayout", "kind": "method" }
+		},
+		{
+			"id": "RestoreLayout",
+			"cpp": "self->RestoreLayout(std::span<const ::Shalltear::UI::DockNodeDesc>(Slots::Copies<::Shalltear::Vector<::Shalltear::UI::DockNodeDesc>>(layout)))",
+			"returns": "bool",
+			"params": [{ "name": "layout", "type": "list<UIDockNodeDesc>" }],
+			"csharp": { "member": "RestoreLayout", "kind": "method" }
+		},
+		{
+			"id": "UpdateInteraction",
+			"cpp": "self->UpdateInteraction(mousePos, screenPosPx, leftDown, leftPressed)",
+			"returns": "void",
+			"params": [
+				{ "name": "mousePos", "type": "Vec2" },
+				{ "name": "screenPosPx", "type": "Vec2I" },
+				{ "name": "leftDown", "type": "bool" },
+				{ "name": "leftPressed", "type": "bool" }
+			],
+			"csharp": { "member": "UpdateInteraction", "kind": "method" }
+		},
+		{
+			"id": "Build",
+			"cpp": "self->Build(parent)",
+			"returns": "void",
+			"params": [{ "name": "parent", "type": "UIElementHandle" }],
+			"csharp": { "member": "Build", "kind": "method" }
+		},
+		{
+			"id": "GetDropTargetAt",
+			"cpp": "self->GetDropTargetAt(mousePos)",
+			"returns": "UIDockDropTarget",
+			"params": [{ "name": "mousePos", "type": "Vec2" }],
+			"csharp": { "member": "GetDropTargetAt", "kind": "method" }
+		},
+		{
+			"id": "ShowExternalOverlay",
+			"cpp": "self->ShowExternalOverlay(mousePos)",
+			"returns": "void",
+			"params": [{ "name": "mousePos", "type": "Vec2" }],
+			"csharp": { "member": "ShowExternalOverlay", "kind": "method" }
+		},
+		{
+			"id": "HideExternalOverlay",
+			"cpp": "self->HideExternalOverlay()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "HideExternalOverlay", "kind": "method" }
+		},
+		{
+			"id": "IsDraggingTab",
+			"cpp": "self->IsDraggingTab()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsDraggingTab", "kind": "getter" }
+		},
+		{
+			"id": "GetDraggedPanel",
+			"cpp": "self->GetDraggedPanel()",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "DraggedPanel", "kind": "getter" }
+		},
+		{
+			"id": "SetDetachCallback",
+			"cpp": "self->SetDetachCallback(callback)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "callback",
+					"type": "fn<void;StringHash;Vec2I>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::StringHash, Shalltear::Vec2Generic<int>)>"
+				}
+			],
+			"csharp": { "member": "SetDetachCallback", "kind": "method" }
+		},
+		{
+			"id": "SetPanelCloseCallback",
+			"cpp": "self->SetPanelCloseCallback(callback)",
+			"returns": "void",
+			"params": [
+				{ "name": "callback", "type": "fn<void;StringHash>", "optional": true, "cpp": "std::function<void (Shalltear::StringHash)>" }
+			],
+			"csharp": { "member": "SetPanelCloseCallback", "kind": "method" }
+		},
+		{
+			"id": "SetTabBarClass",
+			"cpp": "self->SetTabBarClass(extraClass)",
+			"returns": "void",
+			"params": [{ "name": "extraClass", "type": "StringHash" }],
+			"csharp": { "member": "SetTabBarClass", "kind": "method" }
+		},
+		{
+			"id": "SetFocusedPanel",
+			"cpp": "self->SetFocusedPanel(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "FocusedPanel", "kind": "setter" }
+		},
+		{
+			"id": "GetFocusedPanel",
+			"cpp": "self->GetFocusedPanel()",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "FocusedPanel", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::UI::DockManager(*context, ::Shalltear::Handle<::Shalltear::FontAsset>(labelFont))",
+			"returns": "UIDockManager",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "labelFont", "type": "FontAsset", "optional": true }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

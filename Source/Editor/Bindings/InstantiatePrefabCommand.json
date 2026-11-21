@@ -1,0 +1,59 @@
+{
+	"area": "InstantiatePrefabCommand",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorCommands.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Editor/UndoSystem.h",
+		"Shalltear/Core/Scene/Scene.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.Editor.InstantiatePrefabCommand",
+	"instance": "InstantiatePrefabCommand",
+	"functions": [
+		{
+			"id": "GetCreated",
+			"cpp": "self->GetCreated()",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Created", "kind": "getter" }
+		},
+		{
+			"id": "GetAsIEditorCommand",
+			"cpp": "static_cast<::Shalltear::IEditorCommand*>(self)",
+			"returns": "IEditorCommand",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "AsIEditorCommand", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::InstantiatePrefabCommand(prefabId, ::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent))",
+			"returns": "InstantiatePrefabCommand",
+			"params": [
+				{ "name": "prefabId", "type": "EngineGuid" },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		},
+		{
+			"id": "Create2",
+			"cpp": "new ::Shalltear::InstantiatePrefabCommand(prefabId, ::Shalltear::Handle<::Shalltear::Scene>(scene), ::Shalltear::Handle<::Shalltear::SceneObject>(parent), worldPosition)",
+			"returns": "InstantiatePrefabCommand",
+			"params": [
+				{ "name": "prefabId", "type": "EngineGuid" },
+				{ "name": "scene", "type": "Scene", "optional": true },
+				{ "name": "parent", "type": "SceneObject", "optional": true },
+				{ "name": "worldPosition", "type": "Vec3" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

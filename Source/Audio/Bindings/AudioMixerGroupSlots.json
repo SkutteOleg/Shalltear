@@ -1,0 +1,21 @@
+{
+	"area": "AudioMixerGroupSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioMixer.h",
+		"Shalltear/Audio/Audio.h"
+	],
+	"class": "Shalltear.AudioMixerGroup",
+	"instance": "AudioMixerGroup",
+	"functions": [
+		{
+			"id": "GetBus",
+			"cpp": "self->GetBus()",
+			"returns": "AudioBus",
+			"params": [],
+			"csharp": { "member": "Bus", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

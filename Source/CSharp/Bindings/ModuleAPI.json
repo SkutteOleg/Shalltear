@@ -1,0 +1,12 @@
+{
+	"area": "ModuleAPI",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Module/ModuleAPI.h"
+	],
+	"class": "Shalltear.ModuleAPI",
+	"constants": [
+		{ "name": "SLT_MODULE_FLAG_RELEASE", "cpp": "::Shalltear::SLT_MODULE_FLAG_RELEASE", "type": "u32", "value": 1 }
+	],
+	"functions": []
+}

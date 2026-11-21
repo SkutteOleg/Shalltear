@@ -1,0 +1,124 @@
+{
+	"area": "MethodInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.MethodInfo",
+	"instance": "MethodInfo",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerType",
+			"cpp": "self->ownerType",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "OwnerType", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerType",
+			"cpp": "self->ownerType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "OwnerType", "kind": "setter" }
+		},
+		{
+			"id": "GetReturnType",
+			"cpp": "self->returnType",
+			"returns": "TypeInfo",
+			"params": [],
+			"csharp": { "member": "ReturnType", "kind": "getter" }
+		},
+		{
+			"id": "SetReturnType",
+			"cpp": "self->returnType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "ReturnType", "kind": "setter" }
+		},
+		{
+			"id": "GetParamTypes",
+			"cpp": "Slots::Bits(self->paramTypes)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "ParamTypes", "kind": "getter" }
+		},
+		{
+			"id": "SetParamTypes",
+			"cpp": "self->paramTypes = Slots::FromBits<const Shalltear::TypeInfo *const *>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "ParamTypes", "kind": "setter" }
+		},
+		{
+			"id": "GetParamCount",
+			"cpp": "self->paramCount",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "ParamCount", "kind": "getter" }
+		},
+		{
+			"id": "SetParamCount",
+			"cpp": "self->paramCount = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "ParamCount", "kind": "setter" }
+		},
+		{
+			"id": "GetInvokeFn",
+			"cpp": "Slots::Bits(self->invokeFn)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "InvokeFn", "kind": "getter" }
+		},
+		{
+			"id": "SetInvokeFn",
+			"cpp": "self->invokeFn = Slots::FromBits<void (*)(void *, const Shalltear::Variant *, unsigned int, Shalltear::Variant *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "InvokeFn", "kind": "setter" }
+		},
+		{
+			"id": "GetFlags",
+			"cpp": "self->flags",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Flags", "kind": "getter" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->flags = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Flags", "kind": "setter" }
+		},
+		{
+			"id": "GetDisplayName",
+			"cpp": "self->displayName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DisplayName", "kind": "getter" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->displayName = Slots::KeepFieldText(self, 0xc048e0daedf13989ull, value).data()",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DisplayName", "kind": "setter" }
+		}
+	]
+}

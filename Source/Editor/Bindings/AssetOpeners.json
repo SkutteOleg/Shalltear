@@ -1,0 +1,42 @@
+{
+	"area": "AssetOpeners",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/AssetOpeners.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.AssetOpeners",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::AssetOpeners::Register(extension, open, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "extension", "type": "string" },
+				{ "name": "open", "type": "fn<void;EngineGuid>", "optional": true, "cpp": "std::function<void (const Shalltear::Guid &)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "Has",
+			"cpp": "::Shalltear::AssetOpeners::Has(extension)",
+			"returns": "bool",
+			"params": [{ "name": "extension", "type": "string" }],
+			"csharp": { "member": "Has", "kind": "method" }
+		},
+		{
+			"id": "Open",
+			"cpp": "::Shalltear::AssetOpeners::Open(::Shalltear::Path(str(virtualPath)))",
+			"returns": "bool",
+			"params": [{ "name": "virtualPath", "type": "string" }],
+			"csharp": { "member": "Open", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::AssetOpeners::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

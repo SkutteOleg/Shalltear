@@ -1,0 +1,61 @@
+{
+	"area": "CurveEditor",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CurveEditor.h",
+		"Shalltear/Core/Math/AnimationCurve.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/RenderList.h"
+	],
+	"class": "Shalltear.Editor.CurveEditor",
+	"structs": [
+		{
+			"name": "CurveEditorView",
+			"cpp": "::Shalltear::CurveEditor::View",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "timeMin", "type": "f32", "offset": 0 },
+				{ "name": "timeMax", "type": "f32", "offset": 4 },
+				{ "name": "valueMin", "type": "f32", "offset": 8 },
+				{ "name": "valueMax", "type": "f32", "offset": 12 }
+			]
+		}
+	],
+	"functions": [
+		{
+			"id": "Frame",
+			"cpp": "::Shalltear::CurveEditor::Frame(*curve)",
+			"returns": "CurveEditorView",
+			"params": [{ "name": "curve", "type": "AnimationCurve" }],
+			"csharp": { "member": "Frame", "kind": "method" }
+		},
+		{
+			"id": "PaintPreview",
+			"cpp": "::Shalltear::CurveEditor::PaintPreview(*context, part, *paint, *curve)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "part", "type": "UIElementHandle" },
+				{ "name": "paint", "type": "UIPaintScope" },
+				{ "name": "curve", "type": "AnimationCurve" }
+			],
+			"csharp": { "member": "PaintPreview", "kind": "method" }
+		},
+		{
+			"id": "Open",
+			"cpp": "::Shalltear::CurveEditor::Open(*context, anchor, *curve, onChange, onEditBegin, onEditEnd)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "anchor", "type": "UIElementHandle" },
+				{ "name": "curve", "type": "AnimationCurve" },
+				{ "name": "onChange", "type": "fn<void;AnimationCurve>", "optional": true, "cpp": "std::function<void (const Shalltear::AnimationCurve &)>" },
+				{ "name": "onEditBegin", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" },
+				{ "name": "onEditEnd", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" }
+			],
+			"csharp": { "member": "Open", "kind": "method" }
+		}
+	]
+}

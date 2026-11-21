@@ -1,0 +1,43 @@
+{
+	"area": "ComponentMenu",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ComponentMenu.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.Editor.ComponentMenu",
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::ComponentMenu::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::ComponentMenu::Register(componentTypeName, category, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "componentTypeName", "type": "StringHash" },
+				{ "name": "category", "type": "string" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::ComponentMenu::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "CategoryFor",
+			"cpp": "::Shalltear::ComponentMenu::CategoryFor(componentType)",
+			"returns": "string",
+			"params": [{ "name": "componentType", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "CategoryFor", "kind": "method" }
+		}
+	]
+}

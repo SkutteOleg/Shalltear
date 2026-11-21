@@ -1,0 +1,72 @@
+{
+	"area": "Plane",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.Plane",
+	"instance": "Plane",
+	"functions": [
+		{
+			"id": "FromPointNormal",
+			"cpp": "::Shalltear::Plane::FromPointNormal(point, normal)",
+			"returns": "Plane",
+			"params": [
+				{ "name": "point", "type": "Vec3" },
+				{ "name": "normal", "type": "Vec3" }
+			],
+			"csharp": { "member": "FromPointNormal", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "FromPoints",
+			"cpp": "::Shalltear::Plane::FromPoints(a, b, c)",
+			"returns": "Plane",
+			"params": [
+				{ "name": "a", "type": "Vec3" },
+				{ "name": "b", "type": "Vec3" },
+				{ "name": "c", "type": "Vec3" }
+			],
+			"csharp": { "member": "FromPoints", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "Normalized",
+			"cpp": "self->Normalized()",
+			"returns": "Plane",
+			"params": [],
+			"csharp": { "member": "Normalized", "kind": "method" }
+		},
+		{
+			"id": "SignedDistance",
+			"cpp": "self->SignedDistance(point)",
+			"returns": "f32",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "SignedDistance", "kind": "method" }
+		},
+		{
+			"id": "GetSide",
+			"cpp": "self->GetSide(point)",
+			"returns": "bool",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "GetSide", "kind": "method" }
+		},
+		{
+			"id": "ClosestPoint",
+			"cpp": "self->ClosestPoint(point)",
+			"returns": "Vec3",
+			"params": [{ "name": "point", "type": "Vec3" }],
+			"csharp": { "member": "ClosestPoint", "kind": "method" }
+		},
+		{
+			"id": "Raycast",
+			"cpp": "self->Raycast(ray, enter)",
+			"returns": "bool",
+			"params": [
+				{ "name": "ray", "type": "Ray" },
+				{ "name": "enter", "type": "f32", "out": true }
+			],
+			"csharp": { "member": "Raycast", "kind": "method" }
+		}
+	]
+}

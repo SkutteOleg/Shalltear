@@ -1,0 +1,18 @@
+{
+	"area": "EditorFonts",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFonts.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.Editor.EditorFonts",
+	"functions": [
+		{
+			"id": "GetMonospace",
+			"cpp": "::Shalltear::EditorFonts::GetMonospace()",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "Monospace", "kind": "getter" }
+		}
+	]
+}

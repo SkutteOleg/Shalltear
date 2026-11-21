@@ -1,0 +1,85 @@
+{
+	"area": "CookReader",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h"
+	],
+	"class": "Shalltear.CookReader",
+	"instance": "CookReader",
+	"functions": [
+		{
+			"id": "ReadBytes",
+			"cpp": "self->ReadBytes(reinterpret_cast<void*>(static_cast<uintptr_t>(outValue)), size)",
+			"returns": "bool",
+			"params": [
+				{ "name": "outValue", "type": "u64" },
+				{ "name": "size", "type": "u64" }
+			],
+			"csharp": { "member": "ReadBytes", "kind": "method" }
+		},
+		{
+			"id": "ReadSpan",
+			"cpp": "static_cast<uint64_t>(reinterpret_cast<uintptr_t>(self->ReadSpan(size)))",
+			"returns": "u64",
+			"params": [{ "name": "size", "type": "u64" }],
+			"csharp": { "member": "ReadSpan", "kind": "method" }
+		},
+		{
+			"id": "Skip",
+			"cpp": "self->Skip(size)",
+			"returns": "bool",
+			"params": [{ "name": "size", "type": "u64" }],
+			"csharp": { "member": "Skip", "kind": "method" }
+		},
+		{
+			"id": "ReadString",
+			"cpp": "self->ReadString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ReadString", "kind": "method" }
+		},
+		{
+			"id": "Remaining",
+			"cpp": "self->Remaining()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Remaining", "kind": "method" }
+		},
+		{
+			"id": "Size",
+			"cpp": "self->Size()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "method" }
+		},
+		{
+			"id": "Failed",
+			"cpp": "self->Failed()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Failed", "kind": "method" }
+		},
+		{
+			"id": "GetLocator",
+			"cpp": "self->GetLocator()",
+			"returns": "PakPayloadLocator",
+			"params": [],
+			"csharp": { "member": "Locator", "kind": "getter" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::CookReader(reinterpret_cast<const u8*>(static_cast<uintptr_t>(data)), size, *strings, locator)",
+			"returns": "CookReader",
+			"params": [
+				{ "name": "data", "type": "u64" },
+				{ "name": "size", "type": "u64" },
+				{ "name": "strings", "type": "PakStringTable" },
+				{ "name": "locator", "type": "PakPayloadLocator", "optional": true }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

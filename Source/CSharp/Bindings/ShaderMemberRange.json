@@ -1,0 +1,53 @@
+{
+	"area": "ShaderMemberRange",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderReflection.h"
+	],
+	"class": "Shalltear.ShaderMemberRange",
+	"instance": "ShaderMemberRange",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetMinValue",
+			"cpp": "self->minValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MinValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMinValue",
+			"cpp": "self->minValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MinValue", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxValue",
+			"cpp": "self->maxValue",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MaxValue", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxValue",
+			"cpp": "self->maxValue = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MaxValue", "kind": "setter" }
+		}
+	]
+}

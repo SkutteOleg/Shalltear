@@ -1,0 +1,32 @@
+{
+	"area": "TypeNameOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/TypeNameOps.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.TypeNameOps",
+	"functions": [
+		{
+			"id": "Refresh",
+			"cpp": "::Shalltear::TypeNameOps::Refresh()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Refresh", "kind": "method" }
+		},
+		{
+			"id": "Lookup",
+			"cpp": "::Shalltear::TypeNameOps::Lookup(typeName)",
+			"returns": "string",
+			"params": [{ "name": "typeName", "type": "StringHash" }],
+			"csharp": { "member": "Lookup", "kind": "method" }
+		},
+		{
+			"id": "MissingTypeLabel",
+			"cpp": "::Shalltear::TypeNameOps::MissingTypeLabel(typeName)",
+			"returns": "string",
+			"params": [{ "name": "typeName", "type": "StringHash" }],
+			"csharp": { "member": "MissingTypeLabel", "kind": "method" }
+		}
+	]
+}

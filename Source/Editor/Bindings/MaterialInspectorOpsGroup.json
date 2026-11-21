@@ -1,0 +1,53 @@
+{
+	"area": "MaterialInspectorOpsGroup",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/MaterialInspectorOps.h"
+	],
+	"class": "Shalltear.Editor.MaterialInspectorOpsGroup",
+	"instance": "MaterialInspectorOpsGroup",
+	"functions": [
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetBuiltIn",
+			"cpp": "self->builtIn",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "BuiltIn", "kind": "getter" }
+		},
+		{
+			"id": "SetBuiltIn",
+			"cpp": "self->builtIn = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "BuiltIn", "kind": "setter" }
+		},
+		{
+			"id": "GetRows",
+			"cpp": "self->rows",
+			"returns": "list<MaterialInspectorOpsRow>",
+			"params": [],
+			"csharp": { "member": "Rows", "kind": "getter" }
+		},
+		{
+			"id": "SetRows",
+			"cpp": "self->rows = Slots::Copies<::Shalltear::Vector<::Shalltear::MaterialInspectorOps::Row>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<MaterialInspectorOpsRow>" }],
+			"csharp": { "member": "Rows", "kind": "setter" }
+		}
+	]
+}

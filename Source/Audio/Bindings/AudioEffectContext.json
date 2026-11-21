@@ -1,0 +1,82 @@
+{
+	"area": "AudioEffectContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioEffect.h",
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.AudioEffectContext",
+	"instance": "AudioEffectContext",
+	"functions": [
+		{
+			"id": "GetSampleRate",
+			"cpp": "self->sampleRate",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SampleRate", "kind": "getter" }
+		},
+		{
+			"id": "SetSampleRate",
+			"cpp": "self->sampleRate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SampleRate", "kind": "setter" }
+		},
+		{
+			"id": "GetBlockFrames",
+			"cpp": "self->blockFrames",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BlockFrames", "kind": "getter" }
+		},
+		{
+			"id": "SetBlockFrames",
+			"cpp": "self->blockFrames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "BlockFrames", "kind": "setter" }
+		},
+		{
+			"id": "GetChannels",
+			"cpp": "self->channels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Channels", "kind": "getter" }
+		},
+		{
+			"id": "SetChannels",
+			"cpp": "self->channels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Channels", "kind": "setter" }
+		},
+		{
+			"id": "GetSpeakers",
+			"cpp": "self->speakers",
+			"returns": "list<AudioSpeaker>",
+			"params": [],
+			"csharp": { "member": "Speakers", "kind": "getter" }
+		},
+		{
+			"id": "SetSpeakers",
+			"cpp": "Slots::Assign(self->speakers, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioSpeaker>" }],
+			"csharp": { "member": "Speakers", "kind": "setter" }
+		},
+		{
+			"id": "GetParameters",
+			"cpp": "self->parameters",
+			"returns": "list<f32>",
+			"params": [],
+			"csharp": { "member": "Parameters", "kind": "getter" }
+		},
+		{
+			"id": "SetParameters",
+			"cpp": "self->parameters = Slots::KeepFieldSpan(self, 0x616020da7f954aa7ull, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<f32>" }],
+			"csharp": { "member": "Parameters", "kind": "setter" }
+		}
+	]
+}

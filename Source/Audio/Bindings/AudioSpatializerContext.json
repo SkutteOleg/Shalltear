@@ -1,0 +1,95 @@
+{
+	"area": "AudioSpatializerContext",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.AudioSpatializerContext",
+	"instance": "AudioSpatializerContext",
+	"functions": [
+		{
+			"id": "GetSampleRate",
+			"cpp": "self->sampleRate",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "SampleRate", "kind": "getter" }
+		},
+		{
+			"id": "SetSampleRate",
+			"cpp": "self->sampleRate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "SampleRate", "kind": "setter" }
+		},
+		{
+			"id": "GetBlockFrames",
+			"cpp": "self->blockFrames",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "BlockFrames", "kind": "getter" }
+		},
+		{
+			"id": "SetBlockFrames",
+			"cpp": "self->blockFrames = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "BlockFrames", "kind": "setter" }
+		},
+		{
+			"id": "GetInputChannels",
+			"cpp": "self->inputChannels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "InputChannels", "kind": "getter" }
+		},
+		{
+			"id": "SetInputChannels",
+			"cpp": "self->inputChannels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "InputChannels", "kind": "setter" }
+		},
+		{
+			"id": "GetInputSpeakers",
+			"cpp": "self->inputSpeakers",
+			"returns": "list<AudioSpeaker>",
+			"params": [],
+			"csharp": { "member": "InputSpeakers", "kind": "getter" }
+		},
+		{
+			"id": "SetInputSpeakers",
+			"cpp": "Slots::Assign(self->inputSpeakers, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioSpeaker>" }],
+			"csharp": { "member": "InputSpeakers", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputChannels",
+			"cpp": "self->outputChannels",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "OutputChannels", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputChannels",
+			"cpp": "self->outputChannels = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "OutputChannels", "kind": "setter" }
+		},
+		{
+			"id": "GetOutputSpeakers",
+			"cpp": "self->outputSpeakers",
+			"returns": "list<AudioSpeaker>",
+			"params": [],
+			"csharp": { "member": "OutputSpeakers", "kind": "getter" }
+		},
+		{
+			"id": "SetOutputSpeakers",
+			"cpp": "Slots::Assign(self->outputSpeakers, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioSpeaker>" }],
+			"csharp": { "member": "OutputSpeakers", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,111 @@
+{
+	"area": "MonitorInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/Monitor.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.MonitorInfo",
+	"instance": "MonitorInfo",
+	"natives": [{ "name": "MonitorInfo", "cpp": "::Shalltear::MonitorInfo", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetBounds",
+			"cpp": "self->bounds",
+			"returns": "RectI",
+			"params": [],
+			"csharp": { "member": "Bounds", "kind": "getter" }
+		},
+		{
+			"id": "SetBounds",
+			"cpp": "self->bounds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RectI" }],
+			"csharp": { "member": "Bounds", "kind": "setter" }
+		},
+		{
+			"id": "GetWorkArea",
+			"cpp": "self->workArea",
+			"returns": "RectI",
+			"params": [],
+			"csharp": { "member": "WorkArea", "kind": "getter" }
+		},
+		{
+			"id": "SetWorkArea",
+			"cpp": "self->workArea = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RectI" }],
+			"csharp": { "member": "WorkArea", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "getter" }
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetPrimary",
+			"cpp": "self->primary",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Primary", "kind": "getter" }
+		},
+		{
+			"id": "SetPrimary",
+			"cpp": "self->primary = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Primary", "kind": "setter" }
+		},
+		{
+			"id": "GetRefreshRate",
+			"cpp": "self->refreshRate",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "RefreshRate", "kind": "getter" }
+		},
+		{
+			"id": "SetRefreshRate",
+			"cpp": "self->refreshRate = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "RefreshRate", "kind": "setter" }
+		}
+	]
+}

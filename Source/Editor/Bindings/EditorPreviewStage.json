@@ -1,0 +1,46 @@
+{
+	"area": "EditorPreviewStage",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Graphics/MaterialAsset.h",
+		"Shalltear/Core/Graphics/RenderPass.h",
+		"Shalltear/Core/Scene/Scene.h"
+	],
+	"class": "Shalltear.Editor.EditorPreviewStage",
+	"functions": [
+		{
+			"id": "AddLights",
+			"cpp": "::Shalltear::EditorPreviewStage::AddLights(::Shalltear::Handle<::Shalltear::Scene>(stage))",
+			"returns": "void",
+			"params": [{ "name": "stage", "type": "Scene", "optional": true }],
+			"csharp": { "member": "AddLights", "kind": "method" }
+		},
+		{
+			"id": "SetSky",
+			"cpp": "::Shalltear::EditorPreviewStage::SetSky(::Shalltear::Handle<::Shalltear::Scene>(stage), ::Shalltear::Handle<::Shalltear::MaterialAsset>(sky))",
+			"returns": "void",
+			"params": [
+				{ "name": "stage", "type": "Scene", "optional": true },
+				{ "name": "sky", "type": "Material", "optional": true }
+			],
+			"csharp": { "member": "SetSky", "kind": "method" }
+		},
+		{
+			"id": "Submit",
+			"cpp": "::Shalltear::EditorPreviewStage::Submit(::Shalltear::Handle<::Shalltear::Scene>(stage), target, targetSize, bounds, orbit, reinterpret_cast<const f64*>(static_cast<uintptr_t>(time)), std::span<const ::Shalltear::Handle<::Shalltear::RenderPass>>(Slots::ToVector<::Shalltear::Handle<::Shalltear::RenderPass>>(passes)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "stage", "type": "Scene", "optional": true },
+				{ "name": "target", "type": "u32" },
+				{ "name": "targetSize", "type": "Vec2I" },
+				{ "name": "bounds", "type": "AABB" },
+				{ "name": "orbit", "type": "AssetPreviewOrbit" },
+				{ "name": "time", "type": "u64" },
+				{ "name": "passes", "type": "list<RenderPass>" }
+			],
+			"csharp": { "member": "Submit", "kind": "method" }
+		}
+	]
+}

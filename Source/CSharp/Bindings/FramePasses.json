@@ -1,0 +1,24 @@
+{
+	"area": "FramePasses",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h"
+	],
+	"class": "Shalltear.FramePasses",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::FramePasses::Register(*pass, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [{ "name": "pass", "type": "FramePass" }],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::FramePasses::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

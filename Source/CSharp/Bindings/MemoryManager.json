@@ -1,0 +1,79 @@
+{
+	"area": "MemoryManager",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Memory.h"
+	],
+	"class": "Shalltear.MemoryManager",
+	"functions": [
+		{
+			"id": "TrackAlloc",
+			"cpp": "::Shalltear::MemoryManager::TrackAlloc(tag, bytes)",
+			"returns": "void",
+			"params": [
+				{ "name": "tag", "type": "MemTag" },
+				{ "name": "bytes", "type": "u64" }
+			],
+			"csharp": { "member": "TrackAlloc", "kind": "method" }
+		},
+		{
+			"id": "TrackFree",
+			"cpp": "::Shalltear::MemoryManager::TrackFree(tag, bytes)",
+			"returns": "void",
+			"params": [
+				{ "name": "tag", "type": "MemTag" },
+				{ "name": "bytes", "type": "u64" }
+			],
+			"csharp": { "member": "TrackFree", "kind": "method" }
+		},
+		{
+			"id": "GetBytesForTag",
+			"cpp": "::Shalltear::MemoryManager::GetBytesForTag(tag)",
+			"returns": "u64",
+			"params": [{ "name": "tag", "type": "MemTag" }],
+			"csharp": { "member": "GetBytesForTag", "kind": "method" }
+		},
+		{
+			"id": "GetAllocationCountForTag",
+			"cpp": "::Shalltear::MemoryManager::GetAllocationCountForTag(tag)",
+			"returns": "u64",
+			"params": [{ "name": "tag", "type": "MemTag" }],
+			"csharp": { "member": "GetAllocationCountForTag", "kind": "method" }
+		},
+		{
+			"id": "GetTotalBytes",
+			"cpp": "::Shalltear::MemoryManager::GetTotalBytes()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TotalBytes", "kind": "getter" }
+		},
+		{
+			"id": "GetTotalAllocations",
+			"cpp": "::Shalltear::MemoryManager::GetTotalAllocations()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "TotalAllocations", "kind": "getter" }
+		},
+		{
+			"id": "GetTagName",
+			"cpp": "::Shalltear::MemoryManager::GetTagName(tag)",
+			"returns": "string",
+			"params": [{ "name": "tag", "type": "MemTag" }],
+			"csharp": { "member": "GetTagName", "kind": "method" }
+		},
+		{
+			"id": "SetVramProvider",
+			"cpp": "::Shalltear::MemoryManager::SetVramProvider(Slots::FromBits<bool (*)(uint64_t &, uint64_t &)>(provider))",
+			"returns": "void",
+			"params": [{ "name": "provider", "type": "u64" }],
+			"csharp": { "member": "SetVramProvider", "kind": "method" }
+		},
+		{
+			"id": "LogReport",
+			"cpp": "::Shalltear::MemoryManager::LogReport()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "LogReport", "kind": "method" }
+		}
+	]
+}

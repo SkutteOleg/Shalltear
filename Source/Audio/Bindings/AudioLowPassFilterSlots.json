@@ -1,0 +1,28 @@
+{
+	"area": "AudioLowPassFilterSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioFilters.h",
+		"Shalltear/Core/Math/AnimationCurve.h"
+	],
+	"class": "Shalltear.AudioLowPassFilter",
+	"instance": "AudioLowPassFilter",
+	"functions": [
+		{
+			"id": "GetCustomCutoffCurve",
+			"cpp": "self->GetCustomCutoffCurve()",
+			"returns": "AnimationCurve",
+			"params": [],
+			"csharp": { "member": "CustomCutoffCurve", "kind": "getter" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "SetCustomCutoffCurve",
+			"cpp": "self->SetCustomCutoffCurve(*value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "AnimationCurve" }],
+			"csharp": { "member": "CustomCutoffCurve", "kind": "setter" }
+		}
+	]
+}

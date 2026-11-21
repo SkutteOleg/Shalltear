@@ -1,0 +1,46 @@
+{
+	"area": "NetTLSOptions",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/TLS.h"
+	],
+	"class": "Shalltear.NetTLSOptions",
+	"instance": "NetTLSOptions",
+	"functions": [
+		{
+			"id": "GetServerName",
+			"cpp": "self->serverName",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ServerName", "kind": "getter" }
+		},
+		{
+			"id": "SetServerName",
+			"cpp": "self->serverName = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ServerName", "kind": "setter" }
+		},
+		{
+			"id": "TryGetPinnedCertificate",
+			"cpp": "Slots::Take(self->pinnedCertificate, found)",
+			"returns": "bool",
+			"params": [{ "name": "found", "type": "list<u8>", "out": true, "cpp": "std::array<unsigned char, 32>" }],
+			"csharp": { "member": "TryGetPinnedCertificate", "kind": "method" }
+		},
+		{
+			"id": "ClearPinnedCertificate",
+			"cpp": "self->pinnedCertificate.reset()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearPinnedCertificate", "kind": "method" }
+		},
+		{
+			"id": "SetPinnedCertificate",
+			"cpp": "self->pinnedCertificate = Slots::ToArray<std::array<unsigned char, 32>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "SetPinnedCertificate", "kind": "method" }
+		}
+	]
+}

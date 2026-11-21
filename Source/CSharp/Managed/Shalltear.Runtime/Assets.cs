@@ -3,7 +3,7 @@ using Shalltear.Interop;
 namespace Shalltear;
 
 /// <summary>Asset loaded by engine.</summary>
-public abstract class Asset : EngineObject {
+public abstract partial class Asset : EngineObject {
 	private protected Asset() {}
 
 	/// <summary>Project path of the asset's file ("" for one made in memory).</summary>
@@ -41,7 +41,7 @@ public sealed partial class Mesh : Asset {
 
 /// <summary>Texture asset.</summary>
 [EngineType(ENGINE_TYPE)]
-public sealed class Texture : Asset {
+public sealed partial class Texture : Asset {
 	internal const string ENGINE_TYPE = "TextureAsset";
 
 	internal Texture(ulong id) {
@@ -51,7 +51,7 @@ public sealed class Texture : Asset {
 
 /// <summary>Sprite asset.</summary>
 [EngineType(ENGINE_TYPE)]
-public sealed class Sprite : Asset {
+public sealed partial class Sprite : Asset {
 	internal const string ENGINE_TYPE = "SpriteAsset";
 
 	internal Sprite(ulong id) {

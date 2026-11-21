@@ -1,0 +1,101 @@
+{
+	"area": "UndoSystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UndoSystem.h"
+	],
+	"class": "Shalltear.Editor.UndoSystem",
+	"functions": [
+		{
+			"id": "Push",
+			"cpp": "::Shalltear::UndoSystem::Push(std::move(command))",
+			"returns": "void",
+			"params": [{ "name": "command", "type": "IEditorCommand", "optional": true, "shared": "unique" }],
+			"csharp": { "member": "Push", "kind": "method" }
+		},
+		{
+			"id": "BeginGroup",
+			"cpp": "::Shalltear::UndoSystem::BeginGroup(label)",
+			"returns": "void",
+			"params": [{ "name": "label", "type": "string" }],
+			"csharp": { "member": "BeginGroup", "kind": "method" }
+		},
+		{
+			"id": "EndGroup",
+			"cpp": "::Shalltear::UndoSystem::EndGroup()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "EndGroup", "kind": "method" }
+		},
+		{
+			"id": "IsGroupOpen",
+			"cpp": "::Shalltear::UndoSystem::IsGroupOpen()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsGroupOpen", "kind": "getter" }
+		},
+		{
+			"id": "Undo",
+			"cpp": "::Shalltear::UndoSystem::Undo()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Undo", "kind": "method" }
+		},
+		{
+			"id": "Redo",
+			"cpp": "::Shalltear::UndoSystem::Redo()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Redo", "kind": "method" }
+		},
+		{
+			"id": "CanUndo",
+			"cpp": "::Shalltear::UndoSystem::CanUndo()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CanUndo", "kind": "getter" }
+		},
+		{
+			"id": "CanRedo",
+			"cpp": "::Shalltear::UndoSystem::CanRedo()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "CanRedo", "kind": "getter" }
+		},
+		{
+			"id": "GetUndoLabel",
+			"cpp": "::Shalltear::UndoSystem::GetUndoLabel()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "UndoLabel", "kind": "getter" }
+		},
+		{
+			"id": "GetRedoLabel",
+			"cpp": "::Shalltear::UndoSystem::GetRedoLabel()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "RedoLabel", "kind": "getter" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "::Shalltear::UndoSystem::Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "GetUndoDepth",
+			"cpp": "::Shalltear::UndoSystem::GetUndoDepth()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UndoDepth", "kind": "getter" }
+		},
+		{
+			"id": "GetRedoDepth",
+			"cpp": "::Shalltear::UndoSystem::GetRedoDepth()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "RedoDepth", "kind": "getter" }
+		}
+	]
+}

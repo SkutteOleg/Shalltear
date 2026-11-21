@@ -1,0 +1,74 @@
+{
+	"area": "RHITransientSetWriter",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RHIDevice.h",
+		"Shalltear/Core/Graphics/RHITypes.h"
+	],
+	"class": "Shalltear.RHITransientSetWriter",
+	"instance": "RHITransientSetWriter",
+	"natives": [
+		{ "name": "RHITransientSetWriter", "cpp": "::Shalltear::RHI::TransientSetWriter", "owned": true, "create": true },
+		{ "name": "RHIDevice", "cpp": "::Shalltear::RHI::Device" }
+	],
+	"constants": [
+		{ "name": "MAX_WRITES", "cpp": "::Shalltear::RHI::TransientSetWriter::MAX_WRITES", "type": "u32", "value": 16 }
+	],
+	"functions": [
+		{
+			"id": "WriteUniformBuffer",
+			"cpp": "self->WriteUniformBuffer(binding, buffer, offset, range)",
+			"returns": "RHITransientSetWriter",
+			"params": [
+				{ "name": "binding", "type": "u32" },
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "offset", "type": "u64" },
+				{ "name": "range", "type": "u64" }
+			],
+			"csharp": { "member": "WriteUniformBuffer", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "WriteStorageBuffer",
+			"cpp": "self->WriteStorageBuffer(binding, buffer, offset, range)",
+			"returns": "RHITransientSetWriter",
+			"params": [
+				{ "name": "binding", "type": "u32" },
+				{ "name": "buffer", "type": "RHIBufferHandle" },
+				{ "name": "offset", "type": "u64" },
+				{ "name": "range", "type": "u64" }
+			],
+			"csharp": { "member": "WriteStorageBuffer", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "WriteTexture",
+			"cpp": "self->WriteTexture(binding, texture)",
+			"returns": "RHITransientSetWriter",
+			"params": [
+				{ "name": "binding", "type": "u32" },
+				{ "name": "texture", "type": "RHITextureHandle" }
+			],
+			"csharp": { "member": "WriteTexture", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "WriteSampler",
+			"cpp": "self->WriteSampler(binding, sampler)",
+			"returns": "RHITransientSetWriter",
+			"params": [
+				{ "name": "binding", "type": "u32" },
+				{ "name": "sampler", "type": "RHISamplerHandle" }
+			],
+			"csharp": { "member": "WriteSampler", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "Commit",
+			"cpp": "self->Commit()",
+			"returns": "RHITransientSet",
+			"params": [],
+			"csharp": { "member": "Commit", "kind": "method" }
+		}
+	]
+}

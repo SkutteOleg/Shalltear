@@ -1,0 +1,236 @@
+{
+	"area": "EditorIcons",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorIcons.h",
+		"Shalltear/Core/Log.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/UI/Widgets.h",
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.Editor.EditorIcons",
+	"enums": [
+		{
+			"name": "EditorIconsFace",
+			"cpp": "::Shalltear::EditorIcons::Face",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Solid", "value": 0 },
+				{ "name": "Regular", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EditorIconsIconButtonParts",
+			"cpp": "::Shalltear::EditorIcons::IconButtonParts",
+			"size": 24,
+			"align": 4,
+			"fields": [
+				{ "name": "button", "type": "UIElementHandle", "offset": 0 },
+				{ "name": "face", "type": "UIElementHandle", "offset": 12 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EditorIconsIcon", "cpp": "::Shalltear::EditorIcons::Icon", "owned": true, "create": true },
+		{ "name": "EditorIconsLogLevelFace", "cpp": "::Shalltear::EditorIcons::LogLevelFace", "owned": true, "create": true }
+	],
+	"constants": [{ "name": "FACE_COUNT", "cpp": "::Shalltear::EditorIcons::FACE_COUNT", "type": "u32", "value": 2 }],
+	"functions": [
+		{
+			"id": "FaceForLogLevel",
+			"cpp": "::Shalltear::EditorIcons::FaceForLogLevel(level)",
+			"returns": "EditorIconsLogLevelFace",
+			"params": [{ "name": "level", "type": "LogLevel" }],
+			"csharp": { "member": "FaceForLogLevel", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "GutterSizePx",
+			"cpp": "::Shalltear::EditorIcons::GutterSizePx()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "GutterSizePx", "kind": "method" }
+		},
+		{
+			"id": "BodySizePx",
+			"cpp": "::Shalltear::EditorIcons::BodySizePx()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BodySizePx", "kind": "method" }
+		},
+		{
+			"id": "TabSizePx",
+			"cpp": "::Shalltear::EditorIcons::TabSizePx()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "TabSizePx", "kind": "method" }
+		},
+		{
+			"id": "GutterGapPx",
+			"cpp": "::Shalltear::EditorIcons::GutterGapPx()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "GutterGapPx", "kind": "method" }
+		},
+		{
+			"id": "LineBoxHeight",
+			"cpp": "::Shalltear::EditorIcons::LineBoxHeight(textSizePx)",
+			"returns": "f32",
+			"params": [{ "name": "textSizePx", "type": "f32" }],
+			"csharp": { "member": "LineBoxHeight", "kind": "method" }
+		},
+		{
+			"id": "GetGlyph",
+			"cpp": "::Shalltear::EditorIcons::GetGlyph(*icon)",
+			"returns": "VectorAsset",
+			"params": [{ "name": "icon", "type": "EditorIconsIcon" }],
+			"csharp": { "member": "GetGlyph", "kind": "method" }
+		},
+		{
+			"id": "GlyphSizeScale",
+			"cpp": "::Shalltear::EditorIcons::GlyphSizeScale(*icon)",
+			"returns": "f32",
+			"params": [{ "name": "icon", "type": "EditorIconsIcon" }],
+			"csharp": { "member": "GlyphSizeScale", "kind": "method" }
+		},
+		{
+			"id": "IsAvailable",
+			"cpp": "::Shalltear::EditorIcons::IsAvailable(face)",
+			"returns": "bool",
+			"params": [{ "name": "face", "type": "EditorIconsFace" }],
+			"csharp": { "member": "IsAvailable", "kind": "method" }
+		},
+		{
+			"id": "SetGlyph",
+			"cpp": "::Shalltear::EditorIcons::SetGlyph(*context, element, *icon, color, sizePx)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "sizePx", "type": "f32" }
+			],
+			"csharp": { "member": "SetGlyph", "kind": "method" }
+		},
+		{
+			"id": "SetGlyphOrText",
+			"cpp": "::Shalltear::EditorIcons::SetGlyphOrText(*context, element, *icon, fallbackText, color, iconSizePx, textSizePx)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "fallbackText", "type": "string" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "iconSizePx", "type": "f32" },
+				{ "name": "textSizePx", "type": "f32" }
+			],
+			"csharp": { "member": "SetGlyphOrText", "kind": "method" }
+		},
+		{
+			"id": "Add",
+			"cpp": "::Shalltear::EditorIcons::Add(*context, parent, *icon, color, sizePx, gapPx, lineTextPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "gapPx", "type": "f32" },
+				{ "name": "lineTextPx", "type": "f32" }
+			],
+			"csharp": { "member": "Add", "kind": "method" }
+		},
+		{
+			"id": "Prefix",
+			"cpp": "::Shalltear::EditorIcons::Prefix(*context, widget, *icon, color, sizePx, gapPx, lineTextPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "widget", "type": "UIElementHandle" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "color", "type": "Color" },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "gapPx", "type": "f32" },
+				{ "name": "lineTextPx", "type": "f32" }
+			],
+			"csharp": { "member": "Prefix", "kind": "method" }
+		},
+		{
+			"id": "IconButton",
+			"cpp": "::Shalltear::EditorIcons::IconButton(*context, parent, *icon, fallbackLabel, tooltip, onClick, textSizePx)",
+			"returns": "EditorIconsIconButtonParts",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "fallbackLabel", "type": "string" },
+				{ "name": "tooltip", "type": "string" },
+				{ "name": "onClick", "type": "fn<void>", "optional": true, "cpp": "std::function<void ()>" },
+				{ "name": "textSizePx", "type": "f32" }
+			],
+			"csharp": { "member": "IconButton", "kind": "method" }
+		},
+		{
+			"id": "GetVector",
+			"cpp": "::Shalltear::EditorIcons::GetVector(enginePath)",
+			"returns": "VectorAsset",
+			"params": [{ "name": "enginePath", "type": "string" }],
+			"csharp": { "member": "GetVector", "kind": "method" }
+		},
+		{
+			"id": "AddVector",
+			"cpp": "::Shalltear::EditorIcons::AddVector(*context, parent, enginePath, *palette, sizePx, gapPx, lineTextPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "parent", "type": "UIElementHandle" },
+				{ "name": "enginePath", "type": "string" },
+				{ "name": "palette", "type": "UIIconPalette" },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "gapPx", "type": "f32" },
+				{ "name": "lineTextPx", "type": "f32" }
+			],
+			"csharp": { "member": "AddVector", "kind": "method" }
+		},
+		{
+			"id": "SetRowGutter",
+			"cpp": "::Shalltear::EditorIcons::SetRowGutter(*context, row, hasChildren, expanded, caretColor, *icon, iconColor, columnPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "row", "type": "UIWidgetsTreeRowParts" },
+				{ "name": "hasChildren", "type": "bool" },
+				{ "name": "expanded", "type": "bool" },
+				{ "name": "caretColor", "type": "Color" },
+				{ "name": "icon", "type": "EditorIconsIcon" },
+				{ "name": "iconColor", "type": "Color" },
+				{ "name": "columnPx", "type": "f32" }
+			],
+			"csharp": { "member": "SetRowGutter", "kind": "method" }
+		},
+		{
+			"id": "SetRowGutterMark",
+			"cpp": "::Shalltear::EditorIcons::SetRowGutterMark(*context, row, hasChildren, expanded, caretColor, markPath, sizePx, columnPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "row", "type": "UIWidgetsTreeRowParts" },
+				{ "name": "hasChildren", "type": "bool" },
+				{ "name": "expanded", "type": "bool" },
+				{ "name": "caretColor", "type": "Color" },
+				{ "name": "markPath", "type": "string" },
+				{ "name": "sizePx", "type": "f32" },
+				{ "name": "columnPx", "type": "f32" }
+			],
+			"csharp": { "member": "SetRowGutterMark", "kind": "method" }
+		}
+	]
+}

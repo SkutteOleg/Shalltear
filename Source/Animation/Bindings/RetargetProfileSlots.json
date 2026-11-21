@@ -1,0 +1,93 @@
+{
+	"area": "RetargetProfileSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Animation/RetargetProfile.h",
+		"Shalltear/Core/Graphics/SkeletonAsset.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.RetargetProfile",
+	"instance": "RetargetProfile",
+	"natives": [
+		{ "name": "RetargetProfileChain", "cpp": "::Shalltear::RetargetProfile::Chain", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "GetReferencePose",
+			"cpp": "self->GetReferencePose()",
+			"returns": "list<EngineBoneTransform>",
+			"params": [],
+			"csharp": { "member": "ReferencePose", "kind": "getter" }
+		},
+		{
+			"id": "GetSkeletonGuid",
+			"cpp": "self->skeletonGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "SkeletonGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetSkeletonGuid",
+			"cpp": "self->skeletonGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "SkeletonGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetSkeletonField",
+			"cpp": "self->skeleton",
+			"returns": "SkeletonAsset",
+			"params": [],
+			"csharp": { "member": "SkeletonField", "kind": "getter" }
+		},
+		{
+			"id": "SetSkeletonField",
+			"cpp": "self->skeleton = ::Shalltear::Handle<::Shalltear::SkeletonAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SkeletonAsset", "optional": true }],
+			"csharp": { "member": "SkeletonField", "kind": "setter" }
+		},
+		{
+			"id": "GetChains",
+			"cpp": "self->chains",
+			"returns": "list<RetargetProfileChain>",
+			"params": [],
+			"csharp": { "member": "Chains", "kind": "getter" }
+		},
+		{
+			"id": "SetChains",
+			"cpp": "self->chains = Slots::Copies<::Shalltear::Vector<::Shalltear::RetargetProfile::Chain>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<RetargetProfileChain>" }],
+			"csharp": { "member": "Chains", "kind": "setter" }
+		},
+		{
+			"id": "GetGoals",
+			"cpp": "self->goals",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Goals", "kind": "getter" }
+		},
+		{
+			"id": "SetGoals",
+			"cpp": "self->goals = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Goals", "kind": "setter" }
+		},
+		{
+			"id": "GetReferencePoseField",
+			"cpp": "self->referencePose",
+			"returns": "list<EngineBoneTransform>",
+			"params": [],
+			"csharp": { "member": "ReferencePoseField", "kind": "getter" }
+		},
+		{
+			"id": "SetReferencePoseField",
+			"cpp": "self->referencePose = Slots::ToVector<::Shalltear::BoneTransform>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineBoneTransform>" }],
+			"csharp": { "member": "ReferencePoseField", "kind": "setter" }
+		}
+	]
+}

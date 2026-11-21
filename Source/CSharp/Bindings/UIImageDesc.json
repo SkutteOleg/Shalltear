@@ -1,0 +1,83 @@
+{
+	"area": "UIImageDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/Graphics/SpriteAsset.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.UIImageDesc",
+	"instance": "UIImageDesc",
+	"functions": [
+		{
+			"id": "GetTexture",
+			"cpp": "self->texture",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "self->texture = ::Shalltear::Handle<::Shalltear::TextureAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Texture", "optional": true }],
+			"csharp": { "member": "Texture", "kind": "setter" }
+		},
+		{
+			"id": "GetSprite",
+			"cpp": "self->sprite",
+			"returns": "Sprite",
+			"params": [],
+			"csharp": { "member": "Sprite", "kind": "getter" }
+		},
+		{
+			"id": "SetSprite",
+			"cpp": "self->sprite = ::Shalltear::Handle<::Shalltear::SpriteAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Sprite", "optional": true }],
+			"csharp": { "member": "Sprite", "kind": "setter" }
+		},
+		{
+			"id": "GetScaleMode",
+			"cpp": "self->scaleMode",
+			"returns": "UIImageScaleMode",
+			"params": [],
+			"csharp": { "member": "ScaleMode", "kind": "getter" }
+		},
+		{
+			"id": "SetScaleMode",
+			"cpp": "self->scaleMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIImageScaleMode" }],
+			"csharp": { "member": "ScaleMode", "kind": "setter" }
+		},
+		{
+			"id": "GetFill",
+			"cpp": "self->fill",
+			"returns": "UIImageFill",
+			"params": [],
+			"csharp": { "member": "Fill", "kind": "getter" }
+		},
+		{
+			"id": "SetFill",
+			"cpp": "self->fill = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIImageFill" }],
+			"csharp": { "member": "Fill", "kind": "setter" }
+		},
+		{
+			"id": "GetSliceScale",
+			"cpp": "self->sliceScale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SliceScale", "kind": "getter" }
+		},
+		{
+			"id": "SetSliceScale",
+			"cpp": "self->sliceScale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SliceScale", "kind": "setter" }
+		}
+	]
+}

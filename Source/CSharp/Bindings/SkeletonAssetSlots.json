@@ -1,0 +1,53 @@
+{
+	"area": "SkeletonAssetSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/SkeletonAsset.h"
+	],
+	"class": "Shalltear.SkeletonAsset",
+	"instance": "SkeletonAsset",
+	"functions": [
+		{
+			"id": "GetBoneNames",
+			"cpp": "self->boneNames",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "BoneNames", "kind": "getter" }
+		},
+		{
+			"id": "SetBoneNames",
+			"cpp": "self->boneNames = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "BoneNames", "kind": "setter" }
+		},
+		{
+			"id": "GetParents",
+			"cpp": "self->parents",
+			"returns": "list<i16>",
+			"params": [],
+			"csharp": { "member": "Parents", "kind": "getter" }
+		},
+		{
+			"id": "SetParents",
+			"cpp": "self->parents = Slots::ToVector<i16>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<i16>" }],
+			"csharp": { "member": "Parents", "kind": "setter" }
+		},
+		{
+			"id": "GetRestPoseField",
+			"cpp": "self->restPose",
+			"returns": "list<EngineBoneTransform>",
+			"params": [],
+			"csharp": { "member": "RestPoseField", "kind": "getter" }
+		},
+		{
+			"id": "SetRestPoseField",
+			"cpp": "self->restPose = Slots::ToVector<::Shalltear::BoneTransform>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineBoneTransform>" }],
+			"csharp": { "member": "RestPoseField", "kind": "setter" }
+		}
+	]
+}

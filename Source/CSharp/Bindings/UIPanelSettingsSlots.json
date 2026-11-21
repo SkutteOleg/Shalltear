@@ -1,0 +1,177 @@
+{
+	"area": "UIPanelSettingsSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UIPanelSettings.h",
+		"Shalltear/Core/UI/FontAsset.h"
+	],
+	"class": "Shalltear.UIPanelSettings",
+	"instance": "UIPanelSettings",
+	"functions": [
+		{
+			"id": "ResolveDefaultContentScale",
+			"cpp": "::Shalltear::UIPanelSettings::ResolveDefaultContentScale(screenSizePx, dpiScale)",
+			"returns": "f32",
+			"params": [
+				{ "name": "screenSizePx", "type": "Vec2I" },
+				{ "name": "dpiScale", "type": "f32" }
+			],
+			"csharp": { "member": "ResolveDefaultContentScale", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "GetScaleModeField",
+			"cpp": "self->scaleMode",
+			"returns": "UIPanelScaleMode",
+			"params": [],
+			"csharp": { "member": "ScaleModeField", "kind": "getter" }
+		},
+		{
+			"id": "SetScaleModeField",
+			"cpp": "self->scaleMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIPanelScaleMode" }],
+			"csharp": { "member": "ScaleModeField", "kind": "setter" }
+		},
+		{
+			"id": "GetScaleField",
+			"cpp": "self->scale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ScaleField", "kind": "getter" }
+		},
+		{
+			"id": "SetScaleField",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ScaleField", "kind": "setter" }
+		},
+		{
+			"id": "GetReferenceDPIField",
+			"cpp": "self->referenceDPI",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "ReferenceDPIField", "kind": "getter" }
+		},
+		{
+			"id": "SetReferenceDPIField",
+			"cpp": "self->referenceDPI = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "ReferenceDPIField", "kind": "setter" }
+		},
+		{
+			"id": "GetReferenceResolutionField",
+			"cpp": "self->referenceResolution",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "ReferenceResolutionField", "kind": "getter" }
+		},
+		{
+			"id": "SetReferenceResolutionField",
+			"cpp": "self->referenceResolution = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "ReferenceResolutionField", "kind": "setter" }
+		},
+		{
+			"id": "GetScreenMatchModeField",
+			"cpp": "self->screenMatchMode",
+			"returns": "UIPanelScreenMatchMode",
+			"params": [],
+			"csharp": { "member": "ScreenMatchModeField", "kind": "getter" }
+		},
+		{
+			"id": "SetScreenMatchModeField",
+			"cpp": "self->screenMatchMode = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "UIPanelScreenMatchMode" }],
+			"csharp": { "member": "ScreenMatchModeField", "kind": "setter" }
+		},
+		{
+			"id": "GetMatchField",
+			"cpp": "self->match",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "MatchField", "kind": "getter" }
+		},
+		{
+			"id": "SetMatchField",
+			"cpp": "self->match = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "MatchField", "kind": "setter" }
+		},
+		{
+			"id": "GetLogarithmicMatchField",
+			"cpp": "self->logarithmicMatch",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "LogarithmicMatchField", "kind": "getter" }
+		},
+		{
+			"id": "SetLogarithmicMatchField",
+			"cpp": "self->logarithmicMatch = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "LogarithmicMatchField", "kind": "setter" }
+		},
+		{
+			"id": "GetSortOrderField",
+			"cpp": "self->sortOrder",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "SortOrderField", "kind": "getter" }
+		},
+		{
+			"id": "SetSortOrderField",
+			"cpp": "self->sortOrder = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "SortOrderField", "kind": "setter" }
+		},
+		{
+			"id": "GetFontField",
+			"cpp": "self->font",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "FontField", "kind": "getter" }
+		},
+		{
+			"id": "SetFontField",
+			"cpp": "self->font = ::Shalltear::Handle<::Shalltear::FontAsset>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FontAsset", "optional": true }],
+			"csharp": { "member": "FontField", "kind": "setter" }
+		},
+		{
+			"id": "GetFontSizePxField",
+			"cpp": "self->fontSizePx",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "FontSizePxField", "kind": "getter" }
+		},
+		{
+			"id": "SetFontSizePxField",
+			"cpp": "self->fontSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "FontSizePxField", "kind": "setter" }
+		},
+		{
+			"id": "GetTextColorField",
+			"cpp": "self->textColor",
+			"returns": "Color",
+			"params": [],
+			"csharp": { "member": "TextColorField", "kind": "getter" }
+		},
+		{
+			"id": "SetTextColorField",
+			"cpp": "self->textColor = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Color" }],
+			"csharp": { "member": "TextColorField", "kind": "setter" }
+		}
+	]
+}

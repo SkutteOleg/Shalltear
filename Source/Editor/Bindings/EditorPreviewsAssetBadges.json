@@ -1,0 +1,38 @@
+{
+	"area": "EditorPreviewsAssetBadges",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorPreviews.h",
+		"Shalltear/Editor/EditorIcons.h",
+		"Shalltear/Editor/EditorTheme.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.Editor.EditorPreviewsAssetBadges",
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::EditorPreviews::AssetBadges::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::EditorPreviews::AssetBadges::Register(assetTypeName, *glyph, tint, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "assetTypeName", "type": "StringHash" },
+				{ "name": "glyph", "type": "EditorIconsIcon" },
+				{ "name": "tint", "type": "EditorThemeColorToken" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::EditorPreviews::AssetBadges::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

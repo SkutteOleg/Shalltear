@@ -274,6 +274,51 @@ static class SlotTests {
 	}
 
 	[ConformanceTest]
+	internal static void CallbacksWriteReturnAndShare() {
+		Check.Equal(11811, SlotProbe.Tally(null));
+		Check.Equal(34353, SlotProbe.Tally(static (total, shape, tone, at, label) => {
+			total.Value += 2;
+			shape.Value.count = 4;
+			tone.Value = ProbeTone.High;
+			at.Value.x = 5f;
+			label.Value += "bc";
+		}));
+		Check.Equal(12f, SlotProbe.Scale(static values => {
+			for (int index = 0; index < values.Length; ++index) {
+				values[index] *= 2f;
+			}
+		}));
+		Check.Equal(29, SlotProbe.Pass(static (numbers, words) => numbers[0] + numbers[1] + numbers[2] + words.Length * 10 + words[1].Length));
+		ProbeShape shaped = SlotProbe.Shaped(static count => new ProbeShape { count = count, width = 1.5f });
+		Check.Equal(3, shaped.count);
+		Check.Equal(1.5f, shaped.width);
+
+		int live = SlotProbe.CountLiveRecipes();
+		Check.Equal(4, SlotProbe.Cook(static name => SlotProbe.MakeRecipe(name, 4)));
+		Check.Equal(live, SlotProbe.CountLiveRecipes());
+		ProbeRecipe kept = SlotProbe.MakeRecipe("kept", 2);
+		Check.Equal(2, SlotProbe.Peek(() => kept));
+		Check.Equal(-1, SlotProbe.Peek(static () => null));
+		Check.Equal("kept", SlotProbe.Named(steps => kept));
+		Check.Equal(live + 1, SlotProbe.CountLiveRecipes());
+		Check.Equal(0, SlotProbe.Gather(null, null));
+		Check.Equal(206, SlotProbe.Gather(static () => [1, 2, 3], () => [kept]));
+		Check.Equal(live + 1, SlotProbe.CountLiveRecipes());
+		Check.Equal("kept", ProbeRecipe.FromAddress(kept.Address)!.Name);
+		Check.True(ProbeRecipe.FromAddress(0) is null, "no object at 0");
+
+		ProbeRecipe shared = SlotProbe.ShareRecipe("shared");
+		Check.Equal("shared", shared.Name);
+		Check.Equal(2, SlotProbe.CountShared(shared));
+		Check.Equal(1, SlotProbe.CountShared(kept));
+		Check.Equal(0, SlotProbe.CountShared(null));
+		Check.Equal(live + 2, SlotProbe.CountLiveRecipes());
+		shared.Dispose();
+		kept.Dispose();
+		Check.Equal(live, SlotProbe.CountLiveRecipes());
+	}
+
+	[ConformanceTest]
 	internal static void RepeatedSlotCallsAllocateNothing() {
 		ProbeShape shape = new() { width = 1f, count = 1 };
 		float sum = SlotProbe.Grow(shape, 1f).width + (float)SlotProbe.EchoI64(1) + SlotProbe.Swap(default).x + SlotProbe.Counter.Total;

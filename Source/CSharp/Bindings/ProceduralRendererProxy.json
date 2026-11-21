@@ -1,0 +1,96 @@
+{
+	"area": "ProceduralRendererProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ProceduralRenderer.h",
+		"DerivedTypes.h",
+		"Shalltear/Core/Graphics/FramePass.h",
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.ProceduralRendererProxy",
+	"instance": "ProceduralRendererProxy",
+	"prelude": [
+		"class ProceduralRendererProxy final : public ::Shalltear::ProceduralRenderer {",
+		"public:",
+		"\tconst ::Shalltear::TypeInfo* derivedType = nullptr;",
+		"\tconst ::Shalltear::TypeInfo* GetType() const override { return derivedType ? derivedType : ::Shalltear::ProceduralRenderer::GetType(); }",
+		"\t~ProceduralRendererProxy() override { DerivedTypes::Destroyed(derivedType, this); }",
+		"\tstd::function<void(Shalltear::ProceduralPlan &)> declare;",
+		"\tvoid Declare(Shalltear::ProceduralPlan & a0) override {",
+		"\t\tif (declare) {",
+		"\t\t\tdeclare(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::ProceduralContext &)> record;",
+		"\tvoid Record(Shalltear::ProceduralContext & a0) override {",
+		"\t\tif (record) {",
+		"\t\t\trecord(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(Shalltear::ComputeContext &, const Shalltear::ProceduralView &)> recordView;",
+		"\tvoid RecordView(Shalltear::ComputeContext & a0, const Shalltear::ProceduralView & a1) override {",
+		"\t\tif (recordView) {",
+		"\t\t\trecordView(a0, a1);",
+		"\t\t} else {",
+		"\t\t\t::Shalltear::ProceduralRenderer::RecordView(a0, a1);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "ProceduralRendererProxy", "cpp": "ProceduralRendererProxy" }],
+	"functions": [
+		{
+			"id": "SetDeclare",
+			"cpp": "self->declare = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;ProceduralPlan>", "optional": true, "cpp": "std::function<void(Shalltear::ProceduralPlan &)>" }
+			],
+			"csharp": { "member": "SetDeclare", "kind": "method" }
+		},
+		{
+			"id": "SetRecord",
+			"cpp": "self->record = handler",
+			"returns": "void",
+			"params": [
+				{ "name": "handler", "type": "fn<void;ProceduralContext>", "optional": true, "cpp": "std::function<void(Shalltear::ProceduralContext &)>" }
+			],
+			"csharp": { "member": "SetRecord", "kind": "method" }
+		},
+		{
+			"id": "SetRecordView",
+			"cpp": "self->recordView = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;ComputeContext;ProceduralView>",
+					"optional": true,
+					"cpp": "std::function<void(Shalltear::ComputeContext &, const Shalltear::ProceduralView &)>"
+				}
+			],
+			"csharp": { "member": "SetRecordView", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::ProceduralRenderer*>(self)",
+			"returns": "ProceduralRenderer",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		},
+		{
+			"id": "Register",
+			"cpp": "DerivedTypes::Register<ProceduralRendererProxy, ::Shalltear::ProceduralRenderer>(name, std::move(wire), describe)",
+			"returns": "TypeInfo",
+			"static": true,
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "wire", "type": "fn<void;ProceduralRendererProxy>", "cpp": "std::function<void(ProceduralRendererProxy*)>" },
+				{ "name": "describe", "type": "fn<void;ReflectBuilder>", "optional": true, "cpp": "std::function<void(::Shalltear::ReflectBuilder*)>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		}
+	]
+}

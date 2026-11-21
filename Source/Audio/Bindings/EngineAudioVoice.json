@@ -1,0 +1,44 @@
+{
+	"area": "EngineAudioVoice",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/Audio.h"
+	],
+	"class": "Shalltear.EngineAudioVoice",
+	"instance": "EngineAudioVoice",
+	"structs": [
+		{
+			"name": "AudioSpatialSettings",
+			"cpp": "::Shalltear::AudioSpatialSettings",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "spatialBlend", "type": "f32", "offset": 0 },
+				{ "name": "minDistance", "type": "f32", "offset": 4 },
+				{ "name": "maxDistance", "type": "f32", "offset": 8 },
+				{ "name": "rolloffMode", "type": "AudioRolloffMode", "offset": 12 },
+				{ "name": "spread", "type": "f32", "offset": 16 },
+				{ "name": "dopplerLevel", "type": "f32", "offset": 20 },
+				{ "name": "occlusion", "type": "f32", "offset": 24 },
+				{ "name": "spatialize", "type": "bool", "offset": 28 },
+				{ "name": "spatializePostEffects", "type": "bool", "offset": 29 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "EngineAudioVoice", "cpp": "::Shalltear::AudioVoice", "owned": true, "create": true },
+		{ "name": "AudioBus", "cpp": "::Shalltear::AudioBus", "owned": true, "create": true },
+		{ "name": "AudioPlayParams", "cpp": "::Shalltear::AudioPlayParams", "owned": true, "create": true },
+		{ "name": "AudioDistanceCurves", "cpp": "::Shalltear::AudioDistanceCurves", "owned": true, "create": true },
+		{ "name": "AudioVoiceEffect", "cpp": "::Shalltear::AudioVoiceEffect", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

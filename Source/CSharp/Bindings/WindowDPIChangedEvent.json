@@ -1,0 +1,55 @@
+{
+	"area": "WindowDPIChangedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowEvents.h",
+		"Shalltear/Core/Math/Geometry.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowDPIChangedEvent",
+	"instance": "WindowDPIChangedEvent",
+	"functions": [
+		{
+			"id": "GetWindow",
+			"cpp": "(self->window).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		},
+		{
+			"id": "GetScale",
+			"cpp": "self->scale",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Scale", "kind": "getter" }
+		},
+		{
+			"id": "SetScale",
+			"cpp": "self->scale = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "Scale", "kind": "setter" }
+		},
+		{
+			"id": "GetSuggestedRect",
+			"cpp": "self->suggestedRect",
+			"returns": "RectI",
+			"params": [],
+			"csharp": { "member": "SuggestedRect", "kind": "getter" }
+		},
+		{
+			"id": "SetSuggestedRect",
+			"cpp": "self->suggestedRect = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RectI" }],
+			"csharp": { "member": "SuggestedRect", "kind": "setter" }
+		}
+	]
+}

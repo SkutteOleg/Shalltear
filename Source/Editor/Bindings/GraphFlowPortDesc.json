@@ -1,0 +1,39 @@
+{
+	"area": "GraphFlowPortDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphCanvas.h"
+	],
+	"class": "Shalltear.Editor.GraphFlowPortDesc",
+	"instance": "GraphFlowPortDesc",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetConnected",
+			"cpp": "self->connected",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Connected", "kind": "getter" }
+		},
+		{
+			"id": "SetConnected",
+			"cpp": "self->connected = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Connected", "kind": "setter" }
+		}
+	]
+}

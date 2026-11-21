@@ -1,0 +1,44 @@
+{
+	"area": "FrameImage",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/FramePass.h"
+	],
+	"class": "Shalltear.FrameImage",
+	"instance": "FrameImage",
+	"structs": [
+		{
+			"name": "FrameImage",
+			"cpp": "::Shalltear::FrameImage",
+			"size": 4,
+			"align": 4,
+			"fields": [{ "name": "id", "type": "u32", "offset": 0 }]
+		},
+		{
+			"name": "ComputeBinding",
+			"cpp": "::Shalltear::ComputeBinding",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "binding", "type": "u32", "offset": 0 },
+				{ "name": "buffer", "type": "RHIBufferHandle", "offset": 4 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "FramePassPlan", "cpp": "::Shalltear::FramePassPlan" },
+		{ "name": "CameraDepth", "cpp": "::Shalltear::CameraDepth", "owned": true, "create": true },
+		{ "name": "ComputeContext", "cpp": "::Shalltear::ComputeContext" },
+		{ "name": "ComputeTexture", "cpp": "::Shalltear::ComputeTexture", "owned": true, "create": true },
+		{ "name": "FramePass", "cpp": "::Shalltear::FramePass" }
+	],
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}

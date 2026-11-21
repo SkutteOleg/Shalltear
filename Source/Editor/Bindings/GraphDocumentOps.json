@@ -1,0 +1,292 @@
+{
+	"area": "GraphDocumentOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/GraphDocument.h"
+	],
+	"class": "Shalltear.Editor.GraphDocumentOps",
+	"enums": [
+		{
+			"name": "GraphNoteTheme",
+			"cpp": "::Shalltear::GraphNoteTheme",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Light", "value": 0 },
+				{ "name": "Dark", "value": 1 }
+			]
+		},
+		{
+			"name": "GraphNoteSize",
+			"cpp": "::Shalltear::GraphNoteSize",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Small", "value": 0 },
+				{ "name": "Medium", "value": 1 },
+				{ "name": "Large", "value": 2 },
+				{ "name": "Huge", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "GraphDocument", "cpp": "::Shalltear::GraphDocument", "owned": true, "create": true },
+		{ "name": "GraphNode", "cpp": "::Shalltear::GraphNode", "owned": true, "create": true },
+		{ "name": "GraphContext", "cpp": "::Shalltear::GraphContext", "owned": true, "create": true },
+		{ "name": "GraphNote", "cpp": "::Shalltear::GraphNote", "owned": true, "create": true },
+		{ "name": "GraphSetting", "cpp": "::Shalltear::GraphSetting", "owned": true, "create": true },
+		{ "name": "GraphInput", "cpp": "::Shalltear::GraphInput", "owned": true, "create": true },
+		{ "name": "GraphFlow", "cpp": "::Shalltear::GraphFlow", "owned": true, "create": true },
+		{ "name": "GraphProperty", "cpp": "::Shalltear::GraphProperty", "owned": true, "create": true },
+		{ "name": "GraphGroup", "cpp": "::Shalltear::GraphGroup", "owned": true, "create": true }
+	],
+	"constants": [
+		{ "name": "FORMAT_VERSION", "cpp": "::Shalltear::GraphDocumentOps::FORMAT_VERSION", "type": "u32", "value": 4 },
+		{ "name": "RedirectDef", "cpp": "::Shalltear::GraphDocumentOps::RedirectDef", "type": "string", "value": "Utility/Redirect" },
+		{ "name": "RedirectIn", "cpp": "::Shalltear::GraphDocumentOps::RedirectIn", "type": "string", "value": "In" },
+		{ "name": "RedirectOut", "cpp": "::Shalltear::GraphDocumentOps::RedirectOut", "type": "string", "value": "Out" }
+	],
+	"functions": [
+		{
+			"id": "Read",
+			"cpp": "::Shalltear::GraphDocumentOps::Read(text, *outValue, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "text", "type": "string" },
+				{ "name": "outValue", "type": "GraphDocument" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Read", "kind": "method" }
+		},
+		{
+			"id": "Write",
+			"cpp": "::Shalltear::GraphDocumentOps::Write(*document)",
+			"returns": "string",
+			"params": [{ "name": "document", "type": "GraphDocument" }],
+			"csharp": { "member": "Write", "kind": "method" }
+		},
+		{
+			"id": "FindNode",
+			"cpp": "::Shalltear::GraphDocumentOps::FindNode(*document, id)",
+			"returns": "GraphNode",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "id", "type": "u32" }
+			],
+			"csharp": { "member": "FindNode", "kind": "method" }
+		},
+		{
+			"id": "MoveNode",
+			"cpp": "::Shalltear::GraphDocumentOps::MoveNode(*document, id, position)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "id", "type": "u32" },
+				{ "name": "position", "type": "Vec2" }
+			],
+			"csharp": { "member": "MoveNode", "kind": "method" }
+		},
+		{
+			"id": "Connect",
+			"cpp": "::Shalltear::GraphDocumentOps::Connect(*document, fromNode, fromPort, toNode, toPort)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "fromNode", "type": "u32" },
+				{ "name": "fromPort", "type": "string" },
+				{ "name": "toNode", "type": "u32" },
+				{ "name": "toPort", "type": "string" }
+			],
+			"csharp": { "member": "Connect", "kind": "method" }
+		},
+		{
+			"id": "Disconnect",
+			"cpp": "::Shalltear::GraphDocumentOps::Disconnect(*document, toNode, toPort)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "toNode", "type": "u32" },
+				{ "name": "toPort", "type": "string" }
+			],
+			"csharp": { "member": "Disconnect", "kind": "method" }
+		},
+		{
+			"id": "Link",
+			"cpp": "::Shalltear::GraphDocumentOps::Link(*document, from, to, slot)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "from", "type": "u32" },
+				{ "name": "to", "type": "u32" },
+				{ "name": "slot", "type": "string" }
+			],
+			"csharp": { "member": "Link", "kind": "method" }
+		},
+		{
+			"id": "Unlink",
+			"cpp": "::Shalltear::GraphDocumentOps::Unlink(*document, from, to, slot)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "from", "type": "u32" },
+				{ "name": "to", "type": "u32" },
+				{ "name": "slot", "type": "string" }
+			],
+			"csharp": { "member": "Unlink", "kind": "method" }
+		},
+		{
+			"id": "MoveBlocks",
+			"cpp": "::Shalltear::GraphDocumentOps::MoveBlocks(*document, blocks, context, index)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "blocks", "type": "list<u32>" },
+				{ "name": "context", "type": "u32" },
+				{ "name": "index", "type": "u32" }
+			],
+			"csharp": { "member": "MoveBlocks", "kind": "method" }
+		},
+		{
+			"id": "SetBlockEnabled",
+			"cpp": "::Shalltear::GraphDocumentOps::SetBlockEnabled(*document, block, enabled)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "block", "type": "u32" },
+				{ "name": "enabled", "type": "bool" }
+			],
+			"csharp": { "member": "SetBlockEnabled", "kind": "method" }
+		},
+		{
+			"id": "SetInputSpace",
+			"cpp": "::Shalltear::GraphDocumentOps::SetInputSpace(*document, node, port, space)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "node", "type": "u32" },
+				{ "name": "port", "type": "string" },
+				{ "name": "space", "type": "string" }
+			],
+			"csharp": { "member": "SetInputSpace", "kind": "method" }
+		},
+		{
+			"id": "ContextOf",
+			"cpp": "::Shalltear::GraphDocumentOps::ContextOf(*document, block)",
+			"returns": "GraphContext",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "block", "type": "u32" }
+			],
+			"csharp": { "member": "ContextOf", "kind": "method" }
+		},
+		{
+			"id": "Delete",
+			"cpp": "::Shalltear::GraphDocumentOps::Delete(*document, ids)",
+			"returns": "u32",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "ids", "type": "list<u32>" }
+			],
+			"csharp": { "member": "Delete", "kind": "method" }
+		},
+		{
+			"id": "AddGroup",
+			"cpp": "::Shalltear::GraphDocumentOps::AddGroup(*document, title, members, position)",
+			"returns": "u32",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "title", "type": "string" },
+				{ "name": "members", "type": "list<u32>" },
+				{ "name": "position", "type": "Vec2" }
+			],
+			"csharp": { "member": "AddGroup", "kind": "method" }
+		},
+		{
+			"id": "SetGroup",
+			"cpp": "::Shalltear::GraphDocumentOps::SetGroup(*document, members, group)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "members", "type": "list<u32>" },
+				{ "name": "group", "type": "u32" }
+			],
+			"csharp": { "member": "SetGroup", "kind": "method" }
+		},
+		{
+			"id": "SetGroupTitle",
+			"cpp": "::Shalltear::GraphDocumentOps::SetGroupTitle(*document, group, title)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "group", "type": "u32" },
+				{ "name": "title", "type": "string" }
+			],
+			"csharp": { "member": "SetGroupTitle", "kind": "method" }
+		},
+		{
+			"id": "AddNote",
+			"cpp": "::Shalltear::GraphDocumentOps::AddNote(*document, *note)",
+			"returns": "u32",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "note", "type": "GraphNote" }
+			],
+			"csharp": { "member": "AddNote", "kind": "method" }
+		},
+		{
+			"id": "SetNote",
+			"cpp": "::Shalltear::GraphDocumentOps::SetNote(*document, *note)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "note", "type": "GraphNote" }
+			],
+			"csharp": { "member": "SetNote", "kind": "method" }
+		},
+		{
+			"id": "InsertRedirect",
+			"cpp": "::Shalltear::GraphDocumentOps::InsertRedirect(*document, toNode, toPort, position)",
+			"returns": "u32",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "toNode", "type": "u32" },
+				{ "name": "toPort", "type": "string" },
+				{ "name": "position", "type": "Vec2" }
+			],
+			"csharp": { "member": "InsertRedirect", "kind": "method" }
+		},
+		{
+			"id": "Copy",
+			"cpp": "::Shalltear::GraphDocumentOps::Copy(*document, ids)",
+			"returns": "string",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "ids", "type": "list<u32>" }
+			],
+			"csharp": { "member": "Copy", "kind": "method" }
+		},
+		{
+			"id": "Paste",
+			"cpp": "::Shalltear::GraphDocumentOps::Paste(*document, fragment, offset, pasted, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "fragment", "type": "string" },
+				{ "name": "offset", "type": "Vec2" },
+				{ "name": "pasted", "type": "list<u32>", "out": true, "cpp": "::Shalltear::Vector<u32>" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "Paste", "kind": "method" }
+		},
+		{
+			"id": "Duplicate",
+			"cpp": "::Shalltear::GraphDocumentOps::Duplicate(*document, ids, offset, pasted)",
+			"returns": "bool",
+			"params": [
+				{ "name": "document", "type": "GraphDocument" },
+				{ "name": "ids", "type": "list<u32>" },
+				{ "name": "offset", "type": "Vec2" },
+				{ "name": "pasted", "type": "list<u32>", "out": true, "cpp": "::Shalltear::Vector<u32>" }
+			],
+			"csharp": { "member": "Duplicate", "kind": "method" }
+		}
+	]
+}

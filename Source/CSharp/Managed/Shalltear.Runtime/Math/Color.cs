@@ -130,6 +130,11 @@ public struct Color : IEquatable<Color> {
 		return string.Create(CultureInfo.InvariantCulture, $"#{ToByte(r):x2}{ToByte(g):x2}{ToByte(b):x2}{ToByte(a):x2}");
 	}
 
+	/// <summary>8 bits per channel, channels clamped to 0-1.</summary>
+	public readonly Color32 ToColor32() {
+		return new Color32 { r = ToByte(r), g = ToByte(g), b = ToByte(b), a = ToByte(a) };
+	}
+
 	static byte ToByte(float channel) {
 		return (byte)MathF.Round(MathUtil.Clamp01(channel) * 255.0f, MidpointRounding.AwayFromZero);
 	}

@@ -1,0 +1,72 @@
+{
+	"area": "FrameStages",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Frame/FrameStages.h"
+	],
+	"class": "Shalltear.FrameStages",
+	"enums": [
+		{
+			"name": "FrameStage",
+			"cpp": "::Shalltear::FrameStage",
+			"underlying": "u8",
+			"values": [
+				{ "name": "FixedUpdate", "value": 0 },
+				{ "name": "Update", "value": 1 },
+				{ "name": "UIUpdate", "value": 2 },
+				{ "name": "LateUpdate", "value": 3 },
+				{ "name": "EndFrame", "value": 4 },
+				{ "name": "Render", "value": 5 }
+			]
+		},
+		{
+			"name": "FrameStagePosition",
+			"cpp": "::Shalltear::FrameStagePosition",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Early", "value": 0 },
+				{ "name": "Normal", "value": 1 },
+				{ "name": "Late", "value": 2 }
+			]
+		}
+	],
+	"constants": [{ "name": "FRAME_STAGE_COUNT", "cpp": "::Shalltear::FRAME_STAGE_COUNT", "type": "u32", "value": 6 }],
+	"functions": [
+		{
+			"id": "GetFrameStageName",
+			"cpp": "::Shalltear::GetFrameStageName(stage)",
+			"returns": "string",
+			"params": [{ "name": "stage", "type": "FrameStage" }],
+			"csharp": { "member": "GetFrameStageName", "kind": "method" }
+		},
+		{
+			"id": "FindFrameStage",
+			"cpp": "::Shalltear::FindFrameStage(name, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "outValue", "type": "FrameStage", "out": true }
+			],
+			"csharp": { "member": "FindFrameStage", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::FrameStages::Register(stage, position, Slots::FromBits<void (*)(const Shalltear::FrameStageArgs &, void *)>(fn), reinterpret_cast<void*>(static_cast<uintptr_t>(user)), ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "stage", "type": "FrameStage" },
+				{ "name": "position", "type": "FrameStagePosition" },
+				{ "name": "fn", "type": "u64" },
+				{ "name": "user", "type": "u64" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::FrameStages::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		}
+	]
+}

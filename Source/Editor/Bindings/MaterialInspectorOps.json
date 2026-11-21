@@ -1,0 +1,59 @@
+{
+	"area": "MaterialInspectorOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/MaterialInspectorOps.h",
+		"Shalltear/Core/Graphics/ShaderAsset.h"
+	],
+	"class": "Shalltear.Editor.MaterialInspectorOps",
+	"constants": [
+		{ "name": "ParametersGroup", "cpp": "::Shalltear::MaterialInspectorOps::ParametersGroup", "type": "string", "value": "Parameters" },
+		{ "name": "TexturesGroup", "cpp": "::Shalltear::MaterialInspectorOps::TexturesGroup", "type": "string", "value": "Textures" },
+		{ "name": "KeywordsGroup", "cpp": "::Shalltear::MaterialInspectorOps::KeywordsGroup", "type": "string", "value": "Keywords" },
+		{ "name": "SurfaceOptionsGroup", "cpp": "::Shalltear::MaterialInspectorOps::SurfaceOptionsGroup", "type": "string", "value": "Surface Options" },
+		{ "name": "AdvancedOptionsGroup", "cpp": "::Shalltear::MaterialInspectorOps::AdvancedOptionsGroup", "type": "string", "value": "Advanced Options" }
+	],
+	"functions": [
+		{
+			"id": "CollectShaderChoices",
+			"cpp": "::Shalltear::MaterialInspectorOps::CollectShaderChoices(outValue)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "outValue",
+					"type": "list<MaterialInspectorOpsShaderChoice>",
+					"out": true,
+					"cpp": "::Shalltear::Vector<::Shalltear::MaterialInspectorOps::ShaderChoice>"
+				}
+			],
+			"csharp": { "member": "CollectShaderChoices", "kind": "method" }
+		},
+		{
+			"id": "RegisterShaderSource",
+			"cpp": "::Shalltear::MaterialInspectorOps::RegisterShaderSource(extension, Slots::FromBits<bool (*)(std::basic_string_view<char>)>(isMaterialShader), ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "extension", "type": "string" },
+				{ "name": "isMaterialShader", "type": "u64" }
+			],
+			"csharp": { "member": "RegisterShaderSource", "kind": "method" }
+		},
+		{
+			"id": "UnregisterShaderSourcesOwnedBy",
+			"cpp": "::Shalltear::MaterialInspectorOps::UnregisterShaderSourcesOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterShaderSourcesOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "BuildLayout",
+			"cpp": "::Shalltear::MaterialInspectorOps::BuildLayout(*shader, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "shader", "type": "ShaderAsset" },
+				{ "name": "outValue", "type": "list<MaterialInspectorOpsGroup>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::MaterialInspectorOps::Group>" }
+			],
+			"csharp": { "member": "BuildLayout", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,54 @@
+{
+	"area": "PakPayloadLocator",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/PakFormat.h",
+		"Shalltear/Core/FileSystem.h"
+	],
+	"class": "Shalltear.PakPayloadLocator",
+	"instance": "PakPayloadLocator",
+	"functions": [
+		{
+			"id": "GetFile",
+			"cpp": "self->file",
+			"returns": "FileReader",
+			"params": [],
+			"csharp": { "member": "File", "kind": "getter" }
+		},
+		{
+			"id": "SetFile",
+			"cpp": "self->file = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FileReader", "optional": true }],
+			"csharp": { "member": "File", "kind": "setter" }
+		},
+		{
+			"id": "GetOffset",
+			"cpp": "self->offset",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Offset", "kind": "getter" }
+		},
+		{
+			"id": "SetOffset",
+			"cpp": "self->offset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Offset", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		}
+	]
+}

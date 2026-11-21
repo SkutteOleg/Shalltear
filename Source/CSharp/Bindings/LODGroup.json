@@ -1,0 +1,134 @@
+{
+	"area": "LODGroup",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/LODGroup.h"
+	],
+	"class": "Shalltear.LODGroup",
+	"instance": "LODGroup",
+	"types": [{ "name": "LODGroup", "cpp": "::Shalltear::LODGroup", "engine": "LODGroup", "base": "Component" }],
+	"enums": [
+		{
+			"name": "LODFadeMode",
+			"cpp": "::Shalltear::LODFadeMode",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "CrossFade", "value": 1 },
+				{ "name": "AnimatedCrossFade", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "LODChoice",
+			"cpp": "::Shalltear::LODChoice",
+			"size": 3,
+			"align": 1,
+			"fields": [
+				{ "name": "level", "type": "u8", "offset": 0 },
+				{ "name": "next", "type": "u8", "offset": 1 },
+				{ "name": "keep", "type": "u8", "offset": 2 }
+			]
+		},
+		{
+			"name": "LODFadeState",
+			"cpp": "::Shalltear::LODFadeState",
+			"size": 16,
+			"align": 8,
+			"fields": [
+				{ "name": "from", "type": "u8", "offset": 0 },
+				{ "name": "to", "type": "u8", "offset": 1 },
+				{ "name": "started", "type": "bool", "offset": 2 },
+				{ "name": "start", "type": "f64", "offset": 8 }
+			]
+		}
+	],
+	"natives": [{ "name": "LODLevel", "cpp": "::Shalltear::LODLevel", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "GetLevelCount",
+			"cpp": "self->GetLevelCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "LevelCount", "kind": "getter" }
+		},
+		{
+			"id": "GetLevel",
+			"cpp": "self->GetLevel(index)",
+			"returns": "LODLevel",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "GetLevel", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "EditLevel",
+			"cpp": "self->EditLevel(index)",
+			"returns": "LODLevel",
+			"params": [{ "name": "index", "type": "u32" }],
+			"csharp": { "member": "EditLevel", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "SetLevels",
+			"cpp": "self->SetLevels(Slots::Copies<::Shalltear::Vector<::Shalltear::LODLevel>>(levels))",
+			"returns": "void",
+			"params": [{ "name": "levels", "type": "list<LODLevel>" }],
+			"csharp": { "member": "SetLevels", "kind": "method" }
+		},
+		{
+			"id": "AddLevel",
+			"cpp": "self->AddLevel(screenRelativeHeight)",
+			"returns": "LODLevel",
+			"params": [{ "name": "screenRelativeHeight", "type": "f32" }],
+			"csharp": { "member": "AddLevel", "kind": "method" },
+			"nullable": false
+		},
+		{
+			"id": "GetFadeMode",
+			"cpp": "self->GetFadeMode()",
+			"returns": "LODFadeMode",
+			"params": [],
+			"csharp": { "member": "FadeMode", "kind": "getter" }
+		},
+		{
+			"id": "SetFadeMode",
+			"cpp": "self->SetFadeMode(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "LODFadeMode" }],
+			"csharp": { "member": "FadeMode", "kind": "setter" }
+		},
+		{
+			"id": "GetCrossFadeDuration",
+			"cpp": "self->GetCrossFadeDuration()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "CrossFadeDuration", "kind": "getter" }
+		},
+		{
+			"id": "SetCrossFadeDuration",
+			"cpp": "self->SetCrossFadeDuration(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "CrossFadeDuration", "kind": "setter" }
+		},
+		{
+			"id": "Choose",
+			"cpp": "self->Choose(screenRelativeHeight)",
+			"returns": "LODChoice",
+			"params": [{ "name": "screenRelativeHeight", "type": "f32" }],
+			"csharp": { "member": "Choose", "kind": "method" }
+		},
+		{
+			"id": "Choose2",
+			"cpp": "self->Choose(screenRelativeHeight, state, now)",
+			"returns": "LODChoice",
+			"params": [
+				{ "name": "screenRelativeHeight", "type": "f32" },
+				{ "name": "state", "type": "LODFadeState", "out": true },
+				{ "name": "now", "type": "f64" }
+			],
+			"csharp": { "member": "Choose", "kind": "method" }
+		}
+	]
+}

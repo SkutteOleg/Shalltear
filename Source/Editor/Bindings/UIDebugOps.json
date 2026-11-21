@@ -1,0 +1,331 @@
+{
+	"area": "UIDebugOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIDebugOps.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.Editor.UIDebugOps",
+	"constants": [
+		{ "name": "MarkerClass", "cpp": "::Shalltear::UIDebugOps::MarkerClass", "type": "string", "value": "slt-uidebug-overlay" },
+		{ "name": "HIGHLIGHT_BAND_COUNT", "cpp": "::Shalltear::UIDebugOps::HIGHLIGHT_BAND_COUNT", "type": "u64", "value": 4 },
+		{ "name": "NoAtlasText", "cpp": "::Shalltear::UIDebugOps::NoAtlasText", "type": "string", "value": "No atlas page (headless: nothing was rasterized)" }
+	],
+	"functions": [
+		{
+			"id": "EnumerateTargets",
+			"cpp": "::Shalltear::UIDebugOps::EnumerateTargets(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<UIDebugOpsTarget>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::Target>" }
+			],
+			"csharp": { "member": "EnumerateTargets", "kind": "method" }
+		},
+		{
+			"id": "ResolveTarget",
+			"cpp": "::Shalltear::UIDebugOps::ResolveTarget(*target)",
+			"returns": "UIContext",
+			"params": [{ "name": "target", "type": "UIDebugOpsTarget" }],
+			"csharp": { "member": "ResolveTarget", "kind": "method" }
+		},
+		{
+			"id": "TargetForContext",
+			"cpp": "::Shalltear::UIDebugOps::TargetForContext(*context)",
+			"returns": "UIDebugOpsTarget",
+			"params": [{ "name": "context", "type": "UIContext" }],
+			"csharp": { "member": "TargetForContext", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "OpenDebuggerOn",
+			"cpp": "::Shalltear::UIDebugOps::OpenDebuggerOn(*target)",
+			"returns": "bool",
+			"params": [{ "name": "target", "type": "UIDebugOpsTarget" }],
+			"csharp": { "member": "OpenDebuggerOn", "kind": "method" }
+		},
+		{
+			"id": "BuildSnapshot",
+			"cpp": "::Shalltear::UIDebugOps::BuildSnapshot(*context, *outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "outValue", "type": "UIDebugOpsSnapshot" }
+			],
+			"csharp": { "member": "BuildSnapshot", "kind": "method" }
+		},
+		{
+			"id": "RowLabel",
+			"cpp": "::Shalltear::UIDebugOps::RowLabel(*context, element, *names)",
+			"returns": "string",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" }
+			],
+			"csharp": { "member": "RowLabel", "kind": "method" }
+		},
+		{
+			"id": "PathTo",
+			"cpp": "::Shalltear::UIDebugOps::PathTo(*context, element, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "outValue", "type": "list<u32>", "out": true, "cpp": "::Shalltear::Vector<u32>" }
+			],
+			"csharp": { "member": "PathTo", "kind": "method" }
+		},
+		{
+			"id": "Resolve",
+			"cpp": "::Shalltear::UIDebugOps::Resolve(*context, path)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "path", "type": "list<u32>" }
+			],
+			"csharp": { "member": "Resolve", "kind": "method" }
+		},
+		{
+			"id": "IdentityOf",
+			"cpp": "::Shalltear::UIDebugOps::IdentityOf(*context, element)",
+			"returns": "UIDebugOpsElementIdentity",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "IdentityOf", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		},
+		{
+			"id": "ResolveSame",
+			"cpp": "::Shalltear::UIDebugOps::ResolveSame(*context, path, *identity)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "path", "type": "list<u32>" },
+				{ "name": "identity", "type": "UIDebugOpsElementIdentity" }
+			],
+			"csharp": { "member": "ResolveSame", "kind": "method" }
+		},
+		{
+			"id": "PathKey",
+			"cpp": "::Shalltear::UIDebugOps::PathKey(path)",
+			"returns": "u64",
+			"params": [{ "name": "path", "type": "list<u32>" }],
+			"csharp": { "member": "PathKey", "kind": "method" }
+		},
+		{
+			"id": "ExpandAncestors",
+			"cpp": "::Shalltear::UIDebugOps::ExpandAncestors(path, collapsed)",
+			"returns": "bool",
+			"params": [
+				{ "name": "path", "type": "list<u32>" },
+				{ "name": "collapsed", "type": "list<u64>", "out": true, "cpp": "::Shalltear::Vector<u64>" }
+			],
+			"csharp": { "member": "ExpandAncestors", "kind": "method" }
+		},
+		{
+			"id": "BuildTreeView",
+			"cpp": "::Shalltear::UIDebugOps::BuildTreeView(*context, *snapshot, *names, *desc, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "snapshot", "type": "UIDebugOpsSnapshot" },
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" },
+				{ "name": "desc", "type": "UIDebugOpsTreeViewDesc" },
+				{ "name": "outValue", "type": "list<UIDebugOpsTreeRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::TreeRow>" }
+			],
+			"csharp": { "member": "BuildTreeView", "kind": "method" }
+		},
+		{
+			"id": "BuildGeometry",
+			"cpp": "::Shalltear::UIDebugOps::BuildGeometry(*context, element, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "outValue", "type": "UIDebugOpsGeometry", "out": true }
+			],
+			"csharp": { "member": "BuildGeometry", "kind": "method" }
+		},
+		{
+			"id": "FormatNumber",
+			"cpp": "::Shalltear::UIDebugOps::FormatNumber(valueValue)",
+			"returns": "string",
+			"params": [{ "name": "valueValue", "type": "f32" }],
+			"csharp": { "member": "FormatNumber", "kind": "method" }
+		},
+		{
+			"id": "PickAt",
+			"cpp": "::Shalltear::UIDebugOps::PickAt(*context, pointPx)",
+			"returns": "UIElementHandle",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "pointPx", "type": "Vec2" }
+			],
+			"csharp": { "member": "PickAt", "kind": "method" }
+		},
+		{
+			"id": "BuildHighlight",
+			"cpp": "::Shalltear::UIDebugOps::BuildHighlight(*context, element, *outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "outValue", "type": "UIDebugOpsHighlight" }
+			],
+			"csharp": { "member": "BuildHighlight", "kind": "method" }
+		},
+		{
+			"id": "HasFlag",
+			"cpp": "::Shalltear::UIDebugOps::HasFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UIDebugOpsTextBoxKinds" },
+				{ "name": "flags", "type": "UIDebugOpsTextBoxKinds" }
+			],
+			"csharp": { "member": "HasFlag", "kind": "method" }
+		},
+		{
+			"id": "HasAnyFlag",
+			"cpp": "::Shalltear::UIDebugOps::HasAnyFlag(valueValue, flags)",
+			"returns": "bool",
+			"params": [
+				{ "name": "valueValue", "type": "UIDebugOpsTextBoxKinds" },
+				{ "name": "flags", "type": "UIDebugOpsTextBoxKinds" }
+			],
+			"csharp": { "member": "HasAnyFlag", "kind": "method" }
+		},
+		{
+			"id": "BuildTextBoxes",
+			"cpp": "::Shalltear::UIDebugOps::BuildTextBoxes(*context, element, kinds, outValue)",
+			"returns": "UIDebugOpsTextOverlayStats",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "kinds", "type": "UIDebugOpsTextBoxKinds" },
+				{ "name": "outValue", "type": "list<UIDebugOpsTextBox>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::TextBox>" }
+			],
+			"csharp": { "member": "BuildTextBoxes", "kind": "method" }
+		},
+		{
+			"id": "CollectTextBoxes",
+			"cpp": "::Shalltear::UIDebugOps::CollectTextBoxes(*context, kinds, outValue)",
+			"returns": "UIDebugOpsTextOverlayStats",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "kinds", "type": "UIDebugOpsTextBoxKinds" },
+				{ "name": "outValue", "type": "list<UIDebugOpsTextBox>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::TextBox>" }
+			],
+			"csharp": { "member": "CollectTextBoxes", "kind": "method" }
+		},
+		{
+			"id": "BuildAtlasPages",
+			"cpp": "::Shalltear::UIDebugOps::BuildAtlasPages(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<UIDebugOpsAtlasPageRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::AtlasPageRow>" }
+			],
+			"csharp": { "member": "BuildAtlasPages", "kind": "method" }
+		},
+		{
+			"id": "BuildAttributes",
+			"cpp": "::Shalltear::UIDebugOps::BuildAttributes(*context, element, *names, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" },
+				{ "name": "outValue", "type": "list<UIDebugOpsAttributeRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::AttributeRow>" }
+			],
+			"csharp": { "member": "BuildAttributes", "kind": "method" }
+		},
+		{
+			"id": "BuildSheets",
+			"cpp": "::Shalltear::UIDebugOps::BuildSheets(*names, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" },
+				{ "name": "outValue", "type": "list<UIDebugOpsSheetRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::SheetRow>" }
+			],
+			"csharp": { "member": "BuildSheets", "kind": "method" }
+		},
+		{
+			"id": "BuildMatches",
+			"cpp": "::Shalltear::UIDebugOps::BuildMatches(*context, element, *names, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" },
+				{ "name": "outValue", "type": "list<UIDebugOpsMatch>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::Match>" }
+			],
+			"csharp": { "member": "BuildMatches", "kind": "method" }
+		},
+		{
+			"id": "BuildProperties",
+			"cpp": "::Shalltear::UIDebugOps::BuildProperties(*context, element, *names, outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" },
+				{ "name": "outValue", "type": "list<UIDebugOpsPropertyRow>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::UIDebugOps::PropertyRow>" }
+			],
+			"csharp": { "member": "BuildProperties", "kind": "method" }
+		},
+		{
+			"id": "SetProperty",
+			"cpp": "::Shalltear::UIDebugOps::SetProperty(*context, element, *edits, name, valueValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "edits", "type": "UIDebugOpsStyleEdits" },
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "valueValue", "type": "string" }
+			],
+			"csharp": { "member": "SetProperty", "kind": "method" }
+		},
+		{
+			"id": "CanRevert",
+			"cpp": "::Shalltear::UIDebugOps::CanRevert(*context, element, *edits, name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "edits", "type": "UIDebugOpsStyleEdits" },
+				{ "name": "name", "type": "StringHash" }
+			],
+			"csharp": { "member": "CanRevert", "kind": "method" }
+		},
+		{
+			"id": "RevertProperty",
+			"cpp": "::Shalltear::UIDebugOps::RevertProperty(*context, element, *edits, name)",
+			"returns": "bool",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "edits", "type": "UIDebugOpsStyleEdits" },
+				{ "name": "name", "type": "StringHash" }
+			],
+			"csharp": { "member": "RevertProperty", "kind": "method" }
+		},
+		{
+			"id": "SetClasses",
+			"cpp": "::Shalltear::UIDebugOps::SetClasses(*context, element, text, *names)",
+			"returns": "void",
+			"params": [
+				{ "name": "context", "type": "UIContext" },
+				{ "name": "element", "type": "UIElementHandle" },
+				{ "name": "text", "type": "string" },
+				{ "name": "names", "type": "UIDebugOpsNameDictionary" }
+			],
+			"csharp": { "member": "SetClasses", "kind": "method" }
+		}
+	]
+}

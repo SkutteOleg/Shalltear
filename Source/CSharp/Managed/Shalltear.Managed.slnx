@@ -3,8 +3,14 @@
 	<Project Path="Shalltear.Physics3D/Shalltear.Physics3D.csproj" />
 	<Project Path="Shalltear.Audio/Shalltear.Audio.csproj" />
 	<Project Path="Shalltear.Animation/Shalltear.Animation.csproj" />
+	<Project Path="Shalltear.Network/Shalltear.Network.csproj" />
+	<Project Path="Shalltear.PostProcessing/Shalltear.PostProcessing.csproj" />
+	<Project Path="Shalltear.VisualEffects/Shalltear.VisualEffects.csproj" />
+	<Project Path="Shalltear.ImportPipeline/Shalltear.ImportPipeline.csproj" />
+	<Project Path="Shalltear.Editor/Shalltear.Editor.csproj" />
 	<Project Path="Shalltear.Generators/Shalltear.Generators.csproj" />
 	<Project Path="Shalltear.Conformance/Shalltear.Conformance.csproj" />
 	<Project Path="Shalltear.Conformance.Audio/Shalltear.Conformance.Audio.csproj" />
+	<Project Path="Shalltear.Conformance.Editor/Shalltear.Conformance.Editor.csproj" />
 	<Project Path="Shalltear.Renamer/Shalltear.Renamer.csproj" />
 </Solution>

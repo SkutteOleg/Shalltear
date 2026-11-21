@@ -1,0 +1,151 @@
+{
+	"area": "ReflectBuilder",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/Reflect.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.ReflectBuilder",
+	"instance": "ReflectBuilder",
+	"natives": [{ "name": "ReflectBuilder", "cpp": "::Shalltear::ReflectBuilder", "owned": true }],
+	"functions": [
+		{
+			"id": "SetParent",
+			"cpp": "self->SetParent(parent)",
+			"returns": "void",
+			"params": [{ "name": "parent", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "SetParent", "kind": "method" }
+		},
+		{
+			"id": "SetFlags",
+			"cpp": "self->SetFlags(flags)",
+			"returns": "void",
+			"params": [{ "name": "flags", "type": "u32" }],
+			"csharp": { "member": "SetFlags", "kind": "method" }
+		},
+		{
+			"id": "SetConstructor",
+			"cpp": "self->SetConstructor(Slots::FromBits<void (*)(void *)>(fn))",
+			"returns": "void",
+			"params": [{ "name": "fn", "type": "u64" }],
+			"csharp": { "member": "SetConstructor", "kind": "method" }
+		},
+		{
+			"id": "SetDestructor",
+			"cpp": "self->SetDestructor(Slots::FromBits<void (*)(void *)>(fn))",
+			"returns": "void",
+			"params": [{ "name": "fn", "type": "u64" }],
+			"csharp": { "member": "SetDestructor", "kind": "method" }
+		},
+		{
+			"id": "SetCreateFn",
+			"cpp": "self->SetCreateFn(Slots::FromBits<Shalltear::Object *(*)(Shalltear::MemTag)>(fn))",
+			"returns": "void",
+			"params": [{ "name": "fn", "type": "u64" }],
+			"csharp": { "member": "SetCreateFn", "kind": "method" }
+		},
+		{
+			"id": "SetCreateTypedFn",
+			"cpp": "self->SetCreateTypedFn(Slots::FromBits<Shalltear::Object *(*)(const Shalltear::TypeInfo *, Shalltear::MemTag)>(fn))",
+			"returns": "void",
+			"params": [{ "name": "fn", "type": "u64" }],
+			"csharp": { "member": "SetCreateTypedFn", "kind": "method" }
+		},
+		{
+			"id": "SetFieldSyncFn",
+			"cpp": "self->SetFieldSyncFn(Slots::FromBits<void (*)(void *, Shalltear::FieldSync)>(fn))",
+			"returns": "void",
+			"params": [{ "name": "fn", "type": "u64" }],
+			"csharp": { "member": "SetFieldSyncFn", "kind": "method" }
+		},
+		{
+			"id": "SetDisplayName",
+			"cpp": "self->SetDisplayName(str(literal).c_str())",
+			"returns": "void",
+			"params": [{ "name": "literal", "type": "string" }],
+			"csharp": { "member": "SetDisplayName", "kind": "method" }
+		},
+		{
+			"id": "AddField",
+			"cpp": "Slots::WithInitializerList<::Shalltear::AttributeInfo>(std::span<const ::Shalltear::AttributeInfo>(Slots::Copies<::Shalltear::Vector<::Shalltear::AttributeInfo>>(attributes)), [&](std::initializer_list<::Shalltear::AttributeInfo> attributesList) { return self->AddField(name, str(displayName).c_str(), fieldType, size, alignment, Slots::FromBits<void (*)(const void *, Shalltear::Variant *)>(getFn), Slots::FromBits<void (*)(void *, const Shalltear::Variant *)>(setFn), Slots::FromBits<void *(*)(void *)>(addrFn), flags, attributesList); })",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "displayName", "type": "string" },
+				{ "name": "fieldType", "type": "TypeInfo", "optional": true },
+				{ "name": "size", "type": "u64" },
+				{ "name": "alignment", "type": "u64" },
+				{ "name": "getFn", "type": "u64" },
+				{ "name": "setFn", "type": "u64" },
+				{ "name": "addrFn", "type": "u64" },
+				{ "name": "flags", "type": "u32" },
+				{ "name": "attributes", "type": "list<AttributeInfo>" }
+			],
+			"csharp": { "member": "AddField", "kind": "method" }
+		},
+		{
+			"id": "AddContainerField",
+			"cpp": "Slots::WithInitializerList<::Shalltear::AttributeInfo>(std::span<const ::Shalltear::AttributeInfo>(Slots::Copies<::Shalltear::Vector<::Shalltear::AttributeInfo>>(attributes)), [&](std::initializer_list<::Shalltear::AttributeInfo> attributesList) { return self->AddContainerField(name, str(displayName).c_str(), size, alignment, Slots::FromBits<void *(*)(void *)>(addrFn), flags, container, attributesList); })",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "displayName", "type": "string" },
+				{ "name": "size", "type": "u64" },
+				{ "name": "alignment", "type": "u64" },
+				{ "name": "addrFn", "type": "u64" },
+				{ "name": "flags", "type": "u32" },
+				{ "name": "container", "type": "ContainerInfo", "optional": true },
+				{ "name": "attributes", "type": "list<AttributeInfo>" }
+			],
+			"csharp": { "member": "AddContainerField", "kind": "method" }
+		},
+		{
+			"id": "AddMethod",
+			"cpp": "self->AddMethod(name, str(displayName).c_str(), returnType, Slots::FromBits<const Shalltear::TypeInfo *const *>(paramTypes), paramCount, Slots::FromBits<void (*)(void *, const Shalltear::Variant *, unsigned int, Shalltear::Variant *)>(invokeFn), flags)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "displayName", "type": "string" },
+				{ "name": "returnType", "type": "TypeInfo", "optional": true },
+				{ "name": "paramTypes", "type": "u64" },
+				{ "name": "paramCount", "type": "u8" },
+				{ "name": "invokeFn", "type": "u64" },
+				{ "name": "flags", "type": "u32" }
+			],
+			"csharp": { "member": "AddMethod", "kind": "method" }
+		},
+		{
+			"id": "AddAttribute",
+			"cpp": "self->AddAttribute(key, *valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "key", "type": "StringHash" },
+				{ "name": "valueValue", "type": "Variant" }
+			],
+			"csharp": { "member": "AddAttribute", "kind": "method" }
+		},
+		{
+			"id": "FinalizeOwned",
+			"cpp": "self->FinalizeOwned(reinterpret_cast<const void*>(static_cast<uintptr_t>(ownerToken)))",
+			"returns": "TypeInfo",
+			"params": [{ "name": "ownerToken", "type": "u64" }],
+			"csharp": { "member": "FinalizeOwned", "kind": "method" }
+		},
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::ReflectBuilder(name, size, alignment)",
+			"returns": "ReflectBuilder",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "size", "type": "u64" },
+				{ "name": "alignment", "type": "u64" }
+			],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

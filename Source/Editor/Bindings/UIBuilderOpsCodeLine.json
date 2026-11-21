@@ -1,0 +1,39 @@
+{
+	"area": "UIBuilderOpsCodeLine",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/UIBuilderOps.h"
+	],
+	"class": "Shalltear.Editor.UIBuilderOpsCodeLine",
+	"instance": "UIBuilderOpsCodeLine",
+	"functions": [
+		{
+			"id": "GetNumber",
+			"cpp": "self->number",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Number", "kind": "getter" }
+		},
+		{
+			"id": "SetNumber",
+			"cpp": "self->number = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Number", "kind": "setter" }
+		},
+		{
+			"id": "GetSpans",
+			"cpp": "self->spans",
+			"returns": "list<UIBuilderOpsCodeSpan>",
+			"params": [],
+			"csharp": { "member": "Spans", "kind": "getter" }
+		},
+		{
+			"id": "SetSpans",
+			"cpp": "self->spans = Slots::Copies<::Shalltear::Vector<::Shalltear::UIBuilderOps::CodeSpan>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<UIBuilderOpsCodeSpan>" }],
+			"csharp": { "member": "Spans", "kind": "setter" }
+		}
+	]
+}

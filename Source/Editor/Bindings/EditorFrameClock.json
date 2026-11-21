@@ -1,0 +1,59 @@
+{
+	"area": "EditorFrameClock",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorFrameClock.h"
+	],
+	"class": "Shalltear.Editor.EditorFrameClock",
+	"instance": "EditorFrameClock",
+	"enums": [
+		{
+			"name": "EditorFrameClockFrameKind",
+			"cpp": "::Shalltear::EditorFrameClock::FrameKind",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Frozen", "value": 0 },
+				{ "name": "Gameplay", "value": 1 },
+				{ "name": "Step", "value": 2 }
+			]
+		}
+	],
+	"natives": [{ "name": "EditorFrameClock", "cpp": "::Shalltear::EditorFrameClock", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "KindFromGate",
+			"cpp": "::Shalltear::EditorFrameClock::KindFromGate(tickGameplay, paused)",
+			"returns": "EditorFrameClockFrameKind",
+			"params": [
+				{ "name": "tickGameplay", "type": "bool" },
+				{ "name": "paused", "type": "bool" }
+			],
+			"csharp": { "member": "KindFromGate", "kind": "method" },
+			"static": true
+		},
+		{
+			"id": "BeginFrame",
+			"cpp": "self->BeginFrame(kind, wallDeltaSeconds)",
+			"returns": "u32",
+			"params": [
+				{ "name": "kind", "type": "EditorFrameClockFrameKind" },
+				{ "name": "wallDeltaSeconds", "type": "f64" }
+			],
+			"csharp": { "member": "BeginFrame", "kind": "method" }
+		},
+		{
+			"id": "GetAlpha",
+			"cpp": "self->GetAlpha()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "Alpha", "kind": "getter" }
+		},
+		{
+			"id": "DropBankedTime",
+			"cpp": "self->DropBankedTime()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "DropBankedTime", "kind": "method" }
+		}
+	]
+}

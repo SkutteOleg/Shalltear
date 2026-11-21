@@ -1,5 +1,7 @@
 #include "CSharpProjectFiles.h"
 
+#include "EditorBindings.h"
+
 #include "CSharpSettings.h"
 #include "PackageBindings.h"
 
@@ -141,6 +143,10 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 					references += ReferenceTo(*found, false);
 				}
 			}
+			if (definition.editorOnly && !options.editorAssembly.empty()) {
+				references += "\t\t<Reference Include=\"" + options.editorAssembly + "\" HintPath=\"$(ShalltearManagedDir)" + options.editorAssembly +
+							  ".dll\" Private=\"false\" />\n";
+			}
 			str defines;
 			for (const str& symbol : definition.defines) {
 				defines += ";" + symbol;
@@ -248,7 +254,12 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 															: DotNetToolchain::GetPackagesRoot(DotNetToolchain::GetCacheRoot(), DotNetToolchain::GetPin());
 		options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
 		for (u32 index = 0; index < CSharpImpl::PackageBindings::GetCount(); ++index) {
-			options.packageAssemblies.push_back("Shalltear." + str(CSharpImpl::PackageBindings::GetName(index)));
+			const str assembly = "Shalltear." + str(CSharpImpl::PackageBindings::GetName(index));
+			if (CSharpImpl::PackageBindings::GetName(index) == EditorBindings::Name) {
+				options.editorAssembly = assembly;
+			} else {
+				options.packageAssemblies.push_back(assembly);
+			}
 		}
 		std::sort(options.packageAssemblies.begin(), options.packageAssemblies.end());
 		options.pin = DotNetToolchain::GetPin();

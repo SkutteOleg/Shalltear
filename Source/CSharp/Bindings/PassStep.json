@@ -1,0 +1,39 @@
+{
+	"area": "PassStep",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/RenderPass.h"
+	],
+	"class": "Shalltear.PassStep",
+	"instance": "PassStep",
+	"functions": [
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "u8",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u8" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetReads",
+			"cpp": "self->reads",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Reads", "kind": "getter" }
+		},
+		{
+			"id": "SetReads",
+			"cpp": "Slots::Assign(self->reads, value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Reads", "kind": "setter" }
+		}
+	]
+}

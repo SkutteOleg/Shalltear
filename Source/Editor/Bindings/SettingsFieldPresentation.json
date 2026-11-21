@@ -1,0 +1,67 @@
+{
+	"area": "SettingsFieldPresentation",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/SettingsPresentation.h"
+	],
+	"class": "Shalltear.Editor.SettingsFieldPresentation",
+	"instance": "SettingsFieldPresentation",
+	"functions": [
+		{
+			"id": "GetLabel",
+			"cpp": "self->label",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Label", "kind": "getter" }
+		},
+		{
+			"id": "SetLabel",
+			"cpp": "self->label = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Label", "kind": "setter" }
+		},
+		{
+			"id": "GetTooltip",
+			"cpp": "self->tooltip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Tooltip", "kind": "getter" }
+		},
+		{
+			"id": "SetTooltip",
+			"cpp": "self->tooltip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Tooltip", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywords",
+			"cpp": "self->keywords",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Keywords", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywords",
+			"cpp": "self->keywords = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Keywords", "kind": "setter" }
+		},
+		{
+			"id": "GetShownWhen",
+			"cpp": "self->shownWhen",
+			"returns": "list<SettingsFieldCondition>",
+			"params": [],
+			"csharp": { "member": "ShownWhen", "kind": "getter" }
+		},
+		{
+			"id": "SetShownWhen",
+			"cpp": "self->shownWhen = Slots::Copies<::Shalltear::Vector<::Shalltear::SettingsFieldCondition>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<SettingsFieldCondition>" }],
+			"csharp": { "member": "ShownWhen", "kind": "setter" }
+		}
+	]
+}

@@ -1,0 +1,25 @@
+{
+	"area": "FrameTimer",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Time.h"
+	],
+	"class": "Shalltear.FrameTimer",
+	"instance": "FrameTimer",
+	"functions": [
+		{
+			"id": "Tick",
+			"cpp": "self->Tick()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Tick", "kind": "method" }
+		},
+		{
+			"id": "GetUnscaledDeltaTime",
+			"cpp": "self->GetUnscaledDeltaTime()",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "UnscaledDeltaTime", "kind": "getter" }
+		}
+	]
+}

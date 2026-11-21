@@ -1,0 +1,54 @@
+{
+	"area": "WindowResizedEvent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Window/WindowEvents.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.WindowResizedEvent",
+	"instance": "WindowResizedEvent",
+	"functions": [
+		{
+			"id": "GetWindow",
+			"cpp": "(self->window).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "Window", "kind": "getter" }
+		},
+		{
+			"id": "SetWindow",
+			"cpp": "self->window = ::Shalltear::Handle<::Shalltear::Window>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "Window", "kind": "setter" }
+		},
+		{
+			"id": "GetClientSizePx",
+			"cpp": "self->clientSizePx",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "ClientSizePx", "kind": "getter" }
+		},
+		{
+			"id": "SetClientSizePx",
+			"cpp": "self->clientSizePx = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "ClientSizePx", "kind": "setter" }
+		},
+		{
+			"id": "GetLive",
+			"cpp": "self->live",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Live", "kind": "getter" }
+		},
+		{
+			"id": "SetLive",
+			"cpp": "self->live = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Live", "kind": "setter" }
+		}
+	]
+}

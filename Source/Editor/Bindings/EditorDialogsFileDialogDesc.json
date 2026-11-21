@@ -1,0 +1,69 @@
+{
+	"area": "EditorDialogsFileDialogDesc",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/EditorDialogs.h",
+		"Shalltear/Core/NativeWindow.h"
+	],
+	"class": "Shalltear.Editor.EditorDialogsFileDialogDesc",
+	"instance": "EditorDialogsFileDialogDesc",
+	"functions": [
+		{
+			"id": "GetTitle",
+			"cpp": "self->title",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Title", "kind": "getter" }
+		},
+		{
+			"id": "SetTitle",
+			"cpp": "self->title = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Title", "kind": "setter" }
+		},
+		{
+			"id": "GetPhysicalFolder",
+			"cpp": "self->physicalFolder",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "PhysicalFolder", "kind": "getter" }
+		},
+		{
+			"id": "SetPhysicalFolder",
+			"cpp": "self->physicalFolder = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "PhysicalFolder", "kind": "setter" }
+		},
+		{
+			"id": "GetMultiple",
+			"cpp": "self->multiple",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "Multiple", "kind": "getter" }
+		},
+		{
+			"id": "SetMultiple",
+			"cpp": "self->multiple = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "bool" }],
+			"csharp": { "member": "Multiple", "kind": "setter" }
+		},
+		{
+			"id": "GetOwnerField",
+			"cpp": "&self->owner",
+			"returns": "NativeWindowHandle",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "NativeWindowHandle" }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		}
+	]
+}

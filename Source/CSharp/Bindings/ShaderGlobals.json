@@ -1,0 +1,75 @@
+{
+	"area": "ShaderGlobals",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ShaderGlobals.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.ShaderGlobals",
+	"functions": [
+		{
+			"id": "SetFloat",
+			"cpp": "::Shalltear::ShaderGlobals::SetFloat(name, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "valueValue", "type": "f32" }
+			],
+			"csharp": { "member": "SetFloat", "kind": "method" }
+		},
+		{
+			"id": "SetVector",
+			"cpp": "::Shalltear::ShaderGlobals::SetVector(name, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "valueValue", "type": "Vec4" }
+			],
+			"csharp": { "member": "SetVector", "kind": "method" }
+		},
+		{
+			"id": "SetColor",
+			"cpp": "::Shalltear::ShaderGlobals::SetColor(name, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "valueValue", "type": "Color" }
+			],
+			"csharp": { "member": "SetColor", "kind": "method" }
+		},
+		{
+			"id": "SetInt",
+			"cpp": "::Shalltear::ShaderGlobals::SetInt(name, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "valueValue", "type": "i32" }
+			],
+			"csharp": { "member": "SetInt", "kind": "method" }
+		},
+		{
+			"id": "SetTexture",
+			"cpp": "::Shalltear::ShaderGlobals::SetTexture(name, ::Shalltear::Handle<::Shalltear::TextureAsset>(texture))",
+			"returns": "void",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "texture", "type": "Texture", "optional": true }
+			],
+			"csharp": { "member": "SetTexture", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "::Shalltear::ShaderGlobals::Clear(name)",
+			"returns": "void",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "Clear", "kind": "method" }
+		},
+		{
+			"id": "ClearAll",
+			"cpp": "::Shalltear::ShaderGlobals::ClearAll()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearAll", "kind": "method" }
+		}
+	]
+}

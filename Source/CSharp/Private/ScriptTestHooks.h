@@ -34,6 +34,7 @@ namespace Shalltear::CSharpImpl {
 		void (*releaseProfilerModule)();
 		void (*pumpProfilerModule)();
 		void (*readProfile)(std::vector<ScriptProfile::Row>& rows, ScriptProfile::Collections& collections);
+		size_t (*countKeptFields)();
 		const char* runtimeVersion;
 	};
 

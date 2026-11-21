@@ -1,0 +1,39 @@
+{
+	"area": "ScriptProjectOpsScaffoldResult",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ScriptProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ScriptProjectOpsScaffoldResult",
+	"instance": "ScriptProjectOpsScaffoldResult",
+	"functions": [
+		{
+			"id": "GetWritten",
+			"cpp": "self->written",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Written", "kind": "getter" }
+		},
+		{
+			"id": "SetWritten",
+			"cpp": "self->written = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Written", "kind": "setter" }
+		},
+		{
+			"id": "GetSkipped",
+			"cpp": "self->skipped",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Skipped", "kind": "getter" }
+		},
+		{
+			"id": "SetSkipped",
+			"cpp": "self->skipped = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Skipped", "kind": "setter" }
+		}
+	]
+}

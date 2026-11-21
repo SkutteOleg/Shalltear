@@ -1,0 +1,76 @@
+{
+	"area": "FieldRef",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/TypeRegistry.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.FieldRef",
+	"instance": "FieldRef",
+	"functions": [
+		{
+			"id": "Resolve",
+			"cpp": "self->Resolve()",
+			"returns": "FieldInfo",
+			"params": [],
+			"csharp": { "member": "Resolve", "kind": "method" }
+		},
+		{
+			"id": "GetOwnerType",
+			"cpp": "self->ownerType",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "OwnerType", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerType",
+			"cpp": "self->ownerType = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "OwnerType", "kind": "setter" }
+		},
+		{
+			"id": "GetField",
+			"cpp": "self->field",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "Field", "kind": "getter" }
+		},
+		{
+			"id": "SetField",
+			"cpp": "self->field = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "Field", "kind": "setter" }
+		},
+		{
+			"id": "GetCached",
+			"cpp": "self->cached",
+			"returns": "FieldInfo",
+			"params": [],
+			"csharp": { "member": "Cached", "kind": "getter" }
+		},
+		{
+			"id": "SetCached",
+			"cpp": "self->cached = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "FieldInfo", "optional": true }],
+			"csharp": { "member": "Cached", "kind": "setter" }
+		},
+		{
+			"id": "GetEpoch",
+			"cpp": "self->epoch",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Epoch", "kind": "getter" }
+		},
+		{
+			"id": "SetEpoch",
+			"cpp": "self->epoch = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Epoch", "kind": "setter" }
+		}
+	]
+}

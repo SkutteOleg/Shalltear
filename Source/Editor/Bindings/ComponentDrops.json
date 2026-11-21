@@ -1,0 +1,55 @@
+{
+	"area": "ComponentDrops",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ComponentDrops.h",
+		"Shalltear/Core/Scene/Component.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h",
+		"Shalltear/Core/UI/DragDrop.h"
+	],
+	"class": "Shalltear.Editor.ComponentDrops",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::ComponentDrops::Register(assetType, resolve, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "assetType", "type": "StringHash" },
+				{
+					"name": "resolve",
+					"type": "fn<TypeInfo;EngineGuid>",
+					"optional": true,
+					"cpp": "std::function<const Shalltear::TypeInfo *(const Shalltear::Guid &)>"
+				}
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::ComponentDrops::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Accepts",
+			"cpp": "::Shalltear::ComponentDrops::Accepts(*payload)",
+			"returns": "bool",
+			"params": [{ "name": "payload", "type": "UIDragPayload" }],
+			"csharp": { "member": "Accepts", "kind": "method" }
+		},
+		{
+			"id": "Drop",
+			"cpp": "::Shalltear::ComponentDrops::Drop(*payload, ::Shalltear::Handle<::Shalltear::SceneObject>(objectValue))",
+			"returns": "Component",
+			"params": [
+				{ "name": "payload", "type": "UIDragPayload" },
+				{ "name": "objectValue", "type": "SceneObject", "optional": true }
+			],
+			"csharp": { "member": "Drop", "kind": "method" }
+		}
+	]
+}

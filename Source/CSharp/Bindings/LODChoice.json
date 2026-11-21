@@ -1,0 +1,14 @@
+{
+	"area": "LODChoice",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/LODGroup.h"
+	],
+	"class": "Shalltear.LODChoice",
+	"instance": "LODChoice",
+	"constants": [
+		{ "name": "NONE", "cpp": "::Shalltear::LODChoice::NONE", "type": "u8", "value": 255 },
+		{ "name": "MAX_LEVELS", "cpp": "::Shalltear::LODChoice::MAX_LEVELS", "type": "u32", "value": 64 }
+	],
+	"functions": []
+}

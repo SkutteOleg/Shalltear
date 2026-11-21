@@ -1,0 +1,21 @@
+{
+	"area": "EnginePath",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/FileSystem.h"
+	],
+	"class": "Shalltear.EnginePath",
+	"instance": "EnginePath",
+	"functions": [
+		{
+			"id": "Create",
+			"cpp": "new ::Shalltear::Path(str(path))",
+			"returns": "EnginePath",
+			"params": [{ "name": "path", "type": "string" }],
+			"adopts": true,
+			"nullable": false,
+			"static": true,
+			"csharp": { "member": "Create", "kind": "method" }
+		}
+	]
+}

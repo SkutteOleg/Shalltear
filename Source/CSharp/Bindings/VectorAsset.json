@@ -1,0 +1,218 @@
+{
+	"area": "VectorAsset",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/VectorAsset.h"
+	],
+	"class": "Shalltear.VectorAsset",
+	"instance": "VectorAsset",
+	"types": [{ "name": "VectorAsset", "cpp": "::Shalltear::VectorAsset", "engine": "VectorAsset", "base": "Asset" }],
+	"enums": [
+		{
+			"name": "VectorVerb",
+			"cpp": "::Shalltear::VectorVerb",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Move", "value": 0 },
+				{ "name": "Line", "value": 1 },
+				{ "name": "Cubic", "value": 2 },
+				{ "name": "Close", "value": 3 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "VectorShape",
+			"cpp": "::Shalltear::VectorShape",
+			"size": 28,
+			"align": 4,
+			"fields": [
+				{ "name": "firstVerb", "type": "u32", "offset": 0 },
+				{ "name": "verbCount", "type": "u32", "offset": 4 },
+				{ "name": "firstPoint", "type": "u32", "offset": 8 },
+				{ "name": "pointCount", "type": "u32", "offset": 12 },
+				{ "name": "slot", "type": "u32", "offset": 16 },
+				{ "name": "opacity", "type": "f32", "offset": 20 },
+				{ "name": "mask", "type": "u32", "offset": 24 }
+			]
+		},
+		{
+			"name": "VectorMask",
+			"cpp": "::Shalltear::VectorMask",
+			"size": 8,
+			"align": 4,
+			"fields": [
+				{ "name": "firstShape", "type": "u32", "offset": 0 },
+				{ "name": "shapeCount", "type": "u32", "offset": 4 }
+			]
+		},
+		{
+			"name": "VectorMaskShape",
+			"cpp": "::Shalltear::VectorMaskShape",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "firstVerb", "type": "u32", "offset": 0 },
+				{ "name": "verbCount", "type": "u32", "offset": 4 },
+				{ "name": "firstPoint", "type": "u32", "offset": 8 },
+				{ "name": "pointCount", "type": "u32", "offset": 12 },
+				{ "name": "color", "type": "Color", "offset": 16 }
+			]
+		}
+	],
+	"constants": [
+		{ "name": "INVALID_VECTOR_INDEX", "cpp": "::Shalltear::INVALID_VECTOR_INDEX", "type": "u32", "value": 4294967295 }
+	],
+	"functions": [
+		{
+			"id": "FitInto",
+			"cpp": "self->FitInto(sizePx)",
+			"returns": "Vec2",
+			"params": [{ "name": "sizePx", "type": "f32" }],
+			"csharp": { "member": "FitInto", "kind": "method" }
+		},
+		{
+			"id": "IsEmpty",
+			"cpp": "self->IsEmpty()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsEmpty", "kind": "getter" }
+		},
+		{
+			"id": "ParseSvg",
+			"cpp": "self->ParseSvg(svgText, error)",
+			"returns": "bool",
+			"params": [
+				{ "name": "svgText", "type": "string" },
+				{ "name": "error", "type": "string", "out": true }
+			],
+			"csharp": { "member": "ParseSvg", "kind": "method" }
+		},
+		{
+			"id": "GetViewSize",
+			"cpp": "self->viewSize",
+			"returns": "Vec2",
+			"params": [],
+			"csharp": { "member": "ViewSize", "kind": "getter" }
+		},
+		{
+			"id": "SetViewSize",
+			"cpp": "self->viewSize = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2" }],
+			"csharp": { "member": "ViewSize", "kind": "setter" }
+		},
+		{
+			"id": "GetVerbs",
+			"cpp": "self->verbs",
+			"returns": "list<VectorVerb>",
+			"params": [],
+			"csharp": { "member": "Verbs", "kind": "getter" }
+		},
+		{
+			"id": "SetVerbs",
+			"cpp": "self->verbs = Slots::ToVector<::Shalltear::VectorVerb>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<VectorVerb>" }],
+			"csharp": { "member": "Verbs", "kind": "setter" }
+		},
+		{
+			"id": "GetPoints",
+			"cpp": "self->points",
+			"returns": "list<Vec2>",
+			"params": [],
+			"csharp": { "member": "Points", "kind": "getter" }
+		},
+		{
+			"id": "SetPoints",
+			"cpp": "self->points = Slots::ToVector<::Shalltear::Vec2>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec2>" }],
+			"csharp": { "member": "Points", "kind": "setter" }
+		},
+		{
+			"id": "GetShapes",
+			"cpp": "self->shapes",
+			"returns": "list<VectorShape>",
+			"params": [],
+			"csharp": { "member": "Shapes", "kind": "getter" }
+		},
+		{
+			"id": "SetShapes",
+			"cpp": "self->shapes = Slots::ToVector<::Shalltear::VectorShape>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<VectorShape>" }],
+			"csharp": { "member": "Shapes", "kind": "setter" }
+		},
+		{
+			"id": "GetMasks",
+			"cpp": "self->masks",
+			"returns": "list<VectorMask>",
+			"params": [],
+			"csharp": { "member": "Masks", "kind": "getter" }
+		},
+		{
+			"id": "SetMasks",
+			"cpp": "self->masks = Slots::ToVector<::Shalltear::VectorMask>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<VectorMask>" }],
+			"csharp": { "member": "Masks", "kind": "setter" }
+		},
+		{
+			"id": "GetMaskShapes",
+			"cpp": "self->maskShapes",
+			"returns": "list<VectorMaskShape>",
+			"params": [],
+			"csharp": { "member": "MaskShapes", "kind": "getter" }
+		},
+		{
+			"id": "SetMaskShapes",
+			"cpp": "self->maskShapes = Slots::ToVector<::Shalltear::VectorMaskShape>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<VectorMaskShape>" }],
+			"csharp": { "member": "MaskShapes", "kind": "setter" }
+		},
+		{
+			"id": "GetMaskVerbs",
+			"cpp": "self->maskVerbs",
+			"returns": "list<VectorVerb>",
+			"params": [],
+			"csharp": { "member": "MaskVerbs", "kind": "getter" }
+		},
+		{
+			"id": "SetMaskVerbs",
+			"cpp": "self->maskVerbs = Slots::ToVector<::Shalltear::VectorVerb>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<VectorVerb>" }],
+			"csharp": { "member": "MaskVerbs", "kind": "setter" }
+		},
+		{
+			"id": "GetMaskPoints",
+			"cpp": "self->maskPoints",
+			"returns": "list<Vec2>",
+			"params": [],
+			"csharp": { "member": "MaskPoints", "kind": "getter" }
+		},
+		{
+			"id": "SetMaskPoints",
+			"cpp": "self->maskPoints = Slots::ToVector<::Shalltear::Vec2>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Vec2>" }],
+			"csharp": { "member": "MaskPoints", "kind": "setter" }
+		},
+		{
+			"id": "GetSlotDefaults",
+			"cpp": "self->slotDefaults",
+			"returns": "list<Color>",
+			"params": [],
+			"csharp": { "member": "SlotDefaults", "kind": "getter" }
+		},
+		{
+			"id": "SetSlotDefaults",
+			"cpp": "self->slotDefaults = Slots::ToVector<::Shalltear::Color>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<Color>" }],
+			"csharp": { "member": "SlotDefaults", "kind": "setter" }
+		}
+	]
+}

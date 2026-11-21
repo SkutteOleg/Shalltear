@@ -16,6 +16,12 @@ public abstract partial class AudioFilter : Component {
 	private protected AudioFilter() {}
 }
 
+internal sealed class OpaqueAudioFilter : AudioFilter {
+	internal OpaqueAudioFilter(ulong id) {
+		_id = id;
+	}
+}
+
 /// <summary>Cuts high frequencies.</summary>
 [EngineType(ENGINE_TYPE)]
 public sealed partial class AudioLowPassFilter : AudioFilter {

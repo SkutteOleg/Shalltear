@@ -1,0 +1,81 @@
+{
+	"area": "AudioInteractiveContainer",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioContainer.h"
+	],
+	"class": "Shalltear.AudioInteractiveContainer",
+	"instance": "AudioInteractiveContainer",
+	"functions": [
+		{
+			"id": "GetBeatsPerMinute",
+			"cpp": "self->beatsPerMinute",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "BeatsPerMinute", "kind": "getter" }
+		},
+		{
+			"id": "SetBeatsPerMinute",
+			"cpp": "self->beatsPerMinute = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "BeatsPerMinute", "kind": "setter" }
+		},
+		{
+			"id": "GetBeatsPerBar",
+			"cpp": "self->beatsPerBar",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "BeatsPerBar", "kind": "getter" }
+		},
+		{
+			"id": "SetBeatsPerBar",
+			"cpp": "self->beatsPerBar = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "BeatsPerBar", "kind": "setter" }
+		},
+		{
+			"id": "GetInitialClip",
+			"cpp": "self->initialClip",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "InitialClip", "kind": "getter" }
+		},
+		{
+			"id": "SetInitialClip",
+			"cpp": "self->initialClip = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "InitialClip", "kind": "setter" }
+		},
+		{
+			"id": "GetClips",
+			"cpp": "self->clips",
+			"returns": "list<AudioInteractiveContainerClip>",
+			"params": [],
+			"csharp": { "member": "Clips", "kind": "getter" }
+		},
+		{
+			"id": "SetClips",
+			"cpp": "self->clips = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioInteractiveContainerClip>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioInteractiveContainerClip>" }],
+			"csharp": { "member": "Clips", "kind": "setter" }
+		},
+		{
+			"id": "GetTransitions",
+			"cpp": "self->transitions",
+			"returns": "list<AudioInteractiveContainerTransition>",
+			"params": [],
+			"csharp": { "member": "Transitions", "kind": "getter" }
+		},
+		{
+			"id": "SetTransitions",
+			"cpp": "self->transitions = Slots::Copies<::Shalltear::Vector<::Shalltear::AudioInteractiveContainerTransition>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<AudioInteractiveContainerTransition>" }],
+			"csharp": { "member": "Transitions", "kind": "setter" }
+		}
+	]
+}

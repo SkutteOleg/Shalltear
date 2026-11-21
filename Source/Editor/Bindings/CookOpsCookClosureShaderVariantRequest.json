@@ -1,0 +1,40 @@
+{
+	"area": "CookOpsCookClosureShaderVariantRequest",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CookOps.h",
+		"Shalltear/Core/Types.h"
+	],
+	"class": "Shalltear.Editor.CookOpsCookClosureShaderVariantRequest",
+	"instance": "CookOpsCookClosureShaderVariantRequest",
+	"functions": [
+		{
+			"id": "GetShader",
+			"cpp": "self->shader",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "Shader", "kind": "getter" }
+		},
+		{
+			"id": "SetShader",
+			"cpp": "self->shader = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "Shader", "kind": "setter" }
+		},
+		{
+			"id": "GetKeywords",
+			"cpp": "self->keywords",
+			"returns": "list<string>",
+			"params": [],
+			"csharp": { "member": "Keywords", "kind": "getter" }
+		},
+		{
+			"id": "SetKeywords",
+			"cpp": "self->keywords = Slots::ToVector<str>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<string>" }],
+			"csharp": { "member": "Keywords", "kind": "setter" }
+		}
+	]
+}

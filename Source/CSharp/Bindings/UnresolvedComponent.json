@@ -1,0 +1,22 @@
+{
+	"area": "UnresolvedComponent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/UnresolvedComponent.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.UnresolvedComponent",
+	"instance": "UnresolvedComponent",
+	"types": [
+		{ "name": "UnresolvedComponent", "cpp": "::Shalltear::UnresolvedComponent", "engine": "UnresolvedComponent", "base": "Component" }
+	],
+	"functions": [
+		{
+			"id": "GetUnresolvedType",
+			"cpp": "self->GetUnresolvedType()",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "UnresolvedType", "kind": "getter" }
+		}
+	]
+}

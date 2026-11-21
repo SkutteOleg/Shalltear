@@ -1,0 +1,197 @@
+{
+	"area": "PrefabInstanceRecord",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Types.h",
+		"Shalltear/Core/Object.h",
+		"Shalltear/Core/Scene/SceneObject.h"
+	],
+	"class": "Shalltear.PrefabInstanceRecord",
+	"instance": "PrefabInstanceRecord",
+	"functions": [
+		{
+			"id": "GetPrefabGuid",
+			"cpp": "self->prefabGuid",
+			"returns": "EngineGuid",
+			"params": [],
+			"csharp": { "member": "PrefabGuid", "kind": "getter" }
+		},
+		{
+			"id": "SetPrefabGuid",
+			"cpp": "self->prefabGuid = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "EngineGuid" }],
+			"csharp": { "member": "PrefabGuid", "kind": "setter" }
+		},
+		{
+			"id": "GetChainGuids",
+			"cpp": "self->chainGuids",
+			"returns": "list<EngineGuid>",
+			"params": [],
+			"csharp": { "member": "ChainGuids", "kind": "getter" }
+		},
+		{
+			"id": "SetChainGuids",
+			"cpp": "self->chainGuids = Slots::ToVector<::Shalltear::Guid>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<EngineGuid>" }],
+			"csharp": { "member": "ChainGuids", "kind": "setter" }
+		},
+		{
+			"id": "GetLiveOverrides",
+			"cpp": "&self->liveOverrides",
+			"returns": "OverrideLayer",
+			"params": [],
+			"csharp": { "member": "LiveOverrides", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetLiveOverrides",
+			"cpp": "self->liveOverrides = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "OverrideLayer" }],
+			"csharp": { "member": "LiveOverrides", "kind": "setter" }
+		},
+		{
+			"id": "GetCorrespondenceKeys",
+			"cpp": "Slots::Keys(self->correspondence)",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "CorrespondenceKeys", "kind": "getter" }
+		},
+		{
+			"id": "GetCorrespondenceValues",
+			"cpp": "Slots::Values(self->correspondence)",
+			"returns": "list<EngineObject>",
+			"params": [],
+			"csharp": { "member": "CorrespondenceValues", "kind": "getter" }
+		},
+		{
+			"id": "ClearCorrespondence",
+			"cpp": "self->correspondence.clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearCorrespondence", "kind": "method" }
+		},
+		{
+			"id": "GetKeyPathsKeys",
+			"cpp": "Slots::Keys(self->keyPaths)",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "KeyPathsKeys", "kind": "getter" }
+		},
+		{
+			"id": "GetKeyPathsValues",
+			"cpp": "Slots::Values(self->keyPaths)",
+			"returns": "list<PrefabTargetPath>",
+			"params": [],
+			"csharp": { "member": "KeyPathsValues", "kind": "getter" },
+			"owns": true
+		},
+		{
+			"id": "ClearKeyPaths",
+			"cpp": "self->keyPaths.clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearKeyPaths", "kind": "method" }
+		},
+		{
+			"id": "PutKeyPaths",
+			"cpp": "self->keyPaths.insert_or_assign(key, *value)",
+			"returns": "void",
+			"params": [
+				{ "name": "key", "type": "u64" },
+				{ "name": "value", "type": "PrefabTargetPath" }
+			],
+			"csharp": { "member": "PutKeyPaths", "kind": "method" }
+		},
+		{
+			"id": "RemoveKeyPaths",
+			"cpp": "self->keyPaths.erase(key)",
+			"returns": "void",
+			"params": [{ "name": "key", "type": "u64" }],
+			"csharp": { "member": "RemoveKeyPaths", "kind": "method" }
+		},
+		{
+			"id": "GetKeyTypesKeys",
+			"cpp": "Slots::Keys(self->keyTypes)",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "KeyTypesKeys", "kind": "getter" }
+		},
+		{
+			"id": "GetKeyTypesValues",
+			"cpp": "Slots::Values(self->keyTypes)",
+			"returns": "list<u64>",
+			"params": [],
+			"csharp": { "member": "KeyTypesValues", "kind": "getter" }
+		},
+		{
+			"id": "ClearKeyTypes",
+			"cpp": "self->keyTypes.clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "ClearKeyTypes", "kind": "method" }
+		},
+		{
+			"id": "PutKeyTypes",
+			"cpp": "self->keyTypes.insert_or_assign(key, value)",
+			"returns": "void",
+			"params": [
+				{ "name": "key", "type": "u64" },
+				{ "name": "value", "type": "u64" }
+			],
+			"csharp": { "member": "PutKeyTypes", "kind": "method" }
+		},
+		{
+			"id": "RemoveKeyTypes",
+			"cpp": "self->keyTypes.erase(key)",
+			"returns": "void",
+			"params": [{ "name": "key", "type": "u64" }],
+			"csharp": { "member": "RemoveKeyTypes", "kind": "method" }
+		},
+		{
+			"id": "GetRoot",
+			"cpp": "self->root",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "Root", "kind": "getter" }
+		},
+		{
+			"id": "SetRoot",
+			"cpp": "self->root = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "Root", "kind": "setter" }
+		},
+		{
+			"id": "GetAsset",
+			"cpp": "self->asset",
+			"returns": "Prefab",
+			"params": [],
+			"csharp": { "member": "Asset", "kind": "getter" }
+		},
+		{
+			"id": "SetAsset",
+			"cpp": "self->asset = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Prefab", "optional": true }],
+			"csharp": { "member": "Asset", "kind": "setter" }
+		},
+		{
+			"id": "GetSceneRowId",
+			"cpp": "self->sceneRowId",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SceneRowId", "kind": "getter" }
+		},
+		{
+			"id": "SetSceneRowId",
+			"cpp": "self->sceneRowId = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "SceneRowId", "kind": "setter" }
+		}
+	]
+}

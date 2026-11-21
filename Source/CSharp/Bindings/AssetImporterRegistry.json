@@ -1,0 +1,103 @@
+{
+	"area": "AssetImporterRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Asset/AssetImporter.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/Reflection/TypeInfo.h"
+	],
+	"class": "Shalltear.AssetImporterRegistry",
+	"functions": [
+		{
+			"id": "Register",
+			"cpp": "Slots::WithInitializerList<std::string_view>(std::span<const std::string_view>(extensions), [&](std::initializer_list<std::string_view> extensionsList) { return ::Shalltear::AssetImporterRegistry::Register(typeId, importer, extensionsList, ScriptRuntime::GetScriptsOwner()); })",
+			"returns": "void",
+			"params": [
+				{ "name": "typeId", "type": "StringHash" },
+				{ "name": "importer", "type": "IAssetImporter", "optional": true },
+				{ "name": "extensions", "type": "list<string>" }
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "RegisterExtension",
+			"cpp": "::Shalltear::AssetImporterRegistry::RegisterExtension(extension, importer, ScriptRuntime::GetScriptsOwner())",
+			"returns": "void",
+			"params": [
+				{ "name": "extension", "type": "string" },
+				{ "name": "importer", "type": "IAssetImporter", "optional": true }
+			],
+			"csharp": { "member": "RegisterExtension", "kind": "method" }
+		},
+		{
+			"id": "RegisterDeclared",
+			"cpp": "::Shalltear::AssetImporterRegistry::RegisterDeclared(type, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [{ "name": "type", "type": "TypeInfo", "optional": true }],
+			"csharp": { "member": "RegisterDeclared", "kind": "method" }
+		},
+		{
+			"id": "Unregister",
+			"cpp": "::Shalltear::AssetImporterRegistry::Unregister(importer)",
+			"returns": "void",
+			"params": [{ "name": "importer", "type": "IAssetImporter", "optional": true }],
+			"csharp": { "member": "Unregister", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::AssetImporterRegistry::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "Find",
+			"cpp": "::Shalltear::AssetImporterRegistry::Find(typeId)",
+			"returns": "IAssetImporter",
+			"params": [{ "name": "typeId", "type": "StringHash" }],
+			"csharp": { "member": "Find", "kind": "method" }
+		},
+		{
+			"id": "FindByExtension",
+			"cpp": "::Shalltear::AssetImporterRegistry::FindByExtension(ext)",
+			"returns": "IAssetImporter",
+			"params": [{ "name": "ext", "type": "string" }],
+			"csharp": { "member": "FindByExtension", "kind": "method" }
+		},
+		{
+			"id": "ForEach",
+			"cpp": "::Shalltear::AssetImporterRegistry::ForEach(fn)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "fn",
+					"type": "fn<void;StringHash;IAssetImporter;string>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::StringHash, Shalltear::IAssetImporter *, std::basic_string_view<char>)>"
+				}
+			],
+			"csharp": { "member": "ForEach", "kind": "method" }
+		},
+		{
+			"id": "ForEachImporter",
+			"cpp": "::Shalltear::AssetImporterRegistry::ForEachImporter(fn)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "fn",
+					"type": "fn<void;StringHash;IAssetImporter;string>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::StringHash, Shalltear::IAssetImporter *, std::basic_string_view<char>)>"
+				}
+			],
+			"csharp": { "member": "ForEachImporter", "kind": "method" }
+		},
+		{
+			"id": "Clear",
+			"cpp": "::Shalltear::AssetImporterRegistry::Clear()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Clear", "kind": "method" }
+		}
+	]
+}

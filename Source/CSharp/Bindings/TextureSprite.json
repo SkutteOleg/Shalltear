@@ -1,0 +1,153 @@
+{
+	"area": "TextureSprite",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/TextureAsset.h",
+		"Shalltear/Core/Math/Geometry.h"
+	],
+	"class": "Shalltear.TextureSprite",
+	"instance": "TextureSprite",
+	"enums": [
+		{
+			"name": "TextureFilter",
+			"cpp": "::Shalltear::TextureFilter",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Point", "value": 0 },
+				{ "name": "Bilinear", "value": 1 },
+				{ "name": "Trilinear", "value": 2 }
+			]
+		},
+		{
+			"name": "TextureShape",
+			"cpp": "::Shalltear::TextureShape",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Auto", "value": 0 },
+				{ "name": "Texture2D", "value": 1 },
+				{ "name": "Cube", "value": 2 },
+				{ "name": "Texture2DArray", "value": 3 },
+				{ "name": "Texture3D", "value": 4 }
+			]
+		},
+		{
+			"name": "TextureType",
+			"cpp": "::Shalltear::TextureType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Default", "value": 0 },
+				{ "name": "NormalMap", "value": 1 }
+			]
+		},
+		{
+			"name": "TextureCompression",
+			"cpp": "::Shalltear::TextureCompression",
+			"underlying": "u8",
+			"values": [
+				{ "name": "None", "value": 0 },
+				{ "name": "HighQuality", "value": 1 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "SpriteBorder",
+			"cpp": "::Shalltear::SpriteBorder",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "left", "type": "i32", "offset": 0 },
+				{ "name": "top", "type": "i32", "offset": 4 },
+				{ "name": "right", "type": "i32", "offset": 8 },
+				{ "name": "bottom", "type": "i32", "offset": 12 }
+			]
+		},
+		{
+			"name": "TextureAssetSettings",
+			"cpp": "::Shalltear::TextureAsset::Settings",
+			"size": 32,
+			"align": 4,
+			"fields": [
+				{ "name": "sRGB", "type": "bool", "offset": 0 },
+				{ "name": "generateMips", "type": "bool", "offset": 1 },
+				{ "name": "filter", "type": "TextureFilter", "offset": 2 },
+				{ "name": "addressMode", "type": "RHIAddressMode", "offset": 3 },
+				{ "name": "anisoLevel", "type": "u8", "offset": 4 },
+				{ "name": "shape", "type": "TextureShape", "offset": 5 },
+				{ "name": "cubeFaceSize", "type": "i32", "offset": 8 },
+				{ "name": "convolveIBL", "type": "bool", "offset": 12 },
+				{ "name": "columns", "type": "u32", "offset": 16 },
+				{ "name": "rows", "type": "u32", "offset": 20 },
+				{ "name": "type", "type": "TextureType", "offset": 24 },
+				{ "name": "compression", "type": "TextureCompression", "offset": 25 },
+				{ "name": "pixelsPerUnit", "type": "f32", "offset": 28 }
+			]
+		}
+	],
+	"natives": [{ "name": "TextureSprite", "cpp": "::Shalltear::TextureSprite", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "Identity",
+			"cpp": "self->Identity()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Identity", "kind": "method" }
+		},
+		{
+			"id": "GetId",
+			"cpp": "self->id",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Id", "kind": "getter" }
+		},
+		{
+			"id": "SetId",
+			"cpp": "self->id = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Id", "kind": "setter" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetRect",
+			"cpp": "self->rect",
+			"returns": "RectI",
+			"params": [],
+			"csharp": { "member": "Rect", "kind": "getter" }
+		},
+		{
+			"id": "SetRect",
+			"cpp": "self->rect = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "RectI" }],
+			"csharp": { "member": "Rect", "kind": "setter" }
+		},
+		{
+			"id": "GetBorder",
+			"cpp": "self->border",
+			"returns": "SpriteBorder",
+			"params": [],
+			"csharp": { "member": "Border", "kind": "getter" }
+		},
+		{
+			"id": "SetBorder",
+			"cpp": "self->border = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SpriteBorder" }],
+			"csharp": { "member": "Border", "kind": "setter" }
+		}
+	]
+}

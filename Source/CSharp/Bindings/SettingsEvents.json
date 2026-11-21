@@ -1,0 +1,26 @@
+{
+	"area": "SettingsEvents",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Settings.h"
+	],
+	"class": "Shalltear.SettingsEvents",
+	"functions": [
+		{
+			"id": "SubscribeChanged",
+			"cpp": "EventBridge::Subscribe(::Shalltear::SettingsEvents::Changed, handler)",
+			"returns": "u64",
+			"params": [
+				{ "name": "handler", "type": "fn<void;SettingChangedEvent>", "cpp": "std::function<void(const ::Shalltear::SettingChangedEvent&)>" }
+			],
+			"csharp": { "member": "SubscribeChanged", "kind": "method" }
+		},
+		{
+			"id": "PublishChanged",
+			"cpp": "::Shalltear::SettingsEvents::Changed.Publish(::Shalltear::EventBus::GetGlobal(), *payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "SettingChangedEvent" }],
+			"csharp": { "member": "PublishChanged", "kind": "method" }
+		}
+	]
+}

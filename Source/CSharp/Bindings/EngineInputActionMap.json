@@ -1,0 +1,135 @@
+{
+	"area": "EngineInputActionMap",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Input/InputAction.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.EngineInputActionMap",
+	"instance": "EngineInputActionMap",
+	"enums": [
+		{
+			"name": "InputBindingSource",
+			"cpp": "::Shalltear::InputBinding::Source",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Key", "value": 0 },
+				{ "name": "MouseButton", "value": 1 },
+				{ "name": "MouseDelta", "value": 2 },
+				{ "name": "MouseWheel", "value": 3 },
+				{ "name": "GamepadButton", "value": 4 },
+				{ "name": "GamepadAxis", "value": 5 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "EngineInputBinding",
+			"cpp": "::Shalltear::InputBinding",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "source", "type": "InputBindingSource", "offset": 0 },
+				{ "name": "code", "type": "u16", "offset": 2 },
+				{ "name": "requiredMods", "type": "KeyMod", "offset": 4 },
+				{ "name": "exactMods", "type": "bool", "offset": 5 },
+				{ "name": "scale", "type": "f32", "offset": 8 },
+				{ "name": "component", "type": "u8", "offset": 12 },
+				{ "name": "gamepadIndex", "type": "u8", "offset": 13 }
+			]
+		}
+	],
+	"natives": [{ "name": "EngineInputActionMap", "cpp": "::Shalltear::InputActionMap", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "RegisterAction",
+			"cpp": "self->RegisterAction(name, type)",
+			"returns": "u32",
+			"params": [
+				{ "name": "name", "type": "StringHash" },
+				{ "name": "type", "type": "ActionType" }
+			],
+			"csharp": { "member": "RegisterAction", "kind": "method" }
+		},
+		{
+			"id": "FindAction",
+			"cpp": "self->FindAction(name)",
+			"returns": "u32",
+			"params": [{ "name": "name", "type": "StringHash" }],
+			"csharp": { "member": "FindAction", "kind": "method" }
+		},
+		{
+			"id": "Bind",
+			"cpp": "self->Bind(action, binding)",
+			"returns": "void",
+			"params": [
+				{ "name": "action", "type": "u32" },
+				{ "name": "binding", "type": "EngineInputBinding" }
+			],
+			"csharp": { "member": "Bind", "kind": "method" }
+		},
+		{
+			"id": "ClearBindings",
+			"cpp": "self->ClearBindings(action)",
+			"returns": "void",
+			"params": [{ "name": "action", "type": "u32" }],
+			"csharp": { "member": "ClearBindings", "kind": "method" }
+		},
+		{
+			"id": "Enable",
+			"cpp": "self->Enable()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Enable", "kind": "method" }
+		},
+		{
+			"id": "Disable",
+			"cpp": "self->Disable()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Disable", "kind": "method" }
+		},
+		{
+			"id": "Evaluate",
+			"cpp": "self->Evaluate()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "Evaluate", "kind": "method" }
+		},
+		{
+			"id": "IsPressed",
+			"cpp": "self->IsPressed(action)",
+			"returns": "bool",
+			"params": [{ "name": "action", "type": "u32" }],
+			"csharp": { "member": "IsPressed", "kind": "method" }
+		},
+		{
+			"id": "WasPerformed",
+			"cpp": "self->WasPerformed(action)",
+			"returns": "bool",
+			"params": [{ "name": "action", "type": "u32" }],
+			"csharp": { "member": "WasPerformed", "kind": "method" }
+		},
+		{
+			"id": "GetAxis1D",
+			"cpp": "self->GetAxis1D(action)",
+			"returns": "f32",
+			"params": [{ "name": "action", "type": "u32" }],
+			"csharp": { "member": "GetAxis1D", "kind": "method" }
+		},
+		{
+			"id": "GetAxis2D",
+			"cpp": "self->GetAxis2D(action)",
+			"returns": "Vec2",
+			"params": [{ "name": "action", "type": "u32" }],
+			"csharp": { "member": "GetAxis2D", "kind": "method" }
+		},
+		{
+			"id": "GetActionCount",
+			"cpp": "self->GetActionCount()",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "ActionCount", "kind": "getter" }
+		}
+	]
+}

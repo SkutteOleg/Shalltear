@@ -1,0 +1,36 @@
+{
+	"area": "CameraSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/Camera.h",
+		"Shalltear/Core/Math/Matrix.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.Camera",
+	"instance": "Camera",
+	"functions": [
+		{
+			"id": "GetTargetWindow",
+			"cpp": "(self->GetTargetWindow()).Get()",
+			"returns": "Window",
+			"params": [],
+			"csharp": { "member": "TargetWindow", "kind": "getter" }
+		},
+		{
+			"id": "SetTargetWindow",
+			"cpp": "self->SetTargetWindow(::Shalltear::Handle<::Shalltear::Window>(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Window", "optional": true }],
+			"csharp": { "member": "TargetWindow", "kind": "setter" }
+		},
+		{
+			"id": "BuildProjection",
+			"cpp": "self->BuildProjection(aspect)",
+			"returns": "Mat4",
+			"params": [{ "name": "aspect", "type": "f32" }],
+			"csharp": { "member": "BuildProjection", "kind": "method" },
+			"owns": true,
+			"nullable": false
+		}
+	]
+}

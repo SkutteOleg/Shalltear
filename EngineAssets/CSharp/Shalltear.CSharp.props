@@ -14,6 +14,9 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<RestoreAdditionalProjectFallbackFolders Condition="Exists('$(ShalltearPackagesRoot)')">$(RestoreAdditionalProjectFallbackFolders);$(ShalltearPackagesRoot)</RestoreAdditionalProjectFallbackFolders>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(ShalltearPlayerPackages)' != ''">
+		<ShalltearPackageAssemblies>$([MSBuild]::Unescape($(ShalltearPlayerPackages.Replace('-', '').Replace('+', ';'))))</ShalltearPackageAssemblies>
+	</PropertyGroup>
 	<PropertyGroup Condition="'$(ShalltearPlayerScripts)' == 'true'">
 		<DefineConstants>$(DefineConstants);SHALLTEAR_PLAYER</DefineConstants>
 		<PathMap>$([System.IO.Path]::GetFullPath('$(ShalltearBuildRoot)'))=./Library/,$(MSBuildProjectDirectory)=.</PathMap>

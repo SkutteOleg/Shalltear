@@ -1,0 +1,409 @@
+{
+	"area": "UISystem",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UISystem.h",
+		"Shalltear/Core/Input/InputEvent.h",
+		"Shalltear/Core/UI/FontAsset.h",
+		"Shalltear/Core/Graphics/RHITypes.h",
+		"Shalltear/Core/StringHash.h",
+		"Shalltear/Core/UI/Context.h",
+		"Shalltear/Core/UI/Docking.h",
+		"Shalltear/Core/UI/DragDrop.h",
+		"Shalltear/Core/UI/UITypes.h",
+		"Shalltear/Core/UI/Font.h",
+		"Shalltear/Core/UI/VectorIcon.h",
+		"Shalltear/Core/Window/Window.h"
+	],
+	"class": "Shalltear.UISystem",
+	"enums": [
+		{
+			"name": "UIScreenDescTarget",
+			"cpp": "::Shalltear::UIScreenDesc::Target",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Window", "value": 0 },
+				{ "name": "Texture", "value": 1 },
+				{ "name": "None", "value": 2 }
+			]
+		}
+	],
+	"structs": [
+		{
+			"name": "UIScreenDesc",
+			"cpp": "::Shalltear::UIScreenDesc",
+			"size": 16,
+			"align": 4,
+			"fields": [
+				{ "name": "target", "type": "UIScreenDescTarget", "offset": 0 },
+				{ "name": "sizePx", "type": "Vec2I", "offset": 4 },
+				{ "name": "dpiScale", "type": "f32", "offset": 12 }
+			]
+		},
+		{
+			"name": "UISystemStats",
+			"cpp": "::Shalltear::UISystem::Stats",
+			"size": 12,
+			"align": 4,
+			"fields": [
+				{ "name": "drawCalls", "type": "u32", "offset": 0 },
+				{ "name": "quads", "type": "u32", "offset": 4 },
+				{ "name": "contexts", "type": "u32", "offset": 8 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "UIScreenSurfaceDesc", "cpp": "::Shalltear::UIScreenSurfaceDesc", "owned": true, "create": true },
+		{ "name": "UISystemFloatingDockWindowPolicy", "cpp": "::Shalltear::UISystem::FloatingDockWindowPolicy", "owned": true, "create": true }
+	],
+	"constants": [{ "name": "INVALID_UI_SURFACE", "cpp": "::Shalltear::INVALID_UI_SURFACE", "type": "u32", "value": 0 }],
+	"functions": [
+		{
+			"id": "IsInitialized",
+			"cpp": "::Shalltear::UISystem::IsInitialized()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsInitialized", "kind": "getter" }
+		},
+		{
+			"id": "CreateContext",
+			"cpp": "::Shalltear::UISystem::CreateContext(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "UIContext",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "CreateContext", "kind": "method" }
+		},
+		{
+			"id": "DestroyContext",
+			"cpp": "::Shalltear::UISystem::DestroyContext(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "void",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "DestroyContext", "kind": "method" }
+		},
+		{
+			"id": "GetContext",
+			"cpp": "::Shalltear::UISystem::GetContext(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "UIContext",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "GetContext", "kind": "method" }
+		},
+		{
+			"id": "IsContextLive",
+			"cpp": "::Shalltear::UISystem::IsContextLive(context)",
+			"returns": "bool",
+			"params": [{ "name": "context", "type": "UIContext", "optional": true }],
+			"csharp": { "member": "IsContextLive", "kind": "method" }
+		},
+		{
+			"id": "SetContextInitializer",
+			"cpp": "::Shalltear::UISystem::SetContextInitializer(initializer)",
+			"returns": "void",
+			"params": [
+				{ "name": "initializer", "type": "fn<void;UIContext>", "optional": true, "cpp": "std::function<void (Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "SetContextInitializer", "kind": "method" }
+		},
+		{
+			"id": "ForEachContext",
+			"cpp": "::Shalltear::UISystem::ForEachContext(visit)",
+			"returns": "void",
+			"params": [
+				{
+					"name": "visit",
+					"type": "fn<void;Window;UIContext>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::Handle<Shalltear::Window>, Shalltear::UI::Context &)>"
+				}
+			],
+			"csharp": { "member": "ForEachContext", "kind": "method" }
+		},
+		{
+			"id": "CreateSurface",
+			"cpp": "::Shalltear::UISystem::CreateSurface(sizePx, contentScale)",
+			"returns": "u32",
+			"params": [
+				{ "name": "sizePx", "type": "Vec2I" },
+				{ "name": "contentScale", "type": "f32" }
+			],
+			"csharp": { "member": "CreateSurface", "kind": "method" }
+		},
+		{
+			"id": "DestroySurface",
+			"cpp": "::Shalltear::UISystem::DestroySurface(surface)",
+			"returns": "void",
+			"params": [{ "name": "surface", "type": "u32" }],
+			"csharp": { "member": "DestroySurface", "kind": "method" }
+		},
+		{
+			"id": "ResizeSurface",
+			"cpp": "::Shalltear::UISystem::ResizeSurface(surface, sizePx, contentScale)",
+			"returns": "void",
+			"params": [
+				{ "name": "surface", "type": "u32" },
+				{ "name": "sizePx", "type": "Vec2I" },
+				{ "name": "contentScale", "type": "f32" }
+			],
+			"csharp": { "member": "ResizeSurface", "kind": "method" }
+		},
+		{
+			"id": "GetSurfaceContext",
+			"cpp": "::Shalltear::UISystem::GetSurfaceContext(surface)",
+			"returns": "UIContext",
+			"params": [{ "name": "surface", "type": "u32" }],
+			"csharp": { "member": "GetSurfaceContext", "kind": "method" }
+		},
+		{
+			"id": "ForEachSurface",
+			"cpp": "::Shalltear::UISystem::ForEachSurface(visit)",
+			"returns": "void",
+			"params": [
+				{ "name": "visit", "type": "fn<void;u32;UIContext>", "optional": true, "cpp": "std::function<void (unsigned int, Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "ForEachSurface", "kind": "method" }
+		},
+		{
+			"id": "GetSurfaceTexture",
+			"cpp": "::Shalltear::UISystem::GetSurfaceTexture(surface)",
+			"returns": "RHITextureHandle",
+			"params": [{ "name": "surface", "type": "u32" }],
+			"csharp": { "member": "GetSurfaceTexture", "kind": "method" }
+		},
+		{
+			"id": "SetScreen",
+			"cpp": "::Shalltear::UISystem::SetScreen(desc)",
+			"returns": "void",
+			"params": [{ "name": "desc", "type": "UIScreenDesc" }],
+			"csharp": { "member": "SetScreen", "kind": "method" }
+		},
+		{
+			"id": "CreateScreenSurface",
+			"cpp": "::Shalltear::UISystem::CreateScreenSurface(*desc)",
+			"returns": "u32",
+			"params": [{ "name": "desc", "type": "UIScreenSurfaceDesc" }],
+			"csharp": { "member": "CreateScreenSurface", "kind": "method" }
+		},
+		{
+			"id": "SetScreenSurfaceDesc",
+			"cpp": "::Shalltear::UISystem::SetScreenSurfaceDesc(surface, *desc)",
+			"returns": "void",
+			"params": [
+				{ "name": "surface", "type": "u32" },
+				{ "name": "desc", "type": "UIScreenSurfaceDesc" }
+			],
+			"csharp": { "member": "SetScreenSurfaceDesc", "kind": "method" }
+		},
+		{
+			"id": "ForEachScreenSurface",
+			"cpp": "::Shalltear::UISystem::ForEachScreenSurface(visit)",
+			"returns": "void",
+			"params": [
+				{ "name": "visit", "type": "fn<void;u32;UIContext>", "optional": true, "cpp": "std::function<void (unsigned int, Shalltear::UI::Context &)>" }
+			],
+			"csharp": { "member": "ForEachScreenSurface", "kind": "method" }
+		},
+		{
+			"id": "GetSurfaceName",
+			"cpp": "::Shalltear::UISystem::GetSurfaceName(surface)",
+			"returns": "string",
+			"params": [{ "name": "surface", "type": "u32" }],
+			"csharp": { "member": "GetSurfaceName", "kind": "method" }
+		},
+		{
+			"id": "InjectScreenInput",
+			"cpp": "::Shalltear::UISystem::InjectScreenInput(*eventValue)",
+			"returns": "void",
+			"params": [{ "name": "eventValue", "type": "EngineInputEvent" }],
+			"csharp": { "member": "InjectScreenInput", "kind": "method" }
+		},
+		{
+			"id": "CreateDockManager",
+			"cpp": "::Shalltear::UISystem::CreateDockManager(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "UIDockManager",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "CreateDockManager", "kind": "method" }
+		},
+		{
+			"id": "GetDockManager",
+			"cpp": "::Shalltear::UISystem::GetDockManager(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "UIDockManager",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "GetDockManager", "kind": "method" }
+		},
+		{
+			"id": "RegisterPanel",
+			"cpp": "::Shalltear::UISystem::RegisterPanel(id, title, build, *icon)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "title", "type": "string" },
+				{
+					"name": "build",
+					"type": "fn<void;UIContext;UIElementHandle>",
+					"optional": true,
+					"cpp": "std::function<void (Shalltear::UI::Context &, Shalltear::UI::ElementHandle)>"
+				},
+				{ "name": "icon", "type": "UIDockTabIcon" }
+			],
+			"csharp": { "member": "RegisterPanel", "kind": "method" }
+		},
+		{
+			"id": "SetPanelTitle",
+			"cpp": "::Shalltear::UISystem::SetPanelTitle(id, title)",
+			"returns": "void",
+			"params": [
+				{ "name": "id", "type": "StringHash" },
+				{ "name": "title", "type": "string" }
+			],
+			"csharp": { "member": "SetPanelTitle", "kind": "method" }
+		},
+		{
+			"id": "UnregisterPanel",
+			"cpp": "::Shalltear::UISystem::UnregisterPanel(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "StringHash" }],
+			"csharp": { "member": "UnregisterPanel", "kind": "method" }
+		},
+		{
+			"id": "SetPanelCloseCallback",
+			"cpp": "::Shalltear::UISystem::SetPanelCloseCallback(callback)",
+			"returns": "void",
+			"params": [
+				{ "name": "callback", "type": "fn<void;StringHash>", "optional": true, "cpp": "std::function<void (Shalltear::StringHash)>" }
+			],
+			"csharp": { "member": "SetPanelCloseCallback", "kind": "method" }
+		},
+		{
+			"id": "SetDockHost",
+			"cpp": "::Shalltear::UISystem::SetDockHost(::Shalltear::Handle<::Shalltear::Window>(window), host)",
+			"returns": "void",
+			"params": [
+				{ "name": "window", "type": "Window", "optional": true },
+				{ "name": "host", "type": "UIElementHandle" }
+			],
+			"csharp": { "member": "SetDockHost", "kind": "method" }
+		},
+		{
+			"id": "SetFloatingDockWindowPolicy",
+			"cpp": "::Shalltear::UISystem::SetFloatingDockWindowPolicy(*policy)",
+			"returns": "void",
+			"params": [{ "name": "policy", "type": "UISystemFloatingDockWindowPolicy" }],
+			"csharp": { "member": "SetFloatingDockWindowPolicy", "kind": "method" }
+		},
+		{
+			"id": "CreateFloatingDockWindow",
+			"cpp": "(::Shalltear::UISystem::CreateFloatingDockWindow(screenPosPx, clientSizePx)).Get()",
+			"returns": "Window",
+			"params": [
+				{ "name": "screenPosPx", "type": "Vec2I" },
+				{ "name": "clientSizePx", "type": "Vec2I" }
+			],
+			"csharp": { "member": "CreateFloatingDockWindow", "kind": "method" }
+		},
+		{
+			"id": "GetDockWindows",
+			"cpp": "::Shalltear::UISystem::GetDockWindows(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<Window>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::Handle<::Shalltear::Window>>", "borrowed": true }
+			],
+			"csharp": { "member": "GetDockWindows", "kind": "method" }
+		},
+		{
+			"id": "IsFloatingDockWindow",
+			"cpp": "::Shalltear::UISystem::IsFloatingDockWindow(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "bool",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "IsFloatingDockWindow", "kind": "method" }
+		},
+		{
+			"id": "GetFontSystem",
+			"cpp": "::Shalltear::UISystem::GetFontSystem()",
+			"returns": "UIFontSystem",
+			"params": [],
+			"csharp": { "member": "FontSystem", "kind": "getter" }
+		},
+		{
+			"id": "GetVectorIconSystem",
+			"cpp": "::Shalltear::UISystem::GetVectorIconSystem()",
+			"returns": "UIVectorIconSystem",
+			"params": [],
+			"csharp": { "member": "VectorIconSystem", "kind": "getter" }
+		},
+		{
+			"id": "GetDefaultFont",
+			"cpp": "::Shalltear::UISystem::GetDefaultFont()",
+			"returns": "FontAsset",
+			"params": [],
+			"csharp": { "member": "DefaultFont", "kind": "getter" }
+		},
+		{
+			"id": "SetCursorModeYielded",
+			"cpp": "::Shalltear::UISystem::SetCursorModeYielded(yielded)",
+			"returns": "void",
+			"params": [{ "name": "yielded", "type": "bool" }],
+			"csharp": { "member": "SetCursorModeYielded", "kind": "method" }
+		},
+		{
+			"id": "WantsMouse",
+			"cpp": "::Shalltear::UISystem::WantsMouse(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "bool",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "WantsMouse", "kind": "method" }
+		},
+		{
+			"id": "WantsKeyboard",
+			"cpp": "::Shalltear::UISystem::WantsKeyboard(::Shalltear::Handle<::Shalltear::Window>(window))",
+			"returns": "bool",
+			"params": [{ "name": "window", "type": "Window", "optional": true }],
+			"csharp": { "member": "WantsKeyboard", "kind": "method" }
+		},
+		{
+			"id": "ScreenWantsMouse",
+			"cpp": "::Shalltear::UISystem::ScreenWantsMouse()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "ScreenWantsMouse", "kind": "method" }
+		},
+		{
+			"id": "SetPanelDetachEnabled",
+			"cpp": "::Shalltear::UISystem::SetPanelDetachEnabled(enabled)",
+			"returns": "void",
+			"params": [{ "name": "enabled", "type": "bool" }],
+			"csharp": { "member": "SetPanelDetachEnabled", "kind": "method" }
+		},
+		{
+			"id": "BeginDragPayload",
+			"cpp": "::Shalltear::UISystem::BeginDragPayload(*payload)",
+			"returns": "void",
+			"params": [{ "name": "payload", "type": "UIDragPayload" }],
+			"csharp": { "member": "BeginDragPayload", "kind": "method" }
+		},
+		{
+			"id": "IsDragPayloadActive",
+			"cpp": "::Shalltear::UISystem::IsDragPayloadActive()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsDragPayloadActive", "kind": "getter" }
+		},
+		{
+			"id": "GetDragPayload",
+			"cpp": "::Shalltear::UISystem::GetDragPayload()",
+			"returns": "UIDragPayload",
+			"params": [],
+			"csharp": { "member": "DragPayload", "kind": "getter" }
+		},
+		{
+			"id": "CancelDragPayload",
+			"cpp": "::Shalltear::UISystem::CancelDragPayload()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "CancelDragPayload", "kind": "method" }
+		},
+		{
+			"id": "GetStats",
+			"cpp": "::Shalltear::UISystem::GetStats()",
+			"returns": "UISystemStats",
+			"params": [],
+			"csharp": { "member": "Stats", "kind": "getter" }
+		}
+	]
+}

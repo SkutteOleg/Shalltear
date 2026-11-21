@@ -1,0 +1,67 @@
+{
+	"area": "SettingsPaths",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Settings.h"
+	],
+	"class": "Shalltear.SettingsPaths",
+	"instance": "SettingsPaths",
+	"functions": [
+		{
+			"id": "GetUserProject",
+			"cpp": "(self->userProject).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "UserProject", "kind": "getter" }
+		},
+		{
+			"id": "SetUserProject",
+			"cpp": "self->userProject = ::Shalltear::Path(str(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "UserProject", "kind": "setter" }
+		},
+		{
+			"id": "GetUser",
+			"cpp": "(self->user).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "User", "kind": "getter" }
+		},
+		{
+			"id": "SetUser",
+			"cpp": "self->user = ::Shalltear::Path(str(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "User", "kind": "setter" }
+		},
+		{
+			"id": "GetProject",
+			"cpp": "(self->project).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Project", "kind": "getter" }
+		},
+		{
+			"id": "SetProject",
+			"cpp": "self->project = ::Shalltear::Path(str(value))",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Project", "kind": "setter" }
+		},
+		{
+			"id": "GetProjectText",
+			"cpp": "self->projectText",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "ProjectText", "kind": "getter" }
+		},
+		{
+			"id": "SetProjectText",
+			"cpp": "self->projectText = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "ProjectText", "kind": "setter" }
+		}
+	]
+}

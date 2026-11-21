@@ -1,0 +1,70 @@
+{
+	"area": "PrefabInstanceDiffRemovedComponent",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Scene/Prefab.h",
+		"Shalltear/Core/Scene/SceneObject.h",
+		"Shalltear/Core/StringHash.h"
+	],
+	"class": "Shalltear.PrefabInstanceDiffRemovedComponent",
+	"instance": "PrefabInstanceDiffRemovedComponent",
+	"functions": [
+		{
+			"id": "GetOwnerField",
+			"cpp": "self->owner",
+			"returns": "SceneObject",
+			"params": [],
+			"csharp": { "member": "OwnerField", "kind": "getter" }
+		},
+		{
+			"id": "SetOwnerField",
+			"cpp": "self->owner = ::Shalltear::Handle<::Shalltear::SceneObject>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "SceneObject", "optional": true }],
+			"csharp": { "member": "OwnerField", "kind": "setter" }
+		},
+		{
+			"id": "GetRow",
+			"cpp": "&self->row",
+			"returns": "PrefabTargetPath",
+			"params": [],
+			"csharp": { "member": "Row", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetRow",
+			"cpp": "self->row = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "PrefabTargetPath" }],
+			"csharp": { "member": "Row", "kind": "setter" }
+		},
+		{
+			"id": "GetTypeField",
+			"cpp": "self->type",
+			"returns": "StringHash",
+			"params": [],
+			"csharp": { "member": "TypeField", "kind": "getter" }
+		},
+		{
+			"id": "SetTypeField",
+			"cpp": "self->type = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "StringHash" }],
+			"csharp": { "member": "TypeField", "kind": "setter" }
+		},
+		{
+			"id": "GetIndex",
+			"cpp": "self->index",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "Index", "kind": "getter" }
+		},
+		{
+			"id": "SetIndex",
+			"cpp": "self->index = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "Index", "kind": "setter" }
+		}
+	]
+}

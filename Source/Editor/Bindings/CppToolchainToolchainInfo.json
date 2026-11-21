@@ -1,0 +1,164 @@
+{
+	"area": "CppToolchainToolchainInfo",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/CppToolchain.h"
+	],
+	"class": "Shalltear.Editor.CppToolchainToolchainInfo",
+	"instance": "CppToolchainToolchainInfo",
+	"enums": [
+		{
+			"name": "CppToolchainToolStatus",
+			"cpp": "::Shalltear::CppToolchain::ToolStatus",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Missing", "value": 0 },
+				{ "name": "Found", "value": 1 },
+				{ "name": "Unusable", "value": 2 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "CppToolchainToolchainInfo", "cpp": "::Shalltear::CppToolchain::ToolchainInfo", "owned": true, "create": true },
+		{ "name": "CppToolchainDiscoveryOptions", "cpp": "::Shalltear::CppToolchain::DiscoveryOptions", "owned": true, "create": true },
+		{ "name": "CppToolchainToolInfo", "cpp": "::Shalltear::CppToolchain::ToolInfo", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "IsComplete",
+			"cpp": "self->IsComplete()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsComplete", "kind": "getter" }
+		},
+		{
+			"id": "GetCMake",
+			"cpp": "&self->cmake",
+			"returns": "CppToolchainToolInfo",
+			"params": [],
+			"csharp": { "member": "CMake", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetCMake",
+			"cpp": "self->cmake = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CppToolchainToolInfo" }],
+			"csharp": { "member": "CMake", "kind": "setter" }
+		},
+		{
+			"id": "GetNinja",
+			"cpp": "&self->ninja",
+			"returns": "CppToolchainToolInfo",
+			"params": [],
+			"csharp": { "member": "Ninja", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetNinja",
+			"cpp": "self->ninja = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CppToolchainToolInfo" }],
+			"csharp": { "member": "Ninja", "kind": "setter" }
+		},
+		{
+			"id": "GetCompiler",
+			"cpp": "&self->compiler",
+			"returns": "CppToolchainToolInfo",
+			"params": [],
+			"csharp": { "member": "Compiler", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetCompiler",
+			"cpp": "self->compiler = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "CppToolchainToolInfo" }],
+			"csharp": { "member": "Compiler", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKRoot",
+			"cpp": "self->sdkRoot",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKRoot", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKRoot",
+			"cpp": "self->sdkRoot = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKRoot", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKCompilerId",
+			"cpp": "self->sdkCompilerId",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKCompilerId", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKCompilerId",
+			"cpp": "self->sdkCompilerId = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKCompilerId", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKCompilerVersion",
+			"cpp": "self->sdkCompilerVersion",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKCompilerVersion", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKCompilerVersion",
+			"cpp": "self->sdkCompilerVersion = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKCompilerVersion", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKCompilerTarget",
+			"cpp": "self->sdkCompilerTarget",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKCompilerTarget", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKCompilerTarget",
+			"cpp": "self->sdkCompilerTarget = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKCompilerTarget", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKLinkMode",
+			"cpp": "self->sdkLinkMode",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKLinkMode", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKLinkMode",
+			"cpp": "self->sdkLinkMode = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKLinkMode", "kind": "setter" }
+		},
+		{
+			"id": "GetSDKToolchainFile",
+			"cpp": "self->sdkToolchainFile",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "SDKToolchainFile", "kind": "getter" }
+		},
+		{
+			"id": "SetSDKToolchainFile",
+			"cpp": "self->sdkToolchainFile = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "SDKToolchainFile", "kind": "setter" }
+		}
+	]
+}

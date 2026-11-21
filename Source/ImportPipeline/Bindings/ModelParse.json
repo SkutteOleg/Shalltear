@@ -1,0 +1,17 @@
+{
+	"area": "ModelParse",
+	"slots": true,
+	"include": [
+		"Shalltear/ImportPipeline/ModelParse.h"
+	],
+	"class": "Shalltear.ModelParse",
+	"functions": [
+		{
+			"id": "ModelValuesPerKey",
+			"cpp": "::Shalltear::ModelValuesPerKey(interp)",
+			"returns": "u32",
+			"params": [{ "name": "interp", "type": "ModelInterpolation" }],
+			"csharp": { "member": "ModelValuesPerKey", "kind": "method" }
+		}
+	]
+}

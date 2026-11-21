@@ -1,0 +1,33 @@
+{
+	"area": "Sprite",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/SpriteAsset.h",
+		"Shalltear/Core/Graphics/TextureAsset.h"
+	],
+	"class": "Shalltear.Sprite",
+	"instance": "Sprite",
+	"functions": [
+		{
+			"id": "GetTexture",
+			"cpp": "self->GetTexture()",
+			"returns": "Texture",
+			"params": [],
+			"csharp": { "member": "Texture", "kind": "getter" }
+		},
+		{
+			"id": "GetDefinition",
+			"cpp": "self->GetDefinition()",
+			"returns": "TextureSprite",
+			"params": [],
+			"csharp": { "member": "Definition", "kind": "getter" }
+		},
+		{
+			"id": "GetIdentity",
+			"cpp": "self->GetIdentity()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Identity", "kind": "getter" }
+		}
+	]
+}

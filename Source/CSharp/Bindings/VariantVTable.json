@@ -1,0 +1,81 @@
+{
+	"area": "VariantVTable",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Reflection/Variant.h"
+	],
+	"class": "Shalltear.VariantVTable",
+	"instance": "VariantVTable",
+	"functions": [
+		{
+			"id": "GetCopy",
+			"cpp": "Slots::Bits(self->copy)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Copy", "kind": "getter" }
+		},
+		{
+			"id": "SetCopy",
+			"cpp": "self->copy = Slots::FromBits<void (*)(void *, const void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Copy", "kind": "setter" }
+		},
+		{
+			"id": "GetMove",
+			"cpp": "Slots::Bits(self->move)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Move", "kind": "getter" }
+		},
+		{
+			"id": "SetMove",
+			"cpp": "self->move = Slots::FromBits<void (*)(void *, void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Move", "kind": "setter" }
+		},
+		{
+			"id": "GetDestroyField",
+			"cpp": "Slots::Bits(self->destroy)",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "DestroyField", "kind": "getter" }
+		},
+		{
+			"id": "SetDestroyField",
+			"cpp": "self->destroy = Slots::FromBits<void (*)(void *)>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "DestroyField", "kind": "setter" }
+		},
+		{
+			"id": "GetSize",
+			"cpp": "self->size",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Size", "kind": "getter" }
+		},
+		{
+			"id": "SetSize",
+			"cpp": "self->size = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Size", "kind": "setter" }
+		},
+		{
+			"id": "GetAlignment",
+			"cpp": "self->alignment",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "Alignment", "kind": "getter" }
+		},
+		{
+			"id": "SetAlignment",
+			"cpp": "self->alignment = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u64" }],
+			"csharp": { "member": "Alignment", "kind": "setter" }
+		}
+	]
+}

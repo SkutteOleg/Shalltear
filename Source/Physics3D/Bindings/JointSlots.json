@@ -1,0 +1,19 @@
+{
+	"area": "JointSlots",
+	"slots": true,
+	"include": [
+		"Shalltear/Physics3D/Joints.h"
+	],
+	"class": "Shalltear.Joint",
+	"instance": "Joint",
+	"natives": [{ "name": "PhysicsJointRequest", "cpp": "::Shalltear::PhysicsJointRequest" }],
+	"functions": [
+		{
+			"id": "DescribeJoint",
+			"cpp": "self->DescribeJoint(*outValue)",
+			"returns": "bool",
+			"params": [{ "name": "outValue", "type": "PhysicsJointRequest" }],
+			"csharp": { "member": "DescribeJoint", "kind": "method" }
+		}
+	]
+}

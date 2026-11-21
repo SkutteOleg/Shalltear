@@ -1,0 +1,70 @@
+{
+	"area": "ProceduralView",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/Graphics/ProceduralRenderer.h",
+		"Shalltear/Core/Math/Matrix.h"
+	],
+	"class": "Shalltear.ProceduralView",
+	"instance": "ProceduralView",
+	"functions": [
+		{
+			"id": "GetView",
+			"cpp": "&self->view",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "View", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetView",
+			"cpp": "self->view = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "View", "kind": "setter" }
+		},
+		{
+			"id": "GetProjection",
+			"cpp": "&self->projection",
+			"returns": "Mat4",
+			"params": [],
+			"csharp": { "member": "Projection", "kind": "getter" },
+			"nullable": false
+		},
+		{
+			"id": "SetProjection",
+			"cpp": "self->projection = *value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Mat4" }],
+			"csharp": { "member": "Projection", "kind": "setter" }
+		},
+		{
+			"id": "GetCameraPosition",
+			"cpp": "self->cameraPosition",
+			"returns": "Vec3",
+			"params": [],
+			"csharp": { "member": "CameraPosition", "kind": "getter" }
+		},
+		{
+			"id": "SetCameraPosition",
+			"cpp": "self->cameraPosition = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec3" }],
+			"csharp": { "member": "CameraPosition", "kind": "setter" }
+		},
+		{
+			"id": "GetExtent",
+			"cpp": "self->extent",
+			"returns": "Vec2I",
+			"params": [],
+			"csharp": { "member": "Extent", "kind": "getter" }
+		},
+		{
+			"id": "SetExtent",
+			"cpp": "self->extent = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "Vec2I" }],
+			"csharp": { "member": "Extent", "kind": "setter" }
+		}
+	]
+}

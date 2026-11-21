@@ -1,0 +1,10 @@
+{
+	"area": "AudioSpatializer",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.AudioSpatializer",
+	"constants": [{ "name": "AUDIO_MAX_CHANNELS", "cpp": "::Shalltear::AUDIO_MAX_CHANNELS", "type": "u32", "value": 8 }],
+	"functions": []
+}

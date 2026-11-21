@@ -1,0 +1,87 @@
+{
+	"area": "AudioSpatializerProxy",
+	"slots": true,
+	"include": [
+		"Shalltear/Audio/AudioSpatializer.h"
+	],
+	"class": "Shalltear.AudioSpatializerProxy",
+	"instance": "AudioSpatializerProxy",
+	"prelude": [
+		"class AudioSpatializerProxy final : public ::Shalltear::IAudioSpatializer {",
+		"public:",
+		"\tstd::function<bool()> appliesDistanceAttenuation;",
+		"\tbool AppliesDistanceAttenuation() const override {",
+		"\t\treturn appliesDistanceAttenuation ? appliesDistanceAttenuation() : ::Shalltear::IAudioSpatializer::AppliesDistanceAttenuation();",
+		"\t}",
+		"\tstd::function<void *(const Shalltear::AudioSpatializerContext &)> createVoiceState;",
+		"\tvoid * CreateVoiceState(const Shalltear::AudioSpatializerContext & a0) override {",
+		"\t\treturn createVoiceState ? createVoiceState(a0) : Slots::ResultOf<decltype(createVoiceState)>();",
+		"\t}",
+		"\tstd::function<void(void *)> destroyVoiceState;",
+		"\tvoid DestroyVoiceState(void * a0) override {",
+		"\t\tif (destroyVoiceState) {",
+		"\t\t\tdestroyVoiceState(a0);",
+		"\t\t}",
+		"\t}",
+		"\tstd::function<void(void *, const Shalltear::AudioSpatialParams &, const Shalltear::AudioBlock &, Shalltear::AudioBlock &)> process;",
+		"\tvoid Process(void * a0, const Shalltear::AudioSpatialParams & a1, const Shalltear::AudioBlock & a2, Shalltear::AudioBlock & a3) override {",
+		"\t\tif (process) {",
+		"\t\t\tprocess(a0, a1, a2, a3);",
+		"\t\t}",
+		"\t}",
+		"};"
+	],
+	"natives": [{ "name": "AudioSpatializerProxy", "cpp": "AudioSpatializerProxy", "owned": true, "create": true }],
+	"functions": [
+		{
+			"id": "SetAppliesDistanceAttenuation",
+			"cpp": "self->appliesDistanceAttenuation = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<bool>", "optional": true, "cpp": "std::function<bool()>" }],
+			"csharp": { "member": "SetAppliesDistanceAttenuation", "kind": "method" }
+		},
+		{
+			"id": "SetCreateVoiceState",
+			"cpp": "self->createVoiceState = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<u64;AudioSpatializerContext>",
+					"optional": true,
+					"cpp": "std::function<void *(const Shalltear::AudioSpatializerContext &)>"
+				}
+			],
+			"csharp": { "member": "SetCreateVoiceState", "kind": "method" }
+		},
+		{
+			"id": "SetDestroyVoiceState",
+			"cpp": "self->destroyVoiceState = handler",
+			"returns": "void",
+			"params": [{ "name": "handler", "type": "fn<void;u64>", "optional": true, "cpp": "std::function<void(void *)>" }],
+			"csharp": { "member": "SetDestroyVoiceState", "kind": "method" }
+		},
+		{
+			"id": "SetProcess",
+			"cpp": "self->process = handler",
+			"returns": "void",
+			"params": [
+				{
+					"name": "handler",
+					"type": "fn<void;u64;AudioSpatialParams;AudioBlock;AudioBlock>",
+					"optional": true,
+					"cpp": "std::function<void(void *, const Shalltear::AudioSpatialParams &, const Shalltear::AudioBlock &, Shalltear::AudioBlock &)>"
+				}
+			],
+			"csharp": { "member": "SetProcess", "kind": "method" }
+		},
+		{
+			"id": "GetBase",
+			"cpp": "static_cast<::Shalltear::IAudioSpatializer*>(self)",
+			"returns": "IAudioSpatializer",
+			"params": [],
+			"nullable": false,
+			"csharp": { "member": "Base", "kind": "getter" }
+		}
+	]
+}

@@ -1,0 +1,111 @@
+{
+	"area": "BuildStepRegistry",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildPipeline.h"
+	],
+	"class": "Shalltear.Editor.BuildStepRegistry",
+	"enums": [
+		{
+			"name": "BuildPhase",
+			"cpp": "::Shalltear::BuildPhase",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Validate", "value": 0 },
+				{ "name": "PreBuild", "value": 1 },
+				{ "name": "Compile", "value": 2 },
+				{ "name": "Stage", "value": 3 },
+				{ "name": "PostBuild", "value": 4 }
+			]
+		},
+		{
+			"name": "BuildStepStatus",
+			"cpp": "::Shalltear::BuildStepStatus",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Running", "value": 0 },
+				{ "name": "Succeeded", "value": 1 },
+				{ "name": "Failed", "value": 2 }
+			]
+		},
+		{
+			"name": "BuildState",
+			"cpp": "::Shalltear::BuildState",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Idle", "value": 0 },
+				{ "name": "Running", "value": 1 },
+				{ "name": "Succeeded", "value": 2 },
+				{ "name": "Failed", "value": 3 },
+				{ "name": "Cancelled", "value": 4 }
+			]
+		},
+		{
+			"name": "BuildOutcome",
+			"cpp": "::Shalltear::BuildOutcome",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Succeeded", "value": 0 },
+				{ "name": "Failed", "value": 1 },
+				{ "name": "Skipped", "value": 2 },
+				{ "name": "Cancelled", "value": 3 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "BuildContext", "cpp": "::Shalltear::BuildContext", "owned": true, "create": true },
+		{ "name": "BuildStepDesc", "cpp": "::Shalltear::BuildStepDesc", "owned": true, "create": true },
+		{ "name": "BuildResult", "cpp": "::Shalltear::BuildResult", "owned": true, "create": true },
+		{ "name": "BuildPipeline", "cpp": "::Shalltear::BuildPipeline", "owned": true, "create": true },
+		{ "name": "BuildRequest", "cpp": "::Shalltear::BuildRequest", "owned": true, "create": true },
+		{ "name": "BuildProfileResult", "cpp": "::Shalltear::BuildProfileResult", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "RegisterBuiltIns",
+			"cpp": "::Shalltear::BuildStepRegistry::RegisterBuiltIns()",
+			"returns": "void",
+			"params": [],
+			"csharp": { "member": "RegisterBuiltIns", "kind": "method" }
+		},
+		{
+			"id": "Register",
+			"cpp": "::Shalltear::BuildStepRegistry::Register(name, phase, fn, ScriptRuntime::GetScriptsOwner())",
+			"returns": "bool",
+			"params": [
+				{ "name": "name", "type": "string" },
+				{ "name": "phase", "type": "BuildPhase" },
+				{
+					"name": "fn",
+					"type": "fn<BuildStepStatus;BuildContext>",
+					"optional": true,
+					"cpp": "std::function<Shalltear::BuildStepStatus (Shalltear::BuildContext &)>"
+				}
+			],
+			"csharp": { "member": "Register", "kind": "method" }
+		},
+		{
+			"id": "Unregister",
+			"cpp": "::Shalltear::BuildStepRegistry::Unregister(name)",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "Unregister", "kind": "method" }
+		},
+		{
+			"id": "UnregisterOwnedBy",
+			"cpp": "::Shalltear::BuildStepRegistry::UnregisterOwnedBy(ScriptRuntime::GetScriptsOwner())",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "UnregisterOwnedBy", "kind": "method" }
+		},
+		{
+			"id": "GetSteps",
+			"cpp": "::Shalltear::BuildStepRegistry::GetSteps(outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "outValue", "type": "list<BuildStepDesc>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::BuildStepDesc>" }
+			],
+			"csharp": { "member": "GetSteps", "kind": "method" }
+		}
+	]
+}

@@ -1,0 +1,211 @@
+{
+	"area": "ProjectOps",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/ProjectOps.h"
+	],
+	"class": "Shalltear.Editor.ProjectOps",
+	"functions": [
+		{
+			"id": "NormalizePath",
+			"cpp": "::Shalltear::ProjectOps::NormalizePath(str(path))",
+			"returns": "string",
+			"params": [{ "name": "path", "type": "string" }],
+			"csharp": { "member": "NormalizePath", "kind": "method" }
+		},
+		{
+			"id": "PathsEqual",
+			"cpp": "::Shalltear::ProjectOps::PathsEqual(str(a), str(b))",
+			"returns": "bool",
+			"params": [
+				{ "name": "a", "type": "string" },
+				{ "name": "b", "type": "string" }
+			],
+			"csharp": { "member": "PathsEqual", "kind": "method" }
+		},
+		{
+			"id": "IsValidProjectName",
+			"cpp": "::Shalltear::ProjectOps::IsValidProjectName(str(name))",
+			"returns": "bool",
+			"params": [{ "name": "name", "type": "string" }],
+			"csharp": { "member": "IsValidProjectName", "kind": "method" }
+		},
+		{
+			"id": "GetStatus",
+			"cpp": "::Shalltear::ProjectOps::GetStatus(str(projectPath))",
+			"returns": "ProjectOpsProjectStatus",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "GetStatus", "kind": "method" }
+		},
+		{
+			"id": "IsProjectDirectory",
+			"cpp": "::Shalltear::ProjectOps::IsProjectDirectory(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "IsProjectDirectory", "kind": "method" }
+		},
+		{
+			"id": "ReadProjectFile",
+			"cpp": "::Shalltear::ProjectOps::ReadProjectFile(str(projectPath), outName, outCreatedUnix)",
+			"returns": "bool",
+			"params": [
+				{ "name": "projectPath", "type": "string" },
+				{ "name": "outName", "type": "string", "out": true },
+				{ "name": "outCreatedUnix", "type": "u64", "out": true }
+			],
+			"csharp": { "member": "ReadProjectFile", "kind": "method" }
+		},
+		{
+			"id": "GetModifiedTime",
+			"cpp": "::Shalltear::ProjectOps::GetModifiedTime(str(projectPath))",
+			"returns": "u64",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "GetModifiedTime", "kind": "method" }
+		},
+		{
+			"id": "CreateProject",
+			"cpp": "::Shalltear::ProjectOps::CreateProject(str(parentDirectory), str(name), outPath)",
+			"returns": "bool",
+			"params": [
+				{ "name": "parentDirectory", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "outPath", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CreateProject", "kind": "method" }
+		},
+		{
+			"id": "CreateProject2",
+			"cpp": "::Shalltear::ProjectOps::CreateProject(str(parentDirectory), str(name), *options, outPath)",
+			"returns": "bool",
+			"params": [
+				{ "name": "parentDirectory", "type": "string" },
+				{ "name": "name", "type": "string" },
+				{ "name": "options", "type": "ProjectOpsCreateOptions" },
+				{ "name": "outPath", "type": "string", "out": true }
+			],
+			"csharp": { "member": "CreateProject", "kind": "method" }
+		},
+		{
+			"id": "GetDefaultRegistryPath",
+			"cpp": "(::Shalltear::ProjectOps::GetDefaultRegistryPath()).ToString()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DefaultRegistryPath", "kind": "getter" }
+		},
+		{
+			"id": "LoadRegistry",
+			"cpp": "::Shalltear::ProjectOps::LoadRegistry(::Shalltear::Path(str(registryPath)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "outValue", "type": "list<ProjectOpsProjectEntry>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::ProjectOps::ProjectEntry>" }
+			],
+			"csharp": { "member": "LoadRegistry", "kind": "method" }
+		},
+		{
+			"id": "SaveRegistry",
+			"cpp": "::Shalltear::ProjectOps::SaveRegistry(::Shalltear::Path(str(registryPath)), Slots::Copies<::Shalltear::Vector<::Shalltear::ProjectOps::ProjectEntry>>(entries))",
+			"returns": "bool",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "entries", "type": "list<ProjectOpsProjectEntry>" }
+			],
+			"csharp": { "member": "SaveRegistry", "kind": "method" }
+		},
+		{
+			"id": "LoadOptInChoice",
+			"cpp": "::Shalltear::ProjectOps::LoadOptInChoice(::Shalltear::Path(str(registryPath)), outValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "LoadOptInChoice", "kind": "method" }
+		},
+		{
+			"id": "SaveOptInChoice",
+			"cpp": "::Shalltear::ProjectOps::SaveOptInChoice(::Shalltear::Path(str(registryPath)), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(names)))",
+			"returns": "bool",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "names", "type": "list<string>" }
+			],
+			"csharp": { "member": "SaveOptInChoice", "kind": "method" }
+		},
+		{
+			"id": "AddProject",
+			"cpp": "::Shalltear::ProjectOps::AddProject(::Shalltear::Path(str(registryPath)), str(projectPath))",
+			"returns": "bool",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "projectPath", "type": "string" }
+			],
+			"csharp": { "member": "AddProject", "kind": "method" }
+		},
+		{
+			"id": "RemoveProject",
+			"cpp": "::Shalltear::ProjectOps::RemoveProject(::Shalltear::Path(str(registryPath)), str(projectPath))",
+			"returns": "bool",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "projectPath", "type": "string" }
+			],
+			"csharp": { "member": "RemoveProject", "kind": "method" }
+		},
+		{
+			"id": "TouchProject",
+			"cpp": "::Shalltear::ProjectOps::TouchProject(::Shalltear::Path(str(registryPath)), str(projectPath))",
+			"returns": "void",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "projectPath", "type": "string" }
+			],
+			"csharp": { "member": "TouchProject", "kind": "method" }
+		},
+		{
+			"id": "DeleteProjectFromDisk",
+			"cpp": "::Shalltear::ProjectOps::DeleteProjectFromDisk(::Shalltear::Path(str(registryPath)), str(projectPath))",
+			"returns": "bool",
+			"params": [
+				{ "name": "registryPath", "type": "string" },
+				{ "name": "projectPath", "type": "string" }
+			],
+			"csharp": { "member": "DeleteProjectFromDisk", "kind": "method" }
+		},
+		{
+			"id": "MatchesFilter",
+			"cpp": "::Shalltear::ProjectOps::MatchesFilter(*entry, filter)",
+			"returns": "bool",
+			"params": [
+				{ "name": "entry", "type": "ProjectOpsProjectEntry" },
+				{ "name": "filter", "type": "string" }
+			],
+			"csharp": { "member": "MatchesFilter", "kind": "method" }
+		},
+		{
+			"id": "MountProject",
+			"cpp": "::Shalltear::ProjectOps::MountProject(str(projectPath))",
+			"returns": "bool",
+			"params": [{ "name": "projectPath", "type": "string" }],
+			"csharp": { "member": "MountProject", "kind": "method" }
+		},
+		{
+			"id": "GetMountedProjectPath",
+			"cpp": "::Shalltear::ProjectOps::GetMountedProjectPath()",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "MountedProjectPath", "kind": "getter" }
+		},
+		{
+			"id": "BuildRelaunchCommandLine",
+			"cpp": "::Shalltear::ProjectOps::BuildRelaunchCommandLine(str(executablePath), std::span<const ::Shalltear::str>(Slots::ToVector<::Shalltear::str>(argumentsValue)), str(projectPath))",
+			"returns": "string",
+			"params": [
+				{ "name": "executablePath", "type": "string" },
+				{ "name": "argumentsValue", "type": "list<string>" },
+				{ "name": "projectPath", "type": "string" }
+			],
+			"csharp": { "member": "BuildRelaunchCommandLine", "kind": "method" }
+		}
+	]
+}

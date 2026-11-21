@@ -1,0 +1,177 @@
+{
+	"area": "BuildProfile",
+	"slots": true,
+	"include": [
+		"Shalltear/Editor/BuildProfile.h"
+	],
+	"class": "Shalltear.Editor.BuildProfile",
+	"instance": "BuildProfile",
+	"enums": [
+		{
+			"name": "BuildIssueSeverity",
+			"cpp": "::Shalltear::BuildIssueSeverity",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Warning", "value": 0 },
+				{ "name": "Error", "value": 1 }
+			]
+		},
+		{
+			"name": "BuildSettingType",
+			"cpp": "::Shalltear::BuildSettingType",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Bool", "value": 0 },
+				{ "name": "Int", "value": 1 },
+				{ "name": "String", "value": 2 },
+				{ "name": "Path", "value": 3 },
+				{ "name": "Enum", "value": 4 },
+				{ "name": "StringList", "value": 5 },
+				{ "name": "SceneList", "value": 6 }
+			]
+		},
+		{
+			"name": "BuildMergePolicy",
+			"cpp": "::Shalltear::BuildMergePolicy",
+			"underlying": "u8",
+			"values": [
+				{ "name": "Replace", "value": 0 },
+				{ "name": "Union", "value": 1 }
+			]
+		}
+	],
+	"natives": [
+		{ "name": "BuildIssue", "cpp": "::Shalltear::BuildIssue", "owned": true, "create": true },
+		{ "name": "ResolvedProfile", "cpp": "::Shalltear::ResolvedProfile", "owned": true, "create": true },
+		{ "name": "BuildProfile", "cpp": "::Shalltear::BuildProfile", "owned": true, "create": true },
+		{ "name": "ResolvedSetting", "cpp": "::Shalltear::ResolvedSetting", "owned": true, "create": true },
+		{ "name": "BuildSettingDesc", "cpp": "::Shalltear::BuildSettingDesc", "owned": true, "create": true },
+		{ "name": "BuildProfileOpsStaticSDKProbe", "cpp": "::Shalltear::BuildProfileOps::StaticSDKProbe", "owned": true, "create": true }
+	],
+	"functions": [
+		{
+			"id": "Has",
+			"cpp": "self->Has(key)",
+			"returns": "bool",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "Has", "kind": "method" }
+		},
+		{
+			"id": "Remove",
+			"cpp": "self->Remove(key)",
+			"returns": "bool",
+			"params": [{ "name": "key", "type": "string" }],
+			"csharp": { "member": "Remove", "kind": "method" }
+		},
+		{
+			"id": "SettingCount",
+			"cpp": "self->SettingCount()",
+			"returns": "u64",
+			"params": [],
+			"csharp": { "member": "SettingCount", "kind": "method" }
+		},
+		{
+			"id": "SettingKeyAt",
+			"cpp": "self->SettingKeyAt(index)",
+			"returns": "string",
+			"params": [{ "name": "index", "type": "u64" }],
+			"csharp": { "member": "SettingKeyAt", "kind": "method" }
+		},
+		{
+			"id": "GetString",
+			"cpp": "self->GetString(key, fallback)",
+			"returns": "string",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "fallback", "type": "string" }
+			],
+			"csharp": { "member": "GetString", "kind": "method" }
+		},
+		{
+			"id": "SetString",
+			"cpp": "self->SetString(key, valueValue)",
+			"returns": "void",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "valueValue", "type": "string" }
+			],
+			"csharp": { "member": "SetString", "kind": "method" }
+		},
+		{
+			"id": "GetList",
+			"cpp": "self->GetList(key, outValue)",
+			"returns": "bool",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "outValue", "type": "list<string>", "out": true, "cpp": "::Shalltear::Vector<::Shalltear::str>" }
+			],
+			"csharp": { "member": "GetList", "kind": "method" }
+		},
+		{
+			"id": "SetList",
+			"cpp": "self->SetList(key, Slots::ToVector<str>(items))",
+			"returns": "void",
+			"params": [
+				{ "name": "key", "type": "string" },
+				{ "name": "items", "type": "list<string>" }
+			],
+			"csharp": { "member": "SetList", "kind": "method" }
+		},
+		{
+			"id": "GetName",
+			"cpp": "self->name",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Name", "kind": "getter" }
+		},
+		{
+			"id": "SetName",
+			"cpp": "self->name = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Name", "kind": "setter" }
+		},
+		{
+			"id": "GetInherits",
+			"cpp": "self->inherits",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Inherits", "kind": "getter" }
+		},
+		{
+			"id": "SetInherits",
+			"cpp": "self->inherits = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Inherits", "kind": "setter" }
+		},
+		{
+			"id": "GetTarget",
+			"cpp": "self->target",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "Target", "kind": "getter" }
+		},
+		{
+			"id": "SetTarget",
+			"cpp": "self->target = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "Target", "kind": "setter" }
+		},
+		{
+			"id": "GetFormatVersion",
+			"cpp": "self->formatVersion",
+			"returns": "i32",
+			"params": [],
+			"csharp": { "member": "FormatVersion", "kind": "getter" }
+		},
+		{
+			"id": "SetFormatVersion",
+			"cpp": "self->formatVersion = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "i32" }],
+			"csharp": { "member": "FormatVersion", "kind": "setter" }
+		}
+	]
+}

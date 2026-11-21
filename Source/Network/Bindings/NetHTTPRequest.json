@@ -1,0 +1,109 @@
+{
+	"area": "NetHTTPRequest",
+	"slots": true,
+	"include": [
+		"Shalltear/Network/HTTP.h"
+	],
+	"class": "Shalltear.NetHTTPRequest",
+	"instance": "NetHTTPRequest",
+	"functions": [
+		{
+			"id": "GetMethod",
+			"cpp": "self->method",
+			"returns": "NetHTTPMethod",
+			"params": [],
+			"csharp": { "member": "Method", "kind": "getter" }
+		},
+		{
+			"id": "SetMethod",
+			"cpp": "self->method = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "NetHTTPMethod" }],
+			"csharp": { "member": "Method", "kind": "setter" }
+		},
+		{
+			"id": "GetURL",
+			"cpp": "self->url",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "URL", "kind": "getter" }
+		},
+		{
+			"id": "SetURL",
+			"cpp": "self->url = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "URL", "kind": "setter" }
+		},
+		{
+			"id": "GetHeaders",
+			"cpp": "self->headers",
+			"returns": "list<NetHTTPHeader>",
+			"params": [],
+			"csharp": { "member": "Headers", "kind": "getter" }
+		},
+		{
+			"id": "SetHeaders",
+			"cpp": "self->headers = Slots::Copies<::Shalltear::Vector<::Shalltear::Net::HTTP::Header>>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<NetHTTPHeader>" }],
+			"csharp": { "member": "Headers", "kind": "setter" }
+		},
+		{
+			"id": "GetBody",
+			"cpp": "self->body",
+			"returns": "list<u8>",
+			"params": [],
+			"csharp": { "member": "Body", "kind": "getter" }
+		},
+		{
+			"id": "SetBody",
+			"cpp": "self->body = Slots::ToVector<u8>(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "list<u8>" }],
+			"csharp": { "member": "Body", "kind": "setter" }
+		},
+		{
+			"id": "GetTimeoutSeconds",
+			"cpp": "self->timeoutSeconds",
+			"returns": "f32",
+			"params": [],
+			"csharp": { "member": "TimeoutSeconds", "kind": "getter" }
+		},
+		{
+			"id": "SetTimeoutSeconds",
+			"cpp": "self->timeoutSeconds = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "f32" }],
+			"csharp": { "member": "TimeoutSeconds", "kind": "setter" }
+		},
+		{
+			"id": "GetMaxRedirects",
+			"cpp": "self->maxRedirects",
+			"returns": "u32",
+			"params": [],
+			"csharp": { "member": "MaxRedirects", "kind": "getter" }
+		},
+		{
+			"id": "SetMaxRedirects",
+			"cpp": "self->maxRedirects = value",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "u32" }],
+			"csharp": { "member": "MaxRedirects", "kind": "setter" }
+		},
+		{
+			"id": "GetDownloadPath",
+			"cpp": "self->downloadPath",
+			"returns": "string",
+			"params": [],
+			"csharp": { "member": "DownloadPath", "kind": "getter" }
+		},
+		{
+			"id": "SetDownloadPath",
+			"cpp": "self->downloadPath = str(value)",
+			"returns": "void",
+			"params": [{ "name": "value", "type": "string" }],
+			"csharp": { "member": "DownloadPath", "kind": "setter" }
+		}
+	]
+}

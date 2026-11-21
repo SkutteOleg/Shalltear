@@ -1,0 +1,18 @@
+{
+	"area": "UIElementHandle",
+	"slots": true,
+	"include": [
+		"Shalltear/Core/UI/UITypes.h"
+	],
+	"class": "Shalltear.UIElementHandle",
+	"instance": "UIElementHandle",
+	"functions": [
+		{
+			"id": "IsValid",
+			"cpp": "self->IsValid()",
+			"returns": "bool",
+			"params": [],
+			"csharp": { "member": "IsValid", "kind": "getter" }
+		}
+	]
+}
