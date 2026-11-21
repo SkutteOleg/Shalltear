@@ -1418,7 +1418,7 @@ TEST_F(Physics3DJointFixture, DriveIsTorquePerRadian) {
 	constexpr f32 BAR_MASS = 1.0f;
 	constexpr f32 LEVER = 0.5f;
 	constexpr f32 PACKAGE_GRAVITY = 9.81f;
-	const Vec3 bar{0.1f, 1.0f, 0.1f};
+	const Vec3 barSize{0.1f, 1.0f, 0.1f};
 
 	auto settle = [&](const Vec3& axis, f32 spring) {
 		Handle<Component> jointComponent;
@@ -1427,7 +1427,7 @@ TEST_F(Physics3DJointFixture, DriveIsTorquePerRadian) {
 		EXPECT_TRUE(bar.IsValid());
 		Handle<Component> box = bar->AddComponent(boxType);
 		EXPECT_NE(box.Get(), nullptr);
-		EXPECT_TRUE(WriteField(boxType, box.Get(), "_size", bar));
+		EXPECT_TRUE(WriteField(boxType, box.Get(), "_size", barSize));
 		EXPECT_TRUE(WriteField(_characterType, jointComponent.Get(), "_anchor", Vec3{0.0f, 0.0f, LEVER}));
 		EXPECT_TRUE(WriteField(_characterType, jointComponent.Get(), "_axis", axis));
 		EXPECT_TRUE(WriteField(_characterType, jointComponent.Get(), "_useDrive", true));
