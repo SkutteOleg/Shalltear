@@ -14,6 +14,7 @@
 #include "Shalltear/Core/Graphics/MeshRenderer.h"
 #include "Shalltear/Core/Graphics/PrimitiveMesh.h"
 #include "Shalltear/Core/Graphics/ShaderAsset.h"
+#include "Shalltear/Core/Graphics/ShaderCompileQueue.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Math/HalfFloat.h"
 #include "Shalltear/Core/Scene.h"
@@ -208,6 +209,7 @@ namespace ShadingTest {
 
 		void TearDown() override {
 			SceneSystem::Terminate();
+			ShaderCompileQueue::Terminate();
 			AssetDatabase::Terminate();
 			RenderSystem::Terminate();
 			WindowSystem::Terminate();

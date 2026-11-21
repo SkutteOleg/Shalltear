@@ -100,6 +100,7 @@ namespace {
 
 		void TearDown() override {
 			PanelManager::Terminate();
+			ShaderCompileQueue::Terminate();
 			UISystem::Terminate();
 			AssetDatabase::Terminate();
 			FileSystem::Unmount("engine");
