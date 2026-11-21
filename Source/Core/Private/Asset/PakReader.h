@@ -30,15 +30,30 @@ namespace Shalltear {
 				outError = std::format("'{}' couldn't be opened for reading", physicalPath.ToString());
 				return false;
 			}
-			const u64 fileSize = file.GetSize();
-			if (fileSize < PAK_HEADER_SIZE) {
-				outError = std::format("'{}' is {} bytes (smaller than a superblock)", physicalPath.ToString(), fileSize);
+			const u64 totalFileSize = file.GetSize();
+			if (totalFileSize < PAK_HEADER_SIZE) {
+				outError = std::format("'{}' is {} bytes (smaller than a superblock)", physicalPath.ToString(), totalFileSize);
 				return false;
+			}
+
+			u64 baseOffset = 0;
+			u64 fileSize = totalFileSize;
+			if (totalFileSize >= PAK_HEADER_SIZE + sizeof(PakOverlayFooter)) {
+				PakOverlayFooter footer{};
+				if (file.ReadAt(totalFileSize - sizeof(PakOverlayFooter),
+								std::span<u8>(reinterpret_cast<u8*>(&footer), sizeof(PakOverlayFooter))) &&
+					std::memcmp(footer.magic, PAK_OVERLAY_MAGIC, sizeof(PAK_OVERLAY_MAGIC)) == 0 &&
+					footer.pakOffset <= totalFileSize - sizeof(PakOverlayFooter) &&
+					footer.pakSize == (totalFileSize - sizeof(PakOverlayFooter)) - footer.pakOffset &&
+					footer.pakSize >= PAK_HEADER_SIZE) {
+					baseOffset = footer.pakOffset;
+					fileSize = footer.pakSize;
+				}
 			}
 
 			// validate superblock before any of its offsets sizes a read
 			Buffer header(PAK_HEADER_SIZE, MemTag::Core);
-			if (!header || !file.ReadAt(0, std::span<u8>(header.data, header.size))) {
+			if (!header || !file.ReadAt(baseOffset, std::span<u8>(header.data, header.size))) {
 				outError = std::format("'{}' couldn't be read", physicalPath.ToString());
 				return false;
 			}
@@ -53,13 +68,14 @@ namespace Shalltear {
 			Unmount();
 
 			Buffer resident(static_cast<size_t>(residentEnd), MemTag::Core);
-			if (!resident || !file.ReadAt(0, std::span<u8>(resident.data, resident.size))) {
+			if (!resident || !file.ReadAt(baseOffset, std::span<u8>(resident.data, resident.size))) {
 				outError = std::format("'{}' couldn't be read", physicalPath.ToString());
 				return false;
 			}
 			if (!MountResident(resident.data, resident.size, fileSize, physicalPath.ToString(), outError)) {
 				return false;
 			}
+			_baseOffset = baseOffset;
 			_resident = std::move(resident);
 			_file = std::move(file);
 			return true;
@@ -81,6 +97,7 @@ namespace Shalltear {
 			_resident.Release();
 			_data = nullptr;
 			_residentSize = 0;
+			_baseOffset = 0;
 			_size = 0;
 			_mounted = false;
 			_assets = nullptr;
@@ -287,7 +304,7 @@ namespace Shalltear {
 				outError = std::format("region {} says {} bytes and its pages hold {}", regionIndex, region->sizeRaw, total);
 				return false;
 			}
-			outOffset = at;
+			outOffset = _baseOffset + at;
 			outSize = total;
 			return true;
 		}
@@ -369,7 +386,7 @@ namespace Shalltear {
 				}
 				return true;
 			}
-			return _file.IsOpen() && _file.ReadAt(offset, std::span<u8>(out, static_cast<size_t>(size)));
+			return _file.IsOpen() && _file.ReadAt(_baseOffset + offset, std::span<u8>(out, static_cast<size_t>(size)));
 		}
 
 		bool ValidateSuperblock(std::string_view name, str& outError) {
@@ -639,6 +656,7 @@ namespace Shalltear {
 		// _data owns the bytes only when Mount(Path) read them
 		const u8* _data = nullptr;
 		size_t _residentSize = 0;
+		u64 _baseOffset = 0;
 		u64 _size = 0;
 		Buffer _resident;
 		FileReader _file;

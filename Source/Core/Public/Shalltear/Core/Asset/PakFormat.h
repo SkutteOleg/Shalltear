@@ -81,6 +81,16 @@ namespace Shalltear {
 
 	constexpr u8 PAK_MAGIC[8] = {'S', 'L', 'T', 'P', 0x0D, 0x0A, 0x1A, 0x0A};
 
+	constexpr u8 PAK_OVERLAY_MAGIC[8] = {'S', 'L', 'T', 'P', 'K', 'O', 'V', '1'};
+
+	struct PakOverlayFooter {
+		u64 exeSize = 0;
+		u64 pakOffset = 0;
+		u64 pakSize = 0;
+		u8 magic[8] = {};
+	};
+	static_assert(sizeof(PakOverlayFooter) == 32);
+
 	constexpr u16 PAK_VERSION_MAJOR = 1;
 	constexpr u16 PAK_VERSION_MINOR = 1;
 	constexpr u32 PAK_HEADER_SIZE = 4096;

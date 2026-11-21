@@ -1,6 +1,7 @@
 #include "Shalltear/Editor/BuildPipeline.h"
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Asset/PakFormat.h"
 #include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
@@ -20,6 +21,7 @@
 #include "Shalltear/Editor/ChildProcess.h"
 
 #include <chrono>
+#include <cstring>
 #include <ctime>
 #include <filesystem>
 #include <format>
@@ -320,6 +322,8 @@ namespace Shalltear {
 			commandLine += " -DSHALLTEAR_PLAYER_DEFINES=" + Quote(defines);
 			commandLine += str(" -DSHALLTEAR_PLAYER_DEBUG_SYMBOLS=") +
 						   (ResolvedBool(context, "copyDebugSymbols") ? "ON" : "OFF");
+			commandLine += str(" -DSHALLTEAR_PLAYER_SINGLE_FILE=") +
+						   (ResolvedBool(context, "singleFile") ? "ON" : "OFF");
 			commandLine += " -DSHALLTEAR_PLAYER_ICON=" + Quote(context.executableIconFile);
 
 			Vector<PackageOps::PackageManifest> catalogue;
@@ -424,6 +428,14 @@ namespace Shalltear {
 			dependencies.push_back({"THIRD-PARTY-NOTICES-Runtime.txt", "THIRD-PARTY-NOTICES.txt"});
 			for (const str& file : context.runtimeFiles) {
 				dependencies.push_back({file, file});
+			}
+			if (ResolvedBool(context, "singleFile")) {
+				std::error_code ec;
+				for (const RuntimeDependency& dependency : dependencies) {
+					fs::remove(fs::path{context.stagingDir + "/" + dependency.destination}, ec);
+					ec.clear();
+				}
+				return BuildStepStatus::Succeeded;
 			}
 			for (const RuntimeDependency& dependency : dependencies) {
 				str source;
@@ -579,14 +591,101 @@ namespace Shalltear {
 			str destination = context.stagingDir + "/Data";
 			ClearStagedSubtree(destination);
 			std::error_code ec;
-			fs::create_directories(fs::path{destination}, ec);
 
-			Buffer bytes(package.size(), MemTag::Editor);
-			std::memcpy(bytes.data, package.data(), package.size());
-			str packagePath = destination + "/Content.slpak";
-			if (!FileSystem::WriteFile(Path(packagePath), bytes)) {
-				context.AddIssue(BuildIssueSeverity::Error, "", "couldn't write '" + packagePath + "'");
-				return BuildStepStatus::Failed;
+			const bool singleFile = ResolvedBool(context, "singleFile");
+			const str exePath = !context.executableName.empty()
+									? context.stagingDir + "/" + context.executableName + context.executableSuffix
+									: str{};
+			str packagePath;
+
+			if (singleFile) {
+				if (exePath.empty()) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 "single-file build has no executable name to embed content into");
+					return BuildStepStatus::Failed;
+				}
+				Buffer exeBytes = FileSystem::ReadFile(Path(exePath), MemTag::Editor);
+				if (!exeBytes.data || exeBytes.size == 0) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 "single-file build couldn't read player executable '" + exePath + "'");
+					return BuildStepStatus::Failed;
+				}
+
+				size_t origExeSize = exeBytes.size;
+				if (exeBytes.size >= sizeof(PakOverlayFooter)) {
+					PakOverlayFooter existing{};
+					std::memcpy(&existing, exeBytes.data + exeBytes.size - sizeof(PakOverlayFooter),
+								sizeof(PakOverlayFooter));
+					if (std::memcmp(existing.magic, PAK_OVERLAY_MAGIC, sizeof(existing.magic)) == 0 &&
+						existing.exeSize <= exeBytes.size) {
+						origExeSize = static_cast<size_t>(existing.exeSize);
+					}
+				}
+
+				const u64 pakOffset = (static_cast<u64>(origExeSize) + 7ull) & ~7ull;
+				const size_t totalSize = static_cast<size_t>(pakOffset) + package.size() + sizeof(PakOverlayFooter);
+				Buffer combined(totalSize, MemTag::Editor);
+				std::memcpy(combined.data, exeBytes.data, origExeSize);
+				if (pakOffset > origExeSize) {
+					std::memset(combined.data + origExeSize, 0, static_cast<size_t>(pakOffset - origExeSize));
+				}
+				if (!package.empty()) {
+					std::memcpy(combined.data + pakOffset, package.data(), package.size());
+				}
+				PakOverlayFooter footer{};
+				std::memcpy(footer.magic, PAK_OVERLAY_MAGIC, sizeof(footer.magic));
+				footer.pakOffset = pakOffset;
+				footer.pakSize = package.size();
+				footer.exeSize = origExeSize;
+				std::memcpy(combined.data + pakOffset + package.size(), &footer, sizeof(footer));
+
+				if (!FileSystem::WriteFile(Path(exePath), combined)) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 "couldn't write single-file executable '" + exePath + "'");
+					return BuildStepStatus::Failed;
+				}
+				if (context.executableSuffix == ".x86_64") {
+					fs::permissions(fs::path{exePath},
+									fs::perms::owner_exec | fs::perms::group_exec | fs::perms::others_exec,
+									fs::perm_options::add, ec);
+					ec.clear();
+				}
+				packagePath = exePath;
+			} else {
+				if (!exePath.empty() && fs::is_regular_file(fs::path{exePath}, ec)) {
+					Buffer exeBytes = FileSystem::ReadFile(Path(exePath), MemTag::Editor);
+					if (exeBytes.size >= sizeof(PakOverlayFooter)) {
+						PakOverlayFooter existing{};
+						std::memcpy(&existing, exeBytes.data + exeBytes.size - sizeof(PakOverlayFooter),
+									sizeof(PakOverlayFooter));
+						if (std::memcmp(existing.magic, PAK_OVERLAY_MAGIC, sizeof(existing.magic)) == 0 &&
+							existing.exeSize <= exeBytes.size) {
+							Buffer stripped(static_cast<size_t>(existing.exeSize), MemTag::Editor);
+							std::memcpy(stripped.data, exeBytes.data, stripped.size);
+							if (!FileSystem::WriteFile(Path(exePath), stripped)) {
+								context.AddIssue(BuildIssueSeverity::Error, "",
+												 "couldn't strip stale content overlay from '" + exePath + "'");
+								return BuildStepStatus::Failed;
+							}
+							if (context.executableSuffix == ".x86_64") {
+								fs::permissions(fs::path{exePath},
+												fs::perms::owner_exec | fs::perms::group_exec | fs::perms::others_exec,
+												fs::perm_options::add, ec);
+								ec.clear();
+							}
+						}
+					}
+				}
+				ec.clear();
+				fs::create_directories(fs::path{destination}, ec);
+
+				Buffer bytes(package.size(), MemTag::Editor);
+				std::memcpy(bytes.data, package.data(), package.size());
+				packagePath = destination + "/Content.slpak";
+				if (!FileSystem::WriteFile(Path(packagePath), bytes)) {
+					context.AddIssue(BuildIssueSeverity::Error, "", "couldn't write '" + packagePath + "'");
+					return BuildStepStatus::Failed;
+				}
 			}
 
 			if (!AssetDatabase::ValidatePackage(Path(packagePath), {closure.assets.data(), closure.assets.size()},
@@ -620,8 +719,11 @@ namespace Shalltear {
 								 "the package was written but its build report was not: '" + reportPath + "'");
 			}
 
-			context.Log(std::format("cooked {} asset(s) of {} into Data/Content.slpak ({} byte(s), {} not reached)",
-									closure.assets.size(), candidates, package.size(),
+			context.Log(std::format("cooked {} asset(s) of {} into {} ({} byte(s), {} not reached)",
+									closure.assets.size(), candidates,
+									singleFile ? (context.executableName + context.executableSuffix)
+											   : str("Data/Content.slpak"),
+									package.size(),
 									candidates > closure.assets.size() ? candidates - closure.assets.size() : 0));
 			return BuildStepStatus::Succeeded;
 		}

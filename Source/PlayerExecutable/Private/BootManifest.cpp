@@ -2,6 +2,7 @@
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/PakFormat.h"
+#include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Module/ModuleAPI.h"
 #include "Shalltear/Core/Module/ModuleEvents.h"
@@ -16,7 +17,16 @@ namespace Shalltear {
 
 	bool MountStagedContent(const str& executableRoot, str& outError) {
 		Path packagePath(executableRoot + "/Data/Content.slpak");
-
+		if (FileSystem::Exists(packagePath)) {
+			return AssetDatabase::MountPackage(packagePath, outError);
+		}
+		const Path exePath = FileSystem::GetExecutablePath();
+		if (!exePath.ToString().empty() && FileSystem::Exists(exePath)) {
+			str overlayError;
+			if (AssetDatabase::MountPackage(exePath, overlayError)) {
+				return true;
+			}
+		}
 		return AssetDatabase::MountPackage(packagePath, outError);
 	}
 

@@ -68,6 +68,7 @@ namespace Shalltear {
 		bool windowedSubsystem = true;
 
 		str executableName;
+		str executableSuffix = ".exe";
 
 		Vector<str> defines;
 

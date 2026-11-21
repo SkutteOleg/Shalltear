@@ -40,6 +40,17 @@ namespace Shalltear {
 			out.push_back(std::move(symbols));
 		}
 
+		void DescribeSingleFile(Vector<BuildSettingDesc>& out) {
+			BuildSettingDesc singleFile;
+			singleFile.key = "singleFile";
+			singleFile.type = BuildSettingType::Bool;
+			singleFile.merge = BuildMergePolicy::Replace;
+			singleFile.label = "Single-File Executable";
+			singleFile.help = "link runtime libraries statically and embed Data/Content.slpak into the executable";
+			singleFile.defaultValue = "false";
+			out.push_back(std::move(singleFile));
+		}
+
 	} // anonymous namespace
 
 	bool LinuxTarget::IsAvailable(str& outReason) const {
@@ -58,6 +69,7 @@ namespace Shalltear {
 
 	void LinuxTarget::DescribeSettings(Vector<BuildSettingDesc>& out) const {
 		DescribeSymbols(out);
+		DescribeSingleFile(out);
 		BuildIcon::DescribeSetting(out);
 	}
 
@@ -81,6 +93,7 @@ namespace Shalltear {
 
 		context.entrySource = "PlayerMain.cpp";
 		context.windowedSubsystem = true;
+		context.executableSuffix = str(ExecutableSuffix);
 
 		context.defines.push_back("SLT_PLAYER");
 
@@ -101,6 +114,7 @@ namespace Shalltear {
 
 	void LinuxServerTarget::DescribeSettings(Vector<BuildSettingDesc>& out) const {
 		DescribeSymbols(out);
+		DescribeSingleFile(out);
 	}
 
 	void LinuxServerTarget::ConfigurePipeline(BuildContext& context) const {

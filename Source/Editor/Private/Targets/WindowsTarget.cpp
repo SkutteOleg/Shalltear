@@ -37,6 +37,15 @@ namespace Shalltear {
 		symbols.defaultValue = "false";
 		out.push_back(std::move(symbols));
 
+		BuildSettingDesc singleFile;
+		singleFile.key = "singleFile";
+		singleFile.type = BuildSettingType::Bool;
+		singleFile.merge = BuildMergePolicy::Replace;
+		singleFile.label = "Single-File Executable";
+		singleFile.help = "link runtime libraries statically and embed Data/Content.slpak into the executable";
+		singleFile.defaultValue = "false";
+		out.push_back(std::move(singleFile));
+
 		BuildIcon::DescribeSetting(out);
 	}
 
@@ -60,6 +69,7 @@ namespace Shalltear {
 
 		context.entrySource = "PlayerMain.cpp";
 		context.windowedSubsystem = true;
+		context.executableSuffix = ".exe";
 
 		context.defines.push_back("SLT_PLAYER");
 
