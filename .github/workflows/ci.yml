@@ -2,24 +2,47 @@ name: CI
 
 on:
   push:
+  schedule:
+    - cron: "17 4 * * 1"
   workflow_dispatch:
+    inputs:
+      isolated:
+        description: 1 process per test (slower, isolates each test)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 # new run cancels stale run (same branch)
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.ref }}-${{ github.event_name == 'schedule' || inputs.isolated == true }}
   cancel-in-progress: true
 
 # Clang + GNU ABI, fetched toolchain
 
 env:
+  EACH: ${{ (github.event_name == 'schedule' || inputs.isolated) && '--each' || '' }}
   # need a GPU (pixel exact, pipeline per node)
   WINDOWS_GPU_ONLY: >-
-    SkyPrefilterFixture\.SmoothSkyMatchesOracle|TextureSamplingFixture\.PointSamplesOneTexelAtGrazingAngle|UIRenderFixture\.TabLikeCompositeIsPixelSymmetric|UIRenderFixture\.AuthoredTranslucentTokensCompositeWayCssDoes|AmbientOcclusionRenderFixture\.AfterOpaqueSurvivesPostRow|BC6HSampleFixture\.CodecDecodeMatchesGpu|SwapChainResizeCostTest\.RebuildInvalidatesHandles|NodeShaderGPUFixture\.EveryNodeMatchesReferenceOnGPU
+    SkyPrefilterFixture.SmoothSkyMatchesOracle
+    TextureSamplingFixture.PointSamplesOneTexelAtGrazingAngle
+    UIRenderFixture.TabLikeCompositeIsPixelSymmetric
+    UIRenderFixture.AuthoredTranslucentTokensCompositeWayCssDoes
+    AmbientOcclusionRenderFixture.AfterOpaqueSurvivesPostRow
+    BC6HSampleFixture.CodecDecodeMatchesGpu
+    SwapChainResizeCostTest.RebuildInvalidatesHandles
+    NodeShaderGPUFixture.EveryNodeMatchesReferenceOnGPU
   LINUX_GPU_ONLY: >-
-    SkyPrefilterFixture\.SmoothSkyMatchesOracle|TextureSamplingFixture\.PointSamplesOneTexelAtGrazingAngle|TextureSamplingFixture\.LevelAndProfileShapeGrazingFootprint|UIRenderFixture\.TabLikeCompositeIsPixelSymmetric|UIRenderFixture\.AuthoredTranslucentTokensCompositeWayCssDoes|AmbientOcclusionRenderFixture\.AfterOpaqueSurvivesPostRow|NodeShaderGPUFixture\.EveryNodeMatchesReferenceOnGPU
+    SkyPrefilterFixture.SmoothSkyMatchesOracle
+    TextureSamplingFixture.PointSamplesOneTexelAtGrazingAngle
+    TextureSamplingFixture.LevelAndProfileShapeGrazingFootprint
+    UIRenderFixture.TabLikeCompositeIsPixelSymmetric
+    UIRenderFixture.AuthoredTranslucentTokensCompositeWayCssDoes
+    AmbientOcclusionRenderFixture.AfterOpaqueSurvivesPostRow
+    NodeShaderGPUFixture.EveryNodeMatchesReferenceOnGPU
+  # skipped device tier/player builds should fail the lane
+  DEVICE_SKIPS: "no (Vulkan )?(device|ICD)"
 
 jobs:
   checks:
@@ -91,6 +114,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Lint the workflow
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/actionlint.tar.gz" https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -color
+
       # staging rules describe Windows SDK
       - name: Script tests
         working-directory: Scripts
@@ -110,7 +140,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: windows-latest
     # hung test would hold the runner for 10000 years
-    timeout-minutes: 330
+    timeout-minutes: ${{ (github.event_name == 'schedule' || inputs.isolated) && 330 || 150 }}
     strategy:
       fail-fast: false
       matrix:
@@ -228,20 +258,7 @@ jobs:
           key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
 
       - name: Test
-        id: test
-        run: ctest --preset ${{ matrix.preset }} --timeout 600 --no-tests=error -E '^(${{ env.WINDOWS_GPU_ONLY }})$'
-
-      # skipped device tier/player builds should fail the lane
-      - name: Device and player tests ran
-        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-        shell: pwsh
-        run: |
-          $log = "${{ matrix.tree }}/Testing/Temporary/LastTest.log"
-          $skipped = @(Select-String -CaseSensitive -Path $log -Pattern '^(no (Vulkan )?(device|ICD)${{ matrix.sibling_skips }})')
-          if ($skipped.Count -gt 0) {
-            $skipped | Select-Object -First 20 | ForEach-Object { $_.Line }
-            throw "$($skipped.Count) test(s) skipped for want of a device or sibling tree"
-          }
+        run: python Scripts/run_suite.py ${{ matrix.tree }} --exclude "${{ env.WINDOWS_GPU_ONLY }}" --fail-skips "^(${{ env.DEVICE_SKIPS }}${{ matrix.sibling_skips }})" ${{ env.EACH }}
 
       - name: Benchmarks (informational)
         if: matrix.benchmarks
@@ -252,8 +269,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}-tests
-          path: ${{ matrix.tree }}/Testing/Temporary/LastTest.log
+          path: ${{ matrix.tree }}/Testing/suite.log
           if-no-files-found: ignore
+          retention-days: 14
 
       - name: Disk space
         if: always()
@@ -263,7 +281,7 @@ jobs:
   linux:
     name: ${{ matrix.name }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 330
+    timeout-minutes: ${{ (github.event_name == 'schedule' || inputs.isolated) && 330 || 150 }}
     strategy:
       fail-fast: false
       matrix:
@@ -327,9 +345,11 @@ jobs:
 
       - name: Put the toolchain on PATH
         run: |
-          echo "$PWD/External/Prebuilt/llvm-mingw/bin" >> "$GITHUB_PATH"
-          echo "$PWD/External/Prebuilt/cmake/bin" >> "$GITHUB_PATH"
-          echo "$PWD/External/Prebuilt/ninja" >> "$GITHUB_PATH"
+          {
+            echo "$PWD/External/Prebuilt/llvm-mingw/bin"
+            echo "$PWD/External/Prebuilt/cmake/bin"
+            echo "$PWD/External/Prebuilt/ninja"
+          } >> "$GITHUB_PATH"
 
       - name: Start the display server
         run: |
@@ -364,30 +384,16 @@ jobs:
           key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
 
       - name: Test
-        id: test
-        run: ctest --preset ${{ matrix.preset }} --timeout 600 --no-tests=error -E '^(${{ env.LINUX_GPU_ONLY }})$'
-
-      # skipped device tier/player builds should fail the lane
-      - name: Device and player tests ran
-        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-        run: |
-          log="${{ matrix.tree }}/Testing/Temporary/LastTest.log"
-          [ -f "$log" ] || { echo "no $log"; exit 1; }
-          pattern='^(no (Vulkan )?(device|ICD)${{ matrix.sibling_skips }})'
-          skipped=$(grep -cE "$pattern" "$log" || true)
-          if [ "$skipped" -gt 0 ]; then
-            grep -E "$pattern" "$log" | head -n 20
-            echo "$skipped test(s) skipped for want of a device or sibling tree"
-            exit 1
-          fi
+        run: python3 Scripts/run_suite.py ${{ matrix.tree }} --exclude "${{ env.LINUX_GPU_ONLY }}" --fail-skips "^(${{ env.DEVICE_SKIPS }}${{ matrix.sibling_skips }})" ${{ env.EACH }}
 
       - name: Keep the test log
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}-tests
-          path: ${{ matrix.tree }}/Testing/Temporary/LastTest.log
+          path: ${{ matrix.tree }}/Testing/suite.log
           if-no-files-found: ignore
+          retention-days: 14
 
       - name: Disk space
         if: always()
