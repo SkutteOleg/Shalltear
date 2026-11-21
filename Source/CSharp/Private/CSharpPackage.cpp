@@ -5,6 +5,7 @@
 
 #ifdef SLT_WITH_EDITOR
 #include "CSharpBuildSteps.h"
+#include "CSharpProfilerModule.h"
 #include "CSharpScriptAsset.h"
 #include "CSharpSetup.h"
 #endif
@@ -77,6 +78,9 @@ namespace Shalltear::CSharpImpl {
 		ReleasePlayerStart();
 #endif
 		ScriptRuntime::Detach();
+#ifdef SLT_WITH_EDITOR
+		CSharpEditor::ReleaseProfilerModule();
+#endif
 		DebugLines::Clear();
 		UIBindings::Release();
 	}

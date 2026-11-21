@@ -8,6 +8,7 @@
 #include "ManagedTypes.h"
 #include "PackageBindings.h"
 #include "ScriptEvents.h"
+#include "ScriptProfile.h"
 #include "ShadowStorage.h"
 
 #include "Shalltear/Core/Asset/Asset.h"
@@ -204,6 +205,7 @@ namespace Shalltear::CSharpImpl::ScriptRuntime {
 		}
 		_managed.shutdown();
 		ScriptEvents::Reset();
+		ScriptProfile::Reset();
 		_managed = {};
 		_attached = false;
 	}

@@ -68,6 +68,22 @@ internal unsafe struct SltTypeDesc {
 }
 
 [StructLayout(LayoutKind.Sequential)]
+internal struct SltProfileRow {
+	public int managedTypeId;
+	public int hook;
+	public uint calls;
+	public long nanoseconds;
+	public long bytes;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal unsafe struct SltProfileFrame {
+	public fixed int collections[3];
+	public long pauseNanoseconds;
+	public long heapBytes;
+}
+
+[StructLayout(LayoutKind.Sequential)]
 internal unsafe struct SltEngineAPI {
 	public uint abiVersion;
 	public ulong layoutHash;
@@ -107,4 +123,6 @@ internal unsafe struct SltManagedAPI {
 	public delegate* unmanaged<void> shutdown;
 	public delegate* unmanaged<int, ulong, void> dispatchEvent;
 	public delegate* unmanaged<int, void> pump;
+	public delegate* unmanaged<int, void> setProfiling;
+	public delegate* unmanaged<SltProfileRow*, int, SltProfileFrame*, int> readProfile;
 }

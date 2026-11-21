@@ -2,6 +2,7 @@
 
 #include "ManagedTypes.h"
 #include "ScriptBridge.h"
+#include "ScriptProfile.h"
 
 #include "Shalltear/Core/Types.h"
 
@@ -29,6 +30,10 @@ namespace Shalltear::CSharpImpl {
 		void (*setAssetFinder)(u64 (*finder)(std::string_view path));
 		i32 (*getInputMapCount)();
 		bool (*registerDebugLineGizmo)(const void* owner);
+		bool (*registerProfilerModule)(const void* owner);
+		void (*releaseProfilerModule)();
+		void (*pumpProfilerModule)();
+		void (*readProfile)(std::vector<ScriptProfile::Row>& rows, ScriptProfile::Collections& collections);
 		const char* runtimeVersion;
 	};
 

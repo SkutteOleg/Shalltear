@@ -55,6 +55,7 @@ public readonly struct ScriptEnumConstant {
 
 internal static class HookState {
 	internal static nint _owner;
+	internal static bool _profiling;
 }
 
 internal sealed class ScriptType {
@@ -62,6 +63,7 @@ internal sealed class ScriptType {
 	internal ScriptFieldSync[] _push = [];
 	internal ScriptFieldSync[] _pull = [];
 	internal int _texts;
+	internal HookCost[]? _costs;
 }
 
 /// <summary>Called by generated code.</summary>
@@ -74,6 +76,8 @@ public static unsafe class ScriptTypes {
 	static readonly List<ScriptType> _types = new();
 	static readonly Dictionary<ulong, ScriptType> _byHash = new();
 	static readonly List<(int slot, Type listener)> _listeners = new();
+
+	internal static List<ScriptType> All => _types;
 
 	/// <summary>False outside the engine.</summary>
 	public static bool IsAttached => Bridge.IsAttached;
@@ -273,7 +277,11 @@ public static unsafe class ScriptTypes {
 		HookState._owner = instance;
 		try {
 			Behavior script = Unsafe.As<Behavior>(GCHandle.FromIntPtr(instance).Target!);
-			script.RunHook(hook);
+			if (HookState._profiling) {
+				ScriptProfile.Run(script, hook);
+			} else {
+				script.RunHook(hook);
+			}
 		} catch (Exception exception) {
 			Bridge.Report(exception);
 		}

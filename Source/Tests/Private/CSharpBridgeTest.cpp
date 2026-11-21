@@ -3,17 +3,20 @@
 #ifdef SHALLTEAR_SHARED
 
 #include "CSharpRuntimeFixture.h"
+#include "UITestUtil.h"
 
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/AssetImporter.h"
 #include "Shalltear/Core/Asset/DataAsset.h"
 #include "Shalltear/Core/Frame/FrameStages.h"
 #include "Shalltear/Core/Graphics/RenderSystem.h"
+#include "Shalltear/Core/Profiler.h"
 #include "Shalltear/Core/Reflection.h"
 #include "Shalltear/Core/Scene.h"
 #include "Shalltear/Core/Window/WindowSystem.h"
 
 #include "Shalltear/Editor/EditorGizmos.h"
+#include "Shalltear/Editor/ProfilerModules.h"
 
 #include <chrono>
 #include <format>
@@ -299,6 +302,108 @@ TEST_F(CSharpRuntimeFixture, ThrowingContinuationsAreReported) {
 	EXPECT_EQ(_log.Delivered().Count("System.InvalidOperationException: thrown by a routine"), 1u);
 	EXPECT_EQ(_log.Delivered().Count("Coroutine yielded Int32. Yield null, a Coroutines wait or an IEnumerator"), 1u);
 	EXPECT_EQ(_hooks->takeRecords(), (std::vector<str>{"resumed after the throw"}));
+	SceneSystem::Terminate();
+}
+
+TEST_F(CSharpRuntimeFixture, HookKindsAreProfilerZones) {
+#ifdef SHALLTEAR_CONFIG_RELEASE
+	GTEST_SKIP() << "zones are compiled out of Release";
+#endif
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
+
+	Profiler::SetEnabled(true);
+	Profiler::NextFrame();
+	str message;
+	EXPECT_EQ(Run("ProfileProbe.RunsTwoScripts", message), SLT_OK) << message;
+	Profiler::NextFrame();
+	const Profiler::FrameResults results = Profiler::GetFrameResults();
+	u32 zones = 0;
+	u32 updates = 0;
+	for (u32 index = 0; index < results.count; ++index) {
+		const std::string_view name = results.zones[index].name;
+		zones += name.starts_with("C# ") ? 1u : 0u;
+		updates += name == "C# OnUpdate" ? results.zones[index].calls : 0u;
+	}
+	Profiler::SetEnabled(false);
+	EXPECT_EQ(zones, 8u);
+	EXPECT_EQ(updates, 6u);
+	SceneSystem::Terminate();
+}
+
+TEST_F(CSharpRuntimeFixture, ProfilerModuleListsHookCosts) {
+	SceneSystem::Initialize();
+	ASSERT_TRUE(Attach()) << _error;
+	ASSERT_TRUE(LoadConformance()) << _log.Delivered().Joined();
+	SceneSystem::CreateScene("World");
+	static char owner = 0;
+	ASSERT_TRUE(_hooks->registerProfilerModule(&owner));
+	const ProfilerModule* module = ProfilerModules::Find(StringHash("CSharp"));
+	ASSERT_NE(module, nullptr);
+	EXPECT_EQ(module->title, "C# Scripts");
+
+	std::vector<CSharpImpl::ScriptProfile::Row> rows;
+	CSharpImpl::ScriptProfile::Collections collections;
+	str message;
+	ASSERT_EQ(Run("ProfileProbe.RunsTwoScripts", message), SLT_OK) << message;
+	Profiler::SetEnabled(true);
+	_hooks->pumpProfilerModule();
+	_hooks->readProfile(rows, collections);
+	EXPECT_TRUE(rows.empty());
+
+	ASSERT_EQ(Run("ProfileProbe.RunsTwoScripts", message), SLT_OK) << message;
+	_hooks->readProfile(rows, collections);
+	const auto find = [&rows](std::string_view type) -> const CSharpImpl::ScriptProfile::Row* {
+		for (const CSharpImpl::ScriptProfile::Row& row : rows) {
+			if (row.type == type && row.hook == SLT_HOOK_UPDATE) {
+				return &row;
+			}
+		}
+		return nullptr;
+	};
+	const CSharpImpl::ScriptProfile::Row* hoarder = find("Shalltear.Conformance.Hoarder");
+	const CSharpImpl::ScriptProfile::Row* idler = find("Shalltear.Conformance.Idler");
+	ASSERT_NE(hoarder, nullptr);
+	ASSERT_NE(idler, nullptr);
+	EXPECT_EQ(hoarder->calls, 3u);
+	EXPECT_GE(hoarder->bytes, 3000u);
+	EXPECT_LT(hoarder->bytes, 4000u);
+	EXPECT_EQ(idler->calls, 3u);
+	EXPECT_EQ(idler->bytes, 0u);
+	EXPECT_GT(collections.heapBytes, 0u);
+	_hooks->readProfile(rows, collections);
+	EXPECT_TRUE(rows.empty());
+
+	ASSERT_EQ(Run("ProfileProbe.RunsTwoScripts", message), SLT_OK) << message;
+	module->sample();
+	UITest::MockFontSystem fonts;
+	UI::ContextDesc desc;
+	desc.sizePx = {800, 600};
+	{
+		UI::Context context(desc, &fonts);
+		const UI::ElementHandle host = context.CreateElement();
+		context.AppendChild(context.GetRoot(), host);
+		module->build(context, host);
+		module->refresh(context, host);
+		EXPECT_TRUE(context.IsAlive(UITest::FindByText(context, host, "Shalltear.Conformance.Hoarder")));
+		EXPECT_TRUE(context.IsAlive(UITest::FindByText(context, host, "OnUpdate")));
+		module->refresh(context, host);
+		EXPECT_FALSE(context.IsAlive(UITest::FindByText(context, host, "Shalltear.Conformance.Hoarder")));
+	}
+
+	Profiler::SetEnabled(false);
+	_hooks->pumpProfilerModule();
+	ASSERT_EQ(Run("ProfileProbe.RunsTwoScripts", message), SLT_OK) << message;
+	Profiler::SetEnabled(true);
+	_hooks->pumpProfilerModule();
+	_hooks->readProfile(rows, collections);
+	EXPECT_TRUE(rows.empty());
+	Profiler::SetEnabled(false);
+	_hooks->pumpProfilerModule();
+	ProfilerModules::UnregisterOwnedBy(&owner);
+	_hooks->releaseProfilerModule();
 	SceneSystem::Terminate();
 }
 

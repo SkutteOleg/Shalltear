@@ -2,6 +2,8 @@
 
 #include "ScriptRuntime.h"
 
+#include "Shalltear/Core/Profiler.h"
+
 namespace Shalltear::CSharpImpl {
 
 	ManagedBehavior::ManagedBehavior(ManagedType& type) : _type(type) {
@@ -77,6 +79,20 @@ namespace Shalltear::CSharpImpl {
 		ManagedTypes::FlushDirty();
 #ifdef SLT_CSHARP_TEST_HOOKS
 		++ManagedTypes::GetCounters().hookCrossings;
+#endif
+#ifndef SHALLTEAR_CONFIG_RELEASE
+		// must match SLT_HOOK_* in ScriptBridge.h
+		static const u32 sites[] = {
+			Profiler::RegisterSite("C# OnAttach"),
+			Profiler::RegisterSite("C# OnDetach"),
+			Profiler::RegisterSite("C# OnEnable"),
+			Profiler::RegisterSite("C# OnDisable"),
+			Profiler::RegisterSite("C# OnDestroy"),
+			Profiler::RegisterSite("C# OnUpdate"),
+			Profiler::RegisterSite("C# OnFixedUpdate"),
+			Profiler::RegisterSite("C# OnLateUpdate"),
+		};
+		const Profiler::ScopedZone zone(sites[hook]);
 #endif
 		if (hook > SLT_HOOK_DESTROY) {
 			ScriptRuntime::GetManaged().invokeHook(_instance, hook);

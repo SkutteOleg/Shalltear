@@ -1,6 +1,7 @@
 #include "CSharpAuthoring.h"
 #include "CSharpComponentMenu.h"
 #include "CSharpDebugLineGizmo.h"
+#include "CSharpProfilerModule.h"
 #include "CSharpProjectFiles.h"
 #include "CSharpScriptEditor.h"
 #include "CSharpSettings.h"
@@ -17,6 +18,7 @@ namespace Shalltear::CSharpEditor {
 		void PumpStage(const FrameStageArgs&, void*) {
 			CSharpSetup::Pump();
 			CSharpAuthoring::Pump();
+			PumpProfilerModule();
 		}
 
 	} // anonymous namespace
@@ -29,6 +31,7 @@ namespace Shalltear::CSharpEditor {
 		CSharpProjectFiles::RegisterAttachConfiguration(owner);
 		FrameStages::Register(FrameStage::EndFrame, FrameStagePosition::Normal, &PumpStage, nullptr, owner);
 		RegisterDebugLineGizmo(owner);
+		RegisterProfilerModule(owner);
 		CSharpSetup::Begin(CSharpSetup::GetDefaultOptions(), owner);
 	}
 

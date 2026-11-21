@@ -5,6 +5,7 @@
 #include "BindingProbe.h"
 #include "CSharpComponentMenu.h"
 #include "CSharpDebugLineGizmo.h"
+#include "CSharpProfilerModule.h"
 #include "CoreCLRHost.h"
 #include "DotNetPin.generated.h"
 #include "DotNetToolchain.h"
@@ -37,6 +38,10 @@ extern "C" SLT_API_EXPORT const Shalltear::CSharpImpl::ScriptTestHooks* Shalltea
 		&CSharpImpl::BindingProbe::SetAssetFinder,
 		&CSharpImpl::InputMaps::GetAliveCount,
 		&CSharpEditor::RegisterDebugLineGizmo,
+		&CSharpEditor::RegisterProfilerModule,
+		&CSharpEditor::ReleaseProfilerModule,
+		&CSharpEditor::PumpProfilerModule,
+		&CSharpImpl::ScriptProfile::Read,
 		CSharpEditor::DotNetPinData::RUNTIME_VERSION,
 	};
 	return &HOOKS;

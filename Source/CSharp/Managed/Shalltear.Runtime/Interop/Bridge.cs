@@ -8,7 +8,7 @@ using System.Text;
 namespace Shalltear.Interop;
 
 internal static unsafe class Bridge {
-	internal const uint ABI_VERSION = 14;
+	internal const uint ABI_VERSION = 15;
 	internal const ulong LAYOUT_HASH = Bindings.LAYOUT_HASH;
 
 	internal const int OK = 0;
@@ -65,6 +65,9 @@ internal static unsafe class Bridge {
 		managed->shutdown = &Shutdown;
 		managed->dispatchEvent = &ScriptEvents.Dispatch;
 		managed->pump = &Pump;
+		managed->setProfiling = &ScriptProfile.SetProfiling;
+		managed->readProfile = &ScriptProfile.ReadProfile;
+		HookState._profiling = false;
 		HookState._owner = 0;
 		FrameAwaits.Install();
 

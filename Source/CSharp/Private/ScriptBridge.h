@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // must match Interop/ScriptBridge.cs + Bridge.cs
-#define SLT_BRIDGE_ABI_VERSION 14
+#define SLT_BRIDGE_ABI_VERSION 15
 
 #define SLT_OK 0
 #define SLT_ERR_EXCEPTION 1
@@ -130,6 +130,20 @@ typedef struct SltTypeDesc {
 	SltString assetExtension;
 } SltTypeDesc;
 
+typedef struct SltProfileRow {
+	int32_t managedTypeId;
+	int32_t hook;
+	uint32_t calls;
+	int64_t nanoseconds;
+	int64_t bytes;
+} SltProfileRow;
+
+typedef struct SltProfileFrame {
+	int32_t collections[3];
+	int64_t pauseNanoseconds;
+	int64_t heapBytes;
+} SltProfileFrame;
+
 typedef struct SltEngineAPI {
 	uint32_t abiVersion;
 	uint64_t layoutHash;
@@ -172,6 +186,9 @@ typedef struct SltManagedAPI {
 	void (*shutdown)(void);
 	void (*dispatchEvent)(int32_t event, uint64_t subject);
 	void (*pump)(int32_t phase);
+	void (*setProfiling)(int32_t enabled);
+	// when count > capacity nothing is written (call again with more rows)
+	int32_t (*readProfile)(SltProfileRow* rows, int32_t capacity, SltProfileFrame* outFrame);
 } SltManagedAPI;
 
 typedef int32_t (*SltInitializeFn)(const SltEngineAPI* engine, SltManagedAPI* outManaged);
