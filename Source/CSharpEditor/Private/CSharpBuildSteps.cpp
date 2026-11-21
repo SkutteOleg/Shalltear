@@ -59,7 +59,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		enum class Loading : u8 {
 			Idle = 0,
 			Setup,
-			Compile
+			Compile,
+			StaticCompile
 		};
 
 		struct State {
@@ -341,14 +342,36 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Running;
 		}
 
+		BuildStepStatus RunCompileStep(BuildContext& context, bool singleFile);
+
 		BuildStepStatus EndLoad(State& state, BuildStepStatus status) {
 			state.loading = Loading::Idle;
 			CSharpReload::SetBuildStarting(false);
 			return status;
 		}
 
+		BuildStepStatus FinishLoadOrStaticCompile(BuildContext& context, State& state) {
+			if (!IsSingleFileBuild(context)) {
+				return EndLoad(state, BuildStepStatus::Succeeded);
+			}
+			CSharpReload::SetBuildStarting(false);
+			state.loading = Loading::StaticCompile;
+			const BuildStepStatus status = RunCompileStep(context, true);
+			if (status != BuildStepStatus::Running) {
+				state.loading = Loading::Idle;
+			}
+			return status;
+		}
+
 		BuildStepStatus LoadStep(BuildContext& context) {
 			State& state = GetState();
+			if (state.loading == Loading::StaticCompile) {
+				const BuildStepStatus status = RunCompileStep(context, true);
+				if (status != BuildStepStatus::Running) {
+					state.loading = Loading::Idle;
+				}
+				return status;
+			}
 			if (context.IsCancelRequested()) {
 				return EndLoad(state, BuildStepStatus::Failed);
 			}
@@ -373,7 +396,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					return EndLoad(state, BuildStepStatus::Failed);
 				}
 				if (CSharpReload::IsPlaying()) {
-					return EndLoad(state, BuildStepStatus::Succeeded);
+					return FinishLoadOrStaticCompile(context, state);
 				}
 				if (ScriptProjectOps::GetModuleStatus(context.projectRoot) == ScriptProjectOps::ModuleStatus::Compiling) {
 					return BuildStepStatus::Running;
@@ -399,7 +422,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				context.AddIssue(BuildIssueSeverity::Error, "", "C# scripts couldn't be loaded (errors in log above)");
 				return EndLoad(state, BuildStepStatus::Failed);
 			}
-			return EndLoad(state, BuildStepStatus::Succeeded);
+			return FinishLoadOrStaticCompile(context, state);
 		}
 
 		BuildStepStatus ValidateStep(BuildContext& context) {
@@ -491,13 +514,6 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				context.extraConfigureArgs.push_back("-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=" + QuoteCommandArgument(staticLink.generic_string()));
 			}
 			return BuildStepStatus::Succeeded;
-		}
-
-		BuildStepStatus PreBuildCompileStep(BuildContext& context) {
-			if (!IsSingleFileBuild(context)) {
-				return BuildStepStatus::Succeeded;
-			}
-			return RunCompileStep(context, true);
 		}
 
 		BuildStepStatus CompileStep(BuildContext& context) {
@@ -610,7 +626,6 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		GetState().owner = owner;
 		BuildStepRegistry::Register("csharp-validate", BuildPhase::Validate, &ValidateStep, owner);
 		BuildStepRegistry::Register("csharp-load", BuildPhase::PreBuild, &LoadStep, owner);
-		BuildStepRegistry::Register("csharp-compile-static", BuildPhase::PreBuild, &PreBuildCompileStep, owner);
 		BuildStepRegistry::Register("csharp-compile", BuildPhase::Compile, &CompileStep, owner);
 		BuildStepRegistry::Register("csharp-stage", BuildPhase::Stage, &StageStep, owner);
 		BuildStepRegistry::Register("csharp-no-il", BuildPhase::PostBuild, &GateStep, owner);

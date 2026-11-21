@@ -374,10 +374,15 @@ internal static unsafe class ClangScanner {
 			}
 			case CXCursorKind.StructDecl:
 			case CXCursorKind.ClassDecl:
-				if (LibClang.clang_isCursorDefinition(child) != 0 && LibClang.clang_Cursor_isAnonymous(child) == 0 && isPublic) {
-					CppRecord? nested = ScanRecord(ctx, child, ns, rec, fromBindNamespace);
-					if (nested != null) {
-						rec.NestedRecords.Add(nested);
+			case CXCursorKind.UnionDecl:
+				if (LibClang.clang_isCursorDefinition(child) != 0 && isPublic) {
+					if (LibClang.clang_Cursor_isAnonymous(child) != 0) {
+						CollectAnonymousFields(ctx, child, recordType, ns, rec, fromBindNamespace, rawFields);
+					} else if (child.Kind != CXCursorKind.UnionDecl) {
+						CppRecord? nested = ScanRecord(ctx, child, ns, rec, fromBindNamespace);
+						if (nested != null) {
+							rec.NestedRecords.Add(nested);
+						}
 					}
 				}
 				return CXChildVisitResult.Continue;
@@ -484,6 +489,53 @@ internal static unsafe class ClangScanner {
 			rec.FlattenedFields.AddRange(rawFields);
 		}
 		return rec;
+	}
+
+	static void CollectAnonymousFields(
+		ScanContext ctx,
+		CXCursor anonCursor,
+		CXType enclosingRecordType,
+		string ns,
+		CppRecord enclosingRec,
+		bool fromBindNamespace,
+		List<CppField> rawFields) {
+		LibClang.clang_visitChildren(anonCursor, (child, _, _) => {
+			CX_CXXAccessSpecifier access = LibClang.clang_getCXXAccessSpecifier(child);
+			bool isPublic = access == CX_CXXAccessSpecifier.Public || access == CX_CXXAccessSpecifier.Invalid;
+			if (!isPublic || HasIgnoreAnnotation(child)) {
+				return CXChildVisitResult.Continue;
+			}
+			if (child.Kind is CXCursorKind.StructDecl or CXCursorKind.UnionDecl &&
+				LibClang.clang_isCursorDefinition(child) != 0 &&
+				LibClang.clang_Cursor_isAnonymous(child) != 0) {
+				CollectAnonymousFields(ctx, child, enclosingRecordType, ns, enclosingRec, fromBindNamespace, rawFields);
+				return CXChildVisitResult.Continue;
+			}
+			if (child.Kind == CXCursorKind.FieldDecl) {
+				string fName = LibClang.GetSpelling(child);
+				if (string.IsNullOrEmpty(fName)) {
+					return CXChildVisitResult.Continue;
+				}
+				long offset = LibClang.GetOffsetOfBytes(enclosingRecordType, fName);
+				if (offset < 0) {
+					return CXChildVisitResult.Continue;
+				}
+				CXType fType = LibClang.clang_getCursorType(child);
+				CppTypeRef mapped = MapType(ctx, fType, ns, enclosingRec, fromBindNamespace);
+				if (LibClang.clang_Cursor_isBitField(child) != 0) {
+					mapped = new CppTypeRef { Kind = CppTypeKind.Unsupported, CppSpelling = LibClang.GetTypeSpelling(fType) };
+				}
+				CppField field = new() {
+					Name = fName,
+					Type = mapped,
+					OffsetBytes = offset,
+					IsPublic = true,
+				};
+				rawFields.Add(field);
+				enclosingRec.DirectFields.Add(field);
+			}
+			return CXChildVisitResult.Continue;
+		}, 0);
 	}
 
 	static void ScanFreeFunction(ScanContext ctx, CXCursor cursor, string ns, bool fromBindNamespace) {
