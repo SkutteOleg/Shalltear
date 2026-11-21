@@ -71,6 +71,7 @@ namespace Shalltear {
 		str executableSuffix = ".exe";
 
 		Vector<str> defines;
+		Vector<str> extraConfigureArgs;
 
 		str configuration;
 

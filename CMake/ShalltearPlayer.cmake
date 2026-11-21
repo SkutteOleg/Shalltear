@@ -57,12 +57,24 @@ endfunction()
 function(_shalltear_write_linked_packages TARGET_NAME OUT_SOURCE OUT_LINK_TARGETS)
 	set(anchorDeclarations "")
 	set(anchorCalls "")
+	set(extraIncludes "")
+	set(extraDeclarations "")
 	_shalltear_enabled_package_targets(linkTargets packageAnchors)
+
+	set(hasStaticCSharp FALSE)
+	if(SHALLTEAR_PLAYER_SINGLE_FILE AND SHALLTEAR_CSHARP_STATIC_LINK_CMAKE AND "CSharp" IN_LIST packageAnchors)
+		set(hasStaticCSharp TRUE)
+		set(extraIncludes "#include \"Shalltear/CSharp/StaticHost.h\"\n")
+		set(extraDeclarations "extern \"C\" Shalltear::i32 ShalltearScriptsInitialize(const void*, void*);\n\n")
+	endif()
 
 	foreach(packageAnchor ${packageAnchors})
 		string(APPEND anchorDeclarations "SLT_DECLARE_LINKED_PACKAGE(${packageAnchor})\n")
 		# registrations are attributable
 		string(APPEND anchorCalls "\t\tstatic const char token${packageAnchor} = 0;\n")
+		if(hasStaticCSharp AND packageAnchor STREQUAL "CSharp")
+			string(APPEND anchorCalls "\t\t::Shalltear::CSharpStaticHost::SetEntry(&ShalltearScriptsInitialize);\n")
+		endif()
 		string(APPEND anchorCalls "\t\tSLT_CALL_LINKED_PACKAGE(${packageAnchor}, &token${packageAnchor});\n")
 	endforeach()
 
@@ -73,8 +85,8 @@ function(_shalltear_write_linked_packages TARGET_NAME OUT_SOURCE OUT_LINK_TARGET
 #include \"LinkedPackages.h\"
 
 #include \"Shalltear/Core/Module/ModuleAPI.h\"
-
-${anchorDeclarations}
+${extraIncludes}
+${extraDeclarations}${anchorDeclarations}
 namespace Shalltear {
 
 	void InitializeLinkedPackages() {
@@ -216,6 +228,37 @@ function(_shalltear_add_player_impl MODULE_NAME)
 		endif()
 	endif()
 	target_link_libraries(${playerTarget} PRIVATE ${MODULE_NAME} ${playerPackageTargets} Shalltear::Core)
+	if(SHALLTEAR_PLAYER_SINGLE_FILE AND SHALLTEAR_CSHARP_STATIC_LINK_CMAKE)
+		if(NOT EXISTS "${SHALLTEAR_CSHARP_STATIC_LINK_CMAKE}")
+			message(FATAL_ERROR "Shalltear: SHALLTEAR_CSHARP_STATIC_LINK_CMAKE not found: '${SHALLTEAR_CSHARP_STATIC_LINK_CMAKE}'")
+		endif()
+		include("${SHALLTEAR_CSHARP_STATIC_LINK_CMAKE}")
+		if(SHALLTEAR_CSHARP_STATIC_OBJS)
+			set_source_files_properties(${SHALLTEAR_CSHARP_STATIC_OBJS} PROPERTIES EXTERNAL_OBJECT TRUE GENERATED TRUE)
+			target_sources(${playerTarget} PRIVATE ${SHALLTEAR_CSHARP_STATIC_OBJS})
+		endif()
+		if(WIN32)
+			set(winAotBridge "${SHALLTEAR_PLAYER_SOURCE_DIR}/Platform/Windows/WinAOTCRTBridge.cpp")
+			if(NOT EXISTS "${winAotBridge}")
+				message(FATAL_ERROR "Shalltear: missing Windows NativeAOT CRT bridge: '${winAotBridge}'")
+			endif()
+			target_sources(${playerTarget} PRIVATE "${winAotBridge}")
+			if(MINGW)
+				set(aotStubsDir "${CMAKE_CURRENT_BINARY_DIR}/ShalltearGenerated/AOTStubs")
+				file(MAKE_DIRECTORY "${aotStubsDir}")
+				foreach(stubName LIBCMT OLDNAMES libcpmt libucrt libvcruntime)
+					file(CONFIGURE OUTPUT "${aotStubsDir}/lib${stubName}.a" CONTENT "!<arch>\n" NEWLINE_STYLE LF)
+				endforeach()
+				target_link_directories(${playerTarget} PRIVATE "${aotStubsDir}")
+			endif()
+		endif()
+		if(SHALLTEAR_CSHARP_STATIC_LINK_OPTIONS)
+			target_link_options(${playerTarget} PRIVATE ${SHALLTEAR_CSHARP_STATIC_LINK_OPTIONS})
+		endif()
+		if(SHALLTEAR_CSHARP_STATIC_LIBS)
+			target_link_libraries(${playerTarget} PRIVATE ${SHALLTEAR_CSHARP_STATIC_LIBS})
+		endif()
+	endif()
 	target_compile_options(${playerTarget} PRIVATE ${playerPrefixMaps})
 	if(SHALLTEAR_PLAYER_DEFINES)
 		target_compile_definitions(${playerTarget} PRIVATE ${SHALLTEAR_PLAYER_DEFINES})

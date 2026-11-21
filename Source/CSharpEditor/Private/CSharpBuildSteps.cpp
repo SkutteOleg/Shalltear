@@ -109,6 +109,15 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return IsLinux(targetId) ? "GameScripts.so" : "GameScripts.dll";
 		}
 
+		bool IsSingleFileBuild(const BuildContext& context) {
+			const ResolvedSetting* setting = context.profile ? context.profile->Find("singleFile") : nullptr;
+			if (!setting) {
+				return false;
+			}
+			const str lowered = StringUtil::ToLower(setting->value);
+			return lowered == "true" || lowered == "1" || lowered == "yes" || lowered == "on";
+		}
+
 		str FindCompilerDirectory(const BuildContext& context, str* outToolchainFile = nullptr) {
 			CppToolchain::DiscoveryOptions options;
 			options.sdkRoot = context.sdkRoot;
@@ -176,6 +185,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				{"DOTNET_CLI_UI_LANGUAGE", "en-us"},
 				{"DOTNET_CLI_TELEMETRY_OPTOUT", "1"},
 				{"DOTNET_NOLOGO", "1"},
+				{"DOTNET_MULTILEVEL_LOOKUP", "0"},
 				{"DOTNET_CLI_USE_MSBUILD_SERVER", "0"},
 			};
 			state.unparsed.clear();
@@ -297,12 +307,15 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Running;
 		}
 
-		BuildStepStatus StartShell(BuildContext& context, State& state) {
+		BuildStepStatus StartShell(BuildContext& context, State& state, bool singleFile) {
 			str arguments = std::format("msbuild {} -restore -t:Publish -p:Configuration={} -p:RuntimeIdentifier={}",
 										QuoteCommandArgument(state.root + "/" + str(ShellProject)), context.configuration,
 										RuntimeIdentifierOf(context.target->GetId()));
 			const str native = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path().generic_string() + "/native/";
 			arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native) + PlayerPackagesArgument();
+			if (singleFile) {
+				arguments += " -p:ShalltearSingleFilePlayer=true";
+			}
 			std::error_code ec;
 			fs::remove_all(fs::path(state.root) / RenameFolder, ec);
 			if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
@@ -429,7 +442,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Succeeded;
 		}
 
-		BuildStepStatus CompileStep(BuildContext& context) {
+		BuildStepStatus RunCompileStep(BuildContext& context, bool singleFile) {
 			State& state = GetState();
 			if (context.IsCancelRequested()) {
 				state.child.Kill();
@@ -450,7 +463,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				return Fail(context, state, scripts ? "C# script compile" : "C# native compile", exitCode);
 			}
 			if (scripts) {
-				return StartShell(context, state);
+				return StartShell(context, state, singleFile);
 			}
 			state.stage = Stage::Idle;
 			if (state.warningCount > 0) {
@@ -468,7 +481,30 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					}
 				}
 			}
+			if (singleFile) {
+				const fs::path staticLink = fs::path(state.root) / PublishFolder / "static-link.cmake";
+				if (!fs::is_regular_file(staticLink, ec)) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 std::format("'{}' was not produced by NativeAOT publish", staticLink.generic_string()));
+					return BuildStepStatus::Failed;
+				}
+				context.extraConfigureArgs.push_back("-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=" + QuoteCommandArgument(staticLink.generic_string()));
+			}
 			return BuildStepStatus::Succeeded;
+		}
+
+		BuildStepStatus PreBuildCompileStep(BuildContext& context) {
+			if (!IsSingleFileBuild(context)) {
+				return BuildStepStatus::Succeeded;
+			}
+			return RunCompileStep(context, true);
+		}
+
+		BuildStepStatus CompileStep(BuildContext& context) {
+			if (IsSingleFileBuild(context)) {
+				return BuildStepStatus::Succeeded;
+			}
+			return RunCompileStep(context, false);
 		}
 
 		BuildStepStatus StageStep(BuildContext& context) {
@@ -476,6 +512,23 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			const str libraryName = LibraryNameOf(context.target->GetId());
 			const fs::path library = publish / libraryName;
 			std::error_code ec;
+			if (IsSingleFileBuild(context)) {
+				// remove stale sidecar outputs if stagingDir was previously built with singleFile=false
+				fs::remove(fs::path(context.stagingDir) / libraryName, ec);
+				fs::remove(fs::path(context.stagingDir) / RuntimeNotices, ec);
+				const fs::path kept = fs::path(context.intermediateDir) / SymbolsFolder;
+				const fs::path map = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / RenameFolder / NameMap;
+				fs::remove(kept / NameMap, ec);
+				if (fs::is_regular_file(map, ec)) {
+					fs::create_directories(kept, ec);
+					ec.clear();
+					fs::copy_file(map, kept / map.filename(), fs::copy_options::overwrite_existing, ec);
+					if (ec) {
+						context.AddIssue(BuildIssueSeverity::Warning, "", std::format("couldn't keep '{}' ({})", map.generic_string(), ec.message()));
+					}
+				}
+				return BuildStepStatus::Succeeded;
+			}
 			fs::create_directories(fs::path(context.stagingDir), ec);
 			ec.clear();
 			fs::copy_file(library, fs::path(context.stagingDir) / libraryName, fs::copy_options::overwrite_existing, ec);
@@ -557,6 +610,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		GetState().owner = owner;
 		BuildStepRegistry::Register("csharp-validate", BuildPhase::Validate, &ValidateStep, owner);
 		BuildStepRegistry::Register("csharp-load", BuildPhase::PreBuild, &LoadStep, owner);
+		BuildStepRegistry::Register("csharp-compile-static", BuildPhase::PreBuild, &PreBuildCompileStep, owner);
 		BuildStepRegistry::Register("csharp-compile", BuildPhase::Compile, &CompileStep, owner);
 		BuildStepRegistry::Register("csharp-stage", BuildPhase::Stage, &StageStep, owner);
 		BuildStepRegistry::Register("csharp-no-il", BuildPhase::PostBuild, &GateStep, owner);

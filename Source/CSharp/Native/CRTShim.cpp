@@ -13,16 +13,47 @@ constexpr Size DEFAULT_COOKIE = 0x00002B992DDFA232ull;
 constexpr Size COOKIE_MASK = 0x0000FFFFFFFFFFFFull;
 constexpr unsigned int FAIL_STACK_COOKIE = 2;
 constexpr unsigned int FAIL_RANGE_CHECK = 8;
+constexpr unsigned long BCRYPT_USE_SYSTEM_PREFERRED_RNG_FLAG = 0x00000002ul;
+constexpr int COOKIE_SEED_ATTEMPTS = 8;
+constexpr unsigned char UNWIND_CHAIN_INFO_FLAG = 0x04u;
+
+struct GSHandlerData {
+	int cookieOffset;
+	int alignedBaseOffset;
+	int alignment;
+};
+
+struct Win64RuntimeFunction {
+	unsigned int beginAddress;
+	unsigned int endAddress;
+	unsigned int unwindInfoAddress;
+};
+
+struct Win64UnwindInfo {
+	unsigned char versionAndFlags;
+	unsigned char sizeOfProlog;
+	unsigned char countOfCodes;
+	unsigned char frameRegisterAndOffset;
+	unsigned short unwindCodes[1];
+};
+
+struct Win64DispatcherContext {
+	Size controlPc;
+	Size imageBase;
+	const Win64RuntimeFunction* functionEntry;
+	Size establisherFrame;
+	Size targetIp;
+	void* contextRecord;
+	void* languageHandler;
+	const void* handlerData;
+};
 
 extern "C" {
 
 void* malloc(Size);
 void free(void*);
 int __stdcall DllMain(void*, unsigned long, void*);
-__declspec(dllimport) int __stdcall QueryPerformanceCounter(long long*);
-__declspec(dllimport) void __stdcall GetSystemTimeAsFileTime(Size*);
-__declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
-__declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
+__declspec(dllimport) long __stdcall BCryptGenRandom(void*, unsigned char*, unsigned long, unsigned long);
 // compiler-rt's stack probe (same contract)
 void ___chkstk_ms();
 
@@ -30,17 +61,65 @@ Size __security_cookie = DEFAULT_COOKIE;
 int _fltused = 0x9875;
 unsigned long _tls_index = 0;
 
-void __security_check_cookie(Size cookie) {
-	if (cookie != __security_cookie) {
-		__fastfail(FAIL_STACK_COOKIE);
-	}
+// MSVC /GS epilogs call __security_check_cookie after loading the return value into rax
+__attribute__((naked)) void __security_check_cookie(Size) {
+	__asm__(
+		"cmpq __security_cookie(%rip), %rcx\n"
+		"jne 1f\n"
+		"rolq $16, %rcx\n"
+		"testw %cx, %cx\n"
+		"jne 1f\n"
+		"rorq $16, %rcx\n"
+		"retq\n"
+		"1:\n"
+		"movl $2, %ecx\n"
+		"int $0x29\n");
 }
 
 void __report_rangecheckfailure() {
 	__fastfail(FAIL_RANGE_CHECK);
 }
 
-int __GSHandlerCheck(void*, void*, void*, void*) {
+static Size ResolveFrameXor(Size establisherFrame, const Win64DispatcherContext* dispatcher) {
+	if (!dispatcher || !dispatcher->functionEntry || dispatcher->imageBase == 0) {
+		return establisherFrame;
+	}
+	unsigned int unwindRva = dispatcher->functionEntry->unwindInfoAddress;
+	for (int hop = 0; hop < 16 && unwindRva != 0; ++hop) {
+		const auto* unwindInfo = reinterpret_cast<const Win64UnwindInfo*>(dispatcher->imageBase + unwindRva);
+		const unsigned char frameReg = static_cast<unsigned char>(unwindInfo->frameRegisterAndOffset & 0x0Fu);
+		if (frameReg != 0u) {
+			const Size scaledOffset = static_cast<Size>((unwindInfo->frameRegisterAndOffset >> 4) & 0x0Fu) * 16u;
+			return establisherFrame + scaledOffset;
+		}
+		const unsigned char flags = static_cast<unsigned char>(unwindInfo->versionAndFlags >> 3);
+		if ((flags & UNWIND_CHAIN_INFO_FLAG) == 0u) {
+			break;
+		}
+		const Size alignedCodes = (static_cast<Size>(unwindInfo->countOfCodes) + 1u) & ~Size(1u);
+		const auto* chained = reinterpret_cast<const Win64RuntimeFunction*>(&unwindInfo->unwindCodes[alignedCodes]);
+		unwindRva = chained->unwindInfoAddress;
+	}
+	return establisherFrame;
+}
+
+int __GSHandlerCheck(void*, void* establisherFrame, void*, void* dispatcherContext) {
+	const auto* dispatcher = static_cast<const Win64DispatcherContext*>(dispatcherContext);
+	if (dispatcher && dispatcher->handlerData) {
+		const auto* gsData = static_cast<const GSHandlerData*>(dispatcher->handlerData);
+		const Size frame = reinterpret_cast<Size>(establisherFrame);
+		Size cookieBase = frame;
+		if ((static_cast<unsigned int>(gsData->cookieOffset) & 0x4u) != 0u) {
+			const long long aligned = static_cast<long long>(frame) + static_cast<long long>(gsData->alignedBaseOffset);
+			const long long mask = -static_cast<long long>(gsData->alignment);
+			cookieBase = static_cast<Size>(aligned & mask);
+		}
+		const int signedOffset = static_cast<int>(static_cast<unsigned int>(gsData->cookieOffset) & ~0x7u);
+		const Size cookieAddr = static_cast<Size>(static_cast<long long>(cookieBase) + static_cast<long long>(signedOffset));
+		const Size xorFrame = ResolveFrameXor(frame, dispatcher);
+		const Size actualCookie = *reinterpret_cast<const Size*>(cookieAddr) ^ xorFrame;
+		__security_check_cookie(actualCookie);
+	}
 	return 1;
 }
 
@@ -132,14 +211,20 @@ void __stdcall __dyn_tls_init(void*, unsigned long reason, void*) {
 __declspec(allocate(".CRT$XLC")) TLSCallbackFn __dyn_tls_init_callback = __dyn_tls_init;
 
 static void SeedCookie() {
-	Size time = 0;
-	long long ticks = 0;
-	GetSystemTimeAsFileTime(&time);
-	QueryPerformanceCounter(&ticks);
-	Size seed = reinterpret_cast<Size>(&seed) ^ time ^ GetCurrentProcessId() ^ (static_cast<Size>(GetCurrentThreadId()) << 32);
-	seed ^= static_cast<Size>(ticks) * 0x9E3779B97F4A7C15ull;
-	seed &= COOKIE_MASK;
-	__security_cookie = seed == 0 || seed == DEFAULT_COOKIE ? DEFAULT_COOKIE + 1 : seed;
+	for (int attempt = 0; attempt < COOKIE_SEED_ATTEMPTS; ++attempt) {
+		Size sample = 0;
+		const long status = BCryptGenRandom(nullptr, reinterpret_cast<unsigned char*>(&sample),
+											static_cast<unsigned long>(sizeof(sample)), BCRYPT_USE_SYSTEM_PREFERRED_RNG_FLAG);
+		if (status < 0) {
+			__fastfail(FAIL_STACK_COOKIE);
+		}
+		sample &= COOKIE_MASK;
+		if (sample != 0 && sample != DEFAULT_COOKIE) {
+			__security_cookie = sample;
+			return;
+		}
+	}
+	__fastfail(FAIL_STACK_COOKIE);
 }
 
 int __stdcall _DllMainCRTStartup(void* instance, unsigned long reason, void* reserved) {

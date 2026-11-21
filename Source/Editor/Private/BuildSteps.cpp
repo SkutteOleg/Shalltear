@@ -354,6 +354,11 @@ namespace Shalltear {
 			commandLine += " -DSHALLTEAR_STAMP_TIME_ISO=" + Quote(context.buildTimeIso);
 			commandLine += " -DSHALLTEAR_STAMP_VERSION=" + Quote(context.version);
 			commandLine += " -DSHALLTEAR_STAMP_PROFILE=" + Quote(context.profile->name);
+			for (const str& extraArg : context.extraConfigureArgs) {
+				if (!extraArg.empty()) {
+					commandLine += " " + extraArg;
+				}
+			}
 
 			return StartCommand(context, "configure", commandLine, context.projectRoot);
 		}

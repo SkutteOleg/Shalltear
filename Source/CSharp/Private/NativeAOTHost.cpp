@@ -1,3 +1,23 @@
+#include "Shalltear/CSharp/StaticHost.h"
+
+namespace Shalltear::CSharpStaticHost {
+
+	namespace {
+
+		StaticEntryFn _staticEntry = nullptr;
+
+	} // anonymous namespace
+
+	void SetEntry(StaticEntryFn entry) {
+		_staticEntry = entry;
+	}
+
+	StaticEntryFn GetEntry() {
+		return _staticEntry;
+	}
+
+} // namespace Shalltear::CSharpStaticHost
+
 #ifndef SLT_WITH_EDITOR
 
 #include "NativeAOTHost.h"
@@ -31,6 +51,19 @@ namespace Shalltear::CSharpImpl::NativeAOTHost {
 	}
 
 	void StartPlayer() {
+		if (const CSharpStaticHost::StaticEntryFn staticEntry = CSharpStaticHost::GetEntry()) {
+			const u64 begin = Time::GetTicks();
+			str error;
+			if (!ScriptRuntime::Attach(reinterpret_cast<SltInitializeFn>(staticEntry), error)) {
+				SLT_LOG_ERROR("C#", "statically linked scripts failed to start ({})", error);
+				return;
+			}
+			u32 types = 0;
+			ManagedTypes::ForEachType([](const ManagedType&, void* user) { ++*static_cast<u32*>(user); }, &types);
+			SLT_LOG_INFO("C#", "statically linked scripts started in {:.1f} ms ({} script type(s))",
+						 static_cast<f64>(Time::GetTicks() - begin) * 1000.0 / static_cast<f64>(Time::GetTicksPerSecond()), types);
+			return;
+		}
 		const str name = GetPlayerLibraryName();
 		const str library = FileSystem::GetExecutablePath().GetDirectory() + "/" + name;
 		std::error_code ec;
