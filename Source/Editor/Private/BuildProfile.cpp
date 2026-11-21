@@ -872,6 +872,21 @@ namespace Shalltear {
 					out.source = "the SDK's Static flavor";
 					return;
 				}
+				std::error_code ec;
+				const fs::path staticDir(installed);
+				if (fs::is_directory(staticDir, ec)) {
+					for (const fs::directory_entry& entry : fs::directory_iterator(staticDir, ec)) {
+						if (!entry.is_directory(ec)) {
+							continue;
+						}
+						str nested = entry.path().generic_string();
+						if (IsStaticPackage(nested) && IsBuiltFor(nested, targetTriple)) {
+							out.root = std::move(nested);
+							out.source = "the SDK's Static flavor";
+							return;
+						}
+					}
+				}
 			}
 
 			str sibling;

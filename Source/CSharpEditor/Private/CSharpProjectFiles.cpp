@@ -250,9 +250,15 @@ namespace Shalltear::CSharpEditor::CSharpProjectFiles {
 		}
 		options.managedDirectory = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path().generic_string();
 		std::error_code ec;
-		const fs::path folder = fs::path(dotnetRoot).parent_path().parent_path() / "nuget";
-		options.packagesRoot = fs::is_directory(folder, ec) ? folder.generic_string()
-															: DotNetToolchain::GetPackagesRoot(DotNetToolchain::GetCacheRoot(), DotNetToolchain::GetPin());
+		const fs::path bundledNuget = fs::path(dotnetRoot).parent_path() / "NuGet";
+		const fs::path checkoutNuget = fs::path(dotnetRoot).parent_path().parent_path() / "nuget";
+		if (fs::is_directory(bundledNuget, ec)) {
+			options.packagesRoot = bundledNuget.generic_string();
+		} else if (fs::is_directory(checkoutNuget, ec)) {
+			options.packagesRoot = checkoutNuget.generic_string();
+		} else {
+			options.packagesRoot = DotNetToolchain::GetPackagesRoot(DotNetToolchain::GetCacheRoot(), DotNetToolchain::GetPin());
+		}
 		options.editorExecutable = ScriptProjectOps::GetEditorExecutablePath();
 		for (u32 index = 0; index < CSharpImpl::PackageBindings::GetCount(); ++index) {
 			const str assembly = "Shalltear." + str(CSharpImpl::PackageBindings::GetName(index));

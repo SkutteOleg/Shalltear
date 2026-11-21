@@ -3,11 +3,13 @@
 """
 
 import argparse
+import ctypes
 import filecmp
 import hashlib
 import json
 import os
 import shutil
+import struct
 import subprocess
 import sys
 import tarfile
@@ -44,6 +46,20 @@ LLVM_MINGW_LINUX_URL = (
     f"https://github.com/mstorsjo/llvm-mingw/releases/download/{LLVM_MINGW_VERSION}/{LLVM_MINGW_LINUX_ARCHIVE}.tar.xz"
 )
 LLVM_MINGW_LINUX_SHA256 = "2258c745e3155870c80793f3e8c80b28fbde11b9ff73c4c78783635b3440b092"
+
+LIBCLANG_VERSION = "23.1.1"
+LIBCLANG_WIN_ARCHIVE = f"clang+llvm-{LIBCLANG_VERSION}-x86_64-pc-windows-msvc"
+LIBCLANG_WIN_URL = (
+    f"https://github.com/llvm/llvm-project/releases/download/llvmorg-{LIBCLANG_VERSION}/{LIBCLANG_WIN_ARCHIVE}.tar.xz"
+)
+LIBCLANG_WIN_SHA256 = "c54ac8146b420fe72e11e6fdd56498d6818011ad23267196b6ab37b5ac9264c3"
+LIBCLANG_WIN_DLL_SHA256 = "952b2672e67f4153e3c54a33621c8733557ff83957191e17fb0905ed752d2c21"
+LLVM_LICENSE_URL = f"https://raw.githubusercontent.com/llvm/llvm-project/llvmorg-{LIBCLANG_VERSION}/llvm/LICENSE.TXT"
+LLVM_LICENSE_SHA256 = "8d85c1057d742e597985c7d4e6320b015a9139385cff4cbae06ffc0ebe89afee"
+LIBCLANG_PY_FILES = (
+    ("__init__.py", "961d8ad419dc7aa10d8d7b75e5fcd624cc681403a55ce99ad14ae4fe4a7be749"),
+    ("cindex.py", "0d572be5704bd7065420166bbe5e5b3fb5943423bd73ba6e40e4f8e9253c3f08"),
+)
 
 CMAKE_VERSION = "4.2.0"
 CMAKE_ARCHIVE = f"cmake-{CMAKE_VERSION}-windows-x86_64"
@@ -511,6 +527,258 @@ def fetch_dotnet_packs() -> None:
     print(f".NET player packages -> {packages}")
 
 
+def _pe_imported_dlls(dll_path: Path) -> list[str]:
+    data = dll_path.read_bytes()
+    if len(data) < 0x40 or data[:2] != b"MZ":
+        raise RuntimeError(f"{dll_path} is not a PE image")
+    pe_off = struct.unpack_from("<I", data, 0x3C)[0]
+    if data[pe_off:pe_off + 4] != b"PE\0\0":
+        raise RuntimeError(f"{dll_path} has no PE signature")
+    num_sections = struct.unpack_from("<H", data, pe_off + 6)[0]
+    opt_size = struct.unpack_from("<H", data, pe_off + 20)[0]
+    opt_off = pe_off + 24
+    magic = struct.unpack_from("<H", data, opt_off)[0]
+    if magic != 0x20B:
+        raise RuntimeError(f"{dll_path} is not PE32+ (x64)")
+    import_rva, import_size = struct.unpack_from("<II", data, opt_off + 120)
+    if import_rva == 0 or import_size == 0:
+        return []
+    sec_off = opt_off + opt_size
+    sections = []
+    for i in range(num_sections):
+        base = sec_off + i * 40
+        vsize, vrva, rawsize, rawptr = struct.unpack_from("<IIII", data, base + 8)
+        sections.append((vrva, max(vsize, rawsize), rawptr, rawsize))
+
+    def rva_to_off(rva: int) -> int:
+        for vrva, span, rawptr, rawsize in sections:
+            if vrva <= rva < vrva + span:
+                delta = rva - vrva
+                if delta >= rawsize:
+                    raise RuntimeError(f"RVA {rva:#x} outside raw section data in {dll_path}")
+                return rawptr + delta
+        raise RuntimeError(f"unmapped RVA {rva:#x} in {dll_path}")
+
+    desc_off = rva_to_off(import_rva)
+    imports = []
+    while desc_off + 20 <= len(data):
+        orig_thunk, _, _, name_rva, first_thunk = struct.unpack_from("<IIIII", data, desc_off)
+        if orig_thunk == 0 and name_rva == 0 and first_thunk == 0:
+            break
+        name_off = rva_to_off(name_rva)
+        end = data.index(0, name_off)
+        imports.append(data[name_off:end].decode("ascii", "replace"))
+        desc_off += 20
+    return imports
+
+
+def _assert_win_libclang_valid(dll_path: Path) -> None:
+    imports = [name.lower() for name in _pe_imported_dlls(dll_path)]
+    forbidden = [name for name in imports if name.startswith(("vcruntime", "msvcp", "msvcr"))]
+    if forbidden:
+        raise RuntimeError(
+            f"{dll_path} imports non-inbox MSVC runtime DLL(s): {', '.join(forbidden)}"
+        )
+    loaded = ctypes.CDLL(str(dll_path))
+    if not hasattr(loaded, "clang_createIndex"):
+        raise RuntimeError(f"{dll_path} does not export clang_createIndex")
+
+
+def _elf_dt_needed(so_path: Path) -> list[str]:
+    data = so_path.resolve().read_bytes()
+    if data[:4] != b"\x7fELF" or data[4] != 2 or data[5] != 1:
+        raise RuntimeError(f"{so_path} is not a 64-bit little-endian ELF shared object")
+    e_phoff = struct.unpack_from("<Q", data, 0x20)[0]
+    e_phentsize, e_phnum = struct.unpack_from("<HH", data, 0x36)
+    segments = []
+    dyn_off, dyn_size = 0, 0
+    for i in range(e_phnum):
+        base = e_phoff + i * e_phentsize
+        p_type, _, p_offset, p_vaddr, _, p_filesz, p_memsz, _ = struct.unpack_from("<IIQQQQQQ", data, base)
+        if p_type == 1:
+            segments.append((p_vaddr, p_memsz, p_offset, p_filesz))
+        elif p_type == 2:
+            dyn_off, dyn_size = p_offset, p_filesz
+    if dyn_off == 0 or dyn_size == 0:
+        return []
+
+    def vaddr_to_off(vaddr: int) -> int:
+        for pv, pm, po, pf in segments:
+            if pv <= vaddr < pv + max(pm, pf):
+                return po + (vaddr - pv)
+        raise RuntimeError(f"unmapped ELF vaddr {vaddr:#x} in {so_path}")
+
+    needed_offsets = []
+    strtab_vaddr = 0
+    pos = dyn_off
+    while pos + 16 <= dyn_off + dyn_size:
+        d_tag, d_val = struct.unpack_from("<qQ", data, pos)
+        if d_tag == 0:
+            break
+        if d_tag == 1:
+            needed_offsets.append(d_val)
+        elif d_tag == 5:
+            strtab_vaddr = d_val
+        pos += 16
+    if not needed_offsets or strtab_vaddr == 0:
+        return []
+    strtab_off = vaddr_to_off(strtab_vaddr)
+    out = []
+    for off in needed_offsets:
+        start = strtab_off + off
+        end = data.index(0, start)
+        out.append(data[start:end].decode("utf-8", "replace"))
+    return out
+
+
+def _ensure_libclang_python_bindings(target: Path, tmp: Path) -> None:
+    pkg_dir = target / "python" / "clang"
+    pkg_dir.mkdir(parents=True, exist_ok=True)
+    for name, expected_sha in LIBCLANG_PY_FILES:
+        dst = pkg_dir / name
+        if dst.is_file() and file_digest(dst, "sha256") == expected_sha:
+            continue
+        url = f"https://raw.githubusercontent.com/llvm/llvm-project/llvmorg-{LIBCLANG_VERSION}/clang/bindings/python/clang/{name}"
+        dl = tmp / f"clang_py_{name}"
+        download_verified(url, expected_sha, dl)
+        shutil.copyfile(dl, dst)
+
+
+def fetch_libclang_linux() -> Path:
+    target = PREBUILT_DIR / "libclang"
+    so_link = target / "lib" / "libclang.so"
+    license_path = target / "LICENSE.TXT"
+    py_cindex = target / "python" / "clang" / "cindex.py"
+    if is_current(target, linux_pack.LLVM_VERSION) and so_link.exists() and license_path.is_file() and py_cindex.is_file():
+        loaded = ctypes.CDLL(str(so_link))
+        if not hasattr(loaded, "clang_createIndex"):
+            raise RuntimeError(f"{so_link} does not export clang_createIndex")
+        print(f"libclang {linux_pack.LLVM_VERSION} already fetched. Skipping")
+        return so_link
+    print(f"fetching libclang {linux_pack.LLVM_VERSION} (Linux x64)")
+    prefix = f"{linux_pack.LLVM_ARCHIVE}/"
+    with tempfile.TemporaryDirectory() as tmp_str:
+        tmp = Path(tmp_str)
+        if not so_link.exists():
+            archive = tmp / f"{linux_pack.LLVM_ARCHIVE}.tar.xz"
+            download_verified(linux_pack.LLVM_URL, linux_pack.LLVM_SHA256, archive)
+            if target.exists():
+                shutil.rmtree(target)
+            (target / "lib").mkdir(parents=True)
+            with tarfile.open(archive, mode="r|xz") as tar:
+                for member in tar:
+                    name = member.name[2:] if member.name.startswith("./") else member.name
+                    if not name.startswith(prefix):
+                        continue
+                    rel = name[len(prefix):]
+                    is_license = rel == "LICENSE.TXT"
+                    is_candidate_lib = rel.startswith("lib/") and "/" not in rel[4:] and (
+                        rel[4:].startswith(("libclang.so", "libLLVM", "libRemarks", "libc++.so", "libc++abi.so", "libunwind.so"))
+                    )
+                    if not (is_license or is_candidate_lib):
+                        continue
+                    out = target / rel
+                    out.parent.mkdir(parents=True, exist_ok=True)
+                    if member.issym():
+                        if out.is_symlink() or out.exists():
+                            out.unlink()
+                        os.symlink(member.linkname, out)
+                    elif member.isfile():
+                        out.write_bytes(tar.extractfile(member).read())
+                        os.chmod(out, member.mode & 0o777)
+        if not license_path.is_file():
+            lic_tmp = tmp / "LICENSE.TXT"
+            download_verified(LLVM_LICENSE_URL, LLVM_LICENSE_SHA256, lic_tmp)
+            shutil.copyfile(lic_tmp, license_path)
+        _ensure_libclang_python_bindings(target, tmp)
+
+    if not so_link.exists():
+        raise RuntimeError(f"lib/libclang.so not found in {linux_pack.LLVM_ARCHIVE}.tar.xz")
+
+    lib_dir = target / "lib"
+    keep = set()
+    queue = [entry.name for entry in lib_dir.iterdir() if entry.name.startswith("libclang.so")]
+    while queue:
+        name = queue.pop()
+        if name in keep:
+            continue
+        entry = lib_dir / name
+        if not entry.exists() and not entry.is_symlink():
+            continue
+        keep.add(name)
+        if entry.is_symlink():
+            queue.append(os.path.basename(os.readlink(entry)))
+        if entry.exists():
+            for needed in _elf_dt_needed(entry):
+                if (lib_dir / needed).exists() or (lib_dir / needed).is_symlink():
+                    queue.append(needed)
+
+    for entry in list(lib_dir.iterdir()):
+        if entry.name not in keep:
+            entry.unlink()
+
+    loaded = ctypes.CDLL(str(so_link))
+    if not hasattr(loaded, "clang_createIndex"):
+        raise RuntimeError(f"{so_link} does not export clang_createIndex")
+    write_marker(target, linux_pack.LLVM_VERSION)
+    print(f"libclang -> {target}")
+    return so_link
+
+
+def fetch_libclang() -> Path:
+    if not HOST_IS_WINDOWS:
+        return fetch_libclang_linux()
+    target = PREBUILT_DIR / "libclang"
+    dll_path = target / "bin" / "libclang.dll"
+    license_path = target / "LICENSE.TXT"
+    py_cindex = target / "python" / "clang" / "cindex.py"
+    if (
+        is_current(target, LIBCLANG_VERSION)
+        and dll_path.is_file()
+        and file_digest(dll_path, "sha256") == LIBCLANG_WIN_DLL_SHA256
+        and license_path.is_file()
+        and py_cindex.is_file()
+    ):
+        _assert_win_libclang_valid(dll_path)
+        print(f"libclang {LIBCLANG_VERSION} already fetched. Skipping")
+        return dll_path
+    print(f"fetching libclang {LIBCLANG_VERSION} (Windows x64)")
+    prefix = f"{LIBCLANG_WIN_ARCHIVE}/"
+    with tempfile.TemporaryDirectory() as tmp_str:
+        tmp = Path(tmp_str)
+        need_dll = not (dll_path.is_file() and file_digest(dll_path, "sha256") == LIBCLANG_WIN_DLL_SHA256)
+        if need_dll:
+            archive = tmp / f"{LIBCLANG_WIN_ARCHIVE}.tar.xz"
+            download_verified(LIBCLANG_WIN_URL, LIBCLANG_WIN_SHA256, archive)
+            if target.exists():
+                shutil.rmtree(target)
+            (target / "bin").mkdir(parents=True, exist_ok=True)
+            with tarfile.open(archive, mode="r|xz") as tar:
+                for member in tar:
+                    if not member.isfile():
+                        continue
+                    name = member.name[2:] if member.name.startswith("./") else member.name
+                    rel = name[len(prefix):] if name.startswith(prefix) else name
+                    if rel == "bin/libclang.dll":
+                        dll_path.write_bytes(tar.extractfile(member).read())
+                        break
+        else:
+            (target / "bin").mkdir(parents=True, exist_ok=True)
+        if not (license_path.is_file() and file_digest(license_path, "sha256") == LLVM_LICENSE_SHA256):
+            lic_tmp = tmp / "LICENSE.TXT"
+            download_verified(LLVM_LICENSE_URL, LLVM_LICENSE_SHA256, lic_tmp)
+            shutil.copyfile(lic_tmp, license_path)
+        _ensure_libclang_python_bindings(target, tmp)
+    if not dll_path.is_file() or file_digest(dll_path, "sha256") != LIBCLANG_WIN_DLL_SHA256:
+        raise RuntimeError(f"bin/libclang.dll missing or SHA-256 mismatch in {LIBCLANG_WIN_ARCHIVE}.tar.xz")
+    if not license_path.is_file():
+        raise RuntimeError("LICENSE.TXT missing for libclang")
+    _assert_win_libclang_valid(dll_path)
+    write_marker(target, LIBCLANG_VERSION)
+    print(f"libclang -> {target}")
+    return dll_path
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lavapipe", action="store_true", help="also fetch the CI software Vulkan driver + loader")
@@ -520,6 +788,7 @@ def main() -> int:
     parser.add_argument("--dotnet", action="store_true", help="also fetch the pinned .NET SDK (C# scripting)")
     parser.add_argument("--dotnet-packs", action="store_true",
                         help="also restore the pinned NativeAOT packages (C# players then build offline). Implies --dotnet")
+    parser.add_argument("--libclang", action="store_true", help="also fetch libclang (C++ header binding generator and naming lint)")
     parser.add_argument("--archives", type=Path, help="keep downloaded archives in this directory and reuse them")
     args = parser.parse_args()
 
@@ -552,6 +821,8 @@ def main() -> int:
         fetch_dotnet()
     if args.dotnet_packs:
         fetch_dotnet_packs()
+    if args.libclang or args.dotnet or args.dotnet_packs:
+        fetch_libclang()
     return 0
 
 

@@ -517,6 +517,19 @@ COMPONENTS: tuple[Component, ...] = (
 		text=lambda: read("External/Prebuilt/ninja/COPYING"),
 	),
 	Component(
+		name="libclang (bundled in Toolchain/libclang)",
+		scope="editor",
+		license="Apache License 2.0 with LLVM Exceptions",
+		where="C++ header parser loaded by Shalltear.HeaderBinder to generate C# "
+			  "bindings for user C++ headers and third-party libraries",
+		version=lambda: "LLVM " + read("External/Prebuilt/libclang/.fetched").strip(),
+		text=lambda: read("External/Prebuilt/libclang/LICENSE.TXT"),
+		extra=(
+			"Redistributed as a shared library (not embedded in compiled output),",
+			"so the LLVM Exception does not apply and Section 4's conditions do.",
+		),
+	),
+	Component(
 		name="Mono.Cecil (bundled in CSharp/Renamer)",
 		scope="editor",
 		license="MIT",
@@ -526,6 +539,17 @@ COMPONENTS: tuple[Component, ...] = (
 			"Source/CSharp/Managed/Shalltear.Renamer/Shalltear.Renamer.csproj", r'Include="Mono\.Cecil" Version="([^"]+)"'
 		)[0],
 		text=lambda: read("Source/CSharp/Managed/Shalltear.Renamer/ThirdParty/Mono.Cecil/LICENSE.txt"),
+	),
+	Component(
+		name="Microsoft.CodeAnalysis (Roslyn, bundled in CSharp/Refactor)",
+		scope="editor",
+		license="MIT",
+		where="C# syntax parsing and refactoring loaded by Shalltear.Refactor "
+			  "for script renames and C++ view header emission. Shipped as 2 libraries",
+		version=lambda: "Microsoft.CodeAnalysis.CSharp " + capture(
+			"Source/CSharp/Managed/Directory.Build.props", r"<ShalltearRoslynVersion>([^<]+)</ShalltearRoslynVersion>"
+		)[0],
+		text=lambda: read("Source/CSharp/Managed/Shalltear.Refactor/ThirdParty/Microsoft.CodeAnalysis/LICENSE.txt"),
 	),
 	Component(
 		name="Source Code Pro",

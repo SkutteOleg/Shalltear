@@ -1,6 +1,8 @@
+import argparse
 import collections
 import fnmatch
 import hashlib
+import json
 import os
 import re
 import shutil
@@ -16,6 +18,7 @@ SDK_DIR = os.path.join(ROOT_DIR, 'ShalltearSDK')
 PREBUILT_DIR = os.path.join(ROOT_DIR, 'External', 'Prebuilt')
 TOOLCHAIN_DIR = os.path.join(SDK_DIR, 'Toolchain')
 DIST_DIR = os.path.join(ROOT_DIR, 'Dist')
+DOTNET_PIN_PATH = os.path.join(ROOT_DIR, 'Source', 'CSharp', 'DotNetPin.json')
 
 
 
@@ -24,6 +27,7 @@ LLVM_LICENSE = "Apache-2.0 WITH LLVM-exception"
 MINGW_HEADERS_LICENSE = "public domain and ZPL-2.1, with LGPL-2.1+ DirectX/DDK headers and GCC's GPLv2+ stdarg.h"
 MINGW_RUNTIME_LICENSE = "public domain and ZPL-2.1, plus MIT for winpthreads and winstorecompat"
 MONO_CECIL_LICENSE = "MIT"
+ROSLYN_LICENSE = "MIT"
 
 SHIP, DROP = True, False
 
@@ -148,6 +152,12 @@ CSHARP_RULES = (
 		 "renamer a Release player's script compile runs"),
 	Rule(('Renamer/Mono.Cecil*.dll',), SHIP, MONO_CECIL_LICENSE,
 		 'assembly reader/writer the renamer loads'),
+	Rule(('Refactor/Shalltear.Refactor.dll', 'Refactor/Shalltear.Refactor.runtimeconfig.json'), SHIP, ENGINE_LICENSE,
+		 'Roslyn script rename and C++ view header generator tool'),
+	Rule(('Refactor/Microsoft.CodeAnalysis.dll', 'Refactor/Microsoft.CodeAnalysis.CSharp.dll'), SHIP, ROSLYN_LICENSE,
+		 'Roslyn C# syntax parser and rewriter loaded by Shalltear.Refactor'),
+	Rule(('HeaderBinder/Shalltear.HeaderBinder.dll', 'HeaderBinder/Shalltear.HeaderBinder.runtimeconfig.json'), SHIP, ENGINE_LICENSE,
+		 'libclang C++ header binding generator for mixed C++/C# projects'),
 	Rule(('native/CRTShim.obj',), SHIP, ENGINE_LICENSE,
 		 "startup shim a game's script library links"),
 	Rule(('native/libs/clang_rt.builtins-x86_64.lib',), SHIP, LLVM_LICENSE,
@@ -156,6 +166,19 @@ CSHARP_RULES = (
 		 "Win32 import libs a game's script library links"),
 	Rule(('Shalltear.Conformance.dll', 'Shalltear.Conformance.Audio.dll', 'Shalltear.Conformance.Editor.dll'), DROP, '',
 		 'test assemblies (only the test suite loads them)'),
+)
+
+LIBCLANG_RULES = (
+	Rule(('LICENSE.TXT',), SHIP, LLVM_LICENSE,
+		 "libclang's LLVM license notice"),
+	Rule(('bin/libclang.dll',), SHIP, LLVM_LICENSE,
+		 'libclang shared library loaded by Shalltear.HeaderBinder on Windows'),
+	Rule(('lib/libclang.so*',), SHIP, LLVM_LICENSE,
+		 'libclang shared library loaded by Shalltear.HeaderBinder on Linux'),
+	Rule(('python/*',), DROP, '',
+		 'developer Python bindings (not needed at SDK runtime)'),
+	Rule(('.fetched',), DROP, '',
+		 "fetch_prebuilt.py's version marker"),
 )
 
 
@@ -199,6 +222,30 @@ def build_engine(is_shared):
 
 	install_cmd = ["cmake", "--install", ".", "--config", "Release",
 				   "--prefix", install_prefix(is_shared)]
+	run_cmd(install_cmd, cwd=build_path)
+	return build_path
+
+
+def build_linux_static():
+	build_path = os.path.join(BUILD_DIR, 'STATIC-LINUX')
+	os.makedirs(build_path, exist_ok=True)
+	toolchain_file = os.path.join(ROOT_DIR, 'CMake', 'Toolchains', 'Linux-x64.cmake')
+	cmake_cmd = [
+		"cmake", ROOT_DIR,
+		"-G", "Ninja",
+		f"-DCMAKE_TOOLCHAIN_FILE={toolchain_file}",
+		"-DSHALLTEAR_BUILD_SHARED=OFF",
+		"-DSHALLTEAR_BUILD_TESTS=OFF",
+		"-DSHALLTEAR_BUILD_BENCHMARKS=OFF",
+		"-DSHALLTEAR_CSHARP=ON",
+		"-DCMAKE_BUILD_TYPE=Release",
+	]
+	run_cmd(cmake_cmd, cwd=build_path)
+	run_cmd(["cmake", "--build", ".", "--config", "Release", "--parallel"], cwd=build_path)
+	install_cmd = [
+		"cmake", "--install", ".", "--config", "Release",
+		"--prefix", os.path.join(SDK_DIR, 'Static', 'linux-x86_64'),
+	]
 	run_cmd(install_cmd, cwd=build_path)
 	return build_path
 
@@ -279,16 +326,28 @@ def archive_sdk():
 		for block in iter(lambda: f.read(1 << 20), b""):
 			digest.update(block)
 	size = os.path.getsize(archive_path)
+	sha256_hex = digest.hexdigest()
+	with open(archive_path + ".sha256", 'w', encoding='utf-8') as f:
+		f.write(f"{sha256_hex}  {os.path.basename(archive_path)}\n")
 
 	print("\n======== Ready to upload ========")
 	print(f"  file      {archive_path}")
 	print(f"  bytes     {size:,}")
-	print(f"  sha256    {digest.hexdigest()}")
+	print(f"  sha256    {sha256_hex}")
 	print(f"  contents  {raw:,} B unpacked, under a single {stem}/ directory")
 
 
 def llvm_wanted(relative, unclassified=None):
 	rule = classify(relative)
+	if rule is None:
+		if unclassified is not None:
+			unclassified.append(relative)
+		return False
+	return rule.verdict
+
+
+def libclang_wanted(relative, unclassified=None):
+	rule = classify(relative, LIBCLANG_RULES)
 	if rule is None:
 		if unclassified is not None:
 			unclassified.append(relative)
@@ -311,9 +370,14 @@ def copy_tree(source, destination, wanted=None):
 	return copied
 
 
-def verify_toolchain():
+def verify_toolchain(bundle_dotnet=False, bundle_linux=False):
 	llvm_root = os.path.join(TOOLCHAIN_DIR, 'LLVM')
-	allowed = LLVM_BIN_ALLOWLIST | {'cmake.exe', 'ninja.exe'}
+	libclang_root = os.path.join(TOOLCHAIN_DIR, 'libclang')
+	optional_roots = tuple(
+		os.path.join(TOOLCHAIN_DIR, name) + os.sep
+		for name in ('DotNet', 'NuGet', 'linux-x64')
+	)
+	allowed = LLVM_BIN_ALLOWLIST | {'cmake.exe', 'ninja.exe', 'libclang.dll'}
 	offenders = []
 	executables = 0
 	staged = 0
@@ -331,7 +395,16 @@ def verify_toolchain():
 					offenders.append(f"  staged but no rule classifies it: {relative}")
 				elif rule.verdict is DROP:
 					offenders.append(f"  staged although a rule drops it ({rule.why}): {relative}")
+			elif absolute.startswith(libclang_root + os.sep):
+				relative = os.path.relpath(absolute, libclang_root).replace(os.sep, '/')
+				rule = classify(relative, LIBCLANG_RULES)
+				if rule is None:
+					offenders.append(f"  staged in libclang/ but no rule classifies it: {relative}")
+				elif rule.verdict is DROP:
+					offenders.append(f"  staged in libclang/ although a rule drops it ({rule.why}): {relative}")
 			if not file_name.lower().endswith(('.exe', '.dll')):
+				continue
+			if absolute.startswith(optional_roots):
 				continue
 			executables += 1
 			if file_name not in allowed and not absolute.startswith(llvm_root + os.sep):
@@ -342,7 +415,16 @@ def verify_toolchain():
 		os.path.join(TOOLCHAIN_DIR, 'LLVM', 'bin', 'lld-link.exe'),
 		os.path.join(TOOLCHAIN_DIR, 'CMake', 'bin', 'cmake.exe'),
 		os.path.join(TOOLCHAIN_DIR, 'Ninja', 'ninja.exe'),
+		os.path.join(TOOLCHAIN_DIR, 'libclang', 'bin', 'libclang.dll'),
+		os.path.join(TOOLCHAIN_DIR, 'libclang', 'LICENSE.TXT'),
 	]
+	if bundle_dotnet:
+		required.append(os.path.join(TOOLCHAIN_DIR, 'DotNet', 'dotnet.exe' if os.name == 'nt' else 'dotnet'))
+	if bundle_linux:
+		required.append(os.path.join(
+			TOOLCHAIN_DIR, 'linux-x64', 'sysroot', 'usr', 'include',
+			'x86_64-unknown-linux-gnu', 'c++', 'v1', '__config_site'
+		))
 	offenders += [f"  missing: {path}" for path in required if not os.path.exists(path)]
 	if offenders:
 		print("Error: the staged toolchain isn't distributable:")
@@ -351,23 +433,53 @@ def verify_toolchain():
 	return executables, staged
 
 
-def stage_toolchain():
+def stage_optional_bundles(bundle_dotnet=False, bundle_linux=False):
+	if bundle_dotnet:
+		with open(DOTNET_PIN_PATH, 'r', encoding='utf-8') as f:
+			sdk_version = json.load(f)['sdkVersion']
+		dotnet_src = os.path.join(PREBUILT_DIR, 'dotnet', sdk_version)
+		if not os.path.isdir(dotnet_src):
+			print(f"Error: --bundle-dotnet requested but {dotnet_src} is absent.")
+			print("  fix: python Scripts/fetch_prebuilt.py --dotnet")
+			sys.exit(1)
+		count = copy_tree(dotnet_src, os.path.join(TOOLCHAIN_DIR, 'DotNet'),
+						  lambda rel: rel != '.fetched')
+		print(f"  DotNet {count:>5} file(s)")
+		nuget_src = os.path.join(PREBUILT_DIR, 'nuget')
+		if os.path.isdir(nuget_src):
+			nuget_count = copy_tree(nuget_src, os.path.join(TOOLCHAIN_DIR, 'NuGet'))
+			print(f"  NuGet  {nuget_count:>5} file(s)")
+	if bundle_linux:
+		linux_src = os.path.join(PREBUILT_DIR, 'linux-x64')
+		if not os.path.isdir(linux_src):
+			print(f"Error: --bundle-linux requested but {linux_src} is absent.")
+			print("  fix: python Scripts/fetch_prebuilt.py --toolchain --linux")
+			sys.exit(1)
+		count = copy_tree(linux_src, os.path.join(TOOLCHAIN_DIR, 'linux-x64'),
+						  lambda rel: rel != '.fetched')
+		print(f"  Linux  {count:>5} file(s)")
+
+
+def stage_toolchain(bundle_dotnet=False, bundle_linux=False):
 	unclassified = []
+	libclang_unclassified = []
 	sources = {
 		'LLVM': (os.path.join(PREBUILT_DIR, 'llvm-mingw'),
 				 lambda relative: llvm_wanted(relative, unclassified)),
 		'CMake': (os.path.join(PREBUILT_DIR, 'cmake'), None),
 		'Ninja': (os.path.join(PREBUILT_DIR, 'ninja'), None),
+		'libclang': (os.path.join(PREBUILT_DIR, 'libclang'),
+					 lambda relative: libclang_wanted(relative, libclang_unclassified)),
 	}
 	missing = [name for name, (path, _) in sources.items() if not os.path.isdir(path)]
 	if missing:
 		print(f"Error: the SDK bundles a toolchain and these prebuilts are absent: {', '.join(missing)}")
-		print("  fix: python Scripts/fetch_prebuilt.py --toolchain")
+		print("  fix: python Scripts/fetch_prebuilt.py --toolchain --libclang")
 		sys.exit(1)
 
 	for name, (path, wanted) in sources.items():
 		count = copy_tree(path, os.path.join(TOOLCHAIN_DIR, name), wanted)
-		print(f"  {name:<6} {count:>5} file(s)")
+		print(f"  {name:<8} {count:>5} file(s)")
 
 	if unclassified:
 		print(f"Error: {len(unclassified)} path(s) in llvm-mingw match no rule in LLVM_RULES.")
@@ -380,7 +492,15 @@ def stage_toolchain():
 			print(f"    ... and {len(unclassified) - 40} more")
 		sys.exit(1)
 
-	executables, staged = verify_toolchain()
+	if libclang_unclassified:
+		print(f"Error: {len(libclang_unclassified)} path(s) in libclang match no rule in LIBCLANG_RULES.")
+		for relative in sorted(libclang_unclassified)[:40]:
+			print(f"    {relative}")
+		sys.exit(1)
+
+	stage_optional_bundles(bundle_dotnet=bundle_dotnet, bundle_linux=bundle_linux)
+
+	executables, staged = verify_toolchain(bundle_dotnet=bundle_dotnet, bundle_linux=bundle_linux)
 	print(f"  verified {staged} staged file(s) (each has a rule shipping it)")
 	print(f"           {executables} of them executables (all on the allowlist)")
 
@@ -425,9 +545,18 @@ def finish_sdk():
 	print(f"  toolchain:        {TOOLCHAIN_DIR} (found before PATH)")
 
 if __name__ == "__main__":
+	parser = argparse.ArgumentParser(description="Build, stage, verify, and archive the Shalltear SDK")
+	parser.add_argument("--bundle-dotnet", action="store_true",
+						help="bundle the pinned .NET SDK and offline NuGet cache under Toolchain/")
+	parser.add_argument("--bundle-linux", action="store_true",
+						help="cross-compile the Linux static player target and bundle the Linux target pack")
+	parser.add_argument("--no-archive", action="store_true",
+						help="skip creating the Dist/ archive after staging")
+	args = parser.parse_args()
+
 	toolchain.prepare("the SDK package")
 
-	if working_tree_dirt():
+	if not args.no_archive and working_tree_dirt():
 		print("NOTE: the working tree is dirty -> no archive at the end.\n")
 
 	if os.path.exists(SDK_DIR):
@@ -439,12 +568,17 @@ if __name__ == "__main__":
 	print("\n======== Building Shalltear Engine (STATIC) ========")
 	build_engine(is_shared=False)
 
+	if args.bundle_linux:
+		print("\n======== Building Shalltear Engine (STATIC LINUX) ========")
+		build_linux_static()
+
 	print("\n======== Staging the toolchain ========")
-	stage_toolchain()
+	stage_toolchain(bundle_dotnet=args.bundle_dotnet, bundle_linux=args.bundle_linux)
 	stage_csharp(os.path.join(SDK_DIR, 'CSharp'))
 
 	print("\n======== Finishing SDK ========")
 	finish_sdk()
 
-	print("\n---- Archiving ----")
-	archive_sdk()
+	if not args.no_archive:
+		print("\n---- Archiving ----")
+		archive_sdk()

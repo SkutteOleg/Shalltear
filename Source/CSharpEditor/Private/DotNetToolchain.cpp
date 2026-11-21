@@ -102,8 +102,16 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 		}
 #endif
 		options.overrideRoot = CSharpSettings::GetUser().sdkPath;
+		const str sdkRoot = ScriptProjectOps::GetSDKRoot();
+		if (!sdkRoot.empty()) {
+			std::error_code ec;
+			const fs::path bundled = fs::path(sdkRoot) / "Toolchain" / "DotNet";
+			if (fs::is_directory(bundled, ec)) {
+				options.bundledRoot = bundled.generic_string();
+			}
+		}
 		options.cacheRoot = GetCacheRoot();
-		const str source = ReadEngineSourceDirectory(ScriptProjectOps::GetSDKRoot());
+		const str source = ReadEngineSourceDirectory(sdkRoot);
 		if (!source.empty()) {
 			options.checkoutRoot = source + "/External/Prebuilt/dotnet";
 		}
@@ -125,6 +133,15 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 	Info Discover(const Pin& pin, const DiscoveryOptions& options) {
 		if (HoldsPin(options.overrideRoot, pin)) {
 			return {fs::path(options.overrideRoot).generic_string(), Tier::Override};
+		}
+		if (HoldsPin(options.bundledRoot, pin)) {
+			return {fs::path(options.bundledRoot).generic_string(), Tier::Bundled};
+		}
+		if (!options.bundledRoot.empty()) {
+			const str nested = (fs::path(options.bundledRoot) / pin.sdkVersion).generic_string();
+			if (HoldsPin(nested, pin)) {
+				return {nested, Tier::Bundled};
+			}
 		}
 		if (!options.cacheRoot.empty()) {
 			const str root = (fs::path(options.cacheRoot) / pin.sdkVersion).generic_string();
@@ -150,6 +167,7 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 			}
 		};
 		add(options.overrideRoot);
+		add(options.bundledRoot);
 		add(options.cacheRoot.empty() ? str() : options.cacheRoot + "/" + pin.sdkVersion);
 		add(options.checkoutRoot.empty() ? str() : options.checkoutRoot + "/" + pin.sdkVersion);
 		looked += looked.empty() ? "PATH" : ", PATH";

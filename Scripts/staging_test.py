@@ -107,7 +107,7 @@ def check_rules(fail):
 		checks += 1
 
 	names = " ".join(c.name for c in generate_notices.COMPONENTS).lower()
-	for token in ('clang', 'mingw-w64 headers', 'winstorecompat', 'cmake', 'ninja'):
+	for token in ('clang', 'libclang', 'mingw-w64 headers', 'winstorecompat', 'cmake', 'ninja', 'roslyn'):
 		if token not in names:
 			fail("no notices Component mentions %r, yet the SDK stages it" % token)
 		checks += 1
@@ -139,6 +139,12 @@ CSHARP_CASES = (
 	('Renamer/Shalltear.Renamer.runtimeconfig.json', build_sdk.SHIP),
 	('Renamer/Mono.Cecil.dll', build_sdk.SHIP),
 	('Renamer/Mono.Cecil.Rocks.dll', build_sdk.SHIP),
+	('Refactor/Shalltear.Refactor.dll', build_sdk.SHIP),
+	('Refactor/Shalltear.Refactor.runtimeconfig.json', build_sdk.SHIP),
+	('Refactor/Microsoft.CodeAnalysis.dll', build_sdk.SHIP),
+	('Refactor/Microsoft.CodeAnalysis.CSharp.dll', build_sdk.SHIP),
+	('HeaderBinder/Shalltear.HeaderBinder.dll', build_sdk.SHIP),
+	('HeaderBinder/Shalltear.HeaderBinder.runtimeconfig.json', build_sdk.SHIP),
 	('native/CRTShim.obj', build_sdk.SHIP),
 	('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.SHIP),
 	('native/libs/kernel32.lib', build_sdk.SHIP),
@@ -151,6 +157,10 @@ CSHARP_UNGOVERNED = (
 	'Mono.Cecil.dll',
 	'Renamer/Shalltear.Renamer.pdb',
 	'Renamer/Shalltear.Renamer.deps.json',
+	'Refactor/Shalltear.Refactor.pdb',
+	'Refactor/Shalltear.Refactor.deps.json',
+	'HeaderBinder/Shalltear.HeaderBinder.pdb',
+	'HeaderBinder/Shalltear.HeaderBinder.deps.json',
 	'Microsoft.CodeAnalysis.dll',
 	'Shalltear.Runtime.deps.json',
 	'Shalltear.Runtime.pdb',
@@ -162,7 +172,54 @@ CSHARP_UNGOVERNED = (
 	'aot/Shalltear.ConformanceAOT.dll',
 )
 
-CSHARP_LICENSES = (build_sdk.ENGINE_LICENSE, build_sdk.LLVM_LICENSE, build_sdk.MINGW_RUNTIME_LICENSE, build_sdk.MONO_CECIL_LICENSE)
+CSHARP_LICENSES = (
+	build_sdk.ENGINE_LICENSE,
+	build_sdk.LLVM_LICENSE,
+	build_sdk.MINGW_RUNTIME_LICENSE,
+	build_sdk.MONO_CECIL_LICENSE,
+	build_sdk.ROSLYN_LICENSE,
+)
+
+LIBCLANG_CASES = (
+	('LICENSE.TXT', build_sdk.SHIP),
+	('bin/libclang.dll', build_sdk.SHIP),
+	('lib/libclang.so', build_sdk.SHIP),
+	('lib/libclang.so.23.1', build_sdk.SHIP),
+	('python/clang/cindex.py', build_sdk.DROP),
+	('.fetched', build_sdk.DROP),
+)
+
+LIBCLANG_UNGOVERNED = (
+	'bin/clang.exe',
+	'lib/libLLVM.a',
+	'include/clang-c/Index.h',
+)
+
+
+def check_libclang_rules(fail):
+	checks = 0
+	for relative, expected in LIBCLANG_CASES:
+		rule = build_sdk.classify(relative, build_sdk.LIBCLANG_RULES)
+		if rule is None or rule.verdict is not expected:
+			fail("libclang/%s: expected %s" % (relative, 'SHIP' if expected else 'DROP'))
+		checks += 1
+	for relative in LIBCLANG_UNGOVERNED:
+		if build_sdk.classify(relative, build_sdk.LIBCLANG_RULES) is not None:
+			fail("libclang/%s: an unknown file must stop the package" % relative)
+		checks += 1
+	libclang_prebuilt = os.path.join(build_sdk.PREBUILT_DIR, 'libclang')
+	if os.path.isdir(libclang_prebuilt):
+		unclassified = []
+		for directory, _, files in os.walk(libclang_prebuilt):
+			for name in files:
+				relative = os.path.relpath(os.path.join(directory, name), libclang_prebuilt).replace(os.sep, '/')
+				if build_sdk.classify(relative, build_sdk.LIBCLANG_RULES) is None:
+					unclassified.append(relative)
+		if unclassified:
+			fail("%d path(s) in External/Prebuilt/libclang match no rule: %s"
+				 % (len(unclassified), ', '.join(sorted(unclassified)[:5])))
+		checks += 1
+	return checks
 
 
 def check_csharp_rules(fail):
@@ -307,6 +364,7 @@ def main():
 
 	total = check_rules(fail)
 	total += check_csharp_rules(fail)
+	total += check_libclang_rules(fail)
 	total += check_archive_pruning(fail)
 	if os.path.isdir(PREBUILT):
 		total += check_real_tree(fail)

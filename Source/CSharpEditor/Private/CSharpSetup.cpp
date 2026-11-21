@@ -140,6 +140,7 @@ namespace Shalltear::CSharpEditor::CSharpSetup {
 		_owner = owner;
 		ChildEnvironment::Set("DOTNET_CLI_TELEMETRY_OPTOUT", "1", owner);
 		ChildEnvironment::Set("DOTNET_NOLOGO", "1", owner);
+		ChildEnvironment::Set("DOTNET_MULTILEVEL_LOOKUP", "0", owner);
 		_watcher = New<SettingsWatcher>(MemTag::Editor);
 		SettingsEvents::Changed.Subscribe(EventBus::GetGlobal(), Handle<SettingsWatcher>(_watcher), &SettingsWatcher::OnSettingChanged);
 

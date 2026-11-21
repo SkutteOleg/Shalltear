@@ -112,8 +112,10 @@ function(_shalltear_find_header_binder_tools OUT_BINDER OUT_LIBCLANG OUT_DOTNET_
 		"${SHALLTEAR_LIBCLANG_DIR}"
 		"${SHALLTEAR_PACKAGE_ROOT}/Toolchain/libclang/bin"
 		"${SHALLTEAR_PACKAGE_ROOT}/../Toolchain/libclang/bin"
+		"${SHALLTEAR_PACKAGE_ROOT}/../../Toolchain/libclang/bin"
 		"${SHALLTEAR_PACKAGE_ROOT}/Toolchain/libclang/lib"
-		"${SHALLTEAR_PACKAGE_ROOT}/../Toolchain/libclang/lib")
+		"${SHALLTEAR_PACKAGE_ROOT}/../Toolchain/libclang/lib"
+		"${SHALLTEAR_PACKAGE_ROOT}/../../Toolchain/libclang/lib")
 	if(SHALLTEAR_ENGINE_SOURCE_DIR)
 		list(APPEND libclangCandidates
 			"${SHALLTEAR_ENGINE_SOURCE_DIR}/External/Prebuilt/libclang/bin"
@@ -149,7 +151,8 @@ function(_shalltear_find_header_binder_tools OUT_BINDER OUT_LIBCLANG OUT_DOTNET_
 		"${SHALLTEAR_DOTNET_ROOT}"
 		"$ENV{DOTNET_ROOT}"
 		"${SHALLTEAR_PACKAGE_ROOT}/Toolchain/DotNet"
-		"${SHALLTEAR_PACKAGE_ROOT}/../Toolchain/DotNet")
+		"${SHALLTEAR_PACKAGE_ROOT}/../Toolchain/DotNet"
+		"${SHALLTEAR_PACKAGE_ROOT}/../../Toolchain/DotNet")
 	if(SHALLTEAR_ENGINE_SOURCE_DIR)
 		file(GLOB engineDotnetDirs "${SHALLTEAR_ENGINE_SOURCE_DIR}/External/Prebuilt/dotnet/*")
 		list(SORT engineDotnetDirs ORDER DESCENDING)

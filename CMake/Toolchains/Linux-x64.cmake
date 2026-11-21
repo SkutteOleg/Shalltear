@@ -4,7 +4,20 @@ if(NOT SHALLTEAR_LINUX_PACK)
 	if(DEFINED ENV{SHALLTEAR_LINUX_PACK})
 		set(SHALLTEAR_LINUX_PACK "$ENV{SHALLTEAR_LINUX_PACK}")
 	else()
-		get_filename_component(SHALLTEAR_LINUX_PACK "${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/linux-x64" ABSOLUTE)
+		foreach(slt_packCandidate
+			"${CMAKE_CURRENT_LIST_DIR}/../../../../Toolchain/linux-x64"
+			"${CMAKE_CURRENT_LIST_DIR}/../../../../../Toolchain/linux-x64"
+			"${CMAKE_CURRENT_LIST_DIR}/../../../../../../Toolchain/linux-x64"
+			"${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/linux-x64")
+			get_filename_component(slt_packResolved "${slt_packCandidate}" ABSOLUTE)
+			if(EXISTS "${slt_packResolved}/sysroot/usr/include/${SHALLTEAR_LINUX_TRIPLE}/c++/v1/__config_site")
+				set(SHALLTEAR_LINUX_PACK "${slt_packResolved}")
+				break()
+			endif()
+		endforeach()
+		if(NOT SHALLTEAR_LINUX_PACK)
+			get_filename_component(SHALLTEAR_LINUX_PACK "${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/linux-x64" ABSOLUTE)
+		endif()
 	endif()
 endif()
 set(SHALLTEAR_LINUX_PACK "${SHALLTEAR_LINUX_PACK}" CACHE PATH "Linux target pack (sysroot + C++ runtime)")
@@ -27,10 +40,18 @@ if(CMAKE_HOST_WIN32)
 	set(slt_exe ".exe")
 endif()
 if(NOT CMAKE_CXX_COMPILER)
-	get_filename_component(slt_toolchainBin "${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/llvm-mingw/bin" ABSOLUTE)
-	if(EXISTS "${slt_toolchainBin}/clang++${slt_exe}")
-		set(CMAKE_CXX_COMPILER "${slt_toolchainBin}/clang++${slt_exe}")
-	else()
+	foreach(slt_binCandidate
+		"${CMAKE_CURRENT_LIST_DIR}/../../../../Toolchain/LLVM/bin"
+		"${CMAKE_CURRENT_LIST_DIR}/../../../../../Toolchain/LLVM/bin"
+		"${CMAKE_CURRENT_LIST_DIR}/../../../../../../Toolchain/LLVM/bin"
+		"${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/llvm-mingw/bin")
+		get_filename_component(slt_toolchainBin "${slt_binCandidate}" ABSOLUTE)
+		if(EXISTS "${slt_toolchainBin}/clang++${slt_exe}")
+			set(CMAKE_CXX_COMPILER "${slt_toolchainBin}/clang++${slt_exe}")
+			break()
+		endif()
+	endforeach()
+	if(NOT CMAKE_CXX_COMPILER)
 		set(CMAKE_CXX_COMPILER clang++)
 	endif()
 endif()
@@ -42,9 +63,18 @@ if(NOT CMAKE_C_COMPILER)
 		set(CMAKE_C_COMPILER clang)
 	endif()
 endif()
-get_filename_component(slt_ninja "${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/ninja/ninja${slt_exe}" ABSOLUTE)
-if(CMAKE_GENERATOR MATCHES "Ninja" AND NOT CMAKE_MAKE_PROGRAM AND EXISTS "${slt_ninja}")
-	set(CMAKE_MAKE_PROGRAM "${slt_ninja}" CACHE FILEPATH "")
+if(CMAKE_GENERATOR MATCHES "Ninja" AND NOT CMAKE_MAKE_PROGRAM)
+	foreach(slt_ninjaCandidate
+		"${CMAKE_CURRENT_LIST_DIR}/../../../../Toolchain/Ninja/ninja${slt_exe}"
+		"${CMAKE_CURRENT_LIST_DIR}/../../../../../Toolchain/Ninja/ninja${slt_exe}"
+		"${CMAKE_CURRENT_LIST_DIR}/../../../../../../Toolchain/Ninja/ninja${slt_exe}"
+		"${CMAKE_CURRENT_LIST_DIR}/../../External/Prebuilt/ninja/ninja${slt_exe}")
+		get_filename_component(slt_ninja "${slt_ninjaCandidate}" ABSOLUTE)
+		if(EXISTS "${slt_ninja}")
+			set(CMAKE_MAKE_PROGRAM "${slt_ninja}" CACHE FILEPATH "")
+			break()
+		endif()
+	endforeach()
 endif()
 
 set(CMAKE_C_COMPILER_TARGET ${SHALLTEAR_LINUX_TRIPLE})

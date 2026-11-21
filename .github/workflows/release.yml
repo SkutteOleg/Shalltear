@@ -1,0 +1,163 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag name (defaults to dev-<short-sha>)'
+        required: false
+        type: string
+      prerelease:
+        description: 'Mark release as pre-release'
+        required: false
+        default: true
+        type: boolean
+      bundle_dotnet:
+        description: 'Bundle offline .NET SDK and NuGet packages into the SDK archive'
+        required: false
+        default: false
+        type: boolean
+      bundle_linux:
+        description: 'Bundle Linux static cross-compilation target into the Windows SDK archive'
+        required: false
+        default: true
+        type: boolean
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  package-windows:
+    name: Build Windows x64 SDK
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache prebuilt binaries
+        uses: actions/cache@v4
+        with:
+          path: External/Prebuilt
+          key: prebuilt-release-Windows-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
+
+      - name: Fetch prebuilt binaries
+        shell: pwsh
+        run: |
+          $fetchArgs = @('--toolchain', '--dotnet', '--libclang')
+          if ('${{ inputs.bundle_dotnet }}' -eq 'true') {
+            $fetchArgs += '--dotnet-packs'
+          }
+          if ('${{ inputs.bundle_linux }}' -ne 'false') {
+            $fetchArgs += '--linux'
+          }
+          python Scripts/fetch_prebuilt.py @fetchArgs
+
+      - name: Put the toolchain on PATH
+        shell: pwsh
+        run: |
+          echo "$(Resolve-Path External/Prebuilt/llvm-mingw/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/cmake/bin)" >> $env:GITHUB_PATH
+          echo "$(Resolve-Path External/Prebuilt/ninja)" >> $env:GITHUB_PATH
+
+      - name: Verify notices, bindings, and staging rules
+        shell: pwsh
+        run: |
+          python Scripts/generate_notices.py --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python Scripts/generate_csharp_bindings.py --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Push-Location Scripts
+          try {
+            python staging_test.py
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          } finally {
+            Pop-Location
+          }
+
+      - name: Build and archive Windows SDK
+        shell: pwsh
+        run: |
+          $sdkArgs = @()
+          if ('${{ inputs.bundle_dotnet }}' -eq 'true') {
+            $sdkArgs += '--bundle-dotnet'
+          }
+          if ('${{ inputs.bundle_linux }}' -ne 'false') {
+            $sdkArgs += '--bundle-linux'
+          }
+          python Scripts/build_sdk.py @sdkArgs
+
+      - name: Upload Windows SDK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-windows-x64
+          path: |
+            Dist/Shalltear-dev-*-windows-x64.zip
+            Dist/Shalltear-dev-*-windows-x64.zip.sha256
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: [package-windows]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download SDK artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: Dist
+          merge-multiple: true
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_PRERELEASE: ${{ inputs.prerelease }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          archives=(Dist/Shalltear-dev-*-windows-x64.zip)
+          if [ ${#archives[@]} -ne 1 ]; then
+            echo "Expected 1 Windows SDK archive, found ${#archives[@]}"
+            exit 1
+          fi
+
+          short_sha="$(git rev-parse --short=12 HEAD)"
+          if [ "$REF_TYPE" = "tag" ]; then
+            tag="$REF_NAME"
+            prerelease="false"
+            if [[ "$tag" == *-* ]]; then
+              prerelease="true"
+            fi
+          else
+            tag="${INPUT_TAG:-dev-${short_sha}}"
+            prerelease="${INPUT_PRERELEASE:-true}"
+          fi
+
+          files=("${archives[0]}" "${archives[0]}.sha256")
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "${files[@]}" --clobber
+          else
+            flags=(--title "Shalltear ${tag}" --generate-notes)
+            if [ "$prerelease" = "true" ]; then
+              flags+=(--prerelease)
+            fi
+            gh release create "$tag" "${files[@]}" "${flags[@]}"
+          fi

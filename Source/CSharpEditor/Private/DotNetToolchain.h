@@ -26,6 +26,7 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 	enum class Tier : u8 {
 		None = 0,
 		Override,
+		Bundled,
 		Cache,
 		Checkout,
 		SearchPath
@@ -33,6 +34,7 @@ namespace Shalltear::CSharpEditor::DotNetToolchain {
 
 	struct DiscoveryOptions {
 		str overrideRoot;
+		str bundledRoot;
 		str cacheRoot;
 		str checkoutRoot;
 		str searchPath;
