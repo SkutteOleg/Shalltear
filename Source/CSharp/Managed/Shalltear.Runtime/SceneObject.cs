@@ -58,6 +58,19 @@ public sealed partial class SceneObject : EngineObject {
 		return match;
 	}
 
+	/// <summary>Try to fetch the 1st component of type T on this object.</summary>
+	public bool TryGetComponent<T>(out T? component)
+		where T : class {
+		component = GetComponent<T>();
+		return component is not null;
+	}
+
+	/// <summary>True when this object carries at least one component of type T.</summary>
+	public bool HasComponent<T>()
+		where T : class {
+		return GetComponent<T>() is not null;
+	}
+
 	/// <summary>Fill results with each component of type T on this object.</summary>
 	[SkipLocalsInit]
 	public void GetComponents<T>(List<T> results)

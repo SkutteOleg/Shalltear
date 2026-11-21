@@ -1618,6 +1618,8 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<SltString, float, float, float, ulong, SltString*, int> probeCallJoin;
 	public delegate* unmanaged<int> probeCallThrow;
 	public delegate* unmanaged<SltString, byte*, int> probeIsExported;
+	public delegate* unmanaged<ulong, SltString, ulong*, int> proceduralAssetsCreateTransient;
+	public delegate* unmanaged<ulong, int> proceduralAssetsDestroyTransient;
 	public delegate* unmanaged<ulong*, ulong*, int> proceduralContextGetItem;
 	public delegate* unmanaged<ulong*, ulong*, int> proceduralContextGetPass;
 	public delegate* unmanaged<ulong*, ulong*, int> proceduralContextGetValue;
@@ -4314,7 +4316,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xbc93e4d3a9b7ea9d;
+	internal const ulong LAYOUT_HASH = 0xd79c47e0448418f1;
 
 	internal static SltBindings table;
 

@@ -227,6 +227,7 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillPrimitiveMeshBindings(SltBindings& table);
 	void FillPrimitivesBindings(SltBindings& table);
 	void FillProbeBindings(SltBindings& table);
+	void FillProceduralAssetsBindings(SltBindings& table);
 	void FillProceduralContextBindings(SltBindings& table);
 	void FillProceduralPlanBindings(SltBindings& table);
 	void FillProceduralRendererBindings(SltBindings& table);
@@ -616,6 +617,7 @@ namespace Shalltear::CSharpImpl::Generated {
 		FillPrimitiveMeshBindings(table);
 		FillPrimitivesBindings(table);
 		FillProbeBindings(table);
+		FillProceduralAssetsBindings(table);
 		FillProceduralContextBindings(table);
 		FillProceduralPlanBindings(table);
 		FillProceduralRendererBindings(table);

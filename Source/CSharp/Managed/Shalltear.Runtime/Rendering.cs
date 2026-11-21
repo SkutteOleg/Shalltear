@@ -57,6 +57,78 @@ public sealed partial class Material {
 	}
 }
 
+public sealed unsafe partial class Mesh {
+	/// <summary>Copy vertex data directly from a span without allocating a managed array.</summary>
+	public void SetVertices(ReadOnlySpan<MeshVertex> vertices) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Mesh.SetVertices");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = _id;
+		fixed (MeshVertex* data = vertices) {
+			slots[1] = (ulong)data;
+			slots[2] = (ulong)vertices.Length;
+			int status = Bindings.table.meshSlotsSetVertices(slots, slots + 3);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "Mesh.SetVertices");
+			}
+		}
+	}
+
+	/// <summary>Copy index data directly from a span without allocating a managed array.</summary>
+	public void SetIndices(ReadOnlySpan<uint> indices) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Mesh.SetIndices");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = _id;
+		fixed (uint* data = indices) {
+			slots[1] = (ulong)data;
+			slots[2] = (ulong)indices.Length;
+			int status = Bindings.table.meshSlotsSetIndices(slots, slots + 3);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "Mesh.SetIndices");
+			}
+		}
+	}
+
+	/// <summary>Copy submesh definitions directly from a span without allocating a managed array.</summary>
+	public void SetSubmeshes(ReadOnlySpan<SubMesh> submeshes) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Mesh.SetSubmeshes");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = _id;
+		fixed (SubMesh* data = submeshes) {
+			slots[1] = (ulong)data;
+			slots[2] = (ulong)submeshes.Length;
+			int status = Bindings.table.meshSlotsSetSubmeshes(slots, slots + 3);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "Mesh.SetSubmeshes");
+			}
+		}
+	}
+}
+
+public sealed unsafe partial class Texture {
+	/// <summary>Copy raw pixel bytes directly from a span without allocating a managed array.</summary>
+	public void SetPixels(ReadOnlySpan<byte> pixels) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Texture.SetPixels");
+		}
+		ulong* slots = stackalloc ulong[3];
+		slots[0] = _id;
+		fixed (byte* data = pixels) {
+			slots[1] = (ulong)data;
+			slots[2] = (ulong)pixels.Length;
+			int status = Bindings.table.textureSetPixels(slots, slots + 3);
+			if (status != Bridge.OK) {
+				throw Bridge.Failure(status, "Texture.SetPixels");
+			}
+		}
+	}
+}
+
 public sealed partial class Skeleton {
 	/// <summary>Set bone's pose in its parent's space.</summary>
 	public void SetBoneLocalPose(int bone, BoneTransform transform) {

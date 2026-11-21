@@ -17,6 +17,29 @@ public abstract partial class Asset : EngineObject {
 
 	/// <summary>Number of references keeping the asset loaded.</summary>
 	public int RefCount => AssetBindings.GetRefCount(_id);
+
+	/// <summary>Create an in-memory transient asset of type T (not owned by AssetDatabase).</summary>
+	public static T CreateTransient<T>(string name = "")
+		where T : Asset {
+		ulong typeHash = EngineTypeOf<T>.hash;
+		if (typeHash == 0) {
+			typeHash = ScriptTypeHash<T>.value;
+		}
+		if (typeHash == 0) {
+			throw new EngineException("Asset.CreateTransient can't create " + typeof(T).Name + " (not a registered asset type)");
+		}
+		ulong id = ProceduralAssetBindings.CreateTransient(typeHash, name ?? string.Empty);
+		return ObjectCache.Find<T>(id)
+			?? throw new EngineException("Asset.CreateTransient couldn't wrap " + typeof(T).Name);
+	}
+
+	/// <summary>Destroy an in-memory transient asset created by CreateTransient.</summary>
+	public static void DestroyTransient(Asset? asset) {
+		if (asset is null) {
+			return;
+		}
+		ProceduralAssetBindings.DestroyTransient(asset._id);
+	}
 }
 
 /// <summary>Material asset.</summary>

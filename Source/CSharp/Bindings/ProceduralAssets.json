@@ -1,0 +1,25 @@
+{
+	"area": "ProceduralAssets",
+	"include": "ProceduralBindings.h",
+	"class": "Shalltear.Interop.ProceduralAssetBindings",
+	"internal": true,
+	"functions": [
+		{
+			"id": "CreateTransient",
+			"cpp": "::Shalltear::CSharpImpl::ProceduralBindings::CreateTransient(typeHash, name)",
+			"returns": "u64",
+			"params": [
+				{ "name": "typeHash", "type": "u64" },
+				{ "name": "name", "type": "string" }
+			],
+			"csharp": { "member": "CreateTransient", "kind": "method" }
+		},
+		{
+			"id": "DestroyTransient",
+			"cpp": "::Shalltear::CSharpImpl::ProceduralBindings::DestroyTransient(id)",
+			"returns": "void",
+			"params": [{ "name": "id", "type": "u64" }],
+			"csharp": { "member": "DestroyTransient", "kind": "method" }
+		}
+	]
+}

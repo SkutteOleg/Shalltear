@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#define SLT_BRIDGE_LAYOUT_HASH 0xbc93e4d3a9b7ea9dull
-#define SLT_BINDINGS_INPUT_DIGEST 0x640a6000a93f54bfull
+#define SLT_BRIDGE_LAYOUT_HASH 0xd79c47e0448418f1ull
+#define SLT_BINDINGS_INPUT_DIGEST 0x5830265d3d94d839ull
 
 typedef struct SltString SltString;
 
@@ -1660,6 +1660,8 @@ typedef struct SltBindings {
 	int32_t (*probeCallJoin)(SltString left, float middleX, float middleY, float middleZ, uint64_t right, SltString* outResult);
 	int32_t (*probeCallThrow)(void);
 	int32_t (*probeIsExported)(SltString name, uint8_t* outResult);
+	int32_t (*proceduralAssetsCreateTransient)(uint64_t typeHash, SltString name, uint64_t* outResult);
+	int32_t (*proceduralAssetsDestroyTransient)(uint64_t id);
 	int32_t (*proceduralContextGetItem)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*proceduralContextGetPass)(const uint64_t* arguments, uint64_t* results);
 	int32_t (*proceduralContextGetValue)(const uint64_t* arguments, uint64_t* results);
