@@ -12,6 +12,11 @@ concurrency:
 
 # Clang + GNU ABI, fetched toolchain
 
+env:
+  # need a GPU (pixel exact, pipeline per node)
+  WINDOWS_GPU_ONLY: >-
+    SkyPrefilterFixture\.SmoothSkyMatchesOracle|TextureSamplingFixture\.PointSamplesOneTexelAtGrazingAngle|UIRenderFixture\.TabLikeCompositeIsPixelSymmetric|UIRenderFixture\.AuthoredTranslucentTokensCompositeWayCssDoes|AmbientOcclusionRenderFixture\.AfterOpaqueSurvivesPostRow|BC6HSampleFixture\.CodecDecodeMatchesGpu|SwapChainResizeCostTest\.RebuildInvalidatesHandles|NodeShaderGPUFixture\.EveryNodeMatchesReferenceOnGPU
+
 jobs:
   build-test:
     name: ${{ matrix.name }}
@@ -82,13 +87,16 @@ jobs:
         working-directory: Scripts
         run: python staging_test.py
 
-      - name: Locate software Vulkan driver
+      # VK_DRIVER_FILES ignored by damn loader when elevated (registry only)
+      - name: Register software Vulkan driver
         shell: pwsh
         run: |
           $icd = Get-ChildItem -Recurse External/Prebuilt/lavapipe -Filter lvp_icd.x86_64.json | Select-Object -First 1
           if (-not $icd) { throw "lavapipe ICD manifest not found" }
+          reg add 'HKLM\SOFTWARE\Khronos\Vulkan\Drivers' /v $icd.FullName /t REG_DWORD /d 0 /f /reg:64
+          if ($LASTEXITCODE -ne 0) { throw "couldn't register $($icd.FullName)" }
           echo "VK_DRIVER_FILES=$($icd.FullName)" >> $env:GITHUB_ENV
-          echo "Using ICD: $($icd.FullName)"
+          echo "VK_LOADER_LAYERS_DISABLE=~all~" >> $env:GITHUB_ENV
 
       # warnings = errors only here (fresh clones should build)
       - name: Configure
@@ -109,7 +117,19 @@ jobs:
         run: cmake --build build --target ShalltearHeaderCheck --parallel
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 600
+        id: test
+        run: ctest --test-dir build --output-on-failure --timeout 600 -E '^(${{ env.WINDOWS_GPU_ONLY }})$'
+
+      # skipped device tier should fail the lane
+      - name: Device tests ran
+        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
+        shell: pwsh
+        run: |
+          $skipped = @(Select-String -CaseSensitive -Path build/Testing/Temporary/LastTest.log -Pattern '^no (Vulkan )?(device|ICD)')
+          if ($skipped.Count -gt 0) {
+            $skipped | Select-Object -First 20 | ForEach-Object { $_.Line }
+            throw "$($skipped.Count) test(s) skipped for want of a device"
+          }
 
       - name: Benchmarks (informational)
         if: matrix.benchmarks
