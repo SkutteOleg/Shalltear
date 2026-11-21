@@ -116,6 +116,30 @@ namespace {
 		u32 _tail = 0;
 	};
 
+	class RequeueProbe final : public IAudioEffect {
+	public:
+		void Process(AudioBlock& block, const AudioBlock* sidechain) [[clang::nonblocking]] override {
+			(void)block;
+			(void)sidechain;
+		}
+
+		void SetParameter(u32 index, f32 value) [[clang::nonblocking]] override {
+			(void)index;
+			(void)value;
+			if (++calls < 100) {
+				commands->TryPush(next);
+			}
+		}
+
+		bool IsQuiet() const [[clang::nonblocking]] override { return true; }
+
+		void Release() override {}
+
+		AudioRing<AudioCommand>* commands = nullptr;
+		AudioCommand next;
+		u32 calls = 0;
+	};
+
 	AudioCommand EffectRow(OfflineBus bus, u32 index, IAudioEffect* effect, bool bypass = false, bool wetMixing = false, f32 wet = 1.0f) {
 		return OfflineMixer::Row(bus, index, AudioBusRowKind::Effect, {}, wet, effect, bypass, wetMixing);
 	}
@@ -273,6 +297,21 @@ TEST(AudioEffectChainTest, AParameterReachesTheInstanceBetweenBlocks) {
 	for (f32 sample : mixer.Render(BLOCK)) {
 		ASSERT_EQ(sample, 0.25f);
 	}
+}
+
+TEST(AudioEffectChainTest, CommandsQueuedMidBlockWaitForNext) {
+	RequeueProbe probe;
+	OfflineMixer mixer(1);
+	const OfflineBus bus = mixer.Bus(1);
+	ASSERT_TRUE(Chain(mixer, bus, AudioBusRowKind::Effect, AudioBusRowKind::Fader, &probe));
+	probe.commands = &mixer.Get().GetCommands();
+	probe.next = OfflineMixer::BusCommand(AudioCommandKind::SetBusEffectParameter, bus, 0.5f, 0);
+	probe.next.mode = 0;
+	ASSERT_TRUE(mixer.Push(probe.next));
+	mixer.Render(BLOCK);
+	EXPECT_EQ(probe.calls, 1u);
+	mixer.Render(BLOCK);
+	EXPECT_EQ(probe.calls, 2u);
 }
 
 TEST(AudioEffectChainTest, EffectsFlushDenormalsRestoreMode) {

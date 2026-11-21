@@ -458,7 +458,8 @@ namespace Shalltear {
 
 			if (_voices) {
 				AudioCommand command;
-				while (_commands.TryPop(command)) {
+				// bounded (producer refilling ring would stall block forever)
+				for (u32 queued = _commands.CountApproximate(); queued > 0 && _commands.TryPop(command); --queued) {
 					Apply(command, blockStart);
 				}
 				if (_graphDirty) {
