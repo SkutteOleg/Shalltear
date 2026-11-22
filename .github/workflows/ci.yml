@@ -194,8 +194,15 @@ jobs:
           path: ~/prebuilt-archives
           key: prebuilt-${{ matrix.downloads }}-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
 
+      - name: Restore NuGet packages
+        id: nuget
+        uses: actions/cache/restore@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json', 'Source/CSharp/DotNetPin.json') }}
+
       - name: Fetch prebuilt binaries
-        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet ${{ matrix.fetch }} --archives "$HOME/prebuilt-archives"
+        run: python Scripts/fetch_prebuilt.py --lavapipe --toolchain --dotnet-packs ${{ matrix.fetch }} --archives "$HOME/prebuilt-archives"
 
       - name: Keep downloads
         if: steps.downloads.outputs.cache-hit != 'true'
@@ -203,13 +210,6 @@ jobs:
         with:
           path: ~/prebuilt-archives
           key: prebuilt-${{ matrix.downloads }}-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
-
-      - name: Restore NuGet packages
-        id: nuget
-        uses: actions/cache/restore@v6
-        with:
-          path: External/Prebuilt/nuget
-          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
 
       # fetched binaru goes first because runner's clang++ targets MSVC
       - name: Put the toolchain on PATH
@@ -255,7 +255,7 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: External/Prebuilt/nuget
-          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json', 'Source/CSharp/DotNetPin.json') }}
 
       - name: Test
         run: python Scripts/run_suite.py ${{ matrix.tree }} --exclude "${{ env.WINDOWS_GPU_ONLY }}" --fail-skips "^(${{ env.DEVICE_SKIPS }}${{ matrix.sibling_skips }})" ${{ env.EACH }}
@@ -326,8 +326,15 @@ jobs:
           path: ~/prebuilt-archives
           key: prebuilt-linux-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
 
+      - name: Restore NuGet packages
+        id: nuget
+        uses: actions/cache/restore@v6
+        with:
+          path: External/Prebuilt/nuget
+          key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json', 'Source/CSharp/DotNetPin.json') }}
+
       - name: Fetch prebuilt binaries
-        run: python3 Scripts/fetch_prebuilt.py --toolchain --dotnet --archives "$HOME/prebuilt-archives"
+        run: python3 Scripts/fetch_prebuilt.py --toolchain --dotnet-packs --archives "$HOME/prebuilt-archives"
 
       - name: Keep downloads
         if: steps.downloads.outputs.cache-hit != 'true'
@@ -335,13 +342,6 @@ jobs:
         with:
           path: ~/prebuilt-archives
           key: prebuilt-linux-${{ hashFiles('Scripts/fetch_prebuilt.py', 'Scripts/linux_pack.py', 'Source/CSharp/DotNetPin.json') }}
-
-      - name: Restore NuGet packages
-        id: nuget
-        uses: actions/cache/restore@v6
-        with:
-          path: External/Prebuilt/nuget
-          key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
 
       - name: Put the toolchain on PATH
         run: |
@@ -381,7 +381,7 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: External/Prebuilt/nuget
-          key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+          key: nuget-linux-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json', 'Source/CSharp/DotNetPin.json') }}
 
       - name: Test
         run: python3 Scripts/run_suite.py ${{ matrix.tree }} --exclude "${{ env.LINUX_GPU_ONLY }}" --fail-skips "^(${{ env.DEVICE_SKIPS }}${{ matrix.sibling_skips }})" ${{ env.EACH }}
@@ -423,7 +423,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: External/Prebuilt/nuget
-          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json') }}
+          key: nuget-windows-${{ hashFiles('Source/CSharp/Managed/**/packages.lock.json', 'Source/CSharp/DotNetPin.json') }}
 
       - name: Put the toolchain on PATH
         shell: pwsh
