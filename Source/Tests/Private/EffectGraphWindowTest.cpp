@@ -1540,7 +1540,7 @@ namespace {
 	str SentFountain() {
 		return str(R"({"_type":"EffectGraph","version":2,"nextId":20,"settings":{},"properties":[],"nodes":[],
 "contexts":[
-{"id":11,"def":"Context/Event","x":0,"y":-220,"settings":{"Event Name":"Burst"},"blocks":[]},
+{"id":11,"def":"Context/Event","x":0,"y":780,"settings":{"Event Name":"Burst"},"blocks":[]},
 {"id":2,"def":"Context/Spawn","x":0,"y":0,"flow":[[11,"Start"]],"blocks":[{"id":3,"def":"Block/Burst","in":{"Count":{"value":[1]}}}]},
 {"id":4,"def":"Context/Initialize","x":0,"y":220,"settings":{"Capacity":4},"flow":[[2,"In"]],"blocks":[
 {"id":5,"def":"Block/SetAttribute","settings":{"Attribute":"lifetime"},"in":{"Lifetime":{"value":[100]}}}]},
@@ -1759,9 +1759,10 @@ TEST_F(EffectGraphAttachFixture, EventsSendInGraphReachesEveryEffect) {
 	const UI::Rect at = context->GetLayout(send).borderBox;
 	const str clicked = std::format("{} at {},{} {}x{} in {}x{}", DescribeElement(*context, send), at.x, at.y, at.w, at.h,
 									context->GetLayout(context->GetRoot()).borderBox.w, context->GetLayout(context->GetRoot()).borderBox.h);
+	ASSERT_TRUE(context->HitTest(Vec2{at.x + at.w * 0.5f, at.y + at.h * 0.5f}) == send) << clicked;
 	ClickElement(*context, send);
-	EXPECT_TRUE(counts(alpha, "1 / 4, 0 dropped")) << clicked;
-	EXPECT_TRUE(counts(beta, "1 / 4, 0 dropped")) << clicked;
+	EXPECT_TRUE(counts(alpha, "1 / 4, 0 dropped"));
+	EXPECT_TRUE(counts(beta, "1 / 4, 0 dropped"));
 	EditorSelection::Clear();
 }
 
