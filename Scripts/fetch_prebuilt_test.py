@@ -11,6 +11,7 @@ from unittest import mock
 from pathlib import Path
 
 import fetch_prebuilt
+import update_dotnet_pin
 
 VERSION = "9.9.100"
 DOTNET = "dotnet.exe" if fetch_prebuilt.HOST_IS_WINDOWS else "dotnet"
@@ -119,6 +120,60 @@ class DotNetFetchTest(unittest.TestCase):
 		with self.assertRaisesRegex(RuntimeError, "--toolchain"):
 			self.fetch()
 		self.assertFalse(self.sdk.exists())
+
+
+class DotNetPacksTest(unittest.TestCase):
+
+	def setUp(self):
+		self.root = Path(tempfile.mkdtemp())
+		self.addCleanup(shutil.rmtree, self.root, True)
+		self.packages = self.root / "Prebuilt" / "nuget"
+		self.saved = (fetch_prebuilt.PREBUILT_DIR, fetch_prebuilt.DOTNET_PIN_PATH)
+		fetch_prebuilt.PREBUILT_DIR = self.root / "Prebuilt"
+		fetch_prebuilt.DOTNET_PIN_PATH = self.root / "DotNetPin.json"
+		self.pinned = {"some.pack/1.0.0": hashlib.sha512(b"pack").hexdigest(), "other.pack/1.0.0": hashlib.sha512(b"other").hexdigest()}
+		pin = {"sdkVersion": VERSION, "runtimeVersion": "1.0.0", "targetFramework": "net10.0", "packs": self.pinned}
+		fetch_prebuilt.DOTNET_PIN_PATH.write_text(json.dumps(pin), encoding="utf-8")
+		self.restores = []
+
+	def tearDown(self):
+		fetch_prebuilt.PREBUILT_DIR, fetch_prebuilt.DOTNET_PIN_PATH = self.saved
+
+	def put(self, name, data):
+		package_id, version = name.split("/")
+		folder = self.packages / package_id / version
+		folder.mkdir(parents=True, exist_ok=True)
+		(folder / f"{package_id}.{version}.nupkg").write_bytes(data)
+
+	def fetch(self, restored):
+		def restore(dotnet, pin, work, packages):
+			self.restores.append(packages)
+			for name, data in restored.items():
+				self.put(name, data)
+
+		with mock.patch.object(update_dotnet_pin, "restore_player_packs", restore), contextlib.redirect_stdout(io.StringIO()):
+			fetch_prebuilt.fetch_dotnet_packs()
+
+	def test_a_missing_or_altered_archive_is_stale(self):
+		self.put("some.pack/1.0.0", b"pack")
+		self.put("other.pack/1.0.0", b"altered")
+		self.assertEqual(fetch_prebuilt.stale_packs(self.packages, self.pinned), ["other.pack/1.0.0"])
+		self.assertEqual(fetch_prebuilt.stale_packs(self.root / "nowhere", self.pinned), ["other.pack/1.0.0", "some.pack/1.0.0"])
+
+	def test_restored_packs_are_not_restored_again(self):
+		self.put("some.pack/1.0.0", b"pack")
+		self.put("other.pack/1.0.0", b"other")
+		self.fetch({})
+		self.assertEqual(self.restores, [])
+
+	def test_a_missing_pack_is_restored_into_the_checkout(self):
+		self.put("some.pack/1.0.0", b"pack")
+		self.fetch({"other.pack/1.0.0": b"other"})
+		self.assertEqual(self.restores, [self.packages])
+
+	def test_a_restore_with_another_hash_fails(self):
+		with self.assertRaisesRegex(RuntimeError, "other.pack/1.0.0, some.pack/1.0.0 don't match"):
+			self.fetch({"some.pack/1.0.0": b"tampered", "other.pack/1.0.0": b"tampered"})
 
 
 if __name__ == "__main__":

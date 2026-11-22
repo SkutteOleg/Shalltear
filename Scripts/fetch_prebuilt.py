@@ -480,6 +480,37 @@ def fetch_dotnet() -> None:
         stage_lld_link(lld)
 
 
+def stale_packs(packages: Path, pinned: dict) -> list:
+    stale = []
+    for name, digest in sorted(pinned.items()):
+        package_id, version = name.split("/")
+        archive = packages / package_id / version / f"{package_id}.{version}.nupkg"
+        if not archive.is_file() or file_digest(archive, "sha512") != digest:
+            stale.append(name)
+    return stale
+
+
+def fetch_dotnet_packs() -> None:
+    import update_dotnet_pin
+
+    pin = json.loads(DOTNET_PIN_PATH.read_text(encoding="utf-8"))
+    if not pin.get("packs"):
+        raise RuntimeError(f"{DOTNET_PIN_PATH.name} has no packs. Run python Scripts/update_dotnet_pin.py <channel> --packs")
+    packages = PREBUILT_DIR / "nuget"
+    if not stale_packs(packages, pin["packs"]):
+        print(f".NET player packages {pin['runtimeVersion']} already restored. Skipping")
+        return
+    dotnet = PREBUILT_DIR / "dotnet" / pin["sdkVersion"] / ("dotnet.exe" if HOST_IS_WINDOWS else "dotnet")
+    print(f"restoring .NET player packages {pin['runtimeVersion']} (~165 MB)")
+    with tempfile.TemporaryDirectory() as tmp:
+        update_dotnet_pin.restore_player_packs(dotnet, pin, Path(tmp), packages)
+    stale = stale_packs(packages, pin["packs"])
+    if stale:
+        raise RuntimeError(f"{', '.join(stale)} don't match the SHA-512 in {DOTNET_PIN_PATH.name}. "
+                           f"Delete {packages} and run python Scripts/fetch_prebuilt.py --dotnet-packs")
+    print(f".NET player packages -> {packages}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lavapipe", action="store_true", help="also fetch the CI software Vulkan driver + loader")
@@ -487,6 +518,8 @@ def main() -> int:
     parser.add_argument("--toolchain", action="store_true", help="also fetch llvm-mingw/cmake/ninja (what the SDK bundles)")
     parser.add_argument("--linux", action="store_true", help="also build the Linux target pack (sysroot + C++ runtime). Needs --toolchain once")
     parser.add_argument("--dotnet", action="store_true", help="also fetch the pinned .NET SDK (C# scripting)")
+    parser.add_argument("--dotnet-packs", action="store_true",
+                        help="also restore the pinned NativeAOT packages (C# players then build offline). Implies --dotnet")
     parser.add_argument("--archives", type=Path, help="keep downloaded archives in this directory and reuse them")
     args = parser.parse_args()
 
@@ -515,8 +548,10 @@ def main() -> int:
             fetch_ninja_linux()
     if args.linux or (args.toolchain and not HOST_IS_WINDOWS):
         fetch_linux_pack()
-    if args.dotnet:
+    if args.dotnet or args.dotnet_packs:
         fetch_dotnet()
+    if args.dotnet_packs:
+        fetch_dotnet_packs()
     return 0
 
 

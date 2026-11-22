@@ -121,25 +121,30 @@ def hash_packages(folder):
 	return packs
 
 
+def restore_player_packs(dotnet, pin, work, packages):
+	downloads = "".join(
+		f'    <PackageDownload Include="runtime.{rid}.Microsoft.DotNet.ILCompiler" Version="[{pin["runtimeVersion"]}]" />\n'
+		for rid in HOST_RIDS if rid != HOST_RID)
+	project = work / "Player.csproj"
+	project.write_text(PLAYER_PROJECT.format(framework=pin["targetFramework"], downloads=downloads), encoding="utf-8")
+	(work / "nuget.config").write_text(NUGET_CONFIG, encoding="utf-8")
+	env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(work / "home"),
+			   DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", MSBUILDDISABLENODEREUSE="1")
+	for rid in TARGET_RIDS:
+		print(f"  restoring player packages for {rid}")
+		subprocess.run([str(dotnet), "restore", str(project), f"-p:RuntimeIdentifier={rid}", "--packages", str(packages),
+						"-v", "quiet"], check=True, env=env)
+	return env
+
+
 def restore_packs(pin):
 	dotnet = toolchain.PREBUILT_DIR / "dotnet" / pin["sdkVersion"] / ("dotnet" + toolchain.EXE)
 	if not dotnet.exists():
 		raise RuntimeError(f"{dotnet} is absent. Run python Scripts/fetch_prebuilt.py --dotnet")
 	with tempfile.TemporaryDirectory() as tmp:
 		work = Path(tmp)
-		downloads = "".join(
-			f'    <PackageDownload Include="runtime.{rid}.Microsoft.DotNet.ILCompiler" Version="[{pin["runtimeVersion"]}]" />\n'
-			for rid in HOST_RIDS if rid != HOST_RID)
-		project = work / "Player.csproj"
-		project.write_text(PLAYER_PROJECT.format(framework=pin["targetFramework"], downloads=downloads), encoding="utf-8")
-		(work / "nuget.config").write_text(NUGET_CONFIG, encoding="utf-8")
 		packages = work / "packages"
-		env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(work / "home"),
-				   DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", MSBUILDDISABLENODEREUSE="1")
-		for rid in TARGET_RIDS:
-			print(f"  restoring player packages for {rid}")
-			subprocess.run([str(dotnet), "restore", str(project), f"-p:RuntimeIdentifier={rid}", "--packages", str(packages),
-							"-v", "quiet"], check=True, env=env)
+		env = restore_player_packs(dotnet, pin, work, packages)
 		print(f"  locking {MANAGED_SOLUTION.name} packages")
 		subprocess.run([str(dotnet), "restore", str(MANAGED_SOLUTION), "--force-evaluate", "-v", "quiet",
 						f"-p:ShalltearManagedRoot={(work / 'managed').as_posix()}/"], check=True, env=env)
