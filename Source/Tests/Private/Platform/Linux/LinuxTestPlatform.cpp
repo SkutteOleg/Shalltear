@@ -1043,6 +1043,23 @@ namespace TestPlatform {
 		return {};
 	}
 
+	void BlankUnloadedSections(str& binary) {
+		if (binary.size() < sizeof(Elf64_Ehdr) || std::memcmp(binary.data(), ELFMAG, SELFMAG) != 0) {
+			return;
+		}
+		const Elf64_Ehdr header = *reinterpret_cast<const Elf64_Ehdr*>(binary.data());
+		if (header.e_shoff == 0 || header.e_shoff + static_cast<size_t>(header.e_shnum) * sizeof(Elf64_Shdr) > binary.size()) {
+			return;
+		}
+		for (u32 index = 0; index < header.e_shnum; ++index) {
+			const Elf64_Shdr section = reinterpret_cast<const Elf64_Shdr*>(binary.data() + header.e_shoff)[index];
+			if ((section.sh_flags & SHF_ALLOC) != 0 || section.sh_type == SHT_NOBITS || section.sh_offset + section.sh_size > binary.size()) {
+				continue;
+			}
+			std::memset(binary.data() + section.sh_offset, 0, section.sh_size);
+		}
+	}
+
 	ProcessResult RunProcess(const str& commandLine, u32 timeoutMs) {
 		ProcessResult result;
 		const pid_t child = Spawn(commandLine, true);

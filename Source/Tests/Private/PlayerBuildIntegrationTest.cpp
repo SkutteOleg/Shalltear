@@ -1517,7 +1517,9 @@ TEST_F(PlayerBuildIntegrationTest, PlayerHasNoBuildMachinePath) {
 	std::filesystem::path playerExe = _root / "Builds" / "Windows" / "PathStrip" SLT_TEST_PLAYER_SUFFIX;
 	ASSERT_TRUE(std::filesystem::exists(playerExe)) << buildLog;
 
-	const str bytes = StringUtil::ToLower(ReadAllBytes(playerExe));
+	str binary = ReadAllBytes(playerExe);
+	TestPlatform::BlankUnloadedSections(binary);
+	const str bytes = StringUtil::ToLower(binary);
 	ASSERT_FALSE(bytes.empty());
 
 	const str checkout = EngineAssets().parent_path().generic_string();

@@ -532,6 +532,8 @@ namespace TestPlatform {
 		return {};
 	}
 
+	void BlankUnloadedSections(str&) {}
+
 	ProcessResult RunProcess(const str& commandLine, u32 timeoutMs) {
 		ProcessResult result;
 		std::wstring mutableLine = StringUtil::UTF8ToWide(commandLine);
