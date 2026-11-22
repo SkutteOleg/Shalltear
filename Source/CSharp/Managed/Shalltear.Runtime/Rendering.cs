@@ -31,7 +31,7 @@ public static partial class RenderSystem {
 	}
 }
 
-public sealed partial class Camera {
+public sealed unsafe partial class Camera {
 	/// <summary>Part of the target drawn, normalized, (0, 0) at bottom left.</summary>
 	public RectF ViewportRect {
 		get {
@@ -39,6 +39,17 @@ public sealed partial class Camera {
 			return new RectF(rect.x, rect.y, rect.z, rect.w);
 		}
 		set => ViewportVector = new Vec4(value.position.x, value.position.y, value.size.x, value.size.y);
+	}
+
+	/// <summary>Put a render pass asset from an optional package (such as PostProcessPass) in slot index.</summary>
+	public void SetPass(int index, Asset? pass) {
+		if (Bridge.OffMainThread) {
+			Bridge.ThrowOffMainThread("Camera.SetPass");
+		}
+		int status = Bindings.table.cameraSetPass(_id, index, pass is null ? 0UL : pass._id);
+		if (status != Bridge.OK) {
+			throw Bridge.Failure(status, "Camera.SetPass");
+		}
 	}
 }
 
