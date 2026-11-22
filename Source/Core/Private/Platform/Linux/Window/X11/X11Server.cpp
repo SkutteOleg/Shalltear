@@ -546,10 +546,10 @@ namespace Shalltear::Linux {
 
 	void X11Server::MoveResize(Window::Impl& impl, Vec2I position, Vec2I clientSize) {
 		X11Window& w = Native(impl);
-		const u32 before = w.configures;
-		x.XMoveResizeWindow(display, w.handle, position.x, position.y, static_cast<unsigned int>(clientSize.x > 0 ? clientSize.x : 1),
-							static_cast<unsigned int>(clientSize.y > 0 ? clientSize.y : 1));
-		Settle([&] { return w.configures != before; });
+		const Vec2I size{clientSize.x > 0 ? clientSize.x : 1, clientSize.y > 0 ? clientSize.y : 1};
+		x.XMoveResizeWindow(display, w.handle, position.x, position.y, static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y));
+		// size may be announced after a move or decoration change (bloody openbox)
+		Settle([&] { return w.clientSize == size && GetPosition(impl) == position; });
 	}
 
 	void X11Server::ApplyUnmappedState(Window::Impl& impl) {
