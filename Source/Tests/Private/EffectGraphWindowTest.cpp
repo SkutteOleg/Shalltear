@@ -1599,6 +1599,21 @@ namespace {
 		static UI::ElementHandle Board(UI::Context& context) { return FindByClass(context, context.GetRoot(), EditorTheme::Class::GraphBoard, 0); }
 
 		static bool BoardSays(UI::Context& context, std::string_view text) { return context.IsAlive(FindByText(context, Board(context), text)); }
+
+		static str TextsUnder(UI::Context& context, UI::ElementHandle root) {
+			const UI::Element* pod = context.IsAlive(root) ? context.GetElement(root) : nullptr;
+			if (!pod) {
+				return {};
+			}
+			str texts(context.GetTextString(root));
+			for (u32 child = pod->firstChild; child != UI::INVALID_UI_INDEX;) {
+				const UI::ElementHandle handle = context.MakeHandle(child);
+				const str inner = TextsUnder(context, handle);
+				texts += !texts.empty() && !inner.empty() ? " | " + inner : inner;
+				child = context.GetElement(handle)->nextSibling;
+			}
+			return texts;
+		}
 	};
 
 } // anonymous namespace
@@ -1729,20 +1744,24 @@ TEST_F(EffectGraphAttachFixture, EventsSendInGraphReachesEveryEffect) {
 	ASSERT_NE(context, nullptr);
 	const auto counts = [&](Handle<SceneObject> object, std::string_view text) {
 		Select(object);
-		bool shown = false;
-		for (u32 frame = 0; frame < 60 && !shown; ++frame) {
+		for (u32 frame = 0; frame < 60; ++frame) {
 			Frame();
-			shown = context->IsAlive(FindByText(*context, Board(*context), text));
+			if (context->IsAlive(FindByText(*context, Board(*context), text))) {
+				return testing::AssertionSuccess();
+			}
 		}
-		return shown;
+		return testing::AssertionFailure() << TextsUnder(*context, Board(*context));
 	};
 	EXPECT_TRUE(counts(alpha, "0 / 4, 0 dropped"));
 
 	const UI::ElementHandle send = FindByClass(*context, context->GetRoot(), EditorTheme::Class::GraphSettingAction, 0);
 	ASSERT_TRUE(context->IsAlive(send));
+	const UI::Rect at = context->GetLayout(send).borderBox;
+	const str clicked = std::format("{} at {},{} {}x{} in {}x{}", DescribeElement(*context, send), at.x, at.y, at.w, at.h,
+									context->GetLayout(context->GetRoot()).borderBox.w, context->GetLayout(context->GetRoot()).borderBox.h);
 	ClickElement(*context, send);
-	EXPECT_TRUE(counts(alpha, "1 / 4, 0 dropped"));
-	EXPECT_TRUE(counts(beta, "1 / 4, 0 dropped"));
+	EXPECT_TRUE(counts(alpha, "1 / 4, 0 dropped")) << clicked;
+	EXPECT_TRUE(counts(beta, "1 / 4, 0 dropped")) << clicked;
 	EditorSelection::Clear();
 }
 
