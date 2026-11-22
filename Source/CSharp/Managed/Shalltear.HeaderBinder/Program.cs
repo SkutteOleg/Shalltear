@@ -46,6 +46,12 @@ internal static class Program {
 			case "--header":
 				AddSplit(options.Headers, Next());
 				break;
+			case "--explicit-header":
+				AddSplit(options.ExplicitHeaders, Next());
+				break;
+			case "--policy":
+				options.PolicyPath = Next();
+				break;
 			case "--namespace":
 				AddSplit(options.BindNamespaces, Next());
 				break;
@@ -76,9 +82,10 @@ internal static class Program {
 			}
 		}
 
-		if (string.IsNullOrWhiteSpace(options.ModuleName) || options.Headers.Count == 0 ||
+		if (string.IsNullOrWhiteSpace(options.ModuleName) ||
+			(options.Headers.Count == 0 && options.ExplicitHeaders.Count == 0) ||
 			string.IsNullOrWhiteSpace(outCpp) || string.IsNullOrWhiteSpace(outCs)) {
-			Console.Error.WriteLine("usage: Shalltear.HeaderBinder --module <name> --header <path> [--namespace <ns>] [--include <dir>] [--define <def>] [--libclang-dir <dir>] --out-cpp <path> --out-cs <path>");
+			Console.Error.WriteLine("usage: Shalltear.HeaderBinder --module <name> [--header <path>] [--explicit-header <path>] [--policy <path>] [--namespace <ns>] [--include <dir>] [--define <def>] [--libclang-dir <dir>] --out-cpp <path> --out-cs <path>");
 			return 2;
 		}
 

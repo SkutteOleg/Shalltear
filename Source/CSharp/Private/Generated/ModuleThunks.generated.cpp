@@ -20,6 +20,12 @@ namespace Shalltear::CSharpImpl::Generated {
 			return static_cast<uint32_t>(::Shalltear::CSharpImpl::ModuleThunkBindings::GetCount(moduleName));
 		}
 
+		uint64_t ModuleThunksGetModuleEpoch(SltString moduleNameIn) noexcept {
+			const std::string_view moduleName = View(moduleNameIn);
+			static_assert(noexcept(::Shalltear::CSharpImpl::ModuleThunkBindings::GetModuleEpoch(moduleName)));
+			return static_cast<uint64_t>(::Shalltear::CSharpImpl::ModuleThunkBindings::GetModuleEpoch(moduleName));
+		}
+
 		uint64_t ModuleThunksGetEpoch() noexcept {
 			static_assert(noexcept(::Shalltear::CSharpImpl::ModuleThunkBindings::GetEpoch()));
 			return static_cast<uint64_t>(::Shalltear::CSharpImpl::ModuleThunkBindings::GetEpoch());
@@ -35,6 +41,7 @@ namespace Shalltear::CSharpImpl::Generated {
 	void FillModuleThunksBindings(SltBindings& table) {
 		table.moduleThunksGetTable = &ModuleThunksGetTable;
 		table.moduleThunksGetCount = &ModuleThunksGetCount;
+		table.moduleThunksGetModuleEpoch = &ModuleThunksGetModuleEpoch;
 		table.moduleThunksGetEpoch = &ModuleThunksGetEpoch;
 		table.moduleThunksGetEpochAddress = &ModuleThunksGetEpochAddress;
 	}

@@ -19,6 +19,12 @@ internal static unsafe partial class ModuleThunkBindings {
 		return Bindings.table.moduleThunksGetCount(moduleNameText.Text);
 	}
 
+	[System.Runtime.CompilerServices.SkipLocalsInit]
+	internal static ulong GetModuleEpoch(string moduleName) {
+		using UTF8Scratch moduleNameText = new(moduleName, stackalloc byte[UTF8Scratch.STACK_BYTES]);
+		return Bindings.table.moduleThunksGetModuleEpoch(moduleNameText.Text);
+	}
+
 	internal static ulong GetEpoch() {
 		return Bindings.table.moduleThunksGetEpoch();
 	}

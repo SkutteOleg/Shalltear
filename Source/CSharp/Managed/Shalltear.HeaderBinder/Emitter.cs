@@ -28,9 +28,6 @@ internal static class Emitter {
 		public HeaderModel Model;
 		public StringBuilder CppFuncs = new();
 		public List<string> ThunkNames = new();
-		public StringBuilder CsTrampolines = new();
-		public int NextTrampolineId;
-		public bool NeedsCallbackRelease;
 
 		public Context(HeaderModel model) => Model = model;
 
@@ -157,6 +154,7 @@ internal static class Emitter {
 		cs.Append("using System.Runtime.CompilerServices;\n");
 		cs.Append("using System.Runtime.InteropServices;\n");
 		cs.Append("using System.Text;\n");
+		cs.Append("using System.Threading;\n");
 		cs.Append("using Shalltear.Interop;\n\n");
 		cs.Append(csBody);
 
@@ -166,21 +164,17 @@ internal static class Emitter {
 		cs.Append("\t\tstatic ulong _epoch;\n");
 		cs.Append("\t\tstatic nint _table;\n");
 		cs.Append("\t\tstatic uint _count;\n\n");
+		cs.Append("\t\tinternal static ulong ModuleEpoch => ModuleThunks.GetModuleEpoch(MODULE_NAME);\n\n");
 		cs.Append("\t\t[MethodImpl(MethodImplOptions.AggressiveInlining)]\n");
 		cs.Append("\t\tinternal static nint Slot(int index) {\n");
 		cs.Append("\t\t\treturn ModuleThunks.ResolveSlot(MODULE_NAME, index, ref _epoch, ref _table, ref _count);\n");
+		cs.Append("\t\t}\n\n");
+		cs.Append("\t\tinternal static void DeleteOrEnqueue(int slotIndex, nint ptr, ulong createdEpoch) {\n");
+		cs.Append("\t\t\tModuleThunks.DeleteOrEnqueue(MODULE_NAME, slotIndex, ptr, createdEpoch, ref _epoch, ref _table, ref _count);\n");
+		cs.Append("\t\t}\n\n");
+		cs.Append("\t\tinternal static void EnqueueDelete(int slotIndex, nint ptr, ulong createdEpoch) {\n");
+		cs.Append("\t\t\tModuleThunks.EnqueueDelete(MODULE_NAME, slotIndex, ptr, createdEpoch);\n");
 		cs.Append("\t\t}\n");
-		if (ctx.NeedsCallbackRelease) {
-			cs.Append("\n\t\t[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]\n");
-			cs.Append("\t\tinternal static void ReleaseCallback(nint handle) {\n");
-			cs.Append("\t\t\tif (handle != 0) {\n");
-			cs.Append("\t\t\t\tGCHandle.FromIntPtr(handle).Free();\n");
-			cs.Append("\t\t\t}\n");
-			cs.Append("\t\t}\n");
-		}
-		if (ctx.CsTrampolines.Length > 0) {
-			cs.Append('\n').Append(ctx.CsTrampolines);
-		}
 		cs.Append("\t}\n");
 		cs.Append("}\n");
 
@@ -424,10 +418,12 @@ internal static class Emitter {
 		}
 
 		sb.Append(indent).Append("\tinternal nint _ptr;\n");
-		sb.Append(indent).Append("\treadonly bool _owns;\n\n");
+		sb.Append(indent).Append("\treadonly bool _owns;\n");
+		sb.Append(indent).Append("\treadonly ulong _epoch;\n\n");
 		sb.Append(indent).Append("\tinternal ").Append(csName).Append("(nint ptr, bool owns) {\n");
 		sb.Append(indent).Append("\t\t_ptr = ptr;\n");
 		sb.Append(indent).Append("\t\t_owns = owns;\n");
+		sb.Append(indent).Append("\t\t_epoch = owns && ptr != 0 ? ").Append(CacheType(ctx)).Append(".ModuleEpoch : 0UL;\n");
 		sb.Append(indent).Append("\t}\n\n");
 		sb.Append(indent).Append("\tpublic nint NativePointer => _ptr;\n");
 		sb.Append(indent).Append("\tpublic bool IsValid => _ptr != 0;\n\n");
@@ -442,24 +438,23 @@ internal static class Emitter {
 			ctx.CppFuncs.Append("\t}\n\n");
 
 			sb.Append(indent).Append("\tpublic void Dispose() {\n");
-			sb.Append(indent).Append("\t\tif (_owns && _ptr != 0) {\n");
-			sb.Append(indent).Append("\t\t\tnint p = _ptr;\n");
-			sb.Append(indent).Append("\t\t\t_ptr = 0;\n");
-			sb.Append(indent).Append("\t\t\t((delegate* unmanaged[Cdecl]<void*, void>)").Append(CacheType(ctx)).Append(".Slot(")
-			  .Append(dtorSlot.ToString(CultureInfo.InvariantCulture)).Append("))((void*)p);\n");
-			sb.Append(indent).Append("\t\t} else {\n");
-			sb.Append(indent).Append("\t\t\t_ptr = 0;\n");
+			sb.Append(indent).Append("\t\tnint p = Interlocked.Exchange(ref _ptr, 0);\n");
+			sb.Append(indent).Append("\t\tif (_owns && p != 0) {\n");
+			sb.Append(indent).Append("\t\t\t").Append(CacheType(ctx)).Append(".DeleteOrEnqueue(")
+			  .Append(dtorSlot.ToString(CultureInfo.InvariantCulture)).Append(", p, _epoch);\n");
 			sb.Append(indent).Append("\t\t}\n");
 			sb.Append(indent).Append("\t\tGC.SuppressFinalize(this);\n");
 			sb.Append(indent).Append("\t}\n\n");
 			sb.Append(indent).Append("\t~").Append(csName).Append("() {\n");
-			sb.Append(indent).Append("\t\tif (_owns && _ptr != 0) {\n");
-			sb.Append(indent).Append("\t\t\tDispose();\n");
+			sb.Append(indent).Append("\t\tnint p = Interlocked.Exchange(ref _ptr, 0);\n");
+			sb.Append(indent).Append("\t\tif (_owns && p != 0) {\n");
+			sb.Append(indent).Append("\t\t\t").Append(CacheType(ctx)).Append(".EnqueueDelete(")
+			  .Append(dtorSlot.ToString(CultureInfo.InvariantCulture)).Append(", p, _epoch);\n");
 			sb.Append(indent).Append("\t\t}\n");
 			sb.Append(indent).Append("\t}\n\n");
 		} else {
 			sb.Append(indent).Append("\tpublic void Dispose() {\n");
-			sb.Append(indent).Append("\t\t_ptr = 0;\n");
+			sb.Append(indent).Append("\t\tInterlocked.Exchange(ref _ptr, 0);\n");
 			sb.Append(indent).Append("\t}\n\n");
 		}
 
@@ -1024,18 +1019,15 @@ internal static class Emitter {
 				cppConv = $"std::string({cName}Ptr ? {cName}Ptr : \"\", static_cast<size_t>({cName}Len))";
 			}
 
-			string bVar = $"__strBytes{idx}";
-			string pVar = $"__strPtr{idx}";
+			string bufVar = $"__strBuf{idx}";
 			return new ParamMarshal {
 				CsParamDecl = $"string {pIdent}",
 				CsSignatureType = "string",
 				CppParams = [$"const char* {cName}Ptr", $"int32_t {cName}Len"],
 				CsAbiParams = ["byte*", "int"],
 				CppCallExpr = cppConv,
-				CsPrologue = $"int {bVar}Len = Encoding.UTF8.GetByteCount({pIdent} ?? string.Empty);\nbyte[] {bVar} = new byte[{bVar}Len + 1];\nif ({bVar}Len > 0) {{ Encoding.UTF8.GetBytes({pIdent}!, {bVar}); }}\n",
-				CsFixedOpen = $"fixed (byte* {pVar} = {bVar}) {{",
-				CsFixedClose = "}",
-				CsCallArgs = [pVar, $"{bVar}Len"],
+				CsPrologue = $"using NativeUTF8Buffer {bufVar} = new({pIdent}, stackalloc byte[256]);\n",
+				CsCallArgs = [$"{bufVar}.Pointer", $"{bufVar}.Length"],
 			};
 		}
 		// Value struct / Math passed by value or const ref
@@ -1208,96 +1200,107 @@ internal static class Emitter {
 	static ParamMarshal? BuildStdFunctionParam(Context ctx, CppTypeRef fnType, string pIdent, string cName, int idx) {
 		List<string> csActionArgs = new();
 		List<string> cppLambdaParams = new();
-		List<string> cppCbAbiParams = ["void*"];
-		List<string> cppCbCallArgs = ["holder.get()"];
-		List<string> csTrampParams = ["nint ctx"];
+		StringBuilder cppPackArgs = new();
 		List<string> csInvokeArgs = new();
-		List<string> csAbiFnPtrParams = ["nint"];
 
 		for (int i = 0; i < fnType.CallbackParams.Count; ++i) {
 			CppTypeRef cp = fnType.CallbackParams[i];
 			string arg = "a" + i.ToString(CultureInfo.InvariantCulture);
+			string slot = $"__sltCbArgs[{i.ToString(CultureInfo.InvariantCulture)}]";
+			string cppSlot = $"sltArgs[{i.ToString(CultureInfo.InvariantCulture)}]";
 			if (cp.IsScalar) {
 				string cs = MapScalarCs(cp.Kind);
-				string abiCs = MapScalarAbiCs(cp.Kind);
 				string abiCpp = MapScalarAbiCpp(cp.Kind);
 				string cppParam = cp.Kind == CppTypeKind.Bool ? "bool" : abiCpp;
 				csActionArgs.Add(cs);
 				cppLambdaParams.Add($"{cppParam} {arg}");
-				cppCbAbiParams.Add(abiCpp);
-				cppCbCallArgs.Add($"static_cast<{abiCpp}>({arg})");
-				csTrampParams.Add($"{abiCs} {arg}");
-				csInvokeArgs.Add(cp.Kind == CppTypeKind.Bool ? $"({arg} != 0)" : arg);
-				csAbiFnPtrParams.Add(abiCs);
+				switch (cp.Kind) {
+				case CppTypeKind.Bool:
+					cppPackArgs.Append($"\t\t\t\t{cppSlot} = {arg} ? 1ULL : 0ULL;\n");
+					csInvokeArgs.Add($"({slot} != 0UL)");
+					break;
+				case CppTypeKind.Float:
+					cppPackArgs.Append($"\t\t\t\t{{ uint32_t sltBits = 0; std::memcpy(&sltBits, &{arg}, sizeof(sltBits)); {cppSlot} = sltBits; }}\n");
+					csInvokeArgs.Add($"BitConverter.Int32BitsToSingle((int)(uint){slot})");
+					break;
+				case CppTypeKind.Double:
+					cppPackArgs.Append($"\t\t\t\t{{ uint64_t sltBits = 0; std::memcpy(&sltBits, &{arg}, sizeof(sltBits)); {cppSlot} = sltBits; }}\n");
+					csInvokeArgs.Add($"BitConverter.Int64BitsToDouble((long){slot})");
+					break;
+				case CppTypeKind.Int8 or CppTypeKind.Int16 or CppTypeKind.Int32 or CppTypeKind.Int64:
+					cppPackArgs.Append($"\t\t\t\t{cppSlot} = static_cast<uint64_t>(static_cast<int64_t>({arg}));\n");
+					csInvokeArgs.Add($"({cs})(long){slot}");
+					break;
+				default:
+					cppPackArgs.Append($"\t\t\t\t{cppSlot} = static_cast<uint64_t>({arg});\n");
+					csInvokeArgs.Add($"({cs}){slot}");
+					break;
+				}
 			} else if (cp.Kind == CppTypeKind.Enum && ctx.Model.Enums.TryGetValue(cp.QualifiedName, out CppEnum? en)) {
 				string cs = CsQualifiedType(ctx, cp.QualifiedName);
 				csActionArgs.Add(cs);
 				cppLambdaParams.Add($"::{cp.QualifiedName} {arg}");
-				cppCbAbiParams.Add(en.UnderlyingCpp);
-				cppCbCallArgs.Add($"static_cast<{en.UnderlyingCpp}>({arg})");
-				csTrampParams.Add($"{en.UnderlyingCSharp} {arg}");
-				csInvokeArgs.Add($"({cs}){arg}");
-				csAbiFnPtrParams.Add(en.UnderlyingCSharp);
+				if (en.IsUnsigned) {
+					cppPackArgs.Append($"\t\t\t\t{cppSlot} = static_cast<uint64_t>(static_cast<{en.UnderlyingCpp}>({arg}));\n");
+					csInvokeArgs.Add($"({cs})({en.UnderlyingCSharp}){slot}");
+				} else {
+					cppPackArgs.Append($"\t\t\t\t{cppSlot} = static_cast<uint64_t>(static_cast<int64_t>(static_cast<{en.UnderlyingCpp}>({arg})));\n");
+					csInvokeArgs.Add($"({cs})({en.UnderlyingCSharp})(long){slot}");
+				}
 			} else if (cp.Kind == CppTypeKind.VoidPtr) {
 				csActionArgs.Add("nint");
 				cppLambdaParams.Add($"void* {arg}");
-				cppCbAbiParams.Add("void*");
-				cppCbCallArgs.Add(arg);
-				csTrampParams.Add($"nint {arg}");
-				csInvokeArgs.Add(arg);
-				csAbiFnPtrParams.Add("nint");
+				cppPackArgs.Append($"\t\t\t\t{cppSlot} = static_cast<uint64_t>(reinterpret_cast<uintptr_t>({arg}));\n");
+				csInvokeArgs.Add($"(nint){slot}");
 			} else if (cp.Kind == CppTypeKind.Pointer && cp.Element != null && cp.Element.Kind == CppTypeKind.Record &&
 					   ctx.Model.Records.TryGetValue(cp.Element.QualifiedName, out CppRecord? rec) && !rec.IsValueStruct) {
 				string cs = CsQualifiedType(ctx, rec.QualifiedName);
 				csActionArgs.Add(cs + "?");
 				cppLambdaParams.Add($"::{rec.QualifiedName}* {arg}");
-				cppCbAbiParams.Add("void*");
-				cppCbCallArgs.Add($"static_cast<void*>({arg})");
-				csTrampParams.Add($"nint {arg}");
-				csInvokeArgs.Add($"{cs}.FromPointer({arg}, false)");
-				csAbiFnPtrParams.Add("nint");
+				cppPackArgs.Append($"\t\t\t\t{cppSlot} = static_cast<uint64_t>(reinterpret_cast<uintptr_t>({arg}));\n");
+				csInvokeArgs.Add($"{cs}.FromPointer((nint){slot}, false)");
 			} else {
 				return null;
 			}
 		}
 
-		ctx.NeedsCallbackRelease = true;
-		int trampId = ++ctx.NextTrampolineId;
-		string trampName = $"CbTrampoline_{trampId}";
 		string actionType = csActionArgs.Count == 0 ? "Action" : $"Action<{string.Join(", ", csActionArgs)}>";
 
-		ctx.CsTrampolines.Append("\t\t[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]\n");
-		ctx.CsTrampolines.Append("\t\tinternal static void ").Append(trampName).Append('(').Append(string.Join(", ", csTrampParams)).Append(") {\n");
-		ctx.CsTrampolines.Append("\t\t\tif (ctx == 0) { return; }\n");
-		ctx.CsTrampolines.Append("\t\t\tif (GCHandle.FromIntPtr(ctx).Target is ").Append(actionType).Append(" cb) {\n");
-		ctx.CsTrampolines.Append("\t\t\t\tcb(").Append(string.Join(", ", csInvokeArgs)).Append(");\n");
-		ctx.CsTrampolines.Append("\t\t\t}\n");
-		ctx.CsTrampolines.Append("\t\t}\n\n");
+		string cppInvokeBody;
+		if (fnType.CallbackParams.Count == 0) {
+			cppInvokeBody = "\t\t\t\tfn(tok, nullptr);\n";
+		} else {
+			cppInvokeBody =
+				$"\t\t\t\tuint64_t sltArgs[{fnType.CallbackParams.Count.ToString(CultureInfo.InvariantCulture)}] = {{}};\n" +
+				cppPackArgs +
+				"\t\t\t\tfn(tok, sltArgs);\n";
+		}
 
-		string cppFnPtrTypedef = $"void (*{cName}Fn)({string.Join(", ", cppCbAbiParams)})";
 		string cppPrologue =
 			$"\t\tstd::function<void({string.Join(", ", cppLambdaParams)})> {cName}Func;\n" +
-			$"\t\tif ({cName}Fn) {{\n" +
-			$"\t\t\tstd::shared_ptr<void> holder({cName}Ctx, [rel = {cName}Release](void* p) {{ if (rel && p) {{ rel(p); }} }});\n" +
-			$"\t\t\t{cName}Func = [fn = {cName}Fn, holder]({string.Join(", ", cppLambdaParams)}) {{\n" +
-			$"\t\t\t\tfn({string.Join(", ", cppCbCallArgs)});\n" +
-			$"\t\t\t}};\n" +
-			$"\t\t}}\n";
+			$"\t\tif ({cName}Fn && {cName}Tok != 0) {{\n" +
+			$"\t\t\tstd::shared_ptr<void> holder(static_cast<void*>(nullptr), [rel = {cName}Release, tok = {cName}Tok](void*) {{ if (rel && tok != 0) {{ rel(tok); }} }});\n" +
+			$"\t\t\t{cName}Func = [fn = {cName}Fn, tok = {cName}Tok, holder]({string.Join(", ", cppLambdaParams)}) {{\n" +
+			cppInvokeBody +
+			"\t\t\t};\n" +
+			"\t\t}\n";
 
+		string cbLocal = $"__cbDelegate{idx}";
 		string csPrologue =
-			$"nint __cbCtx{idx} = {pIdent} != null ? GCHandle.ToIntPtr(GCHandle.Alloc({pIdent})) : 0;\n" +
-			$"nint __cbFn{idx} = {pIdent} != null ? (nint)(delegate* unmanaged[Cdecl]<{string.Join(", ", csAbiFnPtrParams)}, void>)&{CacheType(ctx)}.{trampName} : 0;\n" +
-			$"nint __cbRel{idx} = {pIdent} != null ? (nint)(delegate* unmanaged[Cdecl]<nint, void>)&{CacheType(ctx)}.ReleaseCallback : 0;\n";
+			$"{actionType}? {cbLocal} = {pIdent};\n" +
+			$"ulong __cbTok{idx} = {cbLocal} != null ? ModuleThunks.KeepCallback(__sltCbArgs => {cbLocal}({string.Join(", ", csInvokeArgs)})) : 0UL;\n" +
+			$"nint __cbFn{idx} = __cbTok{idx} != 0UL ? ModuleThunks.CallbackInvokePtr : 0;\n" +
+			$"nint __cbRel{idx} = __cbTok{idx} != 0UL ? ModuleThunks.CallbackReleasePtr : 0;\n";
 
 		return new ParamMarshal {
 			CsParamDecl = $"{actionType}? {pIdent}",
 			CsSignatureType = actionType + "?",
-			CppParams = [cppFnPtrTypedef, $"void* {cName}Ctx", $"void (*{cName}Release)(void*)"],
-			CsAbiParams = ["nint", "nint", "nint"],
+			CppParams = [$"void (*{cName}Fn)(uint64_t, uint64_t*)", $"uint64_t {cName}Tok", $"void (*{cName}Release)(uint64_t)"],
+			CsAbiParams = ["nint", "ulong", "nint"],
 			CppPrologue = cppPrologue,
 			CppCallExpr = $"{cName}Func",
 			CsPrologue = csPrologue,
-			CsCallArgs = [$"__cbFn{idx}", $"__cbCtx{idx}", $"__cbRel{idx}"],
+			CsCallArgs = [$"__cbFn{idx}", $"__cbTok{idx}", $"__cbRel{idx}"],
 		};
 	}
 
@@ -1362,6 +1365,7 @@ internal static class Emitter {
 		if (ctorAssign) {
 			sb.Append(innerIndent).Append("_ptr = ").Append(slotExpr).Append('(').Append(string.Join(", ", callArgs)).Append(");\n");
 			sb.Append(innerIndent).Append("_owns = true;\n");
+			sb.Append(innerIndent).Append("_epoch = _ptr != 0 ? ").Append(CacheType(ctx)).Append(".ModuleEpoch : 0UL;\n");
 		} else if (ret == null || ret.Kind == ReturnKind.Void) {
 			sb.Append(innerIndent).Append(slotExpr).Append('(').Append(string.Join(", ", callArgs)).Append(");\n");
 		} else if (ret.Kind == ReturnKind.DirectScalarOrEnum) {

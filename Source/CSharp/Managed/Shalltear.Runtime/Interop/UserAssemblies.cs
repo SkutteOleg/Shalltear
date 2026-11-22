@@ -147,6 +147,8 @@ internal static unsafe class UserAssemblies {
 		FrameAwaits.Forget();
 		NativeFunctions.Forget();
 		SlotCallbacks.Forget();
+		ModuleThunks.ForgetCallbacks();
+		ModuleThunks.DrainDeletes();
 		ObjectCache.ForgetUser();
 		UnloadHooks.Run();
 		if (context == null) {
@@ -161,6 +163,7 @@ internal static unsafe class UserAssemblies {
 		for (int attempt = 0; attempt < 10 && alive.IsAlive; ++attempt) {
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
+			ModuleThunks.DrainDeletes();
 		}
 		return alive.IsAlive ? 1 : Bridge.OK;
 	}

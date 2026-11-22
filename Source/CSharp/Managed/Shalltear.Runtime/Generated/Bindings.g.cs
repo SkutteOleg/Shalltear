@@ -1253,6 +1253,7 @@ internal unsafe struct SltBindings {
 	public delegate* unmanaged<ulong*, ulong*, int> moduleSystemFindSymbol;
 	public delegate* unmanaged[SuppressGCTransition]<SltString, ulong> moduleThunksGetTable;
 	public delegate* unmanaged[SuppressGCTransition]<SltString, uint> moduleThunksGetCount;
+	public delegate* unmanaged[SuppressGCTransition]<SltString, ulong> moduleThunksGetModuleEpoch;
 	public delegate* unmanaged[SuppressGCTransition]<ulong> moduleThunksGetEpoch;
 	public delegate* unmanaged[SuppressGCTransition]<ulong> moduleThunksGetEpochAddress;
 	public delegate* unmanaged<ulong*, ulong*, int> monitorInfoGetId;
@@ -4320,7 +4321,7 @@ internal unsafe struct SltBindings {
 }
 
 internal static unsafe class Bindings {
-	internal const ulong LAYOUT_HASH = 0xaddc8ae2ee9b62cb;
+	internal const ulong LAYOUT_HASH = 0xd1a190c65c692a30;
 
 	internal static SltBindings table;
 

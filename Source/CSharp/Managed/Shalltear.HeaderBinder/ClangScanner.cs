@@ -10,10 +10,12 @@ namespace Shalltear.HeaderBinder;
 internal sealed class ScanOptions {
 	public string ModuleName = "";
 	public List<string> Headers = new();
+	public List<string> ExplicitHeaders = new();
 	public List<string> BindNamespaces = new();
 	public List<string> IncludeDirs = new();
 	public List<string> Defines = new();
 	public List<string> ExtraArgs = new();
+	public string? PolicyPath;
 	public string? LibClangDir;
 	public string? Sysroot;
 }
@@ -22,7 +24,9 @@ internal static unsafe class ClangScanner {
 	sealed class ScanContext {
 		public nint Tu;
 		public HeaderModel Model = new();
+		public ExposureFilter Filter = ExposureFilter.Load(null);
 		public HashSet<string> ExplicitHeaders = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+		public HashSet<string> AutoHeaders = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
 		public List<string> BindNamespaces = new();
 		public Dictionary<string, CXType> RecordTypes = new(StringComparer.Ordinal);
 		public Dictionary<string, CXCursor> RecordCursors = new(StringComparer.Ordinal);
@@ -33,12 +37,27 @@ internal static unsafe class ClangScanner {
 
 	public static HeaderModel Scan(ScanOptions options) {
 		LibClang.ConfigureSearchDirectory(options.LibClangDir);
+		ExposureFilter filter = ExposureFilter.Load(options.PolicyPath);
+
+		List<string> allRequested = new(options.ExplicitHeaders.Count + options.Headers.Count);
+		HashSet<string> seenRequested = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+		foreach (string header in options.ExplicitHeaders) {
+			string norm = NormalizePath(header);
+			if (!string.IsNullOrEmpty(norm) && seenRequested.Add(norm)) {
+				allRequested.Add(norm);
+			}
+		}
+		foreach (string header in options.Headers) {
+			string norm = NormalizePath(header);
+			if (!string.IsNullOrEmpty(norm) && !filter.IsExcludedHeaderPath(norm, false) && seenRequested.Add(norm)) {
+				allRequested.Add(norm);
+			}
+		}
 
 		string virtualFile = "__shalltear_bind_umbrella__.cpp";
 		StringBuilder umbrella = new();
-		foreach (string header in options.Headers) {
-			string normalized = Path.GetFullPath(header).Replace('\\', '/');
-			umbrella.Append("#include \"").Append(normalized).Append("\"\n");
+		foreach (string header in allRequested) {
+			umbrella.Append("#include \"").Append(header).Append("\"\n");
 		}
 
 		List<string> args = new() {
@@ -130,14 +149,23 @@ internal static unsafe class ClangScanner {
 
 			ScanContext ctx = new() {
 				Tu = tu,
+				Filter = filter,
 				BindNamespaces = options.BindNamespaces.Where(static s => !string.IsNullOrWhiteSpace(s)).ToList(),
 			};
 			ctx.Model.ModuleName = options.ModuleName;
+			foreach (string header in options.ExplicitHeaders) {
+				string norm = NormalizePath(header);
+				if (!string.IsNullOrEmpty(norm)) {
+					ctx.ExplicitHeaders.Add(norm);
+				}
+			}
 			foreach (string header in options.Headers) {
 				string norm = NormalizePath(header);
-				ctx.ExplicitHeaders.Add(norm);
-				ctx.Model.BoundHeaders.Add(norm);
+				if (!string.IsNullOrEmpty(norm) && !filter.IsExcludedHeaderPath(norm, false)) {
+					ctx.AutoHeaders.Add(norm);
+				}
 			}
+			ctx.Model.BoundHeaders.AddRange(allRequested);
 
 			CXCursor root = LibClang.clang_getTranslationUnitCursor(tu);
 			VisitScope(ctx, root, "", false);
@@ -187,7 +215,7 @@ internal static unsafe class ClangScanner {
 
 	static bool ShouldIncludeCursor(ScanContext ctx, CXCursor cursor, string currentNamespace, out bool fromBindNamespace) {
 		fromBindNamespace = false;
-		if (ExposureFilter.IsExcludedNamespace(currentNamespace)) {
+		if (ctx.Filter.IsExcludedNamespace(currentNamespace)) {
 			return false;
 		}
 		if (HasIgnoreAnnotation(cursor)) {
@@ -197,15 +225,19 @@ internal static unsafe class ClangScanner {
 		if (string.IsNullOrEmpty(filePath)) {
 			return false;
 		}
-		bool explicitFile = ctx.ExplicitHeaders.Contains(filePath);
+		if (ctx.Filter.IsExcludedByPolicyHeaderPattern(filePath)) {
+			return false;
+		}
 		if (MatchesBindNamespace(ctx, currentNamespace)) {
 			fromBindNamespace = true;
 			return true;
 		}
-		if (ctx.BindNamespaces.Count > 0) {
-			return explicitFile && !ExposureFilter.IsExcludedHeaderPath(filePath, true);
+		bool explicitFile = ctx.ExplicitHeaders.Contains(filePath);
+		bool autoFile = ctx.AutoHeaders.Contains(filePath);
+		if (!explicitFile && !autoFile) {
+			return false;
 		}
-		return explicitFile && !ExposureFilter.IsExcludedHeaderPath(filePath, true);
+		return !ctx.Filter.IsExcludedHeaderPath(filePath, explicitFile);
 	}
 
 	static bool HasIgnoreAnnotation(CXCursor cursor) {
@@ -232,7 +264,7 @@ internal static unsafe class ClangScanner {
 					return CXChildVisitResult.Continue;
 				}
 				string nextNs = string.IsNullOrEmpty(currentNamespace) ? nsName : currentNamespace + "::" + nsName;
-				if (!ExposureFilter.IsExcludedNamespace(nextNs)) {
+				if (!ctx.Filter.IsExcludedNamespace(nextNs)) {
 					VisitScope(ctx, cursor, nextNs, false);
 				}
 				return CXChildVisitResult.Continue;
@@ -279,6 +311,9 @@ internal static unsafe class ClangScanner {
 			: (parentRecord != null
 				? parentRecord.QualifiedName + "::" + name
 				: (string.IsNullOrEmpty(ns) ? name : ns + "::" + name));
+		if (!isAnon && ctx.Filter.IsExcludedType(name, qualified)) {
+			return;
+		}
 		if (ctx.Model.Enums.ContainsKey(qualified)) {
 			return;
 		}
@@ -333,8 +368,8 @@ internal static unsafe class ClangScanner {
 				? parentRecord.QualifiedName + "::" + name
 				: (string.IsNullOrEmpty(ns) ? name : ns + "::" + name));
 
-		if (!isAnon && ctx.Model.Records.ContainsKey(qualified)) {
-			return ctx.Model.Records[qualified];
+		if (!isAnon && (ctx.Filter.IsExcludedType(name, qualified) || ctx.Model.Records.ContainsKey(qualified))) {
+			return ctx.Model.Records.TryGetValue(qualified, out CppRecord? existing) ? existing : null;
 		}
 
 		CXType recordType = LibClang.clang_getCursorType(cursor);
@@ -456,7 +491,7 @@ internal static unsafe class ClangScanner {
 				if (!isPublic || LibClang.clang_CXXMethod_isDeleted(child) != 0 || HasIgnoreAnnotation(child)) {
 					return CXChildVisitResult.Continue;
 				}
-				if (ExposureFilter.IsExcludedFunctionName(mName, fromBindNamespace)) {
+				if (ctx.Filter.IsExcludedFunctionName(mName, fromBindNamespace)) {
 					return CXChildVisitResult.Continue;
 				}
 				if (isAnon) {
@@ -540,7 +575,7 @@ internal static unsafe class ClangScanner {
 
 	static void ScanFreeFunction(ScanContext ctx, CXCursor cursor, string ns, bool fromBindNamespace) {
 		string name = LibClang.GetSpelling(cursor);
-		if (ExposureFilter.IsExcludedFunctionName(name, fromBindNamespace)) {
+		if (ctx.Filter.IsExcludedFunctionName(name, fromBindNamespace)) {
 			return;
 		}
 		if (LibClang.clang_Cursor_getStorageClass(cursor) == CXStorageClass.Static && LibClang.clang_isCursorDefinition(cursor) == 0) {

@@ -8,6 +8,7 @@ namespace Shalltear::CSharpImpl::ModuleThunkBindings {
 
 	u64 GetTable(std::string_view moduleName) noexcept;
 	u32 GetCount(std::string_view moduleName) noexcept;
+	u64 GetModuleEpoch(std::string_view moduleName) noexcept;
 	u64 GetEpoch() noexcept;
 	u64 GetEpochAddress() noexcept;
 

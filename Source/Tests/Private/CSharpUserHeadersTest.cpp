@@ -92,6 +92,7 @@ namespace {
 #include <filesystem>
 #include <functional>
 #include <span>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -175,12 +176,44 @@ namespace SimLib {
 	[[clang::annotate("slt_script_ignore")]]
 	int32_t HiddenSecret();
 
+	class PolicyBlockedType {
+	public:
+		int32_t secret = 1;
+	};
+	int32_t PolicyBlockedFunc();
+
+	class TrackedResource {
+	public:
+		static TrackedResource* Create();
+		~TrackedResource();
+	private:
+		TrackedResource() = default;
+	};
+
+	void RecordMainThread();
+	int32_t GetDestroyedCount();
+	int32_t GetDestroyedOnMainThreadCount();
+	void StoreRetainedCallback(World::StepCallback callback);
+	void FireRetainedCallback(int32_t ticks);
+	void ClearRetainedCallback();
+
 } // namespace SimLib
 )";
 
 	constexpr const char* SIMLIB_SOURCE = R"(#include "SimLib.h"
 
+#include <atomic>
+
 namespace SimLib {
+
+	namespace {
+
+		std::thread::id _mainThreadId{};
+		std::atomic<int32_t> _destroyedCount{0};
+		std::atomic<int32_t> _destroyedOnMainCount{0};
+		World::StepCallback _retainedCallback;
+
+	} // anonymous namespace
 
 	const ConfigSpec DEFAULT_CONFIG = {-9.81f, 120};
 
@@ -235,11 +268,82 @@ namespace SimLib {
 	void Initialize() {}
 	void Shutdown() {}
 	int32_t HiddenSecret() { return 999; }
+	int32_t PolicyBlockedFunc() { return 42; }
+
+	TrackedResource* TrackedResource::Create() {
+		return new TrackedResource();
+	}
+
+	TrackedResource::~TrackedResource() {
+		_destroyedCount.fetch_add(1, std::memory_order_relaxed);
+		if (std::this_thread::get_id() == _mainThreadId) {
+			_destroyedOnMainCount.fetch_add(1, std::memory_order_relaxed);
+		}
+	}
+
+	void RecordMainThread() {
+		_mainThreadId = std::this_thread::get_id();
+		_destroyedCount.store(0, std::memory_order_relaxed);
+		_destroyedOnMainCount.store(0, std::memory_order_relaxed);
+	}
+
+	int32_t GetDestroyedCount() {
+		return _destroyedCount.load(std::memory_order_relaxed);
+	}
+
+	int32_t GetDestroyedOnMainThreadCount() {
+		return _destroyedOnMainCount.load(std::memory_order_relaxed);
+	}
+
+	void StoreRetainedCallback(World::StepCallback callback) {
+		_retainedCallback = std::move(callback);
+	}
+
+	void FireRetainedCallback(int32_t ticks) {
+		if (_retainedCallback) {
+			_retainedCallback(ticks, static_cast<float>(ticks) * 0.25f);
+		}
+	}
+
+	void ClearRetainedCallback() {
+		_retainedCallback = {};
+	}
 
 } // namespace SimLib
+
+extern "C" {
+#if defined(_WIN32)
+__declspec(dllexport)
+#else
+__attribute__((visibility("default")))
+#endif
+void SimLibTestFireAndClearRetained(int32_t ticks) {
+	SimLib::FireRetainedCallback(ticks);
+	SimLib::ClearRetainedCallback();
+}
+
+#if defined(_WIN32)
+__declspec(dllexport)
+#else
+__attribute__((visibility("default")))
+#endif
+int32_t SimLibTestGetDestroyedCount() {
+	return SimLib::GetDestroyedCount();
+}
+
+#if defined(_WIN32)
+__declspec(dllexport)
+#else
+__attribute__((visibility("default")))
+#endif
+int32_t SimLibTestGetDestroyedOnMainCount() {
+	return SimLib::GetDestroyedOnMainThreadCount();
+}
+}
 )";
 
 	constexpr const char* SIM_PROBE_CS = R"(using System;
+using System.Runtime.CompilerServices;
 using Shalltear;
 
 namespace ZeroGlueGame;
@@ -258,15 +362,23 @@ public sealed partial class SimProbe : Behavior {
 	public float callbackHalf;
 	public float spanSum;
 	public int pathLength;
+	public int longPathLength;
 	public float defaultGravity;
 	public int defaultMaxTicks;
+	public int destroyedBeforeTick;
 
 	[Callable]
 	public int ComputeBoost(int baseValue) {
 		return baseValue * 3;
 	}
 
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	static void AllocateDroppedResource() {
+		_ = SimLib.TrackedResource.Create();
+	}
+
 	protected override void OnEnable() {
+		SimLib.Native.RecordMainThread();
 		SimLib.ConfigSpec cfg = SimLib.Native.DEFAULT_CONFIG;
 		defaultGravity = cfg.gravity;
 		defaultMaxTicks = cfg.maxTicks;
@@ -301,6 +413,19 @@ public sealed partial class SimProbe : Behavior {
 		Span<float> values = stackalloc float[3] { 1.5f, 2.5f, 6.0f };
 		spanSum = world.SumSpan(values);
 		pathLength = world.LoadPath("maps/arena.cmf");
+		string longDir = new string('a', 300);
+		longPathLength = world.LoadPath(longDir + "/long_arena_map.cmf");
+
+		// drop an un-disposed opaque wrapper and force finalization off the main thread
+		AllocateDroppedResource();
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
+		destroyedBeforeTick = SimLib.Native.GetDestroyedCount();
+
+		// retain a callback in native global state to verify safe ALC unload
+		SimLib.Native.StoreRetainedCallback((ticks, half) => {
+			callbackTicks += ticks;
+		});
 	}
 }
 )";
@@ -378,6 +503,12 @@ TEST_F(CSharpUserHeadersTest, ZeroSourceLibraryBindingRoundTripsAndEmitsCppView)
 		<< "target_include_directories(SimLib PUBLIC \"${CMAKE_CURRENT_SOURCE_DIR}\")\n"
 		<< "target_compile_features(SimLib PUBLIC cxx_std_20)\n";
 
+	std::ofstream(_project / "ExposurePolicy.json", std::ios::binary)
+		<< "{\n"
+		<< "\t\"excludedFunctions\": [\"PolicyBlockedFunc\"],\n"
+		<< "\t\"excludedTypes\": [\"PolicyBlockedType\"]\n"
+		<< "}\n";
+
 	std::ofstream(_project / "CMakeLists.txt", std::ios::binary)
 		<< "cmake_minimum_required(VERSION 3.24)\n"
 		<< "project(ZeroGlueGame LANGUAGES C CXX)\n"
@@ -431,7 +562,11 @@ TEST_F(CSharpUserHeadersTest, ZeroSourceLibraryBindingRoundTripsAndEmitsCppView)
 	EXPECT_NE(bindingsText.find("class World"), str::npos);
 	EXPECT_NE(bindingsText.find("struct CarPose"), str::npos);
 	EXPECT_NE(bindingsText.find("MODE_ACTIVE"), str::npos);
+	EXPECT_NE(bindingsText.find("NativeUTF8Buffer"), str::npos);
+	EXPECT_EQ(bindingsText.find("[UnmanagedCallersOnly"), str::npos);
 	EXPECT_EQ(bindingsText.find("HiddenSecret"), str::npos);
+	EXPECT_EQ(bindingsText.find("PolicyBlockedFunc"), str::npos);
+	EXPECT_EQ(bindingsText.find("PolicyBlockedType"), str::npos);
 	EXPECT_EQ(bindingsText.find("void Initialize("), str::npos);
 	EXPECT_EQ(bindingsText.find("void Shutdown("), str::npos);
 
@@ -530,8 +665,37 @@ TEST_F(CSharpUserHeadersTest, ZeroSourceLibraryBindingRoundTripsAndEmitsCppView)
 	EXPECT_FLOAT_EQ(readFloat("callbackHalf"), 2.5f);
 	EXPECT_FLOAT_EQ(readFloat("spanSum"), 10.0f);
 	EXPECT_EQ(readInt("pathLength"), 9);
+	EXPECT_EQ(readInt("longPathLength"), 18);
 	EXPECT_FLOAT_EQ(readFloat("defaultGravity"), -9.81f);
 	EXPECT_EQ(readInt("defaultMaxTicks"), 120);
+
+	// finalized TrackedResource must NOT have been deleted on the GC finalizer thread
+	EXPECT_EQ(readInt("destroyedBeforeTick"), 0);
+
+	// pump main-thread tick to drain deferred deletes on the main thread
+	_hooks->getManaged().tick();
+	const auto getDestroyedCount = reinterpret_cast<int32_t (*)()>(
+		ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_userModule), "SimLibTestGetDestroyedCount"));
+	const auto getDestroyedOnMainCount = reinterpret_cast<int32_t (*)()>(
+		ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_userModule), "SimLibTestGetDestroyedOnMainCount"));
+	const auto fireAndClearRetained = reinterpret_cast<void (*)(int32_t)>(
+		ModuleSystem::FindSymbol(ModuleSystem::GetNativeHandle(_userModule), "SimLibTestFireAndClearRetained"));
+	ASSERT_NE(getDestroyedCount, nullptr);
+	ASSERT_NE(getDestroyedOnMainCount, nullptr);
+	ASSERT_NE(fireAndClearRetained, nullptr);
+	EXPECT_EQ(getDestroyedCount(), 1);
+	EXPECT_EQ(getDestroyedOnMainCount(), 1);
+
+	// unload scene before leaving play mode and unloading user ALC so no managed Behavior instances remain live
+	SceneSystem::UnloadScene(scene);
+	SceneSystem::EndFrame();
+	SceneSystem::SetPlaying(false);
+
+	// unload user ALC while native SimLib still holds _retainedCallback -> ALC must unload cleanly
+	EXPECT_EQ(_hooks->unloadUserAssemblies(), SLT_OK);
+
+	// invoking and releasing the stale native std::function after ALC unload must safely no-op
+	fireAndClearRetained(77);
 
 	// unload module and verify thunk table cleanup + epoch bump
 	const u64 epochBeforeUnload = ModuleThunkRegistry::GetEpoch();

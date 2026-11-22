@@ -262,6 +262,7 @@ internal static unsafe class Bridge {
 		try {
 			ObjectCache.Sweep();
 			NativeObject.Drain();
+			ModuleThunks.DrainDeletes();
 			InputActionMap.FreeRetired();
 		} catch (Exception exception) {
 			Report(exception);

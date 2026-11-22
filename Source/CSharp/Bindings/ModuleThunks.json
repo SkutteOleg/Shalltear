@@ -23,6 +23,15 @@
 			"csharp": { "member": "GetCount", "kind": "method" }
 		},
 		{
+			"id": "GetModuleEpoch",
+			"cpp": "::Shalltear::CSharpImpl::ModuleThunkBindings::GetModuleEpoch(moduleName)",
+			"returns": "u64",
+			"params": [{ "name": "moduleName", "type": "string" }],
+			"leaf": true,
+			"thread": "any",
+			"csharp": { "member": "GetModuleEpoch", "kind": "method" }
+		},
+		{
 			"id": "GetEpoch",
 			"cpp": "::Shalltear::CSharpImpl::ModuleThunkBindings::GetEpoch()",
 			"returns": "u64",

@@ -195,20 +195,29 @@ function(_shalltear_find_header_binder_tools OUT_BINDER OUT_LIBCLANG OUT_DOTNET_
 	set(${OUT_DOTNET_ROOT} "${dotnetRoot}" PARENT_SCOPE)
 endfunction()
 
-function(_shalltear_finalize_header_bindings MODULE_NAME PROJECT_ROOT BINDER_DLL LIBCLANG_DIR DOTNET_EXE DOTNET_ROOT HEADERS NAMESPACES)
+function(_shalltear_finalize_header_bindings MODULE_NAME PROJECT_ROOT BINDER_DLL LIBCLANG_DIR DOTNET_EXE DOTNET_ROOT EXPLICIT_HEADERS AUTO_HEADERS NAMESPACES)
 	set(generatedDir "${CMAKE_CURRENT_BINARY_DIR}/ShalltearGenerated")
 	set(outCpp "${generatedDir}/UserThunks.generated.cpp")
 	set(outCs "${PROJECT_ROOT}/Library/CSharp/Generated/Native/UserBindings.g.cs")
 	set(rspFile "${generatedDir}/HeaderBinder.rsp")
+	set(policyFile "${PROJECT_ROOT}/ExposurePolicy.json")
 
 	set(rspContent "")
 	string(APPEND rspContent "--module=${MODULE_NAME}\n")
 	string(APPEND rspContent "--libclang-dir=${LIBCLANG_DIR}\n")
 	string(APPEND rspContent "--out-cpp=${outCpp}\n")
 	string(APPEND rspContent "--out-cs=${outCs}\n")
-	foreach(header IN LISTS HEADERS)
+	foreach(header IN LISTS EXPLICIT_HEADERS)
+		string(APPEND rspContent "--explicit-header=${header}\n")
+	endforeach()
+	foreach(header IN LISTS AUTO_HEADERS)
 		string(APPEND rspContent "--header=${header}\n")
 	endforeach()
+	set(extraDepends "")
+	if(EXISTS "${policyFile}")
+		string(APPEND rspContent "--policy=${policyFile}\n")
+		list(APPEND extraDepends "${policyFile}")
+	endif()
 	foreach(ns IN LISTS NAMESPACES)
 		string(APPEND rspContent "--namespace=${ns}\n")
 	endforeach()
@@ -259,7 +268,7 @@ function(_shalltear_finalize_header_bindings MODULE_NAME PROJECT_ROOT BINDER_DLL
 			DOTNET_NOLOGO=1
 			DOTNET_MULTILEVEL_LOOKUP=0
 			"${DOTNET_EXE}" "${BINDER_DLL}" --args-file "${rspFile}"
-		DEPENDS ${HEADERS} "${BINDER_DLL}" "${rspFile}"
+		DEPENDS ${EXPLICIT_HEADERS} ${AUTO_HEADERS} ${extraDepends} "${BINDER_DLL}" "${rspFile}"
 		COMMENT "Generating C# bindings for ${MODULE_NAME} headers"
 		VERBATIM)
 
@@ -279,18 +288,19 @@ function(_shalltear_attach_header_bindings MODULE_NAME PROJECT_ROOT BIND_HEADERS
 		endif()
 	endif()
 
-	set(allHeaders "")
+	set(explicitHeaders "")
 	foreach(header IN LISTS BIND_HEADERS)
 		if(IS_ABSOLUTE "${header}")
 			get_filename_component(resolvedHeader "${header}" ABSOLUTE)
 		else()
 			get_filename_component(resolvedHeader "${CMAKE_CURRENT_SOURCE_DIR}/${header}" ABSOLUTE)
 		endif()
-		if(NOT resolvedHeader IN_LIST allHeaders)
-			list(APPEND allHeaders "${resolvedHeader}")
+		if(NOT resolvedHeader IN_LIST explicitHeaders)
+			list(APPEND explicitHeaders "${resolvedHeader}")
 		endif()
 	endforeach()
 
+	set(autoHeaders "")
 	if((csharpEnabled OR BIND_HEADERS) AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 		file(GLOB_RECURSE sourceHeaders CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h")
 		list(SORT sourceHeaders)
@@ -298,13 +308,13 @@ function(_shalltear_attach_header_bindings MODULE_NAME PROJECT_ROOT BIND_HEADERS
 			if(header MATCHES "/Private/" OR header MATCHES "/ThirdParty/" OR header MATCHES "\\.generated\\.h$")
 				continue()
 			endif()
-			if(NOT header IN_LIST allHeaders)
-				list(APPEND allHeaders "${header}")
+			if(NOT header IN_LIST explicitHeaders AND NOT header IN_LIST autoHeaders)
+				list(APPEND autoHeaders "${header}")
 			endif()
 		endforeach()
 	endif()
 
-	if(NOT allHeaders)
+	if(NOT explicitHeaders AND NOT autoHeaders)
 		return()
 	endif()
 
@@ -321,7 +331,7 @@ function(_shalltear_attach_header_bindings MODULE_NAME PROJECT_ROOT BIND_HEADERS
 	endif()
 
 	cmake_language(EVAL CODE
-		"cmake_language(DEFER CALL _shalltear_finalize_header_bindings [==[${MODULE_NAME}]==] [==[${PROJECT_ROOT}]==] [==[${binderDll}]==] [==[${libclangDir}]==] [==[${dotnetExe}]==] [==[${dotnetRoot}]==] [==[${allHeaders}]==] [==[${BIND_NAMESPACES}]==])")
+		"cmake_language(DEFER CALL _shalltear_finalize_header_bindings [==[${MODULE_NAME}]==] [==[${PROJECT_ROOT}]==] [==[${binderDll}]==] [==[${libclangDir}]==] [==[${dotnetExe}]==] [==[${dotnetRoot}]==] [==[${explicitHeaders}]==] [==[${autoHeaders}]==] [==[${BIND_NAMESPACES}]==])")
 endfunction()
 
 function(shalltear_add_module MODULE_NAME)
