@@ -21,6 +21,7 @@ TEST(PakOverlayFooterTest, LayoutAndMagicAreFixed) {
 
 #include "CSharpRuntimeFixture.h"
 #include "EditorTestHooks.h"
+#include "LinuxLibraryReader.h"
 #include "ScopedSettingsStore.h"
 #include "TestPlatform.h"
 
@@ -51,6 +52,8 @@ using namespace Shalltear::CSharpTests;
 namespace {
 
 	namespace fs = std::filesystem;
+
+	constexpr const char* SCRIPTS_LIBRARY = "GameScripts" SLT_TEST_DLL_SUFFIX;
 
 	constexpr const char* SINGLE_FILE_PROBE_SCRIPT = R"(using Shalltear;
 
@@ -97,7 +100,20 @@ public sealed class Probe : Behavior {
 		return value;
 	}
 
-	str FindStaticTreeWithCSharp(str& outConfig) {
+	bool IsLinuxTargetPackage(const str& packageText) {
+		constexpr std::string_view Marker = "set(SHALLTEAR_COMPILER_TARGET \"";
+		const size_t at = packageText.find(Marker);
+		if (at == str::npos) {
+			return false;
+		}
+		const size_t start = at + Marker.size();
+		const size_t end = packageText.find('"', start);
+		const std::string_view triple = end == str::npos ? std::string_view(packageText).substr(start)
+														 : std::string_view(packageText).substr(start, end - start);
+		return triple.find("linux") != std::string_view::npos;
+	}
+
+	str FindStaticTreeWithCSharp(str& outConfig, bool wantLinux = std::string_view(SLT_TEST_HOST_TARGET) == "Linux") {
 		const fs::path tree = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path().parent_path();
 		const str expectedCommit = std::format("set(SHALLTEAR_GIT_COMMIT \"{}\")", BuildInfo::GetGitCommit());
 		std::error_code ec;
@@ -109,7 +125,7 @@ public sealed class Probe : Behavior {
 			}
 			const str package = ReadFileBytes(entry.path() / "ShalltearConfig.cmake");
 			if (package.find("set(SHALLTEAR_LINK_MODE \"STATIC\")") == str::npos ||
-				package.find(expectedCommit) == str::npos) {
+				package.find(expectedCommit) == str::npos || IsLinuxTargetPackage(package) != wantLinux) {
 				continue;
 			}
 			if (!fs::is_regular_file(entry.path() / "lib" / "CSharp.a", ec) &&
@@ -128,6 +144,21 @@ public sealed class Probe : Behavior {
 		}
 		outConfig = fallbackConfig;
 		return fallbackTree;
+	}
+
+	void VerifyLinuxElfSystemLibraries(const fs::path& elfBinary) {
+		TestHelpers::LibraryNeeds needs;
+		ASSERT_TRUE(TestHelpers::ReadLibraryNeeds(elfBinary, needs)) << elfBinary.generic_string();
+		ASSERT_FALSE(needs.libraries.empty());
+		for (const str& name : needs.libraries) {
+			const bool system = name == "libc.so.6" || name == "libm.so.6" || name == "libdl.so.2" ||
+								name == "libpthread.so.0" || name == "librt.so.1" || name == "libgcc_s.so.1" ||
+								name == "ld-linux-x86-64.so.2";
+			EXPECT_TRUE(system) << name;
+		}
+		EXPECT_EQ(needs.glibcMajor, 2u);
+		EXPECT_GT(needs.glibcMinor, 0u);
+		EXPECT_LE(needs.glibcMinor, 31u);
 	}
 
 	str SingleFileSceneText(std::string_view behaviorType = "SingleFileDemo.Probe") {
@@ -230,8 +261,8 @@ public sealed class Probe : Behavior {
 		static void SetUpTestSuite() {
 			_singleSuite = new SingleFileSuite();
 			SingleFileSuite& suite = *_singleSuite;
-			if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows") {
-				suite.skip = "single-file player test targets Windows host";
+			if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows" && std::string_view(SLT_TEST_HOST_TARGET) != "Linux") {
+				suite.skip = "single-file player test targets Windows or Linux host";
 				return;
 			}
 			const str staticTree = FindStaticTreeWithCSharp(suite.config);
@@ -270,7 +301,7 @@ public sealed class Probe : Behavior {
 			for (const bool singleFile : {true, false}) {
 				BuildProfile profile;
 				profile.name = singleFile ? "SingleFile" : "Sidecar";
-				profile.target = "Windows";
+				profile.target = SLT_TEST_HOST_TARGET;
 				profile.SetList("scenes", Vector<str>{"Assets/Scenes/Main.scene"});
 				profile.SetString("configuration", suite.config);
 				profile.SetString("singleFile", singleFile ? "true" : "false");
@@ -359,8 +390,8 @@ public sealed class Probe : Behavior {
 
 		void SetUp() override {
 			CSharpRuntimeFixture::SetUp();
-			if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows") {
-				_skip = "single-file player test targets Windows host";
+			if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows" && std::string_view(SLT_TEST_HOST_TARGET) != "Linux") {
+				_skip = "single-file player test targets Windows or Linux host";
 				return;
 			}
 			const str staticTree = FindStaticTreeWithCSharp(_config);
@@ -497,7 +528,7 @@ TEST_F(CSharpSingleFilePlayerTest, SingleFileExecutableRunsIsolatedWithZeroSidec
 	const fs::path staging = _singleSuite->project / "Builds" / "SingleFile";
 	const fs::path exe = staging / ("SingleFileDemo" SLT_TEST_PLAYER_SUFFIX);
 	ASSERT_TRUE(fs::is_regular_file(exe));
-	EXPECT_FALSE(fs::exists(staging / "GameScripts.dll"));
+	EXPECT_FALSE(fs::exists(staging / SCRIPTS_LIBRARY));
 	EXPECT_FALSE(fs::exists(staging / "Data" / "Content.slpak"));
 	EXPECT_FALSE(fs::exists(staging / "libc++.dll"));
 	EXPECT_FALSE(fs::exists(staging / "libunwind.dll"));
@@ -522,6 +553,10 @@ TEST_F(CSharpSingleFilePlayerTest, SingleFileExecutableRunsIsolatedWithZeroSidec
 	EXPECT_EQ(std::memcmp(footer.magic, PAK_OVERLAY_MAGIC, sizeof(PAK_OVERLAY_MAGIC)), 0);
 	EXPECT_GT(footer.exeSize, 0u);
 	EXPECT_GT(footer.pakSize, 0u);
+
+	if (std::string_view(SLT_TEST_HOST_TARGET) == "Linux") {
+		VerifyLinuxElfSystemLibraries(exe);
+	}
 
 	// --third-party-notices prints embedded engine + .NET notices cleanly without creating files
 	EXPECT_EQ(_singleSuite->singleNoticesExit, 0) << _singleSuite->singleNoticesOutput;
@@ -549,11 +584,80 @@ TEST_F(CSharpSingleFilePlayerTest, SidecarModeProducesGameScriptsLibraryAndRuns)
 
 	const fs::path staging = _singleSuite->project / "Builds" / "Sidecar";
 	EXPECT_TRUE(fs::is_regular_file(staging / ("SingleFileDemo" SLT_TEST_PLAYER_SUFFIX)));
-	EXPECT_TRUE(fs::is_regular_file(staging / "GameScripts.dll"));
+	EXPECT_TRUE(fs::is_regular_file(staging / SCRIPTS_LIBRARY));
 	EXPECT_TRUE(fs::is_regular_file(staging / "Data" / "Content.slpak"));
 	EXPECT_EQ(_singleSuite->sidecarRunExit, 0) << _singleSuite->sidecarRunLog;
 	EXPECT_NE(_singleSuite->sidecarRunLog.find("SHALLTEAR_SINGLE_FILE_ENABLED owner=Runner"), str::npos) << _singleSuite->sidecarRunLog;
 	EXPECT_NE(_singleSuite->sidecarRunLog.find("SHALLTEAR_SINGLE_FILE_TICK frame=2"), str::npos) << _singleSuite->sidecarRunLog;
+}
+
+TEST_F(CSharpSingleFilePlayerTest, LinuxSingleFileCrossBuildProducesSelfContainedElf) {
+	if (std::string_view(SLT_TEST_HOST_TARGET) != "Windows") {
+		GTEST_SKIP() << "cross-build test runs from a Windows host";
+	}
+	str linuxConfig;
+	const str linuxStaticTree = FindStaticTreeWithCSharp(linuxConfig, true);
+	if (linuxStaticTree.empty()) {
+		GTEST_SKIP() << "no sibling Linux static tree with C# package";
+	}
+
+	BuildProfile profile;
+	profile.name = "LinuxSingleFile";
+	profile.target = "Linux";
+	profile.SetList("scenes", Vector<str>{"Assets/Scenes/Main.scene"});
+	profile.SetString("configuration", linuxConfig);
+	profile.SetString("singleFile", "true");
+	ASSERT_TRUE(BuildProfileOps::SaveProfile(
+		BuildProfileOps::GetProfilePath(_singleSuite->project.generic_string(), profile.name), profile));
+
+	ScopedUserDataDirectory linuxUserData(_singleSuite->root / "LinuxUserData");
+	fs::create_directories(_singleSuite->root / "LinuxUserData" / "Shalltear");
+	std::ofstream(_singleSuite->root / "LinuxUserData" / "Shalltear" / "UserSettings.ini", std::ios::binary)
+		<< "[Editor/Build]\nstaticSDKRoot = " << linuxStaticTree << "\n";
+
+	int buildExit = -1;
+	const str buildLog = TestPlatform::RunCommand(
+		"\"" + _singleSuite->editor + "\" --project \"" + _singleSuite->project.generic_string() + "\" --build LinuxSingleFile",
+		buildExit);
+	ASSERT_EQ(buildExit, 0) << buildLog;
+
+	const fs::path staging = _singleSuite->project / "Builds" / "LinuxSingleFile";
+	const fs::path linuxExe = staging / "SingleFileDemo.x86_64";
+	ASSERT_TRUE(fs::is_regular_file(linuxExe)) << buildLog;
+	EXPECT_FALSE(fs::exists(staging / "GameScripts.so"));
+	EXPECT_FALSE(fs::exists(staging / "Data" / "Content.slpak"));
+	EXPECT_FALSE(fs::exists(staging / "THIRD-PARTY-NOTICES.txt"));
+	EXPECT_FALSE(fs::exists(staging / "THIRD-PARTY-NOTICES-DotNet.txt"));
+
+	u32 stagedFiles = 0;
+	std::error_code ec;
+	for (const fs::directory_entry& entry : fs::recursive_directory_iterator(staging, ec)) {
+		if (entry.is_regular_file(ec)) {
+			++stagedFiles;
+		}
+	}
+	EXPECT_EQ(stagedFiles, 1u);
+
+	const str exeBytes = ReadFileBytes(linuxExe);
+	ASSERT_GE(exeBytes.size(), sizeof(PakOverlayFooter));
+	PakOverlayFooter footer{};
+	std::memcpy(&footer, exeBytes.data() + exeBytes.size() - sizeof(PakOverlayFooter), sizeof(PakOverlayFooter));
+	EXPECT_EQ(std::memcmp(footer.magic, PAK_OVERLAY_MAGIC, sizeof(PAK_OVERLAY_MAGIC)), 0);
+	EXPECT_GT(footer.exeSize, 0u);
+	EXPECT_GT(footer.pakSize, 0u);
+
+	VerifyLinuxElfSystemLibraries(linuxExe);
+
+	// verify embedded notices inside the cross-compiled Linux overlay pak
+	AssetDatabase::Initialize();
+	str mountError;
+	ASSERT_TRUE(AssetDatabase::MountPackage(Path(linuxExe.generic_string()), mountError)) << mountError;
+	str embeddedNotices;
+	ASSERT_TRUE(AssetDatabase::ReadPackageDocument(PakDocumentKind::ThirdPartyNotices, embeddedNotices));
+	AssetDatabase::Terminate();
+	EXPECT_NE(embeddedNotices.find("THIRD-PARTY NOTICES FOR SHALLTEAR"), str::npos);
+	EXPECT_NE(embeddedNotices.find("by NativeAOT"), str::npos);
+	EXPECT_NE(embeddedNotices.find("SingleFileDemo.x86_64"), str::npos);
 }
 
 TEST_F(CSharpMixedSingleFilePipelineTest, MixedCppHeaderBindingStaysInSyncWithoutEditorBuild) {

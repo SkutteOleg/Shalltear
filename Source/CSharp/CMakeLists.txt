@@ -68,14 +68,24 @@ if(WIN32)
 	get_filename_component(sltToolchainRoot "${sltToolchainBin}" DIRECTORY)
 	set(sltNativeDir "${sltManagedOutput}/native")
 	set(sltShimSource "${CMAKE_CURRENT_SOURCE_DIR}/Native/CRTShim.cpp")
+	set(sltShimGS "${CMAKE_CURRENT_SOURCE_DIR}/Native/Win64GS.inl")
 	set(sltShim "${sltNativeDir}/CRTShim.obj")
+	set(sltShimStatic "${sltNativeDir}/CRTShimStatic.obj")
 	add_custom_command(
 		OUTPUT "${sltShim}"
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${sltNativeDir}"
 		COMMAND "${sltToolchainBin}/clang++" --target=x86_64-pc-windows-msvc -std=c++20 -O2 -fno-exceptions -fno-rtti
 			-fms-extensions -fno-stack-protector -fno-builtin -c "${sltShimSource}" -o "${sltShim}"
-		DEPENDS "${sltShimSource}"
+		DEPENDS "${sltShimSource}" "${sltShimGS}"
 		COMMENT "Compiling C# link shim"
+		VERBATIM)
+	add_custom_command(
+		OUTPUT "${sltShimStatic}"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${sltNativeDir}"
+		COMMAND "${CMAKE_CXX_COMPILER}" -DSLT_AOT_STATIC_BRIDGE -std=c++20 -O2 -Wall -Wextra -Werror
+			-fno-stack-protector -c "${sltShimSource}" -o "${sltShimStatic}"
+		DEPENDS "${sltShimSource}" "${sltShimGS}"
+		COMMENT "Compiling C# static link shim"
 		VERBATIM)
 
 	file(GLOB sltBuiltins "${sltToolchainRoot}/lib/clang/*/lib/windows/libclang_rt.builtins-x86_64.a")
@@ -98,7 +108,7 @@ if(WIN32)
 		${sltNativeLibCopies}
 		COMMENT "Staging import libs for C# links"
 		VERBATIM)
-	add_custom_target(CSharpNative DEPENDS "${sltShim}" ${sltNativeLibs})
+	add_custom_target(CSharpNative DEPENDS "${sltShim}" "${sltShimStatic}" ${sltNativeLibs})
 
 	set(sltAOTRid "win-x64")
 	set(sltAOTSuffix ".dll")

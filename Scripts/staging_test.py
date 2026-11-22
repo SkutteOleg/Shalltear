@@ -146,6 +146,7 @@ CSHARP_CASES = (
 	('HeaderBinder/Shalltear.HeaderBinder.dll', build_sdk.SHIP),
 	('HeaderBinder/Shalltear.HeaderBinder.runtimeconfig.json', build_sdk.SHIP),
 	('native/CRTShim.obj', build_sdk.SHIP),
+	('native/CRTShimStatic.obj', build_sdk.SHIP),
 	('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.SHIP),
 	('native/libs/kernel32.lib', build_sdk.SHIP),
 	('Shalltear.Conformance.dll', build_sdk.DROP),
@@ -271,7 +272,9 @@ def check_csharp_rules(fail):
 		fail("staging CSharp/ accepted a build without %s" % built[0])
 	if staged([name for name in built if name != 'native/CRTShim.obj']) is not None:
 		fail("staging CSharp/ accepted a build without the link shim")
-	return checks + 4
+	if staged([name for name in built if name != 'native/CRTShimStatic.obj']) is not None:
+		fail("staging CSharp/ accepted a build without the static link shim")
+	return checks + 5
 
 
 def check_real_tree(fail):

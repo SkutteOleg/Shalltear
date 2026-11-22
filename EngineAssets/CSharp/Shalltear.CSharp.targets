@@ -129,8 +129,11 @@
 
 	<Target Name="ShalltearWriteStaticLinkCMake" AfterTargets="Publish"
 			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearSingleFilePlayer)' == 'true'">
+		<Error Condition="$(RuntimeIdentifier.StartsWith('win')) and !Exists('$(ShalltearNativeDir)CRTShimStatic.obj')"
+			   Text="CRTShimStatic.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />
 		<PropertyGroup>
 			<_ShalltearPublishedObj>$([System.IO.Path]::GetFullPath('$(PublishDir)GameScripts$(ObjectSuffix)').Replace('\', '/'))</_ShalltearPublishedObj>
+			<_ShalltearStaticShimObj Condition="$(RuntimeIdentifier.StartsWith('win'))">$([System.IO.Path]::GetFullPath('$(ShalltearNativeDir)CRTShimStatic.obj').Replace('\', '/'))</_ShalltearStaticShimObj>
 		</PropertyGroup>
 		<Copy SourceFiles="$(NativeObject)" DestinationFiles="$(PublishDir)GameScripts$(ObjectSuffix)" SkipUnchangedFiles="true" />
 		<ItemGroup>
@@ -138,6 +141,7 @@
 		</ItemGroup>
 		<ItemGroup>
 			<_ShalltearAotObj Include="$(_ShalltearPublishedObj)" />
+			<_ShalltearAotObj Include="$(_ShalltearStaticShimObj)" Condition="'$(_ShalltearStaticShimObj)' != ''" />
 			<_ShalltearAotObj Include="%(_ShalltearNativeLibAll.FullPath)"
 				Condition="('%(_ShalltearNativeLibAll.Extension)' == '.obj' or '%(_ShalltearNativeLibAll.Extension)' == '.o') and '%(_ShalltearNativeLibAll.Filename)' != 'dllmain'" />
 			<_ShalltearAotLib Include="%(_ShalltearNativeLibAll.FullPath)"
