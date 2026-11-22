@@ -98,8 +98,11 @@ function(_shalltear_find_header_binder_tools OUT_BINDER OUT_LIBCLANG OUT_DOTNET_
 		"${SHALLTEAR_RUNTIME_DIR}/CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
 		"${SHALLTEAR_PACKAGE_ROOT}/CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
 		"${SHALLTEAR_PACKAGE_ROOT}/../CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
+		"${SHALLTEAR_PACKAGE_ROOT}/../Bin/CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
 		"${SHALLTEAR_PACKAGE_ROOT}/../bin/CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
-		"${SHALLTEAR_PACKAGE_ROOT}/../../CSharp/HeaderBinder/Shalltear.HeaderBinder.dll")
+		"${SHALLTEAR_PACKAGE_ROOT}/../../CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
+		"${SHALLTEAR_PACKAGE_ROOT}/../../Bin/CSharp/HeaderBinder/Shalltear.HeaderBinder.dll"
+		"${SHALLTEAR_PACKAGE_ROOT}/../../bin/CSharp/HeaderBinder/Shalltear.HeaderBinder.dll")
 	foreach(candidate IN LISTS binderCandidates)
 		if(candidate AND EXISTS "${candidate}")
 			get_filename_component(binderDll "${candidate}" ABSOLUTE)
@@ -272,11 +275,17 @@ function(_shalltear_finalize_header_bindings MODULE_NAME PROJECT_ROOT BINDER_DLL
 		COMMENT "Generating C# bindings for ${MODULE_NAME} headers"
 		VERBATIM)
 
+	add_custom_target(${MODULE_NAME}_ShalltearHeaderBindings DEPENDS "${outCpp}")
+	add_dependencies(ShalltearHeaderBindings ${MODULE_NAME}_ShalltearHeaderBindings)
+
 	target_sources(${MODULE_NAME} PRIVATE "${outCpp}")
 	set_source_files_properties("${outCpp}" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 endfunction()
 
 function(_shalltear_attach_header_bindings MODULE_NAME PROJECT_ROOT BIND_HEADERS BIND_NAMESPACES)
+	if(NOT TARGET ShalltearHeaderBindings)
+		add_custom_target(ShalltearHeaderBindings)
+	endif()
 	target_include_directories(${MODULE_NAME} PRIVATE "${PROJECT_ROOT}/Library/CSharp/Generated/Views")
 
 	set(csharpEnabled FALSE)

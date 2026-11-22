@@ -1,5 +1,6 @@
 #include "CSharpBuildSteps.h"
 
+#include "CSharpAssemblies.h"
 #include "CSharpAuthoring.h"
 #include "CSharpDiagnostics.h"
 #include "CSharpProjectFiles.h"
@@ -58,6 +59,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		enum class Loading : u8 {
 			Idle = 0,
+			HeaderBindConfigure,
+			HeaderBindBuild,
 			Setup,
 			Compile,
 			StaticCompile
@@ -72,6 +75,8 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			const void* owner = nullptr;
 			str sdkRoot;
 			str root;
+			str cmakeExecutable;
+			str userBindingsBefore;
 			u32 errorCount = 0;
 			u32 warningCount = 0;
 			u64 startTicks = 0;
@@ -110,13 +115,18 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return IsLinux(targetId) ? "GameScripts.so" : "GameScripts.dll";
 		}
 
-		bool IsSingleFileBuild(const BuildContext& context) {
-			const ResolvedSetting* setting = context.profile ? context.profile->Find("singleFile") : nullptr;
-			if (!setting) {
-				return false;
-			}
-			const str lowered = StringUtil::ToLower(setting->value);
+		str ResolvedString(const BuildContext& context, std::string_view key) {
+			const ResolvedSetting* setting = context.profile ? context.profile->Find(key) : nullptr;
+			return setting ? setting->value : str{};
+		}
+
+		bool ResolvedBool(const BuildContext& context, std::string_view key) {
+			const str lowered = StringUtil::ToLower(ResolvedString(context, key));
 			return lowered == "true" || lowered == "1" || lowered == "yes" || lowered == "on";
+		}
+
+		bool IsSingleFileBuild(const BuildContext& context) {
+			return ResolvedBool(context, "singleFile");
 		}
 
 		str FindCompilerDirectory(const BuildContext& context, str* outToolchainFile = nullptr) {
@@ -238,16 +248,20 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Failed;
 		}
 
-		str PlayerPackagesArgument() {
-			Vector<PackageOps::PackageManifest> catalogue{GetMemoryResource(MemTag::Editor)};
+		void GetPlayerPackages(Vector<PackageOps::PackageManifest>& outCatalogue, Vector<str>& outGamePackages) {
 			Vector<str> diagnostics{GetMemoryResource(MemTag::Editor)};
-			PackageOps::LoadBuiltInCatalogue(catalogue, diagnostics);
+			PackageOps::LoadBuiltInCatalogue(outCatalogue, diagnostics);
 			Vector<str> stored{GetMemoryResource(MemTag::Editor)};
 			PackageOps::ReadEnabledSet(stored);
 			Vector<PackageOps::ResolvedPackage> resolution{GetMemoryResource(MemTag::Editor)};
-			PackageOps::ResolveEnabledSet(catalogue, stored, resolution);
+			PackageOps::ResolveEnabledSet(outCatalogue, stored, resolution);
+			PackageOps::SelectGamePackages(outCatalogue, resolution, outGamePackages);
+		}
+
+		str PlayerPackagesArgument() {
+			Vector<PackageOps::PackageManifest> catalogue{GetMemoryResource(MemTag::Editor)};
 			Vector<str> game{GetMemoryResource(MemTag::Editor)};
-			PackageOps::SelectGamePackages(catalogue, resolution, game);
+			GetPlayerPackages(catalogue, game);
 			str list;
 			for (u32 index = 0; index < CSharpImpl::PackageBindings::GetCount(); ++index) {
 				const str name(CSharpImpl::PackageBindings::GetName(index));
@@ -258,6 +272,184 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				}
 			}
 			return " -p:ShalltearPlayerPackages=" + (list.empty() ? str("-") : list);
+		}
+
+		bool ShouldRunHeaderBindPrepass(const BuildContext& context) {
+			return ScriptProjectOps::HasScriptProject(context.projectRoot) && ResolvedString(context, "buildCommand").empty();
+		}
+
+		str ReadUserBindingsText(const str& projectRoot) {
+			const fs::path file = fs::path(projectRoot) / CSharpAssemblies::NativeFolder / "UserBindings.g.cs";
+			std::error_code ec;
+			if (!fs::is_regular_file(file, ec)) {
+				return {};
+			}
+			return FileSystem::ReadTextFile(Path(file.generic_string()), MemTag::Editor);
+		}
+
+		str FindHeaderBinderPath() {
+			const fs::path file = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path() / "HeaderBinder" / "Shalltear.HeaderBinder.dll";
+			std::error_code ec;
+			return fs::is_regular_file(file, ec) ? file.generic_string() : str{};
+		}
+
+		void AppendExtraConfigureArg(BuildContext& context, std::string_view prefix, const str& arg) {
+			for (const str& existing : context.extraConfigureArgs) {
+				if (existing.starts_with(prefix)) {
+					return;
+				}
+			}
+			context.extraConfigureArgs.push_back(arg);
+		}
+
+		void DrainHeaderBindOutput(State& state, const BuildContext& context) {
+			state.lines.clear();
+			state.child.DrainLines(state.lines);
+			for (const str& line : state.lines) {
+				if (line.empty()) {
+					continue;
+				}
+				context.Log(line);
+				if (state.unparsed.size() == UNPARSED_LINE_CAP) {
+					state.unparsed.erase(state.unparsed.begin());
+				}
+				state.unparsed.push_back(line);
+			}
+		}
+
+		BuildStepStatus EndLoad(State& state, BuildStepStatus status) {
+			state.loading = Loading::Idle;
+			CSharpReload::SetBuildStarting(false);
+			return status;
+		}
+
+		BuildStepStatus FailHeaderBind(BuildContext& context, State& state, std::string_view what, i32 exitCode) {
+			str said = std::format("{} failed with exit code {}", what, exitCode);
+			for (const str& line : state.unparsed) {
+				said += "\n" + line;
+			}
+			context.AddIssue(BuildIssueSeverity::Error, "", said);
+			return EndLoad(state, BuildStepStatus::Failed);
+		}
+
+		void BeginSetup(State& state) {
+			if (CSharpSetup::GetState() == CSharpSetup::State::Idle && !CSharpAuthoring::IsActive()) {
+				CSharpSetup::Options options = CSharpSetup::GetDefaultOptions();
+				options.buildServers = false;
+				CSharpSetup::Begin(std::move(options), state.owner);
+			}
+			state.loading = Loading::Setup;
+		}
+
+		BuildStepStatus StartHeaderBindConfigure(BuildContext& context, State& state) {
+			if (state.sdkRoot.empty()) {
+				state.sdkRoot = DotNetToolchain::FindSDKRoot();
+			}
+			state.userBindingsBefore = ReadUserBindingsText(context.projectRoot);
+			if (state.userBindingsBefore.empty()) {
+				// regenerate UserBindings.g.cs if Library/CSharp was cleared while intermediateDir persisted
+				std::error_code ec;
+				fs::remove(fs::path(context.intermediateDir) / "ShalltearGenerated" / "UserThunks.generated.cpp", ec);
+			}
+
+			CppToolchain::DiscoveryOptions options;
+			options.sdkRoot = context.sdkRoot;
+			options.probeVersions = false;
+			const CppToolchain::ToolchainInfo toolchain = CppToolchain::Discover(options);
+			state.cmakeExecutable = toolchain.cmake.path;
+
+			str defines;
+			for (const str& define : context.defines) {
+				if (!defines.empty()) {
+					defines += ";";
+				}
+				defines += define;
+			}
+
+			Vector<PackageOps::PackageManifest> catalogue{GetMemoryResource(MemTag::Editor)};
+			Vector<str> playerPackages{GetMemoryResource(MemTag::Editor)};
+			GetPlayerPackages(catalogue, playerPackages);
+			str packageList;
+			for (const str& packageId : playerPackages) {
+				if (!packageList.empty()) {
+					packageList += ";";
+				}
+				packageList += packageId;
+			}
+
+			if (!state.sdkRoot.empty()) {
+				AppendExtraConfigureArg(context, "-DSHALLTEAR_DOTNET_ROOT=", "-DSHALLTEAR_DOTNET_ROOT=" + QuoteCommandArgument(state.sdkRoot));
+			}
+			if (const str headerBinder = FindHeaderBinderPath(); !headerBinder.empty()) {
+				AppendExtraConfigureArg(context, "-DSHALLTEAR_HEADER_BINDER_DLL=", "-DSHALLTEAR_HEADER_BINDER_DLL=" + QuoteCommandArgument(headerBinder));
+			}
+
+			str commandLine = std::format("{} -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE={}", QuoteCommandArgument(toolchain.cmake.path),
+										  QuoteCommandArgument(context.projectRoot), QuoteCommandArgument(context.intermediateDir), context.configuration);
+			commandLine += " -DCMAKE_CXX_COMPILER=" + QuoteCommandArgument(toolchain.compiler.path);
+			commandLine += " -DCMAKE_MAKE_PROGRAM=" + QuoteCommandArgument(toolchain.ninja.path);
+			commandLine += " -DShalltear_ROOT=" + QuoteCommandArgument(context.sdkRoot);
+			if (!toolchain.sdkToolchainFile.empty()) {
+				commandLine += " -DCMAKE_TOOLCHAIN_FILE=" + QuoteCommandArgument(toolchain.sdkToolchainFile);
+			}
+			commandLine += " -DSHALLTEAR_PROJECT_ROOT=" + QuoteCommandArgument(context.projectRoot);
+			commandLine += " -DSHALLTEAR_EXPECT_ENGINE_IDENTITY=" + QuoteCommandArgument(CppToolchain::GetEngineIdentity());
+			commandLine += " -DSHALLTEAR_PLAYER_TARGET=" + QuoteCommandArgument(str(context.target->GetId()));
+			commandLine += " -DSHALLTEAR_PLAYER_ENTRY=" + QuoteCommandArgument(context.entrySource);
+			commandLine += str(" -DSHALLTEAR_PLAYER_WINDOWED=") + (context.windowedSubsystem ? "ON" : "OFF");
+			commandLine += " -DSHALLTEAR_PLAYER_OUTPUT_DIRECTORY=" + QuoteCommandArgument(context.stagingDir);
+			commandLine += " -DSHALLTEAR_PLAYER_OUTPUT_NAME=" + QuoteCommandArgument(context.executableName);
+			commandLine += " -DSHALLTEAR_PLAYER_DEFINES=" + QuoteCommandArgument(defines);
+			commandLine += str(" -DSHALLTEAR_PLAYER_DEBUG_SYMBOLS=") + (ResolvedBool(context, "copyDebugSymbols") ? "ON" : "OFF");
+			commandLine += str(" -DSHALLTEAR_PLAYER_SINGLE_FILE=") + (IsSingleFileBuild(context) ? "ON" : "OFF");
+			commandLine += " -DSHALLTEAR_PLAYER_ICON=" + QuoteCommandArgument(context.executableIconFile);
+			commandLine += " -DSHALLTEAR_ENABLED_PACKAGES=" + QuoteCommandArgument(packageList);
+			commandLine += " -DSHALLTEAR_STAMP_NUMBER=" + std::format("{}", context.buildNumber);
+			commandLine += " -DSHALLTEAR_STAMP_TIME_UNIX=" + std::format("{}", context.buildTimeUnix);
+			commandLine += " -DSHALLTEAR_STAMP_TIME_ISO=" + QuoteCommandArgument(context.buildTimeIso);
+			commandLine += " -DSHALLTEAR_STAMP_VERSION=" + QuoteCommandArgument(context.version);
+			commandLine += " -DSHALLTEAR_STAMP_PROFILE=" + QuoteCommandArgument(context.profile->name);
+			for (const str& extraArg : context.extraConfigureArgs) {
+				if (!extraArg.empty()) {
+					commandLine += " " + extraArg;
+				}
+			}
+			// clear any cached static-link path until NativeAOT publish writes a fresh one
+			commandLine += " -DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=";
+
+			const ChildVariable variables[] = {
+				{"DOTNET_ROOT", state.sdkRoot},
+				{"DOTNET_CLI_TELEMETRY_OPTOUT", "1"},
+				{"DOTNET_NOLOGO", "1"},
+				{"DOTNET_MULTILEVEL_LOOKUP", "0"},
+			};
+			state.unparsed.clear();
+			context.Log("header-bind configure: " + commandLine);
+			if (!state.child.Start(commandLine, context.projectRoot, variables)) {
+				context.AddIssue(BuildIssueSeverity::Error, "", "C# header-binding configure couldn't be started");
+				return EndLoad(state, BuildStepStatus::Failed);
+			}
+			state.loading = Loading::HeaderBindConfigure;
+			return BuildStepStatus::Running;
+		}
+
+		BuildStepStatus StartHeaderBindBuild(BuildContext& context, State& state) {
+			const str commandLine = std::format("{} --build {} --target ShalltearHeaderBindings", QuoteCommandArgument(state.cmakeExecutable),
+												QuoteCommandArgument(context.intermediateDir));
+			const ChildVariable variables[] = {
+				{"DOTNET_ROOT", state.sdkRoot},
+				{"DOTNET_CLI_TELEMETRY_OPTOUT", "1"},
+				{"DOTNET_NOLOGO", "1"},
+				{"DOTNET_MULTILEVEL_LOOKUP", "0"},
+			};
+			state.unparsed.clear();
+			context.Log("header-bind build: " + commandLine);
+			if (!state.child.Start(commandLine, context.projectRoot, variables)) {
+				context.AddIssue(BuildIssueSeverity::Error, "", "C# header-binding build couldn't be started");
+				return EndLoad(state, BuildStepStatus::Failed);
+			}
+			state.loading = Loading::HeaderBindBuild;
+			return BuildStepStatus::Running;
 		}
 
 		BuildStepStatus StartScripts(BuildContext& context, State& state) {
@@ -344,12 +536,6 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		BuildStepStatus RunCompileStep(BuildContext& context, bool singleFile);
 
-		BuildStepStatus EndLoad(State& state, BuildStepStatus status) {
-			state.loading = Loading::Idle;
-			CSharpReload::SetBuildStarting(false);
-			return status;
-		}
-
 		BuildStepStatus FinishLoadOrStaticCompile(BuildContext& context, State& state) {
 			if (!IsSingleFileBuild(context)) {
 				return EndLoad(state, BuildStepStatus::Succeeded);
@@ -373,16 +559,49 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				return status;
 			}
 			if (context.IsCancelRequested()) {
+				state.child.Kill();
 				return EndLoad(state, BuildStepStatus::Failed);
 			}
 			if (state.loading == Loading::Idle) {
 				CSharpReload::SetBuildStarting(true);
-				if (CSharpSetup::GetState() == CSharpSetup::State::Idle && !CSharpAuthoring::IsActive()) {
-					CSharpSetup::Options options = CSharpSetup::GetDefaultOptions();
-					options.buildServers = false;
-					CSharpSetup::Begin(std::move(options), state.owner);
+				if (ShouldRunHeaderBindPrepass(context)) {
+					return StartHeaderBindConfigure(context, state);
 				}
-				state.loading = Loading::Setup;
+				BeginSetup(state);
+			}
+			if (state.loading == Loading::HeaderBindConfigure) {
+				DrainHeaderBindOutput(state, context);
+				i32 exitCode = 0;
+				if (!state.child.TryFinish(exitCode)) {
+					return BuildStepStatus::Running;
+				}
+				DrainHeaderBindOutput(state, context);
+				if (exitCode != 0) {
+					return FailHeaderBind(context, state, "C# header-binding configure", exitCode);
+				}
+				return StartHeaderBindBuild(context, state);
+			}
+			if (state.loading == Loading::HeaderBindBuild) {
+				DrainHeaderBindOutput(state, context);
+				i32 exitCode = 0;
+				if (!state.child.TryFinish(exitCode)) {
+					return BuildStepStatus::Running;
+				}
+				DrainHeaderBindOutput(state, context);
+				if (exitCode != 0) {
+					return FailHeaderBind(context, state, "C# header-binding build", exitCode);
+				}
+				const str userBindingsAfter = ReadUserBindingsText(context.projectRoot);
+				if (userBindingsAfter != state.userBindingsBefore) {
+					const CSharpProjectFiles::Options files = CSharpProjectFiles::GetDefaultOptions(context.projectRoot, state.sdkRoot);
+					CSharpProjectFiles::Result written;
+					CSharpProjectFiles::Write(files, written);
+					if (CSharpAuthoring::IsActive()) {
+						CSharpAuthoring::NotifyDefinitionsChanged();
+					}
+				}
+				BeginSetup(state);
+				return BuildStepStatus::Running;
 			}
 			CSharpSetup::Pump();
 			CSharpAuthoring::Pump();
