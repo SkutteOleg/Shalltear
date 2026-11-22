@@ -178,12 +178,14 @@
 	</PropertyGroup>
 
 	<Target Name="ShalltearEmitCppViews" AfterTargets="CoreCompile"
-			Condition="'$(ShalltearPlayerBuild)' != 'true' and '$(ShalltearEmitCppViews)' != 'false' and Exists('$(MSBuildProjectDirectory)/CMakeLists.txt') and Exists('$(ShalltearRefactorPath)') and '$(AssemblyName)' != '' and !$(AssemblyName.EndsWith('.Native'))">
+			Condition="'$(ShalltearRootProject)' == 'true' and '$(ShalltearPlayerBuild)' != 'true' and '$(ShalltearEmitCppViews)' != 'false' and Exists('$(MSBuildProjectDirectory)/CMakeLists.txt') and Exists('$(ShalltearRefactorPath)')">
 		<PropertyGroup>
 			<_ShalltearDotNetHost Condition="'$(DOTNET_HOST_PATH)' != ''">$(DOTNET_HOST_PATH)</_ShalltearDotNetHost>
 			<_ShalltearDotNetHost Condition="'$(_ShalltearDotNetHost)' == ''">dotnet</_ShalltearDotNetHost>
+			<_ShalltearViewRefsFile>$(BaseIntermediateOutputPath)view-refs.txt</_ShalltearViewRefsFile>
 		</PropertyGroup>
-		<Exec Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRefactorPath)&quot; --emit-views --project-root &quot;$(MSBuildProjectDirectory)&quot; --out-dir &quot;$(MSBuildProjectDirectory)/Library/CSharp/Generated/Views&quot; --runtime-dir &quot;$(ShalltearManagedDir)&quot;"
+		<WriteLinesToFile File="$(_ShalltearViewRefsFile)" Lines="@(ReferencePath)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+		<Exec Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRefactorPath)&quot; --emit-views --project-root &quot;$(MSBuildProjectDirectory)&quot; --out-dir &quot;$(MSBuildProjectDirectory)/Library/CSharp/Generated/Views&quot; --runtime-dir &quot;$(ShalltearManagedDir)&quot; --refs-file &quot;$(_ShalltearViewRefsFile)&quot;"
 			  StandardOutputImportance="low" />
 	</Target>
 </Project>

@@ -25,7 +25,42 @@ internal static class CppViewEmitter {
 		"union", "unsigned", "using", "virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq",
 	};
 
-	public static int Run(string projectRoot, string outDir, string? runtimeDir) {
+	static readonly Dictionary<string, string> _coreEngineHeaders = new(StringComparer.Ordinal) {
+		["SceneObject"] = "Shalltear/Core/Scene/SceneObject.h",
+		["Component"] = "Shalltear/Core/Scene/Component.h",
+		["Behavior"] = "Shalltear/Core/Scene/Behavior.h",
+		["Scene"] = "Shalltear/Core/Scene/Scene.h",
+		["SceneAsset"] = "Shalltear/Core/Scene/SceneAsset.h",
+		["PrefabAsset"] = "Shalltear/Core/Scene/Prefab.h",
+		["Asset"] = "Shalltear/Core/Asset/Asset.h",
+		["DataAsset"] = "Shalltear/Core/Asset/DataAsset.h",
+		["TextAsset"] = "Shalltear/Core/Asset/TextAsset.h",
+		["MeshAsset"] = "Shalltear/Core/Graphics/MeshAsset.h",
+		["MaterialAsset"] = "Shalltear/Core/Graphics/MaterialAsset.h",
+		["TextureAsset"] = "Shalltear/Core/Graphics/TextureAsset.h",
+		["SpriteAsset"] = "Shalltear/Core/Graphics/SpriteAsset.h",
+		["ShaderAsset"] = "Shalltear/Core/Graphics/ShaderAsset.h",
+		["SkeletonAsset"] = "Shalltear/Core/Graphics/SkeletonAsset.h",
+		["SkinAsset"] = "Shalltear/Core/Graphics/SkinAsset.h",
+		["MeshRenderer"] = "Shalltear/Core/Graphics/MeshRenderer.h",
+		["SkinnedMeshRenderer"] = "Shalltear/Core/Graphics/SkinnedMeshRenderer.h",
+		["Camera"] = "Shalltear/Core/Graphics/Camera.h",
+		["Light"] = "Shalltear/Core/Graphics/Light.h",
+		["FontAsset"] = "Shalltear/Core/UI/FontAsset.h",
+		["StyleSheetAsset"] = "Shalltear/Core/UI/StyleSheetAsset.h",
+		["VectorAsset"] = "Shalltear/Core/UI/VectorAsset.h",
+	};
+
+	sealed class MappedFieldType {
+		public string CppType = "";
+		public bool IsHandle;
+		public bool IsString;
+		public bool IsEnum;
+		public string? EngineTypeName;
+		public string? CoreHeader;
+	}
+
+	public static int Run(string projectRoot, string outDir, string? runtimeDir, string? refsFile = null) {
 		string fullRoot = Path.GetFullPath(projectRoot);
 		string assetsDir = Path.Combine(fullRoot, "Assets");
 		List<string> sourceFiles = new();
@@ -43,7 +78,7 @@ internal static class CppViewEmitter {
 				trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(file), parseOptions, path: file));
 			}
 
-			List<MetadataReference> references = Program.CollectReferences(runtimeDir);
+			List<MetadataReference> references = Program.CollectReferences(runtimeDir, projectRoot, refsFile);
 			CSharpCompilation compilation = CSharpCompilation.Create(
 				"ShalltearViewEmitter",
 				trees,
@@ -71,11 +106,18 @@ internal static class CppViewEmitter {
 				}
 			}
 
+			Dictionary<string, int> shortNameCounts = new(StringComparer.OrdinalIgnoreCase);
+			foreach (INamedTypeSymbol cls in classes) {
+				shortNameCounts[cls.Name] = shortNameCounts.TryGetValue(cls.Name, out int count) ? count + 1 : 1;
+			}
+
 			foreach (INamedTypeSymbol cls in classes.OrderBy(static c => c.ToDisplayString(_plain), StringComparer.Ordinal)) {
-				string headerName = cls.Name + ".generated.h";
+				bool collided = shortNameCounts[cls.Name] > 1;
+				string fullName = cls.ToDisplayString(_plain);
+				string headerName = (collided ? fullName : cls.Name) + ".generated.h";
 				string headerPath = Path.Combine(fullOut, headerName);
 				expectedFiles.Add(headerPath);
-				string content = EmitViewHeader(cls);
+				string content = EmitViewHeader(cls, collided);
 				if (!File.Exists(headerPath) || File.ReadAllText(headerPath) != content) {
 					File.WriteAllText(headerPath, content, new UTF8Encoding(false));
 				}
@@ -104,56 +146,120 @@ internal static class CppViewEmitter {
 		return false;
 	}
 
-	static string? MapCppType(ITypeSymbol type, out bool isHandle, out bool isString) {
-		isHandle = false;
-		isString = false;
+	static bool TryResolveEngineType(INamedTypeSymbol named, out string cppClass, out string? coreHeader) {
+		cppClass = "";
+		coreHeader = null;
+		foreach (AttributeData attr in named.GetAttributes()) {
+			string? attrName = attr.AttributeClass?.ToDisplayString(_plain);
+			if ((attrName == "Shalltear.Interop.EngineTypeAttribute" || attrName == "EngineTypeAttribute") &&
+				attr.ConstructorArguments.Length == 1 &&
+				attr.ConstructorArguments[0].Value is string rawName &&
+				!string.IsNullOrWhiteSpace(rawName) &&
+				IsSimpleCppIdentifier(rawName)) {
+				cppClass = rawName;
+				_coreEngineHeaders.TryGetValue(rawName, out coreHeader);
+				return true;
+			}
+		}
+		string full = named.ToDisplayString(_plain);
+		string? mapped = full switch {
+			"Shalltear.SceneObject" or "SceneObject" => "SceneObject",
+			"Shalltear.Component" or "Component" => "Component",
+			"Shalltear.Behavior" or "Behavior" => "Behavior",
+			"Shalltear.Asset" or "Asset" => "Asset",
+			"Shalltear.DataAsset" or "DataAsset" => "DataAsset",
+			_ => null,
+		};
+		if (mapped != null) {
+			cppClass = mapped;
+			_coreEngineHeaders.TryGetValue(mapped, out coreHeader);
+			return true;
+		}
+		return false;
+	}
+
+	static bool IsSimpleCppIdentifier(string text) {
+		if (string.IsNullOrEmpty(text) || (!char.IsLetter(text[0]) && text[0] != '_')) {
+			return false;
+		}
+		foreach (char c in text) {
+			if (!char.IsLetterOrDigit(c) && c != '_') {
+				return false;
+			}
+		}
+		return !_cppKeywords.Contains(text);
+	}
+
+	static MappedFieldType? MapCppType(ITypeSymbol type, bool allowForwardHandle) {
 		switch (type.SpecialType) {
 		case SpecialType.System_Boolean:
-			return "bool";
+			return new MappedFieldType { CppType = "bool" };
 		case SpecialType.System_SByte:
-			return "::Shalltear::i8";
+			return new MappedFieldType { CppType = "::Shalltear::i8" };
 		case SpecialType.System_Byte:
-			return "::Shalltear::u8";
+			return new MappedFieldType { CppType = "::Shalltear::u8" };
 		case SpecialType.System_Int16:
-			return "::Shalltear::i16";
+			return new MappedFieldType { CppType = "::Shalltear::i16" };
 		case SpecialType.System_UInt16:
-			return "::Shalltear::u16";
+			return new MappedFieldType { CppType = "::Shalltear::u16" };
 		case SpecialType.System_Int32:
-			return "::Shalltear::i32";
+			return new MappedFieldType { CppType = "::Shalltear::i32" };
 		case SpecialType.System_UInt32:
-			return "::Shalltear::u32";
+			return new MappedFieldType { CppType = "::Shalltear::u32" };
 		case SpecialType.System_Int64:
-			return "::Shalltear::i64";
+			return new MappedFieldType { CppType = "::Shalltear::i64" };
 		case SpecialType.System_UInt64:
-			return "::Shalltear::u64";
+			return new MappedFieldType { CppType = "::Shalltear::u64" };
 		case SpecialType.System_Single:
-			return "::Shalltear::f32";
+			return new MappedFieldType { CppType = "::Shalltear::f32" };
 		case SpecialType.System_Double:
-			return "::Shalltear::f64";
+			return new MappedFieldType { CppType = "::Shalltear::f64" };
 		case SpecialType.System_String:
-			isString = true;
-			return "::Shalltear::str";
+			return new MappedFieldType { CppType = "::Shalltear::str", IsString = true };
+		}
+		if (type.TypeKind == TypeKind.Enum && type is INamedTypeSymbol enumSym && enumSym.EnumUnderlyingType != null) {
+			MappedFieldType? underlying = MapCppType(enumSym.EnumUnderlyingType, allowForwardHandle);
+			if (underlying != null) {
+				underlying.IsEnum = true;
+				return underlying;
+			}
 		}
 		string name = type.WithNullableAnnotation(NullableAnnotation.NotAnnotated).ToDisplayString(_plain);
 		switch (name) {
 		case "Shalltear.Vec2":
-			return "::Shalltear::Vec2";
+			return new MappedFieldType { CppType = "::Shalltear::Vec2" };
 		case "Shalltear.Vec3":
-			return "::Shalltear::Vec3";
+			return new MappedFieldType { CppType = "::Shalltear::Vec3" };
 		case "Shalltear.Vec4":
-			return "::Shalltear::Vec4";
+			return new MappedFieldType { CppType = "::Shalltear::Vec4" };
 		case "Shalltear.Quat":
-			return "::Shalltear::Quat";
+			return new MappedFieldType { CppType = "::Shalltear::Quat" };
 		case "Shalltear.Color":
-			return "::Shalltear::Color";
+			return new MappedFieldType { CppType = "::Shalltear::Color" };
 		}
 		if (type.TypeKind == TypeKind.Class && type is INamedTypeSymbol named) {
+			bool isEngineObj = false;
 			for (INamedTypeSymbol? cur = named; cur != null; cur = cur.BaseType) {
 				string curName = cur.ToDisplayString(_plain);
 				if (curName == "Shalltear.EngineObject" || curName == "EngineObject") {
-					isHandle = true;
-					return "::Shalltear::Handle<::Shalltear::Object>";
+					isEngineObj = true;
+					break;
 				}
+			}
+			if (isEngineObj) {
+				if (TryResolveEngineType(named, out string engineCpp, out string? coreHeader) &&
+					(coreHeader != null || allowForwardHandle)) {
+					return new MappedFieldType {
+						CppType = "::Shalltear::Handle<::Shalltear::" + engineCpp + ">",
+						IsHandle = true,
+						EngineTypeName = engineCpp,
+						CoreHeader = coreHeader,
+					};
+				}
+				return new MappedFieldType {
+					CppType = "::Shalltear::Handle<::Shalltear::Object>",
+					IsHandle = true,
+				};
 			}
 		}
 		return null;
@@ -163,15 +269,29 @@ internal static class CppViewEmitter {
 		return _cppKeywords.Contains(name) ? name + "_" : name;
 	}
 
-	static string EmitViewHeader(INamedTypeSymbol cls) {
+	static string EmitViewHeader(INamedTypeSymbol cls, bool useQualifiedNamespace) {
 		string fullName = cls.ToDisplayString(_plain);
 		string viewClass = cls.Name + "View";
 		bool isBehavior = DerivesFrom(cls, "Shalltear.Behavior");
+		string cppNamespace = "Shalltear::CSharpViews";
+		if (useQualifiedNamespace && cls.ContainingNamespace != null && !cls.ContainingNamespace.IsGlobalNamespace) {
+			string nsPath = cls.ContainingNamespace.ToDisplayString(_plain).Replace(".", "::", StringComparison.Ordinal);
+			if (!string.IsNullOrEmpty(nsPath)) {
+				cppNamespace += "::" + nsPath;
+			}
+		}
 
-		List<(string name, string cppType, bool isHandle)> fields = new();
+		List<(string name, MappedFieldType mapped)> fields = new();
 		HashSet<string> seenFields = new(StringComparer.Ordinal);
-		List<IMethodSymbol> callables = new();
+		List<(IMethodSymbol method, MappedFieldType? ret, List<(string cppType, string paramName, MappedFieldType mapped)> parameters)> callables = new();
 		HashSet<string> seenMethods = new(StringComparer.Ordinal);
+		SortedSet<string> extraIncludes = new(StringComparer.Ordinal);
+		SortedSet<string> forwardDecls = new(StringComparer.Ordinal);
+
+		if (isBehavior) {
+			extraIncludes.Add("Shalltear/Core/Scene/Component.h");
+			extraIncludes.Add("Shalltear/Core/Scene/SceneObject.h");
+		}
 
 		for (INamedTypeSymbol? level = cls; level != null; level = level.BaseType) {
 			string levelName = level.ToDisplayString(_plain);
@@ -183,24 +303,67 @@ internal static class CppViewEmitter {
 					bool marked = field.GetAttributes().Any(static a => a.AttributeClass?.ToDisplayString(_plain) == "Shalltear.ReflectAttribute");
 					bool nonSerialized = field.GetAttributes().Any(static a => a.AttributeClass?.ToDisplayString(_plain) == "System.NonSerializedAttribute");
 					if ((field.DeclaredAccessibility == Accessibility.Public || marked) && !nonSerialized && seenFields.Add(field.Name)) {
-						string? cppType = MapCppType(field.Type, out bool isHandle, out _);
-						if (cppType != null) {
-							fields.Add((field.Name, cppType, isHandle));
+						MappedFieldType? mapped = MapCppType(field.Type, allowForwardHandle: true);
+						if (mapped != null) {
+							if (mapped.EngineTypeName != null) {
+								if (mapped.CoreHeader != null) {
+									extraIncludes.Add(mapped.CoreHeader);
+								} else {
+									forwardDecls.Add(mapped.EngineTypeName);
+								}
+							}
+							fields.Add((field.Name, mapped));
 						}
 					}
 				} else if (member is IPropertySymbol prop && !prop.IsStatic && !prop.IsIndexer && prop.GetMethod != null && prop.SetMethod != null) {
 					bool marked = prop.GetAttributes().Any(static a => a.AttributeClass?.ToDisplayString(_plain) == "Shalltear.ReflectAttribute");
 					if (marked && seenFields.Add(prop.Name)) {
-						string? cppType = MapCppType(prop.Type, out bool isHandle, out _);
-						if (cppType != null) {
-							fields.Add((prop.Name, cppType, isHandle));
+						MappedFieldType? mapped = MapCppType(prop.Type, allowForwardHandle: true);
+						if (mapped != null) {
+							if (mapped.EngineTypeName != null) {
+								if (mapped.CoreHeader != null) {
+									extraIncludes.Add(mapped.CoreHeader);
+								} else {
+									forwardDecls.Add(mapped.EngineTypeName);
+								}
+							}
+							fields.Add((prop.Name, mapped));
 						}
 					}
 				} else if (member is IMethodSymbol method && !method.IsGenericMethod &&
 						   method.GetAttributes().Any(static a => a.AttributeClass?.ToDisplayString(_plain) == "Shalltear.CallableAttribute")) {
-					if (seenMethods.Add(method.Name)) {
-						callables.Add(method);
+					if (!seenMethods.Add(method.Name)) {
+						continue;
 					}
+					MappedFieldType? retMapped = null;
+					if (!method.ReturnsVoid) {
+						retMapped = MapCppType(method.ReturnType, allowForwardHandle: false);
+						if (retMapped == null) {
+							continue;
+						}
+					}
+					List<(string cppType, string paramName, MappedFieldType mapped)> mparams = new();
+					bool ok = true;
+					foreach (IParameterSymbol param in method.Parameters) {
+						MappedFieldType? mapped = MapCppType(param.Type, allowForwardHandle: false);
+						if (mapped == null) {
+							ok = false;
+							break;
+						}
+						mparams.Add((mapped.IsString ? "std::string_view" : mapped.CppType, EscapeIdent(param.Name), mapped));
+					}
+					if (!ok) {
+						continue;
+					}
+					if (retMapped?.CoreHeader != null) {
+						extraIncludes.Add(retMapped.CoreHeader);
+					}
+					foreach ((_, _, MappedFieldType pm) in mparams) {
+						if (pm.CoreHeader != null) {
+							extraIncludes.Add(pm.CoreHeader);
+						}
+					}
+					callables.Add((method, retMapped, mparams));
 				}
 			}
 		}
@@ -218,12 +381,18 @@ internal static class CppViewEmitter {
 		sb.Append("#include \"Shalltear/Core/Reflection/TypeRegistry.h\"\n");
 		sb.Append("#include \"Shalltear/Core/Reflection/Variant.h\"\n");
 		sb.Append("#include \"Shalltear/Core/Reflection/Walk.h\"\n");
-		if (isBehavior) {
-			sb.Append("#include \"Shalltear/Core/Scene/Component.h\"\n");
-			sb.Append("#include \"Shalltear/Core/Scene/SceneObject.h\"\n");
+		foreach (string inc in extraIncludes) {
+			sb.Append("#include \"").Append(inc).Append("\"\n");
 		}
 		sb.Append("\n#include <bit>\n#include <string_view>\n\n");
-		sb.Append("namespace Shalltear::CSharpViews {\n\n");
+		if (forwardDecls.Count > 0) {
+			sb.Append("namespace Shalltear {\n");
+			foreach (string fwd in forwardDecls) {
+				sb.Append("\tclass ").Append(fwd).Append(";\n");
+			}
+			sb.Append("} // namespace Shalltear\n\n");
+		}
+		sb.Append("namespace ").Append(cppNamespace).Append(" {\n\n");
 		sb.Append("\tclass ").Append(viewClass).Append(" {\n");
 		sb.Append("\tpublic:\n");
 		sb.Append("\t\tstatic constexpr ::Shalltear::StringHash TYPE_HASH{\"").Append(fullName).Append("\"};\n\n");
@@ -247,28 +416,40 @@ internal static class CppViewEmitter {
 		sb.Append("\t\texplicit operator bool() const noexcept { return IsValid(); }\n");
 		sb.Append("\t\t::Shalltear::Handle<::Shalltear::Object> GetHandle() const noexcept { return _handle; }\n\n");
 
-		foreach ((string fname, string cppType, bool isHandle) in fields) {
+		foreach ((string fname, MappedFieldType mapped) in fields) {
 			string pascal = char.ToUpperInvariant(fname[0]) + fname.Substring(1);
-			sb.Append("\t\t").Append(cppType).Append(" Get").Append(pascal).Append("() const {\n");
+			sb.Append("\t\t").Append(mapped.CppType).Append(" Get").Append(pascal).Append("() const {\n");
 			sb.Append("\t\t\t::Shalltear::Object* inst = ValidateInstance(_handle.Get());\n");
 			sb.Append("\t\t\tif (!inst) {\n\t\t\t\treturn {};\n\t\t\t}\n");
 			sb.Append("\t\t\t::Shalltear::Variant value;\n");
 			sb.Append("\t\t\tif (!::Shalltear::GetField(inst, inst->GetType(), ::Shalltear::StringHash(\"").Append(fname).Append("\"), &value)) {\n");
 			sb.Append("\t\t\t\treturn {};\n\t\t\t}\n");
-			if (isHandle) {
+			if (mapped.IsHandle) {
 				sb.Append("\t\t\tconst ::Shalltear::u64* id = value.TryGet<::Shalltear::u64>();\n");
-				sb.Append("\t\t\treturn id ? ::Shalltear::Handle<::Shalltear::Object>(::Shalltear::ObjectRegistry::Resolve(*id)) : ::Shalltear::Handle<::Shalltear::Object>{};\n");
+				sb.Append("\t\t\t::Shalltear::Object* resolved = id ? ::Shalltear::ObjectRegistry::Resolve(*id) : nullptr;\n");
+				if (mapped.EngineTypeName != null) {
+					sb.Append("\t\t\tconst ::Shalltear::TypeInfo* expected = ::Shalltear::TypeRegistry::FindType(::Shalltear::StringHash(\"").Append(mapped.EngineTypeName).Append("\"));\n");
+					sb.Append("\t\t\tif (!resolved || !expected || !::Shalltear::TypeRegistry::IsDerivedFrom(resolved->GetType(), expected)) {\n\t\t\t\treturn {};\n\t\t\t}\n");
+					sb.Append("\t\t\treturn std::bit_cast<").Append(mapped.CppType).Append(">(resolved->GetInstanceId());\n");
+				} else {
+					sb.Append("\t\t\treturn resolved ? ::Shalltear::Handle<::Shalltear::Object>(resolved) : ::Shalltear::Handle<::Shalltear::Object>{};\n");
+				}
+			} else if (mapped.IsEnum) {
+				sb.Append("\t\t\tconst ::Shalltear::i64* ptr = value.TryGet<::Shalltear::i64>();\n");
+				sb.Append("\t\t\treturn ptr ? static_cast<").Append(mapped.CppType).Append(">(*ptr) : ").Append(mapped.CppType).Append("{};\n");
 			} else {
-				sb.Append("\t\t\tconst ").Append(cppType).Append("* ptr = value.TryGet<").Append(cppType).Append(">();\n");
-				sb.Append("\t\t\treturn ptr ? *ptr : ").Append(cppType).Append("{};\n");
+				sb.Append("\t\t\tconst ").Append(mapped.CppType).Append("* ptr = value.TryGet<").Append(mapped.CppType).Append(">();\n");
+				sb.Append("\t\t\treturn ptr ? *ptr : ").Append(mapped.CppType).Append("{};\n");
 			}
 			sb.Append("\t\t}\n\n");
 
-			sb.Append("\t\tvoid Set").Append(pascal).Append("(const ").Append(cppType).Append("& next) const {\n");
+			sb.Append("\t\tvoid Set").Append(pascal).Append("(const ").Append(mapped.CppType).Append("& next) const {\n");
 			sb.Append("\t\t\t::Shalltear::Object* inst = ValidateInstance(_handle.Get());\n");
 			sb.Append("\t\t\tif (!inst) {\n\t\t\t\treturn;\n\t\t\t}\n");
-			if (isHandle) {
+			if (mapped.IsHandle) {
 				sb.Append("\t\t\tconst ::Shalltear::Variant wrapped(next.GetInstanceId());\n");
+			} else if (mapped.IsEnum) {
+				sb.Append("\t\t\tconst ::Shalltear::Variant wrapped(static_cast<::Shalltear::i64>(next));\n");
 			} else {
 				sb.Append("\t\t\tconst ::Shalltear::Variant wrapped(next);\n");
 			}
@@ -276,28 +457,8 @@ internal static class CppViewEmitter {
 			sb.Append("\t\t}\n\n");
 		}
 
-		foreach (IMethodSymbol method in callables) {
-			string retCpp = "void";
-			if (!method.ReturnsVoid) {
-				string? mapped = MapCppType(method.ReturnType, out _, out _);
-				if (mapped == null) {
-					continue;
-				}
-				retCpp = mapped;
-			}
-			List<(string cppType, string paramName)> mparams = new();
-			bool ok = true;
-			foreach (IParameterSymbol param in method.Parameters) {
-				string? mapped = MapCppType(param.Type, out _, out bool isStr);
-				if (mapped == null) {
-					ok = false;
-					break;
-				}
-				mparams.Add((isStr ? "std::string_view" : mapped, EscapeIdent(param.Name)));
-			}
-			if (!ok) {
-				continue;
-			}
+		foreach ((IMethodSymbol method, MappedFieldType? retMapped, List<(string cppType, string paramName, MappedFieldType mapped)> mparams) in callables) {
+			string retCpp = retMapped?.CppType ?? "void";
 			string exportName = method.ContainingType.ToDisplayString(_plain) + "::" + method.Name;
 			List<string> sigParams = new();
 			if (!method.IsStatic) {
@@ -334,7 +495,7 @@ internal static class CppViewEmitter {
 		if (!_cppKeywords.Contains(cls.Name)) {
 			sb.Append("\tusing ").Append(cls.Name).Append(" = ").Append(viewClass).Append(";\n\n");
 		}
-		sb.Append("} // namespace Shalltear::CSharpViews\n");
+		sb.Append("} // namespace ").Append(cppNamespace).Append('\n');
 		return sb.ToString();
 	}
 }

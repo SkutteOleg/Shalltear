@@ -22,6 +22,7 @@ internal static class Program {
 		string? oldName = null;
 		string? newName = null;
 		string? runtimeDir = null;
+		string? refsFile = null;
 
 		for (int i = 0; i < args.Length; ++i) {
 			string arg = args[i];
@@ -48,15 +49,18 @@ internal static class Program {
 			case "--runtime-dir":
 				runtimeDir = Next();
 				break;
+			case "--refs-file":
+				refsFile = Next();
+				break;
 			}
 		}
 
 		if (emitViews) {
 			if (string.IsNullOrWhiteSpace(projectRoot) || string.IsNullOrWhiteSpace(outDir)) {
-				Console.Error.WriteLine("usage: Shalltear.Refactor --emit-views --project-root <dir> --out-dir <dir> [--runtime-dir <dir>]");
+				Console.Error.WriteLine("usage: Shalltear.Refactor --emit-views --project-root <dir> --out-dir <dir> [--runtime-dir <dir>] [--refs-file <path>]");
 				return 2;
 			}
-			return CppViewEmitter.Run(projectRoot, outDir, runtimeDir);
+			return CppViewEmitter.Run(projectRoot, outDir, runtimeDir, refsFile);
 		}
 
 		if (string.IsNullOrWhiteSpace(targetFile) || string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) {
@@ -92,7 +96,7 @@ internal static class Program {
 			return 0;
 		}
 
-		List<MetadataReference> references = CollectReferences(runtimeDir);
+		List<MetadataReference> references = CollectReferences(runtimeDir, projectRoot, refsFile);
 		CSharpCompilation compilation = CSharpCompilation.Create(
 			"ShalltearRefactor",
 			parsed.Select(static p => p.tree),
@@ -188,26 +192,80 @@ internal static class Program {
 		return files;
 	}
 
-	internal static List<MetadataReference> CollectReferences(string? runtimeDir) {
+	internal static List<MetadataReference> CollectReferences(string? runtimeDir, string? projectRoot = null, string? refsFile = null) {
 		List<MetadataReference> refs = new();
 		HashSet<string> seen = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+		HashSet<string> seenNames = new(StringComparer.OrdinalIgnoreCase);
+
 		void AddFile(string path) {
-			if (!string.IsNullOrEmpty(path) && File.Exists(path) && seen.Add(Path.GetFullPath(path))) {
-				refs.Add(MetadataReference.CreateFromFile(path));
+			if (string.IsNullOrEmpty(path) || !File.Exists(path)) {
+				return;
+			}
+			string full = Path.GetFullPath(path);
+			string fileName = Path.GetFileName(full);
+			if (seen.Add(full) && seenNames.Add(fileName)) {
+				try {
+					refs.Add(MetadataReference.CreateFromFile(full));
+				} catch {
+				}
+			}
+		}
+
+		if (!string.IsNullOrWhiteSpace(refsFile) && File.Exists(refsFile)) {
+			foreach (string raw in File.ReadAllLines(refsFile)) {
+				string line = raw.Trim();
+				if (line.Length > 0) {
+					AddFile(line);
+				}
 			}
 		}
 
 		string? coreDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
-		if (!string.IsNullOrEmpty(coreDir)) {
-			foreach (string name in new[] { "System.Private.CoreLib.dll", "System.Runtime.dll", "System.Collections.dll", "System.Linq.dll", "netstandard.dll" }) {
-				AddFile(Path.Combine(coreDir, name));
+		if (!string.IsNullOrEmpty(coreDir) && Directory.Exists(coreDir)) {
+			foreach (string dll in Directory.EnumerateFiles(coreDir, "*.dll", SearchOption.TopDirectoryOnly)) {
+				string name = Path.GetFileName(dll);
+				if (name.Contains(".Native.", StringComparison.OrdinalIgnoreCase)) {
+					continue;
+				}
+				if (name.StartsWith("System.", StringComparison.OrdinalIgnoreCase) ||
+					name.Equals("netstandard.dll", StringComparison.OrdinalIgnoreCase) ||
+					name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase) ||
+					name.Equals("Microsoft.CSharp.dll", StringComparison.OrdinalIgnoreCase)) {
+					AddFile(dll);
+				}
 			}
 		}
+
 		if (!string.IsNullOrWhiteSpace(runtimeDir) && Directory.Exists(runtimeDir)) {
 			foreach (string dll in Directory.EnumerateFiles(runtimeDir, "Shalltear.*.dll", SearchOption.TopDirectoryOnly)) {
 				AddFile(dll);
 			}
 		}
+
+		if (!string.IsNullOrWhiteSpace(projectRoot)) {
+			string fullProjectRoot = Path.GetFullPath(projectRoot);
+			HashSet<string> sourceAssemblyNames = new(StringComparer.OrdinalIgnoreCase);
+			if (Directory.Exists(fullProjectRoot)) {
+				foreach (string csproj in Directory.EnumerateFiles(fullProjectRoot, "*.csproj", SearchOption.TopDirectoryOnly)) {
+					string stem = Path.GetFileNameWithoutExtension(csproj);
+					if (!stem.EndsWith(".Native.Scripts", StringComparison.OrdinalIgnoreCase) &&
+						!stem.EndsWith(".Native", StringComparison.OrdinalIgnoreCase)) {
+						sourceAssemblyNames.Add(stem + ".dll");
+					}
+				}
+			}
+			string binDir = Path.Combine(fullProjectRoot, "Library", "CSharp", "bin");
+			if (Directory.Exists(binDir)) {
+				foreach (string dll in Directory.EnumerateFiles(binDir, "*.dll", SearchOption.TopDirectoryOnly)) {
+					string name = Path.GetFileName(dll);
+					if (sourceAssemblyNames.Contains(name)) {
+						continue;
+					}
+					AddFile(dll);
+				}
+			}
+		}
+
 		return refs;
 	}
 

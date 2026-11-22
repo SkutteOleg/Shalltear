@@ -9,6 +9,7 @@
 	<PropertyGroup>
 		<AssemblyName>{{PROJECT_NAME}}.Scripts</AssemblyName>
 		<RootNamespace>{{PROJECT_NAME}}</RootNamespace>
+		<ShalltearRootProject>true</ShalltearRootProject>
 		<OutputPath>$(ShalltearBuildRoot)bin/</OutputPath>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>

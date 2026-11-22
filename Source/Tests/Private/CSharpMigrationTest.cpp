@@ -302,7 +302,8 @@ TEST_F(CSharpMigrationTest, RoslynRefactorRenamesClassAndInsertsFormerlySerializ
 	const fs::path fileA = _project / "Assets" / "Scripts" / "Booster.cs";
 	const fs::path fileB = _project / "Assets" / "Scripts" / "Caller.cs";
 	std::ofstream(fileA, std::ios::binary)
-		<< "using Shalltear;\n\nnamespace Demo;\n\npublic sealed class Booster : Behavior {\n\t// Booster comment stays\n\tpublic string label = \"Booster\";\n}\n";
+		<< "using System.Numerics;\nusing Shalltear;\n\nnamespace Demo;\n\npublic sealed class Booster : Behavior {\n"
+		<< "\t// Booster comment stays\n\tpublic string label = \"Booster\";\n\tpublic Vector3 ExtraOffset() => Vector3.UnitY;\n}\n";
 	std::ofstream(fileB, std::ios::binary)
 		<< "using Shalltear;\n\nnamespace Demo;\n\npublic sealed class Caller : Behavior {\n\tpublic Booster? target;\n}\n";
 
@@ -326,6 +327,64 @@ TEST_F(CSharpMigrationTest, RoslynRefactorRenamesClassAndInsertsFormerlySerializ
 	EXPECT_NE(updatedA.find("// Booster comment stays"), str::npos) << updatedA;
 	EXPECT_NE(updatedA.find("\"Booster\""), str::npos) << updatedA;
 	EXPECT_NE(updatedB.find("public TurboPad? target;"), str::npos) << updatedB;
+}
+
+TEST_F(CSharpMigrationTest, CppViewEmitterHandlesCollisionsTypedHandlesAndEnums) {
+	const str sdk = _hooks->findSDKRoot();
+	if (sdk.empty()) {
+		GTEST_SKIP() << "pinned .NET SDK not found";
+	}
+	const fs::path managedDir = fs::path(ScriptProjectOps::GetEditorExecutablePath()).parent_path() / "CSharp";
+	const fs::path refactorDll = managedDir / "Refactor" / "Shalltear.Refactor.dll";
+	ASSERT_TRUE(fs::is_regular_file(refactorDll)) << refactorDll;
+
+	std::ofstream(_project / "Assets" / "Scripts" / "AIState.cs", std::ios::binary)
+		<< "using Shalltear;\n\nnamespace Game.AI;\n\npublic sealed class State : Behavior {\n\tpublic int priority;\n}\n";
+	std::ofstream(_project / "Assets" / "Scripts" / "UIState.cs", std::ios::binary)
+		<< "using Shalltear;\n\nnamespace Game.UI;\n\npublic sealed class State : Behavior {\n\tpublic bool visible;\n}\n";
+	std::ofstream(_project / "Assets" / "Scripts" / "TargetViewProbe.cs", std::ios::binary)
+		<< "using Shalltear;\n\nnamespace Demo;\n\npublic enum ProbeMode : byte { Idle = 0, Active = 1 }\n\n"
+		<< "public sealed class TargetViewProbe : Behavior {\n"
+		<< "\tpublic SceneObject? trackedObject;\n"
+		<< "\tpublic Mesh? customMesh;\n"
+		<< "\tpublic ProbeMode mode;\n"
+		<< "\t[Callable]\n"
+		<< "\tpublic SceneObject? EchoTarget(SceneObject? input) => input;\n"
+		<< "}\n";
+
+	const fs::path viewsDir = _project / "Library" / "CSharp" / "Generated" / "Views";
+	const fs::path dotnet = fs::path(sdk) / _editor->muxerName;
+	TestPlatform::SetEnvironment("DOTNET_ROOT", sdk);
+	TestPlatform::SetEnvironment("DOTNET_CLI_TELEMETRY_OPTOUT", "1");
+	TestPlatform::SetEnvironment("DOTNET_NOLOGO", "1");
+	TestPlatform::SetEnvironment("DOTNET_MULTILEVEL_LOOKUP", "0");
+
+	int exitCode = -1;
+	const str command = "\"" + dotnet.generic_string() + "\" \"" + refactorDll.generic_string() +
+						"\" --emit-views --project-root \"" + _project.generic_string() +
+						"\" --out-dir \"" + viewsDir.generic_string() +
+						"\" --runtime-dir \"" + managedDir.generic_string() + "\"";
+	const str output = TestPlatform::RunCommand(command, exitCode);
+	ASSERT_EQ(exitCode, 0) << output;
+
+	// colliding short name "State" must emit qualified headers + namespaces instead of overwriting State.generated.h
+	EXPECT_FALSE(fs::exists(viewsDir / "State.generated.h"));
+	ASSERT_TRUE(fs::is_regular_file(viewsDir / "Game.AI.State.generated.h"));
+	ASSERT_TRUE(fs::is_regular_file(viewsDir / "Game.UI.State.generated.h"));
+	EXPECT_NE(ReadTextFile(viewsDir / "Game.AI.State.generated.h").find("namespace Shalltear::CSharpViews::Game::AI"), str::npos);
+	EXPECT_NE(ReadTextFile(viewsDir / "Game.UI.State.generated.h").find("namespace Shalltear::CSharpViews::Game::UI"), str::npos);
+
+	// unique class keeps ergonomic short filename with typed Handle<T> and enum fields
+	const fs::path probeHeader = viewsDir / "TargetViewProbe.generated.h";
+	ASSERT_TRUE(fs::is_regular_file(probeHeader));
+	const str probeText = ReadTextFile(probeHeader);
+	EXPECT_NE(probeText.find("#include \"Shalltear/Core/Graphics/MeshAsset.h\""), str::npos) << probeText;
+	EXPECT_NE(probeText.find("::Shalltear::Handle<::Shalltear::SceneObject> GetTrackedObject()"), str::npos) << probeText;
+	EXPECT_NE(probeText.find("::Shalltear::Handle<::Shalltear::MeshAsset> GetCustomMesh()"), str::npos) << probeText;
+	EXPECT_NE(probeText.find("::Shalltear::u8 GetMode()"), str::npos) << probeText;
+	EXPECT_NE(probeText.find("void SetMode(const ::Shalltear::u8& next)"), str::npos) << probeText;
+	EXPECT_NE(probeText.find("::Shalltear::Handle<::Shalltear::SceneObject> EchoTarget(::Shalltear::Handle<::Shalltear::SceneObject> input)"), str::npos)
+		<< probeText;
 }
 
 #endif
