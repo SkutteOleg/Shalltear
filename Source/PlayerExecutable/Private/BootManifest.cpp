@@ -11,6 +11,7 @@
 #include "Shalltear/Core/Scene/SceneSystem.h"
 #include "Shalltear/Core/Serialization/JSON.h"
 
+#include <cstdio>
 #include <format>
 
 namespace Shalltear {
@@ -106,6 +107,51 @@ namespace Shalltear {
 
 		out = std::move(parsed);
 		return true;
+	}
+
+	int PrintThirdPartyNotices(const str& executableRoot) {
+		str notices;
+		if (!AssetDatabase::ReadPackageDocument(PakDocumentKind::ThirdPartyNotices, notices) || notices.empty()) {
+			const Path runtimeFile(executableRoot + "/THIRD-PARTY-NOTICES.txt");
+			if (FileSystem::Exists(runtimeFile)) {
+				notices = FileSystem::ReadTextFile(runtimeFile, MemTag::Core);
+			}
+			const Path dotNetFile(executableRoot + "/THIRD-PARTY-NOTICES-DotNet.txt");
+			if (FileSystem::Exists(dotNetFile)) {
+				const str dotNet = FileSystem::ReadTextFile(dotNetFile, MemTag::Core);
+				if (!dotNet.empty()) {
+					if (!notices.empty() && notices.back() != '\n') {
+						notices.push_back('\n');
+					}
+					notices += "\n================================================================================\n\n";
+					notices += dotNet;
+				}
+			}
+		}
+		if (notices.empty()) {
+			std::fputs("no third-party notices are embedded in or beside this executable\n", stderr);
+			return 1;
+		}
+		std::fwrite(notices.data(), 1, notices.size(), stdout);
+		if (notices.back() != '\n') {
+			std::fputc('\n', stdout);
+		}
+		std::fflush(stdout);
+		return 0;
+	}
+
+	void UnpackThirdPartyNotices(const str& executableRoot) {
+		str notices;
+		if (!AssetDatabase::ReadPackageDocument(PakDocumentKind::ThirdPartyNotices, notices) || notices.empty()) {
+			return;
+		}
+		const Path destination(executableRoot + "/THIRD-PARTY-NOTICES.txt");
+		if (FileSystem::Exists(destination) && FileSystem::ReadTextFile(destination, MemTag::Core) == notices) {
+			return;
+		}
+		if (!FileSystem::WriteTextFile(destination, notices)) {
+			SLT_LOG_WARN("Player", "couldn't write '{}' (directory may be read-only)", destination.ToString());
+		}
 	}
 
 } // namespace Shalltear

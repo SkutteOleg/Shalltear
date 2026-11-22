@@ -32,4 +32,8 @@ namespace Shalltear {
 
 	bool ReadBootManifest(BootManifest& out, str& outError);
 
+	int PrintThirdPartyNotices(const str& executableRoot);
+
+	void UnpackThirdPartyNotices(const str& executableRoot);
+
 } // namespace Shalltear

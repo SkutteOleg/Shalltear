@@ -31,6 +31,7 @@ namespace Shalltear {
 
 		struct ServerOptions {
 			i32 frames = -1;
+			bool thirdPartyNotices = false;
 		};
 
 		ServerOptions ParseOptions(int argc, char* argv[]) {
@@ -39,6 +40,8 @@ namespace Shalltear {
 				if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
 					long parsed = std::strtol(argv[++i], nullptr, 10);
 					options.frames = parsed > 0 ? static_cast<i32>(parsed) : 0;
+				} else if (std::strcmp(argv[i], "--third-party-notices") == 0) {
+					options.thirdPartyNotices = true;
 				}
 			}
 			return options;
@@ -133,7 +136,13 @@ namespace Shalltear {
 		ServerOptions options = ParseOptions(argc, argv);
 
 		JobSystem::Initialize();
-		LogManager::Initialize();
+		LogInitConfig logConfig;
+		if (options.thirdPartyNotices) {
+			logConfig.enableConsoleSink = false;
+			logConfig.enableFileSink = false;
+			logConfig.createConsole = false;
+		}
+		LogManager::Initialize(logConfig);
 		TypeRegistry::InitializePrimitives();
 
 		str root = GetExecutableDirectory();
@@ -155,7 +164,10 @@ namespace Shalltear {
 			if (!MountStagedContent(root, mountError)) {
 				SLT_LOG_FATAL("Server", "{}", mountError);
 				exitCode = 1;
+			} else if (options.thirdPartyNotices) {
+				exitCode = PrintThirdPartyNotices(root);
 			} else {
+				UnpackThirdPartyNotices(root);
 				exitCode = RunSimulation(options);
 			}
 		} catch (const std::exception& e) {

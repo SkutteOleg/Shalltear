@@ -213,6 +213,8 @@ public sealed class Probe : Behavior {
 		std::unique_ptr<ScopedUserDataDirectory> userData;
 		int singleBuildExit = -1;
 		str singleBuildLog;
+		int singleNoticesExit = -1;
+		str singleNoticesOutput;
 		int singleRunExit = -1;
 		str singleRunLog;
 		int sidecarBuildExit = -1;
@@ -289,6 +291,13 @@ public sealed class Probe : Behavior {
 				suite.singleBuildExit);
 			if (suite.singleBuildExit == 0) {
 				const fs::path builtExe = suite.project / "Builds" / "SingleFile" / ("SingleFileDemo" SLT_TEST_PLAYER_SUFFIX);
+				const fs::path noticesDir = suite.root / "IsolatedNotices";
+				fs::create_directories(noticesDir);
+				const fs::path noticesExe = noticesDir / builtExe.filename();
+				fs::copy_file(builtExe, noticesExe, fs::copy_options::overwrite_existing, ec);
+				suite.singleNoticesOutput = TestPlatform::RunCommand(
+					"\"" + noticesExe.generic_string() + "\" --third-party-notices", suite.singleNoticesExit);
+
 				const fs::path isolatedDir = suite.root / "Isolated";
 				fs::create_directories(isolatedDir);
 				const fs::path isolatedExe = isolatedDir / builtExe.filename();
@@ -492,6 +501,18 @@ TEST_F(CSharpSingleFilePlayerTest, SingleFileExecutableRunsIsolatedWithZeroSidec
 	EXPECT_FALSE(fs::exists(staging / "Data" / "Content.slpak"));
 	EXPECT_FALSE(fs::exists(staging / "libc++.dll"));
 	EXPECT_FALSE(fs::exists(staging / "libunwind.dll"));
+	EXPECT_FALSE(fs::exists(staging / "THIRD-PARTY-NOTICES.txt"));
+	EXPECT_FALSE(fs::exists(staging / "THIRD-PARTY-NOTICES-DotNet.txt"));
+
+	// staging folder holds strictly the single executable
+	u32 stagedFiles = 0;
+	std::error_code ec;
+	for (const fs::directory_entry& entry : fs::recursive_directory_iterator(staging, ec)) {
+		if (entry.is_regular_file(ec)) {
+			++stagedFiles;
+		}
+	}
+	EXPECT_EQ(stagedFiles, 1u);
 
 	// verify SLTPKOV1 overlay footer appended to executable
 	const str exeBytes = ReadFileBytes(exe);
@@ -502,9 +523,25 @@ TEST_F(CSharpSingleFilePlayerTest, SingleFileExecutableRunsIsolatedWithZeroSidec
 	EXPECT_GT(footer.exeSize, 0u);
 	EXPECT_GT(footer.pakSize, 0u);
 
+	// --third-party-notices prints embedded engine + .NET notices cleanly without creating files
+	EXPECT_EQ(_singleSuite->singleNoticesExit, 0) << _singleSuite->singleNoticesOutput;
+	EXPECT_NE(_singleSuite->singleNoticesOutput.find("THIRD-PARTY NOTICES FOR SHALLTEAR"), str::npos);
+	EXPECT_NE(_singleSuite->singleNoticesOutput.find("by NativeAOT"), str::npos);
+	EXPECT_NE(_singleSuite->singleNoticesOutput.find("SingleFileDemo" SLT_TEST_PLAYER_SUFFIX), str::npos);
+	EXPECT_FALSE(fs::exists(_singleSuite->root / "IsolatedNotices" / "THIRD-PARTY-NOTICES.txt"));
+	EXPECT_FALSE(fs::exists(_singleSuite->root / "IsolatedNotices" / "Logs"));
+
 	EXPECT_EQ(_singleSuite->singleRunExit, 0) << _singleSuite->singleRunLog;
 	EXPECT_NE(_singleSuite->singleRunLog.find("SHALLTEAR_SINGLE_FILE_ENABLED owner=Runner"), str::npos) << _singleSuite->singleRunLog;
 	EXPECT_NE(_singleSuite->singleRunLog.find("SHALLTEAR_SINGLE_FILE_TICK frame=2"), str::npos) << _singleSuite->singleRunLog;
+
+	// first launch unpacks THIRD-PARTY-NOTICES.txt beside the executable
+	const fs::path unpackedNotices = _singleSuite->root / "Isolated" / "THIRD-PARTY-NOTICES.txt";
+	ASSERT_TRUE(fs::is_regular_file(unpackedNotices));
+	const str unpackedText = ReadFileBytes(unpackedNotices);
+	EXPECT_NE(unpackedText.find("THIRD-PARTY NOTICES FOR SHALLTEAR"), str::npos);
+	EXPECT_NE(unpackedText.find("by NativeAOT"), str::npos);
+	EXPECT_NE(unpackedText.find("SingleFileDemo" SLT_TEST_PLAYER_SUFFIX), str::npos);
 }
 
 TEST_F(CSharpSingleFilePlayerTest, SidecarModeProducesGameScriptsLibraryAndRuns) {

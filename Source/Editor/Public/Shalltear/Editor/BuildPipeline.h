@@ -85,6 +85,9 @@ namespace Shalltear {
 		// staged beside executable, found beside SDK/editor
 		Vector<str> runtimeFiles;
 
+		// appended to embedded third-party notices in single-file builds
+		Vector<str> extraThirdPartyNotices;
+
 		Vector<u32> executableIconSizes;
 		Vector<u32> windowIconSizes;
 		str executableIconFile;

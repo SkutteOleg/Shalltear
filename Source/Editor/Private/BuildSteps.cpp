@@ -586,6 +586,33 @@ namespace Shalltear {
 			if (!context.windowIconDocument.empty()) {
 				desc.documents.push_back({PakDocumentKind::Icon, context.windowIconDocument});
 			}
+			const bool singleFile = ResolvedBool(context, "singleFile");
+			if (singleFile) {
+				str runtimeNoticesSource;
+				if (!FindRuntimeDependency(context, "THIRD-PARTY-NOTICES-Runtime.txt", runtimeNoticesSource)) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 "'THIRD-PARTY-NOTICES-Runtime.txt' was not found beside the SDK or the editor "
+									 "(should be installed beside the engine binaries)");
+					return BuildStepStatus::Failed;
+				}
+				str combinedNotices = FileSystem::ReadTextFile(Path(runtimeNoticesSource), MemTag::Editor);
+				if (combinedNotices.empty()) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 "couldn't read '" + runtimeNoticesSource + "' for single-file notices");
+					return BuildStepStatus::Failed;
+				}
+				for (const str& extra : context.extraThirdPartyNotices) {
+					if (extra.empty()) {
+						continue;
+					}
+					if (!combinedNotices.empty() && combinedNotices.back() != '\n') {
+						combinedNotices.push_back('\n');
+					}
+					combinedNotices += "\n================================================================================\n\n";
+					combinedNotices += extra;
+				}
+				desc.documents.push_back({PakDocumentKind::ThirdPartyNotices, std::move(combinedNotices)});
+			}
 			Vector<u8> package{GetMemoryResource(MemTag::Editor)};
 			CookOps::CookReport report;
 			if (!CookOps::CookPackage(closure, desc, package, error, &report)) {
@@ -597,7 +624,6 @@ namespace Shalltear {
 			ClearStagedSubtree(destination);
 			std::error_code ec;
 
-			const bool singleFile = ResolvedBool(context, "singleFile");
 			const str exePath = !context.executableName.empty()
 									? context.stagingDir + "/" + context.executableName + context.executableSuffix
 									: str{};

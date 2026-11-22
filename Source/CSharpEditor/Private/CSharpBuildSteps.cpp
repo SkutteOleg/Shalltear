@@ -684,6 +684,21 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Succeeded;
 		}
 
+		bool ReadDotNetNotices(BuildContext& context, const fs::path& publish, std::string_view targetArtifact, str& outNotices) {
+			std::error_code ec;
+			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion, targetArtifact);
+			for (const std::string_view name : {"LICENSE.TXT", "THIRD-PARTY-NOTICES.TXT"}) {
+				const fs::path part = publish / NoticesFolder / name;
+				if (!fs::is_regular_file(part, ec)) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is missing. Build player again", part.generic_string()));
+					return false;
+				}
+				notices += FileSystem::ReadTextFile(Path(part.generic_string()), MemTag::Editor) + "\n";
+			}
+			outNotices = std::move(notices);
+			return true;
+		}
+
 		BuildStepStatus RunCompileStep(BuildContext& context, bool singleFile) {
 			State& state = GetState();
 			if (context.IsCancelRequested()) {
@@ -724,12 +739,19 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				}
 			}
 			if (singleFile) {
-				const fs::path staticLink = fs::path(state.root) / PublishFolder / "static-link.cmake";
+				const fs::path publish = fs::path(state.root) / PublishFolder;
+				const fs::path staticLink = publish / "static-link.cmake";
 				if (!fs::is_regular_file(staticLink, ec)) {
 					context.AddIssue(BuildIssueSeverity::Error, "",
 									 std::format("'{}' was not produced by NativeAOT publish", staticLink.generic_string()));
 					return BuildStepStatus::Failed;
 				}
+				const str targetArtifact = !context.executableName.empty() ? (context.executableName + context.executableSuffix) : str("this executable");
+				str dotNetNotices;
+				if (!ReadDotNetNotices(context, publish, targetArtifact, dotNetNotices)) {
+					return BuildStepStatus::Failed;
+				}
+				context.extraThirdPartyNotices.push_back(std::move(dotNetNotices));
 				context.extraConfigureArgs.push_back("-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=" + QuoteCommandArgument(staticLink.generic_string()));
 			}
 			return BuildStepStatus::Succeeded;
@@ -783,14 +805,9 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					return BuildStepStatus::Failed;
 				}
 			}
-			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion, libraryName);
-			for (const std::string_view name : {"LICENSE.TXT", "THIRD-PARTY-NOTICES.TXT"}) {
-				const fs::path part = publish / NoticesFolder / name;
-				if (!fs::is_regular_file(part, ec)) {
-					context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is missing. Build player again", part.generic_string()));
-					return BuildStepStatus::Failed;
-				}
-				notices += FileSystem::ReadTextFile(Path(part.generic_string()), MemTag::Editor) + "\n";
+			str notices;
+			if (!ReadDotNetNotices(context, publish, libraryName, notices)) {
+				return BuildStepStatus::Failed;
 			}
 			const fs::path staged = fs::path(context.stagingDir) / RuntimeNotices;
 			if (!FileSystem::WriteTextFile(Path(staged.generic_string()), notices)) {

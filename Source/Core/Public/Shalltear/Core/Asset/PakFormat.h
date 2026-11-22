@@ -265,7 +265,8 @@ namespace Shalltear {
 	enum class PakDocumentKind : u32 {
 		BootManifest = 1,
 		ProjectSettings = 2,
-		Icon = 3
+		Icon = 3,
+		ThirdPartyNotices = 4
 	};
 
 	// Icon document = PakIconImage + WindowIconImage texels per image

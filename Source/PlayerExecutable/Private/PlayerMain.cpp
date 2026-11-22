@@ -42,6 +42,7 @@ namespace Shalltear {
 			i32 loseDeviceFrame = -1;
 			u32 failedRebuilds = 0;
 			bool console = false;
+			bool thirdPartyNotices = false;
 			ScreenLaunch screen;
 		};
 
@@ -54,6 +55,8 @@ namespace Shalltear {
 					options.frames = parsed > 0 ? static_cast<i32>(parsed) : 0;
 				} else if (std::strcmp(argv[i], "--console") == 0) {
 					options.console = true;
+				} else if (std::strcmp(argv[i], "--third-party-notices") == 0) {
+					options.thirdPartyNotices = true;
 				} else if (std::strcmp(argv[i], "--lose-device") == 0 && i + 1 < argc) {
 					options.loseDeviceFrame = number(argv[++i]);
 				} else if (std::strcmp(argv[i], "--fail-rebuilds") == 0 && i + 1 < argc) {
@@ -240,7 +243,13 @@ namespace Shalltear {
 
 		JobSystem::Initialize();
 		LogInitConfig logConfig;
-		logConfig.createConsole = options.console;
+		if (options.thirdPartyNotices) {
+			logConfig.enableConsoleSink = false;
+			logConfig.enableFileSink = false;
+			logConfig.createConsole = false;
+		} else {
+			logConfig.createConsole = options.console;
+		}
 		LogManager::Initialize(logConfig);
 		TypeRegistry::InitializePrimitives();
 		ModuleThunkRegistry::RegisterPendingThunkTables();
@@ -264,7 +273,10 @@ namespace Shalltear {
 			if (!MountStagedContent(root, mountError)) {
 				SLT_LOG_FATAL("Player", "{}", mountError);
 				exitCode = 1;
+			} else if (options.thirdPartyNotices) {
+				exitCode = PrintThirdPartyNotices(root);
 			} else {
+				UnpackThirdPartyNotices(root);
 				exitCode = RunGame(options);
 			}
 		} catch (const std::exception& e) {
