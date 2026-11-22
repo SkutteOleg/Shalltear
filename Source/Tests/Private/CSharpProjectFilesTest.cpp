@@ -374,6 +374,11 @@ TEST_F(CSharpProjectFilesTest, GlobalJSONNamesPinAndRoot) {
 	ASSERT_FALSE(lines.empty());
 	EXPECT_EQ(lines.back(), _options.pin.sdkVersion) << Joined(lines);
 
+	for (const str& sdk : RunIn(_root, QuoteCommandArgument(installed) + " --list-sdks", exitCode)) {
+		if (sdk.starts_with(_options.pin.sdkVersion + " ")) {
+			GTEST_SKIP() << installed << " has SDK " << _options.pin.sdkVersion;
+		}
+	}
 	Put("global.json", str(CSharpProjectFiles::GeneratedMark) +
 						   "\n{ \"sdk\": { \"version\": \"" + _options.pin.sdkVersion + "\", \"rollForward\": \"disable\" } }\n");
 	const std::vector<str> without = RunIn(_project, QuoteCommandArgument(installed) + " --version", exitCode);
