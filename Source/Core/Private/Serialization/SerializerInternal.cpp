@@ -551,6 +551,9 @@ namespace Shalltear {
 					Guid guid{};
 					StringHash pointee{};
 					HandleResolver::ToGuid(instanceId, &guid, &pointee);
+					if (IsAssetGuid(guid)) {
+						writer.NoteAssetRef(guid);
+					}
 					writer.WriteU64(pointee.GetValue());
 					writer.WriteU64(guid.low);
 					writer.WriteU64(guid.high);

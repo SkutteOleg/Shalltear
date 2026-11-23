@@ -2,6 +2,7 @@
 
 #include "Shalltear/Core/Asset/Asset.h"
 #include "Shalltear/Core/Asset/AssetDatabase.h"
+#include "Shalltear/Core/Asset/DataAsset.h"
 #include "Shalltear/Core/Asset/PakFormat.h"
 #include "Shalltear/Core/Asset/TextAsset.h"
 #include "Shalltear/Core/FileSystem.h"
@@ -48,6 +49,44 @@ namespace {
 		Handle<SceneAsset> other;
 	};
 	SLT_REGISTER_TYPE(ClProbeComponent)
+
+	struct ClDataBankSlot {
+		SLT_REFLECT_VALUE(ClDataBankSlot)
+		SLT_REFLECT_FIELD(nested)
+		SLT_END_REFLECT()
+
+		Handle<TextAsset> nested;
+	};
+	SLT_REGISTER_TYPE(ClDataBankSlot)
+
+	class ClDataBank : public DataAsset {
+	public:
+		SLT_REFLECT_CLASS(ClDataBank)
+		SLT_REFLECT_PARENT(DataAsset)
+		SLT_REFLECT_CREATABLE()
+		SLT_REFLECT_FIELD(primary)
+		SLT_REFLECT_ARRAY(layers)
+		SLT_REFLECT_SUBOBJECT(slot)
+		SLT_END_REFLECT()
+
+		Handle<TextAsset> primary;
+		Vector<Handle<TextAsset>> layers{GetMemoryResource(MemTag::Asset)};
+		ClDataBankSlot slot;
+	};
+	SLT_REGISTER_TYPE(ClDataBank)
+
+	class ClDataBankImporter : public IAssetImporter {
+	public:
+		StringHash GetAssetType() const override { return ClDataBank::GetReflectType()->name; }
+		Asset* Import(const Path& sourcePath) override {
+			ClDataBank* asset = New<ClDataBank>(MemTag::Asset);
+			if (!asset->Import(sourcePath)) {
+				Delete(asset);
+				return nullptr;
+			}
+			return asset;
+		}
+	};
 
 	class ClProductImporter : public IAssetImporter {
 	public:
@@ -953,4 +992,94 @@ TEST_F(CookClosureFixture, CookedBindChecksEveryUse) {
 
 	ASSERT_TRUE(UI::WidgetRegistry::Register(UI::WidgetDesc{"item-icon", &MakeClIcon, ClTextureOnlyAttributes}, &CL_WIDGET_OWNER));
 	EXPECT_EQ(AssetDatabase::LoadAssetByGuid(documentGuid), nullptr);
+}
+
+TEST_F(CookClosureFixture, ResidentDataAssetCooksAllReflectedHandles) {
+	struct ScopedImporter {
+		ClDataBankImporter importer;
+		ScopedImporter() { AssetImporterRegistry::RegisterExtension(".clbank", &importer); }
+		~ScopedImporter() { AssetImporterRegistry::Unregister(&importer); }
+	} scopedImporter;
+
+	StageText("Assets/Primary.txt", "primary-clip");
+	StageText("Assets/LayerA.txt", "layer-a");
+	StageText("Assets/LayerB.txt", "layer-b");
+	StageText("Assets/Nested.txt", "nested-clip");
+	Rescan();
+
+	const Guid primaryGuid = GuidOf("project://Assets/Primary.txt");
+	const Guid layerAGuid = GuidOf("project://Assets/LayerA.txt");
+	const Guid layerBGuid = GuidOf("project://Assets/LayerB.txt");
+	const Guid nestedGuid = GuidOf("project://Assets/Nested.txt");
+	ASSERT_TRUE(primaryGuid.IsValid());
+	ASSERT_TRUE(layerAGuid.IsValid());
+	ASSERT_TRUE(layerBGuid.IsValid());
+	ASSERT_TRUE(nestedGuid.IsValid());
+
+	const str bankJSON = std::format(R"({{
+	"_type": "ClDataBank",
+	"primary": {{ "_handle": true, "pointeeType": "TextAsset", "assetId": "{}" }},
+	"layers": [
+		{{ "_handle": true, "pointeeType": "TextAsset", "assetId": "{}" }},
+		{{ "_handle": true, "pointeeType": "TextAsset", "assetId": "{}" }}
+	],
+	"slot": {{
+		"nested": {{ "_handle": true, "pointeeType": "TextAsset", "assetId": "{}" }}
+	}}
+}})",
+									 primaryGuid.ToString(), layerAGuid.ToString(), layerBGuid.ToString(),
+									 nestedGuid.ToString());
+	StageText("Assets/Bank.clbank", bankJSON);
+	Rescan();
+
+	const Guid bankGuid = GuidOf("project://Assets/Bank.clbank");
+	ASSERT_TRUE(bankGuid.IsValid());
+
+	// keep resident before ComputeClosure to mirror an open editor scene
+	Asset* resident = AssetDatabase::LoadAssetByGuid(bankGuid);
+	ASSERT_NE(resident, nullptr);
+
+	CookOps::CookClosure closure;
+	str error;
+	ASSERT_TRUE(CookOps::ComputeClosure(Roots({bankGuid}), closure, error)) << error;
+	EXPECT_TRUE(Holds(closure, primaryGuid));
+	EXPECT_TRUE(Holds(closure, layerAGuid));
+	EXPECT_TRUE(Holds(closure, layerBGuid));
+	EXPECT_TRUE(Holds(closure, nestedGuid));
+
+	const Vector<Guid>* bankEdges = EdgesOf(closure, bankGuid);
+	ASSERT_NE(bankEdges, nullptr);
+	for (const Guid& expected : {primaryGuid, layerAGuid, layerBGuid, nestedGuid}) {
+		EXPECT_NE(std::find(bankEdges->begin(), bankEdges->end(), expected), bankEdges->end());
+	}
+
+	Vector<u8> package{GetMemoryResource(MemTag::Editor)};
+	CookOps::PakWriteDesc desc;
+	ASSERT_TRUE(CookOps::CookPackage(closure, desc, package, error)) << error;
+
+	AssetDatabase::UnloadAsset(resident);
+	for (u32 pass = 0; pass < 4 && AssetDatabase::CollectGarbage() > 0; ++pass) {
+	}
+	ASSERT_EQ(AssetDatabase::FindLoadedByGuid(bankGuid), nullptr);
+	ASSERT_EQ(AssetDatabase::FindLoadedByGuid(primaryGuid), nullptr);
+	ASSERT_EQ(AssetDatabase::FindLoadedByGuid(layerAGuid), nullptr);
+	ASSERT_EQ(AssetDatabase::FindLoadedByGuid(layerBGuid), nullptr);
+	ASSERT_EQ(AssetDatabase::FindLoadedByGuid(nestedGuid), nullptr);
+
+	MountCooked(package, "Bank.slpak");
+
+	Asset* cooked = AssetDatabase::LoadAssetByGuid(bankGuid);
+	ASSERT_NE(cooked, nullptr);
+	const ClDataBank& restored = *static_cast<const ClDataBank*>(cooked);
+	ASSERT_TRUE(restored.primary.IsValid());
+	EXPECT_EQ(restored.primary->content, "primary-clip");
+	ASSERT_EQ(restored.layers.size(), 2u);
+	ASSERT_TRUE(restored.layers[0].IsValid());
+	ASSERT_TRUE(restored.layers[1].IsValid());
+	EXPECT_EQ(restored.layers[0]->content, "layer-a");
+	EXPECT_EQ(restored.layers[1]->content, "layer-b");
+	ASSERT_TRUE(restored.slot.nested.IsValid());
+	EXPECT_EQ(restored.slot.nested->content, "nested-clip");
+
+	AssetDatabase::UnloadAsset(cooked);
 }

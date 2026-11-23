@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Shalltear/Core/Containers.h"
+#include "Shalltear/Core/FileSystem.h"
 #include "Shalltear/Core/Reflection/TypeInfo.h"
 #include "Shalltear/Core/Serialization/JSON.h"
 #include "Shalltear/Core/StringHash.h"
@@ -76,12 +78,20 @@ namespace Shalltear {
 		// host byte order
 		class BinaryWriter {
 		public:
+			explicit BinaryWriter(Vector<Guid>* assetRefs = nullptr) : _assetRefs(assetRefs) {}
+
 			void WriteU8(u8 v) { Append(&v, sizeof(v)); }
 			void WriteU16(u16 v) { Append(&v, sizeof(v)); }
 			void WriteU32(u32 v) { Append(&v, sizeof(v)); }
 			void WriteU64(u64 v) { Append(&v, sizeof(v)); }
 
 			void WriteBytes(const void* p, size_t n) { Append(p, n); }
+
+			void NoteAssetRef(const Guid& guid) {
+				if (_assetRefs) {
+					_assetRefs->push_back(guid);
+				}
+			}
 
 			size_t BeginPatch() {
 				size_t offset = _data.size();
@@ -107,6 +117,7 @@ namespace Shalltear {
 			}
 
 			std::vector<u8> _data;
+			Vector<Guid>* _assetRefs = nullptr;
 		};
 
 		class BinaryReader {
@@ -161,6 +172,8 @@ namespace Shalltear {
 			// when set, fieldAddr = patched object (call AfterWrite)
 			const TypeInfo* writtenType = nullptr;
 		};
+
+		Buffer BinarySerialize(const void* instance, const TypeInfo* type, Vector<Guid>* outAssetRefs);
 
 		bool BinaryWriteObject(BinaryWriter& writer, const void* instance, const TypeInfo* type, u32 depth);
 

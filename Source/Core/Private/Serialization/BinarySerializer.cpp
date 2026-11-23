@@ -18,28 +18,36 @@ namespace Shalltear {
 
 	} // anonymous namespace
 
+	namespace SerializerInternal {
+
+		Buffer BinarySerialize(const void* instance, const TypeInfo* type, Vector<Guid>* outAssetRefs) {
+			if (!instance || !type) {
+				return Buffer();
+			}
+
+			BinaryWriter writer(outAssetRefs);
+			writer.WriteU32(BINARY_MAGIC);
+			writer.WriteU16(BINARY_VERSION);
+			writer.WriteU16(0);
+			writer.WriteU64(BuildInfo::GetEngineHash());
+			writer.WriteU32(0);
+			writer.WriteU32(0);
+
+			if (!BinaryWriteObject(writer, instance, type, 0)) {
+				return Buffer();
+			}
+
+			Buffer buffer(writer.Size(), MemTag::Core);
+			if (writer.Size() > 0) {
+				std::memcpy(buffer.data, writer.Data().data(), writer.Size());
+			}
+			return buffer;
+		}
+
+	} // namespace SerializerInternal
+
 	Buffer BinarySerializer::Serialize(const void* instance, const TypeInfo* type) {
-		if (!instance || !type) {
-			return Buffer();
-		}
-
-		SerializerInternal::BinaryWriter writer;
-		writer.WriteU32(BINARY_MAGIC);
-		writer.WriteU16(BINARY_VERSION);
-		writer.WriteU16(0);
-		writer.WriteU64(BuildInfo::GetEngineHash());
-		writer.WriteU32(0);
-		writer.WriteU32(0);
-
-		if (!SerializerInternal::BinaryWriteObject(writer, instance, type, 0)) {
-			return Buffer();
-		}
-
-		Buffer buffer(writer.Size(), MemTag::Core);
-		if (writer.Size() > 0) {
-			std::memcpy(buffer.data, writer.Data().data(), writer.Size());
-		}
-		return buffer;
+		return SerializerInternal::BinarySerialize(instance, type, nullptr);
 	}
 
 	bool BinarySerializer::Deserialize(void* instance, const TypeInfo* type, const Buffer& buffer) {

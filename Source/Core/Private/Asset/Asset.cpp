@@ -1,5 +1,7 @@
 #include "Shalltear/Core/Asset/Asset.h"
 
+#include "Serialization/SerializerInternal.h"
+
 #include "Shalltear/Core/Asset/AssetDatabase.h"
 #include "Shalltear/Core/Asset/PakFormat.h"
 #include "Shalltear/Core/Serialization/BinarySerializer.h"
@@ -22,11 +24,15 @@ namespace Shalltear {
 	bool Asset::Cook(CookWriter& descriptor, CookWriter& payload) const {
 		(void)payload;
 
-		Buffer blob = BinarySerializer::Serialize(this, GetType());
+		Vector<Guid> assetRefs{GetMemoryResource(MemTag::Asset)};
+		Buffer blob = SerializerInternal::BinarySerialize(this, GetType(), &assetRefs);
 		if (!blob) {
 			return false;
 		}
 		descriptor.WriteBytes(blob.data, blob.size);
+		for (const Guid& ref : assetRefs) {
+			descriptor.NoteAssetRef(ref);
+		}
 		return true;
 	}
 
