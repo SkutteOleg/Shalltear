@@ -512,6 +512,8 @@ namespace Shalltear::RHI {
 
 		std::span<const Attachment> colorAttachments;
 		const DepthAttachment* depth = nullptr;
+		// optional single-sample resolve targets aligned with colorAttachments
+		std::span<const TextureHandle> resolveTargets;
 	};
 
 	// frame lifetime, never stored

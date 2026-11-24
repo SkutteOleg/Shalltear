@@ -1253,6 +1253,9 @@ struct BlitVSOut {
 					SLT_LOG_ERROR("Graphics", "TransientSetWriter: texture at binding {} is in state {}, not ShaderResource (missing TransitionTexture)",
 								  staged.binding, static_cast<u32>(texture->state));
 				}
+				if (texture->external) {
+					impl.frames[impl.frameIndex].bindGroups.hasExternal = true;
+				}
 				entry.textureView = texture->view;
 				out.object = reinterpret_cast<uintptr_t>(texture->view);
 				break;

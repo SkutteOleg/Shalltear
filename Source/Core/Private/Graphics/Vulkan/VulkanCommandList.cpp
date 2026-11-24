@@ -97,7 +97,8 @@ namespace Shalltear::RHI {
 		_impl->passDepthFormat = Format::Unknown;
 		_impl->passSamples = 1;
 
-		for (const RenderPassDesc::Attachment& attachment : desc.colorAttachments) {
+		for (u32 i = 0; i < desc.colorAttachments.size(); ++i) {
+			const RenderPassDesc::Attachment& attachment = desc.colorAttachments[i];
 			TextureResource* resource = d.textures.Resolve(attachment.texture);
 			if (!resource) {
 				SLT_LOG_ERROR("Graphics", "BeginRenderPass: stale color attachment");
@@ -113,6 +114,20 @@ namespace Shalltear::RHI {
 			info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
 			info.imageView = resource->AttachmentView(attachment.layer, attachment.mip);
 			info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			if (i < desc.resolveTargets.size() && desc.resolveTargets[i].IsValid()) {
+				TextureResource* resolveRes = d.textures.Resolve(desc.resolveTargets[i]);
+				if (!resolveRes) {
+					SLT_LOG_ERROR("Graphics", "BeginRenderPass: stale resolve target");
+					return;
+				}
+				SLT_CORE_ASSERT_MSG(resolveRes->state == ResourceState::RenderTarget, "resolve target must be in RenderTarget state");
+				SLT_CORE_ASSERT_MSG(resource->samples > 1 && resolveRes->samples == 1 &&
+										resolveRes->format == resource->format && resolveRes->size == resource->size,
+									"resolve target must be a matching single-sample texture");
+				info.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;
+				info.resolveImageView = resolveRes->AttachmentView(0, 0);
+				info.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
 			info.loadOp = attachment.load == LoadOp::Load	 ? VK_ATTACHMENT_LOAD_OP_LOAD
 						  : attachment.load == LoadOp::Clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
 															 : VK_ATTACHMENT_LOAD_OP_DONT_CARE;

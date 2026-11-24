@@ -183,6 +183,8 @@ namespace Shalltear {
 
 		bool DrawFullScreen(const Handle<MaterialAsset>& material);
 
+		bool DrawFullScreen(const Handle<ShaderAsset>& shader, std::span<const u8> pushConstants = {});
+
 		const Mat4& GetView() const { return _view; }
 		const Mat4& GetProjection() const { return _projection; }
 		const Vec3& GetCameraPosition() const { return _cameraPosition; }
@@ -215,6 +217,8 @@ namespace Shalltear {
 		RHI::TextureHandle _passInput0;
 		RHI::TextureHandle _passInput1;
 		RHI::TextureHandle _passVolume;
+		bool _writesSceneTarget = true;
+		bool _colorWritten = false;
 	};
 
 	class SHALLTEAR_CORE_API RenderPass : public Asset {
@@ -232,6 +236,12 @@ namespace Shalltear {
 		virtual PassRequests GetRequests() const { return PassRequests::None; }
 
 		virtual void DeclarePlan(PassPlan& plan) { (void)plan; }
+
+		// single-sample post passes that read resolved SceneColor and do not use scene depth
+		virtual bool PrefersResolvedTarget() const { return false; }
+
+		// called after DeclarePlan to check whether this pass will actually overwrite the scene target
+		virtual bool WillWriteSceneTarget() const { return true; }
 
 		StringHash GetAssetTypeId() const override { return GetType()->name; }
 

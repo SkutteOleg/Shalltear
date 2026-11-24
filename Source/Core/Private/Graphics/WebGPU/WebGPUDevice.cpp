@@ -211,6 +211,7 @@ namespace Shalltear::RHI {
 		vertexHeap.highWater = BINDING_OFFSET_ALIGNMENT;
 		vertexHeap.freeBlocks.clear();
 		++vertexHeap.version;
+		++resourceEpoch;
 		return true;
 	}
 
@@ -264,6 +265,7 @@ namespace Shalltear::RHI {
 		vertexHeap.buffer = nextBuffer;
 		vertexHeap.capacity = nextCap;
 		++vertexHeap.version;
+		++resourceEpoch;
 		return true;
 	}
 
@@ -432,6 +434,17 @@ namespace Shalltear::RHI {
 		}
 	}
 
+	void DeviceImpl::ReleaseBindGroupCache(FrameBindGroupCache& cache) {
+		for (WGPUBindGroup bg : cache.ownedGroups) {
+			if (bg) {
+				wgpu.wgpuBindGroupRelease(bg);
+			}
+		}
+		cache.ownedGroups.clear();
+		cache.Reset();
+		cache.epoch = resourceEpoch;
+	}
+
 	void DeviceImpl::FlushCPUToGPUBuffers() {
 		if (lost || !queue) {
 			return;
@@ -441,12 +454,13 @@ namespace Shalltear::RHI {
 				continue;
 			}
 			BufferResource& res = buffers.slots[i].resource;
-			if (res.access == MemoryAccess::CPUToGPU && !res.isTransientRing && res.cpuShadow && !res.cpuShadow->empty()) {
+			if (res.cpuDirty && res.access == MemoryAccess::CPUToGPU && !res.isTransientRing && res.cpuShadow && !res.cpuShadow->empty()) {
 				WGPUBuffer target = res.inVertexHeap ? vertexHeap.buffer : res.buffer;
 				const u64 offset = res.inVertexHeap ? res.heapOffset : 0;
 				if (target) {
 					wgpu.wgpuQueueWriteBuffer(queue, target, offset, res.cpuShadow->data(), res.gpuSize);
 				}
+				res.cpuDirty = false;
 			}
 		}
 	}
@@ -681,13 +695,7 @@ namespace Shalltear::RHI {
 				wgpu.wgpuCommandEncoderRelease(f.commandListImpl.encoder);
 				f.commandListImpl.encoder = nullptr;
 			}
-			for (WGPUBindGroup bg : f.bindGroups.ownedGroups) {
-				if (bg) {
-					wgpu.wgpuBindGroupRelease(bg);
-				}
-			}
-			f.bindGroups.ownedGroups.clear();
-			f.bindGroups.Reset();
+			ReleaseBindGroupCache(f.bindGroups);
 			FlushDeletionQueue(f.deletionQueue);
 
 			if (f.set3GraphicsGroup) {
@@ -806,6 +814,7 @@ namespace Shalltear::RHI {
 
 		DestroyTable();
 		DestroyVertexHeap();
+		++resourceEpoch;
 	}
 
 	bool DeviceImpl::RestoreObjects() {
@@ -816,8 +825,12 @@ namespace Shalltear::RHI {
 			if (!buffers.slots[i].alive || buffers.slots[i].resource.isTransientRing) {
 				continue;
 			}
-			if (!CreateBufferObject(buffers.slots[i].resource, nullptr)) {
+			BufferResource& b = buffers.slots[i].resource;
+			if (!CreateBufferObject(b, nullptr)) {
 				return false;
+			}
+			if (b.access == MemoryAccess::CPUToGPU && b.cpuShadow && !b.cpuShadow->empty()) {
+				b.cpuDirty = true;
 			}
 		}
 		for (u32 i = 1; i < textures.slots.size(); ++i) {
@@ -1061,13 +1074,10 @@ namespace Shalltear::RHI {
 				frame.hasWorkDoneFuture = false;
 			}
 			impl->DrainFrameReadbacks(frame, WebGPUPlatform::SupportsWaitAny());
-			for (WGPUBindGroup bg : frame.bindGroups.ownedGroups) {
-				if (bg) {
-					impl->wgpu.wgpuBindGroupRelease(bg);
-				}
+			if (frame.bindGroups.epoch != impl->resourceEpoch || frame.bindGroups.hasExternal ||
+				frame.bindGroups.ownedGroups.size() >= FrameBindGroupCache::MAX_CACHED_GROUPS) {
+				impl->ReleaseBindGroupCache(frame.bindGroups);
 			}
-			frame.bindGroups.ownedGroups.clear();
-			frame.bindGroups.Reset();
 			impl->FlushDeletionQueue(frame.deletionQueue);
 
 			WGPUCommandEncoderDescriptor encDesc{};
@@ -1080,15 +1090,16 @@ namespace Shalltear::RHI {
 
 		CommandListImpl& cmd = frame.commandListImpl;
 		cmd.boundPipelineIndex = 0;
-		cmd.boundRenderPipeline = nullptr;
 		cmd.inRenderPass = false;
 		cmd.pipelineRefused = false;
 		cmd.frontFace = FrontFace::Clockwise;
 		cmd.depthBias = 0;
 		cmd.depthBiasSlope = 0.0f;
 		cmd.currentPushOffset = 0;
-		cmd.set3Bound = false;
+		cmd.lastPushSize = 0;
 		cmd.set3BoundReadWrite = false;
+		cmd.ResetRenderPassCache();
+		cmd.ResetComputePassCache();
 
 		impl->inFrame = true;
 		return &frame.commandList;
@@ -1111,8 +1122,9 @@ namespace Shalltear::RHI {
 
 		// Flush CPU staging buffers before queue submit so commands see all written data
 		if (frame.transientUsed > BINDING_OFFSET_ALIGNMENT && frame.transientBuffer) {
-			const u64 bytes = AlignUp(frame.transientUsed, 4);
-			impl->wgpu.wgpuQueueWriteBuffer(impl->queue, frame.transientBuffer, 0, frame.transientCPU.data(), bytes);
+			const u64 bytes = AlignUp(frame.transientUsed - BINDING_OFFSET_ALIGNMENT, 4);
+			impl->wgpu.wgpuQueueWriteBuffer(impl->queue, frame.transientBuffer, BINDING_OFFSET_ALIGNMENT,
+											frame.transientCPU.data() + BINDING_OFFSET_ALIGNMENT, bytes);
 		}
 		if (frame.pushUsed > 0 && frame.pushBuffer) {
 			const u64 bytes = AlignUp(frame.pushUsed, 4);

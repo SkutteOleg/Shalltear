@@ -596,21 +596,36 @@ namespace Shalltear::VisualEffectsImpl {
 
 	void ParticleSystem::Feed(std::span<const u32> alive, std::span<const u32> attributes, u32 dropped) {
 		RHI::Device* device = RenderSystem::GetDevice();
-		u8* ring = IsCreated() && _desc.cpu && device ? static_cast<u8*>(device->GetMappedPointer(_feed)) : nullptr;
 		const u64 words = static_cast<u64>(_desc.capacity) * _desc.attributeCount;
-		if (!ring || alive.size() > _desc.capacity || attributes.size() != words) {
+		if (!IsCreated() || !_desc.cpu || !device || !_feed.IsValid() || alive.size() > _desc.capacity || attributes.size() != words) {
 			return;
 		}
 		_fedSlot = static_cast<u32>((GetSimulation()._frame + 1) % FEED_SLOTS);
 		_fedAlive = static_cast<u32>(alive.size());
-		u8* slot = ring + _fedSlot * _feedSlotBytes;
 		u32 header[LISTS_HEADER_WORDS] = {};
 		header[1 - _parity] = _fedAlive;
 		header[2] = _desc.capacity - _fedAlive;
 		header[3] = dropped;
-		std::memcpy(slot, header, sizeof(header));
-		std::memcpy(slot + sizeof(header), alive.data(), alive.size_bytes());
-		std::memcpy(slot + sizeof(header) + static_cast<u64>(_desc.capacity) * 4, attributes.data(), attributes.size_bytes());
+		const u64 slotOffset = static_cast<u64>(_fedSlot) * _feedSlotBytes;
+		if (device->GetCapabilities().persistentBufferMapping) {
+			u8* ring = static_cast<u8*>(device->GetMappedPointer(_feed));
+			if (!ring) {
+				return;
+			}
+			u8* slot = ring + slotOffset;
+			std::memcpy(slot, header, sizeof(header));
+			if (!alive.empty()) {
+				std::memcpy(slot + sizeof(header), alive.data(), alive.size_bytes());
+				std::memcpy(slot + sizeof(header) + static_cast<u64>(_desc.capacity) * 4, attributes.data(), attributes.size_bytes());
+			}
+		} else {
+			device->UploadBuffer(_feed, {reinterpret_cast<const u8*>(header), sizeof(header)}, slotOffset);
+			if (!alive.empty()) {
+				device->UploadBuffer(_feed, {reinterpret_cast<const u8*>(alive.data()), alive.size_bytes()}, slotOffset + sizeof(header));
+				device->UploadBuffer(_feed, {reinterpret_cast<const u8*>(attributes.data()), attributes.size_bytes()},
+									 slotOffset + sizeof(header) + static_cast<u64>(_desc.capacity) * 4);
+			}
+		}
 		_fed = true;
 		_advanced = true;
 		_counts = {_fedAlive, dropped, true};

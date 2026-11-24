@@ -166,6 +166,7 @@ namespace Shalltear::RHI {
 		}
 		*resource = BufferResource{};
 		impl->buffers.Release(handle.index);
+		++impl->resourceEpoch;
 	}
 
 	u64 Device::GetBufferDeviceAddress(BufferHandle buffer) const {
@@ -181,7 +182,13 @@ namespace Shalltear::RHI {
 
 	void* Device::GetMappedPointer(BufferHandle buffer) const {
 		BufferResource* resource = _impl->buffers.Resolve(buffer);
-		return (resource && resource->cpuShadow) ? resource->cpuShadow->data() : nullptr;
+		if (!resource || !resource->cpuShadow) {
+			return nullptr;
+		}
+		if (resource->access == MemoryAccess::CPUToGPU) {
+			resource->cpuDirty = true;
+		}
+		return resource->cpuShadow->data();
 	}
 
 	TextureHandle Device::CreateTextureResource(const TextureDesc& desc) {
@@ -345,8 +352,12 @@ namespace Shalltear::RHI {
 		if (!resource->external && resource->texture) {
 			queue.textures.push_back(resource->texture);
 		}
+		const bool wasExternal = resource->external;
 		*resource = TextureResource{};
 		impl->textures.Release(handle.index);
+		if (!wasExternal) {
+			++impl->resourceEpoch;
+		}
 	}
 
 	bool Device::IsAlive(TextureHandle texture) const {
@@ -436,6 +447,7 @@ namespace Shalltear::RHI {
 		}
 		*resource = SamplerResource{};
 		impl->samplers.Release(handle.index);
+		++impl->resourceEpoch;
 	}
 
 	void Device::DestroyResource(PipelineHandle handle) {
@@ -468,6 +480,7 @@ namespace Shalltear::RHI {
 		}
 		*resource = PipelineResource{};
 		impl->pipelines.Release(handle.index);
+		++impl->resourceEpoch;
 	}
 
 	void Device::UploadBuffer(BufferHandle target, std::span<const u8> data, u64 offset) {

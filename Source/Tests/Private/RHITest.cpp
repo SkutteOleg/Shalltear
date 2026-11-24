@@ -1829,3 +1829,55 @@ TEST(RHISwapChainTest, AcquiredImageBarrierWaitsForAcquire) {
 	ASSERT_GT(presented, 0u);
 	EXPECT_EQ(capture.CountMatching("WRITE_AFTER_READ"), 0u);
 }
+
+TEST_F(RHIFixture, InlineMSAAResolveWritesResolvedColor) {
+	if ((_device->GetSupportedSampleCounts(RHI::Format::RGBA8Unorm, RHI::TextureUsage::RenderTarget) & 4u) == 0) {
+		GTEST_SKIP() << "4x MSAA not supported for RGBA8Unorm";
+	}
+	RHI::TextureDesc msaaDesc;
+	msaaDesc.size = {8, 8};
+	msaaDesc.format = RHI::Format::RGBA8Unorm;
+	msaaDesc.usage = RHI::TextureUsage::RenderTarget;
+	msaaDesc.samples = 4;
+	msaaDesc.debugName = "InlineResolveMS";
+	RHI::TextureHandle msaa = _device->CreateTextureResource(msaaDesc);
+	ASSERT_TRUE(msaa.IsValid());
+
+	RHI::TextureDesc resolveDesc;
+	resolveDesc.size = {8, 8};
+	resolveDesc.format = RHI::Format::RGBA8Unorm;
+	resolveDesc.usage = RHI::TextureUsage::RenderTarget | RHI::TextureUsage::TransferSrc;
+	resolveDesc.debugName = "InlineResolveTarget";
+	RHI::TextureHandle resolved = _device->CreateTextureResource(resolveDesc);
+	ASSERT_TRUE(resolved.IsValid());
+
+	RHI::CommandList* cmd = _device->BeginFrame();
+	ASSERT_NE(cmd, nullptr);
+	cmd->TransitionTexture(msaa, RHI::ResourceState::RenderTarget);
+	cmd->TransitionTexture(resolved, RHI::ResourceState::RenderTarget);
+
+	RHI::RenderPassDesc::Attachment color;
+	color.texture = msaa;
+	color.load = RHI::LoadOp::Clear;
+	color.store = RHI::StoreOp::DontCare;
+	color.clearColor = Color(0.25f, 0.5f, 0.75f, 1.0f);
+	RHI::RenderPassDesc pass;
+	pass.colorAttachments = {&color, 1};
+	pass.resolveTargets = {&resolved, 1};
+	cmd->BeginRenderPass(pass);
+	cmd->EndRenderPass();
+	cmd->TransitionTexture(resolved, RHI::ResourceState::TransferSrc);
+
+	_device->EndFrame();
+	_device->WaitIdle();
+
+	Vector<u8> pixels = MakePixelBuffer(8, 8);
+	_device->ReadbackTexture(resolved, pixels);
+	EXPECT_NEAR(pixels[0], 64, 2);
+	EXPECT_NEAR(pixels[1], 128, 2);
+	EXPECT_NEAR(pixels[2], 191, 2);
+	EXPECT_EQ(pixels[3], 255);
+
+	_device->DestroyResource(resolved);
+	_device->DestroyResource(msaa);
+}

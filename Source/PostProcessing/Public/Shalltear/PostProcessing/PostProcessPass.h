@@ -22,12 +22,18 @@ namespace Shalltear {
 
 		PassRequests GetRequests() const override { return PassRequests::SceneColor; }
 
+		bool PrefersResolvedTarget() const override { return true; }
+
+		bool WillWriteSceneTarget() const override;
+
 		void DeclarePlan(PassPlan& plan) override;
 
 		void Record(PassContext& context) override;
 
 		bool Cook(CookWriter& descriptor, CookWriter& payload) const override;
 	private:
+		ShaderAsset* EnsureShader();
+
 		Handle<ShaderAsset> _shader;
 		bool _shaderResolved = false;
 

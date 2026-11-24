@@ -197,8 +197,34 @@ namespace Shalltear {
 		return *_resolved;
 	}
 
+	ShaderAsset* PostProcessPass::EnsureShader() {
+		if (!_shaderResolved) {
+			_shaderResolved = true;
+			if (Asset* asset = AssetDatabase::LoadAssetByGuid(PostProcessingImpl::PostProcessShader)) {
+				if (asset->GetAssetTypeId() == StringHash("ShaderAsset")) {
+					_shader = Handle<ShaderAsset>(static_cast<ShaderAsset*>(asset));
+				} else {
+					AssetDatabase::UnloadAsset(asset);
+				}
+			}
+		}
+		ShaderAsset* shader = _shader.Get();
+		if (!shader && !_warnedNoShader) {
+			_warnedNoShader = true;
+			SLT_LOG_WARN("PostProcessing", "'{}' can't resolve engine://Shaders/PostProcess.hlsl (row draws nothing)", virtualPath);
+		}
+		return shader;
+	}
+
+	bool PostProcessPass::WillWriteSceneTarget() const {
+		return _resolved && _resolved->valid && _resolved->values.AnyEnabled() && _shader.Get() != nullptr;
+	}
+
 	void PostProcessPass::DeclarePlan(PassPlan& plan) {
 		const PostProcessOps::ResolvedPostProcess& resolved = ResolveFor(plan.GetCameraPosition(), true).values;
+		if (resolved.AnyEnabled()) {
+			EnsureShader();
+		}
 		if (!resolved.BloomContributes()) {
 			return;
 		}
@@ -246,17 +272,7 @@ namespace Shalltear {
 			return;
 		}
 
-		if (!_shaderResolved) {
-			_shaderResolved = true;
-			if (Asset* asset = AssetDatabase::LoadAssetByGuid(PostProcessingImpl::PostProcessShader)) {
-				if (asset->GetAssetTypeId() == StringHash("ShaderAsset")) {
-					_shader = Handle<ShaderAsset>(static_cast<ShaderAsset*>(asset));
-				} else {
-					AssetDatabase::UnloadAsset(asset);
-				}
-			}
-		}
-		if (!_shader.Get()) {
+		if (!EnsureShader()) {
 			if (!_warnedNoShader) {
 				_warnedNoShader = true;
 				SLT_LOG_WARN("PostProcessing", "'{}' can't resolve engine://Shaders/PostProcess.hlsl (row draws nothing)", virtualPath);
@@ -306,9 +322,8 @@ namespace Shalltear {
 		push.bloomParams[2] = 0.05f + Math::Clamp(resolved.bloomScatter, 0.0f, 1.0f) * 0.9f;
 		push.bloomParams[3] = Math::Max(resolved.bloomClamp, 0.0f);
 
-		context.DrawProcedural(_shader,
-							   std::span<const u8>(reinterpret_cast<const u8*>(&push), sizeof(push)),
-							   3);
+		context.DrawFullScreen(_shader,
+							   std::span<const u8>(reinterpret_cast<const u8*>(&push), sizeof(push)));
 	}
 
 } // namespace Shalltear

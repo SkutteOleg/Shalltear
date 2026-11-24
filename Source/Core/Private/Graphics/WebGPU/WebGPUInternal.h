@@ -87,6 +87,7 @@ namespace Shalltear::RHI {
 		u64 heapOffset = 0;
 		u64 heapAlignedSize = 0;
 		std::shared_ptr<Vector<u8>> cpuShadow;
+		mutable bool cpuDirty = false;
 		u64 deviceAddress = 0;
 		ResourceState state = ResourceState::Undefined;
 	};
@@ -259,8 +260,9 @@ namespace Shalltear::RHI {
 	};
 
 	struct FrameBindGroupCache {
-		static constexpr u32 CACHE_SLOTS = 256;
-		static constexpr u32 CACHE_MAX_PROBES = 8;
+		static constexpr u32 CACHE_SLOTS = 2048;
+		static constexpr u32 CACHE_MAX_PROBES = 16;
+		static constexpr u32 MAX_CACHED_GROUPS = 1536;
 		static constexpr u32 CACHE_EMPTY = 0xFFFFFFFFu;
 
 		struct Entry {
@@ -275,6 +277,8 @@ namespace Shalltear::RHI {
 		Vector<Entry> entries{GetMemoryResource(MemTag::Graphics)};
 		Vector<ResolvedWrite> writes{GetMemoryResource(MemTag::Graphics)};
 		Vector<WGPUBindGroup> ownedGroups{GetMemoryResource(MemTag::Graphics)};
+		u64 epoch = 0;
+		bool hasExternal = false;
 
 		FrameBindGroupCache() {
 			Reset();
@@ -286,6 +290,7 @@ namespace Shalltear::RHI {
 			}
 			entries.clear();
 			writes.clear();
+			hasExternal = false;
 		}
 	};
 
@@ -296,20 +301,68 @@ namespace Shalltear::RHI {
 		WGPUComputePassEncoder computePass = nullptr;
 		u32 boundPipelineIndex = 0;
 		WGPURenderPipeline boundRenderPipeline = nullptr;
+		WGPUComputePipeline boundComputePipeline = nullptr;
 		bool inRenderPass = false;
 		bool pipelineRefused = false;
+		bool graphicsVariantDirty = false;
+		bool renderSet3Dirty = false;
 		FrontFace frontFace = FrontFace::Clockwise;
 		i32 depthBias = 0;
 		f32 depthBiasSlope = 0.0f;
 		u32 currentPushOffset = 0;
+		u32 lastPushSize = 0;
 		bool set3Bound = false;
 		bool set3BoundReadWrite = false;
+		WGPUBindGroup boundRenderSets[MAX_DESCRIPTOR_SETS] = {};
+		u32 boundRenderSet3Offset = 0xFFFFFFFFu;
 		WGPUBindGroup boundComputeSets[MAX_DESCRIPTOR_SETS] = {};
+		WGPUBindGroup boundComputeActiveSets[MAX_DESCRIPTOR_SETS] = {};
+		u32 boundComputeSet3Offset = 0xFFFFFFFFu;
+		WGPUBuffer boundIndexBuffer = nullptr;
+		WGPUIndexFormat boundIndexFormat = WGPUIndexFormat_Undefined;
+		u64 boundIndexOffset = 0;
+		u64 boundIndexSize = 0;
+		bool viewportBound = false;
+		i32 boundViewportX = 0;
+		i32 boundViewportY = 0;
+		i32 boundViewportW = 0;
+		i32 boundViewportH = 0;
+		bool scissorBound = false;
+		u32 boundScissorX = 0;
+		u32 boundScissorY = 0;
+		u32 boundScissorW = 0;
+		u32 boundScissorH = 0;
 		RectI passArea{};
 		Format passColorFormats[MAX_COLOR_ATTACHMENTS] = {};
 		u32 passColorCount = 0;
 		Format passDepthFormat = Format::Unknown;
 		u32 passSamples = 1;
+
+		void ResetRenderPassCache() {
+			boundRenderPipeline = nullptr;
+			graphicsVariantDirty = false;
+			renderSet3Dirty = false;
+			set3Bound = false;
+			boundRenderSet3Offset = 0xFFFFFFFFu;
+			for (WGPUBindGroup& bg : boundRenderSets) {
+				bg = nullptr;
+			}
+			boundIndexBuffer = nullptr;
+			boundIndexFormat = WGPUIndexFormat_Undefined;
+			boundIndexOffset = 0;
+			boundIndexSize = 0;
+			viewportBound = false;
+			scissorBound = false;
+		}
+
+		void ResetComputePassCache() {
+			boundComputePipeline = nullptr;
+			set3Bound = false;
+			boundComputeSet3Offset = 0xFFFFFFFFu;
+			for (WGPUBindGroup& bg : boundComputeActiveSets) {
+				bg = nullptr;
+			}
+		}
 	};
 
 	struct FrameContext {
@@ -387,6 +440,7 @@ namespace Shalltear::RHI {
 		HashMap<u64, WGPUBindGroupLayout> setLayoutCache{GetMemoryResource(MemTag::Graphics)};
 		VertexHeap vertexHeap;
 		TextureAtlasTable table;
+		u64 resourceEpoch = 1;
 
 		FrameContext frames[FRAMES_IN_FLIGHT];
 		u32 frameIndex = 0;
@@ -415,6 +469,7 @@ namespace Shalltear::RHI {
 		bool CreateTextureObjects(TextureResource& resource, const char* debugName);
 		bool CreateSamplerObject(SamplerResource& resource, const char* debugName);
 		void FlushCPUToGPUBuffers();
+		void ReleaseBindGroupCache(FrameBindGroupCache& cache);
 		void FlushDeletionQueue(DeletionQueue& queue);
 		DeletionQueue& DeletionQueueForDestroy();
 		void DrainFrameReadbacks(FrameContext& frame, bool wait);

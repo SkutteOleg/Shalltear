@@ -107,6 +107,7 @@ namespace Shalltear {
 			RHI::TextureHandle passInput0;
 			RHI::TextureHandle passInput1;
 			RHI::TextureHandle passVolume;
+			bool writesSceneTarget = true;
 		};
 
 		struct ProceduralFrame {
@@ -752,6 +753,10 @@ namespace Shalltear {
 				u32 casterCount = 0;
 				RectI pixels;
 				bool composited = false;
+				bool inlineResolve = false;
+				bool discardColor = false;
+				bool discardDepth = false;
+				bool resolvedPost = false;
 			};
 			struct WindowWork {
 				Handle<Window> window;
@@ -2385,10 +2390,13 @@ namespace Shalltear {
 		struct PassTargets {
 			RHI::TextureHandle color;
 			RHI::TextureHandle depth;
+			RHI::TextureHandle resolveColor;
 			RHI::Format colorFormat = SCENE_COLOR_FORMAT;
 			RHI::Format depthFormat = SCENE_DEPTH_FORMAT;
 			bool clear = true;
 			bool drawSky = true;
+			bool discardColor = false;
+			bool discardDepth = false;
 			u32 samples = 1;
 			Vec2I extent{1, 1};
 		};
@@ -5644,18 +5652,42 @@ namespace Shalltear {
 			const u32 drawCount = extracted.count;
 			const u64 perDrawAddress = extracted.perDrawAddress;
 
+			const u32 shadedDrawCount = fill == ViewFill::Wireframe ? 0 : drawCount;
+			u32 firstBlended = shadedDrawCount;
+			for (u32 i = 0; i < shadedDrawCount; ++i) {
+				if (drawList[i]->alpha) {
+					firstBlended = i;
+					break;
+				}
+			}
+			ProceduralDraw* proceduralDraws = nullptr;
+			const u32 proceduralDrawCount =
+				fill == ViewFill::Wireframe ? 0 : SortProceduralDraws(arena, procedural, cameraPosition, proceduralDraws);
+			u32 firstBlendedProcedural = 0;
+			while (firstBlendedProcedural < proceduralDrawCount && !proceduralDraws[firstBlendedProcedural].alpha) {
+				++firstBlendedProcedural;
+			}
+			const bool willSplitForOpaqueCopy =
+				reads.copiesColor && reads.color.IsValid() &&
+				TransparentReadsColor(drawList, firstBlended, shadedDrawCount, proceduralDraws, firstBlendedProcedural, proceduralDrawCount);
+
 			RHI::RenderPassDesc::Attachment colorAttachment;
 			colorAttachment.texture = targets.color;
 			colorAttachment.load = targets.clear ? RHI::LoadOp::Clear : RHI::LoadOp::Load;
+			colorAttachment.store = (!willSplitForOpaqueCopy && targets.discardColor) ? RHI::StoreOp::DontCare : RHI::StoreOp::Store;
 			colorAttachment.clearColor = clearColor;
 			RHI::RenderPassDesc::DepthAttachment depthAttachment;
 			depthAttachment.texture = targets.depth;
 			depthAttachment.load = targets.clear ? RHI::LoadOp::Clear : RHI::LoadOp::Load;
+			depthAttachment.store = (!willSplitForOpaqueCopy && targets.discardDepth) ? RHI::StoreOp::DontCare : RHI::StoreOp::Store;
 			depthAttachment.clearDepth = 0.0f;
 
 			RHI::RenderPassDesc pass;
 			pass.colorAttachments = {&colorAttachment, 1};
 			pass.depth = &depthAttachment;
+			if (!willSplitForOpaqueCopy && targets.resolveColor.IsValid()) {
+				pass.resolveTargets = {&targets.resolveColor, 1};
+			}
 			cmd.BeginRenderPass(pass);
 
 			u32 drawCalls = 0;
@@ -5664,7 +5696,6 @@ namespace Shalltear {
 			RHI::TransientSet viewSet{};
 			RHI::TransientSet materialSet{};
 
-			const u32 shadedDrawCount = fill == ViewFill::Wireframe ? 0 : drawCount;
 			auto bindShaded = [&](const DrawEntry& entry, u64 drawAddress, bool& instanced) {
 				RHI::PipelineHandle pipeline =
 					GetOrCreatePipeline(entry.shader, targets.colorFormat, targets.depthFormat, &entry.renderState, targets.samples,
@@ -5711,9 +5742,6 @@ namespace Shalltear {
 				return instances;
 			};
 
-			ProceduralDraw* proceduralDraws = nullptr;
-			const u32 proceduralDrawCount =
-				fill == ViewFill::Wireframe ? 0 : SortProceduralDraws(arena, procedural, cameraPosition, proceduralDraws);
 			u32 nextProcedural = 0;
 			auto drawProcedural = [&](const ProceduralDraw& draw) {
 				ProceduralRenderer* renderer = state.procedural.renderers[draw.renderer].renderer.Get();
@@ -5748,13 +5776,6 @@ namespace Shalltear {
 				boundMaterial = ~0ull;
 			};
 
-			u32 firstBlended = shadedDrawCount;
-			for (u32 i = 0; i < shadedDrawCount; ++i) {
-				if (drawList[i]->alpha) {
-					firstBlended = i;
-					break;
-				}
-			}
 			for (u32 i = 0; i < firstBlended;) {
 				i += drawShaded(i, firstBlended, [](const DrawEntry&) { return true; });
 			}
@@ -5803,8 +5824,7 @@ namespace Shalltear {
 				}
 			}
 
-			if (reads.copiesColor && reads.color.IsValid() &&
-				TransparentReadsColor(drawList, firstBlended, shadedDrawCount, proceduralDraws, nextProcedural, proceduralDrawCount)) {
+			if (willSplitForOpaqueCopy) {
 				cmd.EndRenderPass();
 				const bool resolve = targets.samples > 1;
 				cmd.TransitionTexture(targets.color, resolve ? RHI::ResourceState::TransferSrc : RHI::ResourceState::ShaderResource);
@@ -5813,7 +5833,12 @@ namespace Shalltear {
 				cmd.TransitionTexture(reads.color, RHI::ResourceState::ShaderResource);
 				cmd.TransitionTexture(targets.color, RHI::ResourceState::RenderTarget);
 				colorAttachment.load = RHI::LoadOp::Load;
+				colorAttachment.store = targets.discardColor ? RHI::StoreOp::DontCare : RHI::StoreOp::Store;
 				depthAttachment.load = RHI::LoadOp::Load;
+				depthAttachment.store = targets.discardDepth ? RHI::StoreOp::DontCare : RHI::StoreOp::Store;
+				if (targets.resolveColor.IsValid()) {
+					pass.resolveTargets = {&targets.resolveColor, 1};
+				}
 				cmd.BeginRenderPass(pass);
 				boundPipeline = RHI::PipelineHandle{};
 				boundMaterial = ~0ull;
@@ -6013,10 +6038,11 @@ namespace Shalltear {
 			u32 depth = 0;
 			u32 normals = 0;
 			u32 color = 0;
+			u32 inlineResolve = 0;
 		};
 
 		// must match DeclareScenePassReads
-		ScenePassSlots ResolveScenePassSlots(bool produced, PassRequests reads) {
+		ScenePassSlots ResolveScenePassSlots(bool produced, PassRequests reads, bool hasInlineResolve = false) {
 			ScenePassSlots slots;
 			u32 next = SCENE_PASS_FIRST_READ;
 			if (produced) {
@@ -6030,6 +6056,9 @@ namespace Shalltear {
 			}
 			if (HasFlag(reads, PassRequests::SceneColor)) {
 				slots.color = next++;
+			}
+			if (hasInlineResolve) {
+				slots.inlineResolve = next++;
 			}
 			return slots;
 		}
@@ -6128,9 +6157,9 @@ namespace Shalltear {
 			}
 		}
 
-		RowTextureSlots ResolveRowTextureSlots(PassRequests requests, bool writesSceneTarget, const PassStep& step) {
+		RowTextureSlots ResolveRowTextureSlots(PassRequests requests, bool writesSceneTarget, bool hasSceneDepth, const PassStep& step) {
 			RowTextureSlots slots;
-			u32 next = writesSceneTarget ? 2 : 1;
+			u32 next = writesSceneTarget ? (hasSceneDepth ? 2 : 1) : 1;
 			if (HasFlag(requests, PassRequests::SceneColor)) {
 				slots.sceneColor = next++;
 			}
@@ -6293,7 +6322,9 @@ namespace Shalltear {
 				graph.AddPass(name, zoneSite, record, work);
 				if (declared.target == PASS_SCENE_TARGET) {
 					graph.Write(frame.sceneTarget, RHI::ResourceState::RenderTarget);
-					graph.Write(frame.depth, RHI::ResourceState::DepthWrite);
+					if (frame.depth != GraphicsInternal::INVALID_GRAPH_RESOURCE) {
+						graph.Write(frame.depth, RHI::ResourceState::DepthWrite);
+					}
 				} else {
 					graph.Write(state.rowPlanTargets[plan.firstTarget + declared.target].resource,
 								RHI::ResourceState::RenderTarget);
@@ -6325,12 +6356,14 @@ namespace Shalltear {
 			const RenderState::RowPlan& plan = state.rowPlans[flatRow];
 			const PassStep step = ResolveRowStep(state, flatRow, pass.work.step);
 			const bool writesSceneTarget = step.target == PASS_SCENE_TARGET;
+			const bool hasSceneDepth = writesSceneTarget && init.depthFormat != RHI::Format::Unknown;
 			init.step = pass.work.step;
 			init.stepCount = plan.stepCount > 0 ? plan.stepCount : 1;
 			init.requests = row.GetRequests();
-			const RowTextureSlots slots = ResolveRowTextureSlots(init.requests, writesSceneTarget, step);
+			init.writesSceneTarget = writesSceneTarget;
+			const RowTextureSlots slots = ResolveRowTextureSlots(init.requests, writesSceneTarget, hasSceneDepth, step);
 			init.color = pass.textures[0];
-			init.depth = writesSceneTarget ? pass.textures[1] : RHI::TextureHandle{};
+			init.depth = hasSceneDepth ? pass.textures[1] : RHI::TextureHandle{};
 			if (!writesSceneTarget) {
 				const RenderState::RowTarget& target = state.rowPlanTargets[plan.firstTarget + step.target];
 				init.colorFormat = target.format;
@@ -6468,6 +6501,12 @@ namespace Shalltear {
 			row->Record(context);
 		}
 
+		constexpr u32 RowSortKey(PassPoint point, FrameStagePosition position) {
+			return static_cast<u32>(point) * 3u + static_cast<u32>(position);
+		}
+
+		constexpr u32 ROW_KEY_AFTER_LAST = RowSortKey(PassPoint::Present, FrameStagePosition::Late) + 1u;
+
 		void PassRecordWindowRow(GraphExecution& exec, const GraphPass& pass) {
 			RenderState& state = *_state;
 			RenderState::WindowWork& work = state.frameWork[pass.work.index];
@@ -6486,11 +6525,13 @@ namespace Shalltear {
 			const f32 aspect = CameraAspect(cameraWork);
 			Mat4 cameraWorld = cameraOwner->GetWorldMatrix();
 
+			const bool resolvedRow = cameraWork.resolvedPost && row->PrefersResolvedTarget() &&
+									 RowSortKey(row->point, row->position) >= RowSortKey(PassPoint::Opaque, FrameStagePosition::Normal);
 			GraphicsInternal::PassContextInit init;
 			init.exec = &exec;
 			init.colorFormat = SCENE_COLOR_FORMAT;
-			init.depthFormat = SCENE_DEPTH_FORMAT;
-			init.samples = state.msaaSamples;
+			init.depthFormat = resolvedRow ? RHI::Format::Unknown : SCENE_DEPTH_FORMAT;
+			init.samples = resolvedRow ? 1u : state.msaaSamples;
 			init.view = cameraWorld.Inverse();
 			init.projection = camera->BuildProjection(aspect);
 			init.cameraPosition = cameraOwner->GetWorldPosition();
@@ -6526,8 +6567,7 @@ namespace Shalltear {
 		}
 
 		GraphResourceId DeclareSceneColorCopy(GraphicsInternal::RenderGraph& graph, const char* name, u32 zoneSite, PassWork work,
-											  GraphResourceId sceneTarget, const RHI::TextureDesc& colorDesc) {
-			const bool resolve = _state->msaaSamples > 1;
+											  GraphResourceId sceneTarget, const RHI::TextureDesc& colorDesc, bool resolve) {
 			if (!resolve) {
 				EnsureBlitShader();
 			}
@@ -6910,8 +6950,14 @@ namespace Shalltear {
 			PassTargets targets;
 			targets.color = pass.textures[Color];
 			targets.depth = pass.textures[Depth];
+			if (cameraWork.inlineResolve) {
+				const ScenePassSlots slots = ResolveScenePassSlots(pass.work.produced, cameraWork.sceneReads, true);
+				targets.resolveColor = pass.textures[slots.inlineResolve];
+			}
 			targets.clear = pass.work.flag;
 			targets.drawSky = pass.work.flag && camera->GetBackgroundType() == BackgroundType::Sky;
+			targets.discardColor = cameraWork.discardColor;
+			targets.discardDepth = cameraWork.discardDepth;
 			targets.samples = state.msaaSamples;
 			targets.extent = renderSize;
 			Mat4 cameraWorld = cameraOwner->GetWorldMatrix();
@@ -7149,12 +7195,6 @@ namespace Shalltear {
 				graph.Write(graph.CreateVirtual(true), RHI::ResourceState::Undefined);
 			}
 		}
-
-		constexpr u32 RowSortKey(PassPoint point, FrameStagePosition position) {
-			return static_cast<u32>(point) * 3u + static_cast<u32>(position);
-		}
-
-		constexpr u32 ROW_KEY_AFTER_LAST = RowSortKey(PassPoint::Present, FrameStagePosition::Late) + 1u;
 
 		void DeclareProceduralRenderers(RenderState& state) {
 			GraphicsInternal::ProceduralFrame& frame = state.procedural;
@@ -7920,8 +7960,9 @@ namespace Shalltear {
 		}
 
 		void DeclareCameraComposition(RenderState& state, RHI::Device& device, GraphicsInternal::RenderGraph& graph, PassWork work,
-									  GraphResourceId sceneTarget, GraphResourceId sceneDepth,
-									  GraphResourceId worldSkin, GraphResourceId worldSkinBuffer) {
+									  GraphResourceId sceneTarget, GraphResourceId sceneDepth, GraphResourceId resolvedColor,
+									  GraphResourceId worldSkin, GraphResourceId worldSkinBuffer, bool& outResolvedInline) {
+			outResolvedInline = false;
 			RenderState::WindowWork& windowWork = state.frameWork[work.index];
 			GraphResourceId windowShadowAtlas = graph.Import(state.DirectionalShadowTexture());
 			GraphResourceId windowPunctualAtlas = graph.Import(state.punctualShadowAtlas);
@@ -7935,6 +7976,7 @@ namespace Shalltear {
 			SLT_GRAPH_SITE(windowPrepassItemsSite, "Render.Window.PrepassItems");
 			SLT_GRAPH_SITE(cameraResolveSite, "Render.Window.CameraResolve");
 			SLT_GRAPH_SITE(compositeSite, "Render.Window.Composite");
+			const u32 sceneAnchorKey = RowSortKey(PassPoint::Opaque, FrameStagePosition::Normal);
 			bool chainWritten = false;
 			for (u32 cameraIndex = 0; cameraIndex < static_cast<u32>(windowWork.cameras.size()); ++cameraIndex) {
 				work.subIndex = cameraIndex;
@@ -8021,6 +8063,60 @@ namespace Shalltear {
 				windowWork.cameras[cameraIndex].firstCaster = casters.first;
 				windowWork.cameras[cameraIndex].casterCount = casters.count;
 
+				u32 depthRangeSlot = RenderState::DEPTH_RANGE_SLOTS;
+				if (windowCasts && FitsDepth() && cameraRows.camera) {
+					depthRangeSlot = ClaimDepthRangeSlot(state, device, cameraRows.camera->GetInstanceId() & ~PENDING_VIEW_LOD_KEY);
+				}
+				const bool emitsDepthRange = depthRangeSlot < RenderState::DEPTH_RANGE_SLOTS;
+
+				bool canResolvePost = windowWork.cameras.size() == 1 && !cameraRows.composited &&
+									  resolvedColor != GraphicsInternal::INVALID_GRAPH_RESOURCE;
+				u32 writingSceneColorRows = 0;
+				if (canResolvePost) {
+					for (u32 slot = 0; slot < cameraRows.rowCount; ++slot) {
+						const RenderPass* row = state.viewPassRows[cameraRows.firstRow + slot].Get();
+						if (!row || RowSortKey(row->point, row->position) < sceneAnchorKey) {
+							continue;
+						}
+						if (!row->PrefersResolvedTarget()) {
+							canResolvePost = false;
+							break;
+						}
+						if (row->WillWriteSceneTarget() && HasFlag(row->GetRequests(), PassRequests::SceneColor)) {
+							++writingSceneColorRows;
+						}
+					}
+				}
+
+				GraphResourceId inlineResolveTarget = GraphicsInternal::INVALID_GRAPH_RESOURCE;
+				GraphResourceId currentResolved = resolvedColor;
+				GraphResourceId altResolved = GraphicsInternal::INVALID_GRAPH_RESOURCE;
+				if (canResolvePost) {
+					RenderState::CameraWork& cameraState = windowWork.cameras[cameraIndex];
+					cameraState.resolvedPost = true;
+					cameraState.discardDepth = !emitsDepthRange;
+					if (writingSceneColorRows > 0) {
+						RHI::TextureDesc resolvedDesc = cameraHDRDesc;
+						resolvedDesc.debugName = "SceneColorResolved";
+						const GraphResourceId resolvedScratch = graph.CreateTransient(resolvedDesc);
+						if ((writingSceneColorRows & 1u) != 0) {
+							currentResolved = resolvedScratch;
+							altResolved = resolvedColor;
+						} else {
+							currentResolved = resolvedColor;
+							altResolved = resolvedScratch;
+						}
+					}
+					if (state.msaaSamples > 1) {
+						cameraState.inlineResolve = true;
+						cameraState.discardColor = true;
+						inlineResolveTarget = currentResolved;
+						outResolvedInline = true;
+					} else {
+						cameraTarget = currentResolved;
+					}
+				}
+
 				const GraphResourceId opaqueColor = DeclareOpaqueColor(graph, cameraHDRDesc, sceneReads);
 				const bool wantsPrepass = prepassKey < ROW_KEY_AFTER_LAST;
 				const bool wantsNormals = HasFlag(cameraRequests, PassRequests::SceneNormals);
@@ -8067,9 +8163,26 @@ namespace Shalltear {
 								continue;
 							}
 							work.element = slot;
+							if (canResolvePost && key >= sceneAnchorKey) {
+								if (!row->WillWriteSceneTarget()) {
+									continue;
+								}
+								const bool readsSceneColor = HasFlag(row->GetRequests(), PassRequests::SceneColor);
+								const GraphResourceId rowTarget = readsSceneColor ? altResolved : currentResolved;
+								const GraphResourceId rowColorInput = readsSceneColor ? currentResolved : GraphicsInternal::INVALID_GRAPH_RESOURCE;
+								DeclareRowPasses(state, graph, "Render.Window.Row", windowRowSite, &PassRecordWindowRow,
+												 work, cameraRows.firstRow + slot,
+												 {rowTarget, GraphicsInternal::INVALID_GRAPH_RESOURCE, rowColorInput, prepassDepth, prepassNormals,
+												  worldSkinBuffer});
+								if (readsSceneColor) {
+									std::swap(currentResolved, altResolved);
+								}
+								continue;
+							}
 							const GraphResourceId sceneColor =
 								HasFlag(row->GetRequests(), PassRequests::SceneColor)
-									? DeclareSceneColorCopy(graph, "Render.Window.ColorCopy", windowCopySite, work, cameraTarget, cameraHDRDesc)
+									? DeclareSceneColorCopy(graph, "Render.Window.ColorCopy", windowCopySite, work, cameraTarget, cameraHDRDesc,
+															state.msaaSamples > 1)
 									: GraphicsInternal::INVALID_GRAPH_RESOURCE;
 							DeclareRowPasses(state, graph, "Render.Window.Row", windowRowSite, &PassRecordWindowRow,
 											 work, cameraRows.firstRow + slot,
@@ -8092,7 +8205,7 @@ namespace Shalltear {
 					}
 				}
 
-				flushCameraRowsBefore(RowSortKey(PassPoint::Opaque, FrameStagePosition::Normal));
+				flushCameraRowsBefore(sceneAnchorKey);
 				work.produced = productions.ambientOcclusion != GraphicsInternal::INVALID_GRAPH_RESOURCE;
 				graph.AddPass("Render.Window.Scene", windowSceneSite, &PassRecordWindowScene, work);
 				graph.Write(cameraTarget, RHI::ResourceState::RenderTarget);
@@ -8101,19 +8214,19 @@ namespace Shalltear {
 				graph.Read(windowShadowAtlas, RHI::ResourceState::ShaderResource);
 				graph.Read(windowPunctualAtlas, RHI::ResourceState::ShaderResource);
 				DeclareScenePassReads(graph, productions.ambientOcclusion, sceneReads, prepassDepth, prepassNormals, opaqueColor);
-				if (windowCasts && FitsDepth() && cameraRows.camera) {
-					const u32 slot = ClaimDepthRangeSlot(state, device, cameraRows.camera->GetInstanceId() & ~PENDING_VIEW_LOD_KEY);
-					if (slot < RenderState::DEPTH_RANGE_SLOTS) {
-						SLT_GRAPH_SITE(windowDepthRangeSite, "Render.Window.DepthRange");
-						PassWork rangeWork = work;
-						rangeWork.element = slot;
-						graph.AddPass("Render.Window.DepthRange", windowDepthRangeSite, &PassRecordWindowDepthRange, rangeWork);
-						graph.Read(cameraDepth, RHI::ResourceState::ShaderResource);
-						graph.Write(graph.CreateVirtual(true), RHI::ResourceState::Undefined);
-					}
+				if (inlineResolveTarget != GraphicsInternal::INVALID_GRAPH_RESOURCE) {
+					graph.Write(inlineResolveTarget, RHI::ResourceState::RenderTarget);
 				}
-				work.produced = false;
 				DeclareProceduralReads(state, graph, procedural);
+				work.produced = false;
+				if (emitsDepthRange) {
+					SLT_GRAPH_SITE(windowDepthRangeSite, "Render.Window.DepthRange");
+					PassWork rangeWork = work;
+					rangeWork.element = depthRangeSlot;
+					graph.AddPass("Render.Window.DepthRange", windowDepthRangeSite, &PassRecordWindowDepthRange, rangeWork);
+					graph.Read(cameraDepth, RHI::ResourceState::ShaderResource);
+					graph.Write(graph.CreateVirtual(true), RHI::ResourceState::Undefined);
+				}
 
 				flushCameraRowsBefore(ROW_KEY_AFTER_LAST);
 
@@ -8357,7 +8470,7 @@ namespace Shalltear {
 							viewWork.subIndex = index - firstRow;
 							const GraphResourceId sceneColor =
 								HasFlag(row->GetRequests(), PassRequests::SceneColor)
-									? DeclareSceneColorCopy(graph, "Render.View.ColorCopy", viewCopySite, viewWork, sceneTarget, hdrDesc)
+									? DeclareSceneColorCopy(graph, "Render.View.ColorCopy", viewCopySite, viewWork, sceneTarget, hdrDesc, multisampled)
 									: GraphicsInternal::INVALID_GRAPH_RESOURCE;
 							DeclareRowPasses(state, graph, "Render.View.Row", viewRowSite, &PassRecordViewRow,
 											 viewWork, index,
@@ -8558,9 +8671,10 @@ namespace Shalltear {
 				GraphResourceId hdrColor = graph.CreateTransient(hdrDesc);
 				GraphResourceId sceneTarget = state.msaaSamples > 1 ? graph.CreateTransient(hdrMsDesc) : hdrColor;
 				GraphResourceId sceneDepth = graph.CreateTransient(depthDesc);
-				DeclareCameraComposition(state, device, graph, work, sceneTarget, sceneDepth, worldSkin, worldSkinBuffer);
+				bool resolvedInline = false;
+				DeclareCameraComposition(state, device, graph, work, sceneTarget, sceneDepth, hdrColor, worldSkin, worldSkinBuffer, resolvedInline);
 
-				if (state.msaaSamples > 1) {
+				if (state.msaaSamples > 1 && !resolvedInline) {
 					SLT_GRAPH_SITE(targetResolveSite, "Render.Window.Resolve");
 					graph.AddPass("Render.Window.Resolve", targetResolveSite, &PassRecordResolve, work);
 					graph.Read(sceneTarget, RHI::ResourceState::TransferSrc);
@@ -8672,9 +8786,10 @@ namespace Shalltear {
 					GraphResourceId sceneTarget = state.msaaSamples > 1 ? graph.CreateTransient(windowHDRMultisampledDesc) : sceneColor;
 					GraphResourceId sceneDepth = graph.CreateTransient(windowDepthDesc);
 
-					DeclareCameraComposition(state, device, graph, work, sceneTarget, sceneDepth, worldSkin, worldSkinBuffer);
+					bool resolvedInline = false;
+					DeclareCameraComposition(state, device, graph, work, sceneTarget, sceneDepth, sceneColor, worldSkin, worldSkinBuffer, resolvedInline);
 
-					if (state.msaaSamples > 1) {
+					if (state.msaaSamples > 1 && !resolvedInline) {
 						SLT_GRAPH_SITE(windowResolveSite, "Render.Window.Resolve");
 						graph.AddPass("Render.Window.Resolve", windowResolveSite, &PassRecordResolve, work);
 						graph.Read(sceneTarget, RHI::ResourceState::TransferSrc);
@@ -9039,7 +9154,8 @@ namespace Shalltear {
 		  _scopeIndex(init.scopeIndex), _requests(init.requests), _sceneColor(init.sceneColor),
 		  _sceneDepth(init.sceneDepth), _sceneNormals(init.sceneNormals),
 		  _step(init.step), _stepCount(init.stepCount),
-		  _passInput0(init.passInput0), _passInput1(init.passInput1), _passVolume(init.passVolume) {}
+		  _passInput0(init.passInput0), _passInput1(init.passInput1), _passVolume(init.passVolume),
+		  _writesSceneTarget(init.writesSceneTarget) {}
 
 	bool PassContext::DrawProcedural(const Handle<ShaderAsset>& shader, std::span<const u8> pushConstants, u32 vertexCount, u32 instanceCount) {
 		ShaderAsset* asset = shader.Get();
@@ -9051,21 +9167,25 @@ namespace Shalltear {
 						 asset->virtualPath, pushConstants.size(), asset->pushConstantSize);
 			return false;
 		}
-		RHI::PipelineHandle pipeline = GetOrCreatePipeline(asset, _colorFormat, _depthFormat, nullptr, _samples);
+		const bool usesDepth = _depth.IsValid() && asset->renderState.depth != RHI::DepthMode::Off;
+		const RHI::Format depthFormat = usesDepth ? _depthFormat : RHI::Format::Unknown;
+		RHI::PipelineHandle pipeline = GetOrCreatePipeline(asset, _colorFormat, depthFormat, nullptr, _samples);
 		if (!pipeline.IsValid()) {
 			return false;
 		}
 
+		const bool discardPriorColor = !_writesSceneTarget && !_colorWritten &&
+									   asset->renderState.blend == RHI::BlendMode::Opaque && !usesDepth;
 		RHI::RenderPassDesc::Attachment colorAttachment;
 		colorAttachment.texture = _color;
-		colorAttachment.load = RHI::LoadOp::Load;
+		colorAttachment.load = discardPriorColor ? RHI::LoadOp::DontCare : RHI::LoadOp::Load;
 		RHI::RenderPassDesc::DepthAttachment depthAttachment;
 		depthAttachment.texture = _depth;
 		depthAttachment.load = RHI::LoadOp::Load;
 
 		RHI::RenderPassDesc desc;
 		desc.colorAttachments = {&colorAttachment, 1};
-		desc.depth = _depth.IsValid() ? &depthAttachment : nullptr;
+		desc.depth = usesDepth ? &depthAttachment : nullptr;
 		RHI::CommandList& cmd = *_exec->cmd;
 		cmd.BeginRenderPass(desc);
 		cmd.SetPipeline(pipeline);
@@ -9077,6 +9197,51 @@ namespace Shalltear {
 		}
 		cmd.Draw(vertexCount, instanceCount);
 		cmd.EndRenderPass();
+		_colorWritten = true;
+		++_exec->drawCalls;
+		return true;
+	}
+
+	bool PassContext::DrawFullScreen(const Handle<ShaderAsset>& shader, std::span<const u8> pushConstants) {
+		ShaderAsset* asset = shader.Get();
+		if (!_exec || !_exec->cmd || !asset) {
+			return false;
+		}
+		if (pushConstants.size() > asset->pushConstantSize) {
+			SLT_LOG_WARN("Graphics", "pass draw with '{}' pushed {} B -> a declared {} B. Dropped",
+						 asset->virtualPath, pushConstants.size(), asset->pushConstantSize);
+			return false;
+		}
+		const bool usesDepth = _depth.IsValid() && asset->renderState.depth != RHI::DepthMode::Off;
+		const RHI::Format depthFormat = usesDepth ? _depthFormat : RHI::Format::Unknown;
+		RHI::PipelineHandle pipeline = GetOrCreatePipeline(asset, _colorFormat, depthFormat, nullptr, _samples);
+		if (!pipeline.IsValid()) {
+			return false;
+		}
+
+		const bool overwritesTarget = asset->renderState.blend == RHI::BlendMode::Opaque && !usesDepth;
+		RHI::RenderPassDesc::Attachment colorAttachment;
+		colorAttachment.texture = _color;
+		colorAttachment.load = overwritesTarget ? RHI::LoadOp::DontCare : RHI::LoadOp::Load;
+		RHI::RenderPassDesc::DepthAttachment depthAttachment;
+		depthAttachment.texture = _depth;
+		depthAttachment.load = RHI::LoadOp::Load;
+
+		RHI::RenderPassDesc desc;
+		desc.colorAttachments = {&colorAttachment, 1};
+		desc.depth = usesDepth ? &depthAttachment : nullptr;
+		RHI::CommandList& cmd = *_exec->cmd;
+		cmd.BeginRenderPass(desc);
+		cmd.SetPipeline(pipeline);
+		BindGlobalsOnlyViewSet(cmd, *_exec->device, pipeline, *asset);
+		BindSceneTextureSet(cmd, *_exec->device, pipeline, *asset, SceneRequestTextures{_sceneColor, _sceneDepth, _sceneNormals, _passInput0, _passInput1, _passVolume},
+							PassView{_view, _projection, _extent});
+		if (!pushConstants.empty()) {
+			cmd.PushConstants(pushConstants);
+		}
+		cmd.Draw(3, 1);
+		cmd.EndRenderPass();
+		_colorWritten = true;
 		++_exec->drawCalls;
 		return true;
 	}
@@ -9104,8 +9269,10 @@ namespace Shalltear {
 			return false;
 		}
 		const RHI::ShaderRenderState renderState = asset->ResolveRenderState(shader->renderState);
+		const bool usesDepth = _depth.IsValid() && renderState.depth != RHI::DepthMode::Off;
+		const RHI::Format depthFormat = usesDepth ? _depthFormat : RHI::Format::Unknown;
 		const u32 variant = shader->FindVariant(asset->keywordHash);
-		RHI::PipelineHandle pipeline = GetOrCreatePipeline(shader, _colorFormat, _depthFormat, &renderState, _samples, variant);
+		RHI::PipelineHandle pipeline = GetOrCreatePipeline(shader, _colorFormat, depthFormat, &renderState, _samples, variant);
 		if (!pipeline.IsValid()) {
 			return false;
 		}
@@ -9114,16 +9281,18 @@ namespace Shalltear {
 		PackMaterialBlock(entry, *state->extractionArena, shader, asset);
 		ResolveMaterialTextures(entry, *state->extractionArena, shader, asset);
 
+		const bool discardPriorColor = !_writesSceneTarget && !_colorWritten &&
+									   renderState.blend == RHI::BlendMode::Opaque && !usesDepth;
 		RHI::RenderPassDesc::Attachment colorAttachment;
 		colorAttachment.texture = _color;
-		colorAttachment.load = RHI::LoadOp::Load;
+		colorAttachment.load = discardPriorColor ? RHI::LoadOp::DontCare : RHI::LoadOp::Load;
 		RHI::RenderPassDesc::DepthAttachment depthAttachment;
 		depthAttachment.texture = _depth;
 		depthAttachment.load = RHI::LoadOp::Load;
 
 		RHI::RenderPassDesc desc;
 		desc.colorAttachments = {&colorAttachment, 1};
-		desc.depth = _depth.IsValid() ? &depthAttachment : nullptr;
+		desc.depth = usesDepth ? &depthAttachment : nullptr;
 		RHI::CommandList& cmd = *_exec->cmd;
 		RHI::Device& device = *_exec->device;
 		cmd.BeginRenderPass(desc);
@@ -9137,6 +9306,7 @@ namespace Shalltear {
 		}
 		cmd.Draw(vertexCount, instanceCount);
 		cmd.EndRenderPass();
+		_colorWritten = true;
 		++_exec->drawCalls;
 		return true;
 	}
@@ -9173,6 +9343,7 @@ namespace Shalltear {
 											  ScenePassReads{_sceneColor, _sceneDepth, _sceneNormals, false});
 		_exec->drawCalls += drawCalls;
 		_exec->triangles += triangles;
+		_colorWritten = _colorWritten || drawCalls > 0;
 		return drawCalls > 0;
 	}
 

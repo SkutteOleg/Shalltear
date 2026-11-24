@@ -12,14 +12,25 @@ namespace Shalltear::RHI {
 				return;
 			}
 			FrameContext& frame = d.frames[d.frameIndex];
-			d.EnsureFrameSet3BindGroups(frame);
+			if (frame.set3HeapVersion != d.vertexHeap.version || !frame.set3GraphicsGroup || !frame.set3ComputeReadWriteGroup) {
+				d.EnsureFrameSet3BindGroups(frame);
+			}
 			const bool rw = pipeline.isCompute && pipeline.tableWritable;
 			WGPUBindGroup group = rw ? frame.set3ComputeReadWriteGroup : frame.set3GraphicsGroup;
 			const u32 dynOffset = cmd.currentPushOffset;
 			if (cmd.inRenderPass && cmd.renderPass) {
-				d.wgpu.wgpuRenderPassEncoderSetBindGroup(cmd.renderPass, TABLE_SET, group, 1, &dynOffset);
+				if (cmd.boundRenderSets[TABLE_SET] != group || cmd.boundRenderSet3Offset != dynOffset) {
+					d.wgpu.wgpuRenderPassEncoderSetBindGroup(cmd.renderPass, TABLE_SET, group, 1, &dynOffset);
+					cmd.boundRenderSets[TABLE_SET] = group;
+					cmd.boundRenderSet3Offset = dynOffset;
+				}
+				cmd.renderSet3Dirty = false;
 			} else if (cmd.computePass) {
-				d.wgpu.wgpuComputePassEncoderSetBindGroup(cmd.computePass, TABLE_SET, group, 1, &dynOffset);
+				if (cmd.boundComputeActiveSets[TABLE_SET] != group || cmd.boundComputeSet3Offset != dynOffset) {
+					d.wgpu.wgpuComputePassEncoderSetBindGroup(cmd.computePass, TABLE_SET, group, 1, &dynOffset);
+					cmd.boundComputeActiveSets[TABLE_SET] = group;
+					cmd.boundComputeSet3Offset = dynOffset;
+				}
 			}
 			cmd.set3Bound = true;
 			cmd.set3BoundReadWrite = rw;
@@ -33,12 +44,18 @@ namespace Shalltear::RHI {
 			if (pipeline.isCompute) {
 				return;
 			}
-			const i32 bias = pipeline.dynamicDepthBias ? cmd.depthBias : static_cast<i32>(pipeline.depthBiasConstant);
-			const f32 slope = pipeline.dynamicDepthBias ? cmd.depthBiasSlope : pipeline.depthBiasSlope;
-			WGPURenderPipeline variant = d.GetOrCreateGraphicsVariant(pipeline, cmd.frontFace, bias, slope);
-			if (variant && variant != cmd.boundRenderPipeline) {
-				d.wgpu.wgpuRenderPassEncoderSetPipeline(cmd.renderPass, variant);
-				cmd.boundRenderPipeline = variant;
+			if (cmd.graphicsVariantDirty) {
+				const i32 bias = pipeline.dynamicDepthBias ? cmd.depthBias : static_cast<i32>(pipeline.depthBiasConstant);
+				const f32 slope = pipeline.dynamicDepthBias ? cmd.depthBiasSlope : pipeline.depthBiasSlope;
+				WGPURenderPipeline variant = d.GetOrCreateGraphicsVariant(pipeline, cmd.frontFace, bias, slope);
+				if (variant && variant != cmd.boundRenderPipeline) {
+					d.wgpu.wgpuRenderPassEncoderSetPipeline(cmd.renderPass, variant);
+					cmd.boundRenderPipeline = variant;
+				}
+				cmd.graphicsVariantDirty = false;
+			}
+			if (cmd.renderSet3Dirty) {
+				BindSet3ForPass(d, cmd, pipeline);
 			}
 		}
 
@@ -75,7 +92,7 @@ namespace Shalltear::RHI {
 			wgpu.wgpuComputePassEncoderEnd(cmd.computePass);
 			wgpu.wgpuComputePassEncoderRelease(cmd.computePass);
 			cmd.computePass = nullptr;
-			cmd.set3Bound = false;
+			cmd.ResetComputePassCache();
 		}
 	}
 
@@ -83,7 +100,7 @@ namespace Shalltear::RHI {
 		if (!cmd.computePass && cmd.encoder && !lost) {
 			WGPUComputePassDescriptor desc{};
 			cmd.computePass = wgpu.wgpuCommandEncoderBeginComputePass(cmd.encoder, &desc);
-			cmd.set3Bound = false;
+			cmd.ResetComputePassCache();
 		}
 	}
 
@@ -136,7 +153,8 @@ namespace Shalltear::RHI {
 		_impl->passDepthFormat = Format::Unknown;
 		_impl->passSamples = 1;
 
-		for (const RenderPassDesc::Attachment& attachment : desc.colorAttachments) {
+		for (u32 i = 0; i < desc.colorAttachments.size(); ++i) {
+			const RenderPassDesc::Attachment& attachment = desc.colorAttachments[i];
 			TextureResource* resource = d.textures.Resolve(attachment.texture);
 			if (!resource) {
 				SLT_LOG_ERROR("Graphics", "BeginRenderPass: stale color attachment");
@@ -147,6 +165,18 @@ namespace Shalltear::RHI {
 			_impl->passSamples = resource->samples;
 			WGPURenderPassColorAttachment& info = colorInfos[colorCount++];
 			info.view = resource->AttachmentView(attachment.layer, attachment.mip);
+			if (i < desc.resolveTargets.size() && desc.resolveTargets[i].IsValid()) {
+				TextureResource* resolveRes = d.textures.Resolve(desc.resolveTargets[i]);
+				if (!resolveRes) {
+					SLT_LOG_ERROR("Graphics", "BeginRenderPass: stale resolve target");
+					return;
+				}
+				SLT_CORE_ASSERT_MSG(resolveRes->state == ResourceState::RenderTarget, "resolve target must be in RenderTarget state");
+				SLT_CORE_ASSERT_MSG(resource->samples > 1 && resolveRes->samples == 1 &&
+										resolveRes->format == resource->format && resolveRes->size == resource->size,
+									"resolve target must be a matching single-sample texture");
+				info.resolveTarget = resolveRes->AttachmentView(0, 0);
+			}
 			info.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
 			info.loadOp = attachment.load == LoadOp::Load ? WGPULoadOp_Load : WGPULoadOp_Clear;
 			info.storeOp = attachment.store == StoreOp::Store ? WGPUStoreOp_Store : WGPUStoreOp_Discard;
@@ -189,8 +219,7 @@ namespace Shalltear::RHI {
 		}
 		_impl->inRenderPass = true;
 		_impl->boundPipelineIndex = 0;
-		_impl->boundRenderPipeline = nullptr;
-		_impl->set3Bound = false;
+		_impl->ResetRenderPassCache();
 		_impl->passArea = RectI{0, 0, area.x, area.y};
 
 		SetViewportScissor(_impl->passArea);
@@ -205,8 +234,7 @@ namespace Shalltear::RHI {
 			_impl->renderPass = nullptr;
 		}
 		_impl->inRenderPass = false;
-		_impl->boundRenderPipeline = nullptr;
-		_impl->set3Bound = false;
+		_impl->ResetRenderPassCache();
 	}
 
 	void CommandList::SetPipeline(PipelineHandle pipeline) {
@@ -223,6 +251,8 @@ namespace Shalltear::RHI {
 			}
 			_impl->boundPipelineIndex = 0;
 			_impl->boundRenderPipeline = nullptr;
+			_impl->graphicsVariantDirty = false;
+			_impl->renderSet3Dirty = false;
 			_impl->pipelineRefused = true;
 			return;
 		}
@@ -233,44 +263,49 @@ namespace Shalltear::RHI {
 		_impl->frontFace = FrontFace::Clockwise;
 		_impl->depthBias = 0;
 		_impl->depthBiasSlope = 0.0f;
-		for (WGPUBindGroup& bg : _impl->boundComputeSets) {
-			bg = nullptr;
-		}
 
 		if (d.lost) {
 			return;
 		}
 
 		if (resource->isCompute) {
+			for (WGPUBindGroup& bg : _impl->boundComputeSets) {
+				bg = nullptr;
+			}
 			d.EnsureActiveComputePass(*_impl);
 			if (_impl->computePass) {
-				d.wgpu.wgpuComputePassEncoderSetPipeline(_impl->computePass, resource->computePipeline);
+				if (_impl->boundComputePipeline != resource->computePipeline) {
+					d.wgpu.wgpuComputePassEncoderSetPipeline(_impl->computePass, resource->computePipeline);
+					_impl->boundComputePipeline = resource->computePipeline;
+				}
 				for (u32 s = 0; s < resource->setCount && s < TABLE_SET; ++s) {
-					if (!resource->setHasBindings[s] && d.table.emptyBindGroup) {
+					if (!resource->setHasBindings[s] && d.table.emptyBindGroup &&
+						_impl->boundComputeActiveSets[s] != d.table.emptyBindGroup) {
 						d.wgpu.wgpuComputePassEncoderSetBindGroup(_impl->computePass, s, d.table.emptyBindGroup, 0, nullptr);
+						_impl->boundComputeActiveSets[s] = d.table.emptyBindGroup;
 					}
 				}
 				BindSet3ForPass(d, *_impl, *resource);
 			}
 		} else if (_impl->inRenderPass && _impl->renderPass) {
-			_impl->boundRenderPipeline = nullptr;
-			EnsureGraphicsVariantBound(d, *_impl);
+			_impl->graphicsVariantDirty = true;
+			_impl->renderSet3Dirty = resource->bindsTable;
 			for (u32 s = 0; s < resource->setCount && s < TABLE_SET; ++s) {
-				if (!resource->setHasBindings[s] && d.table.emptyBindGroup) {
+				if (!resource->setHasBindings[s] && d.table.emptyBindGroup &&
+					_impl->boundRenderSets[s] != d.table.emptyBindGroup) {
 					d.wgpu.wgpuRenderPassEncoderSetBindGroup(_impl->renderPass, s, d.table.emptyBindGroup, 0, nullptr);
+					_impl->boundRenderSets[s] = d.table.emptyBindGroup;
 				}
 			}
-			BindSet3ForPass(d, *_impl, *resource);
 		}
 	}
 
 	void CommandList::SetFrontFace(FrontFace face) {
-		DeviceImpl& d = *_impl->device;
 		if (_impl->frontFace == face) {
 			return;
 		}
 		_impl->frontFace = face;
-		EnsureGraphicsVariantBound(d, *_impl);
+		_impl->graphicsVariantDirty = true;
 	}
 
 	void CommandList::SetDepthBias(f32 constant, f32 slope) {
@@ -280,9 +315,13 @@ namespace Shalltear::RHI {
 		if (!dynamic) {
 			return;
 		}
-		_impl->depthBias = static_cast<i32>(constant);
+		const i32 bias = static_cast<i32>(constant);
+		if (_impl->depthBias == bias && _impl->depthBiasSlope == slope) {
+			return;
+		}
+		_impl->depthBias = bias;
 		_impl->depthBiasSlope = slope;
-		EnsureGraphicsVariantBound(d, *_impl);
+		_impl->graphicsVariantDirty = true;
 	}
 
 	void CommandList::SetViewportScissor(RectI rect) {
@@ -298,9 +337,16 @@ namespace Shalltear::RHI {
 		const i32 y1 = std::clamp(rect.position.y + rect.size.y, y0, passH);
 		const i32 w = std::max(0, x1 - x0);
 		const i32 h = std::max(0, y1 - y0);
-		if (w > 0 && h > 0) {
+		if (w > 0 && h > 0 &&
+			(!_impl->viewportBound || _impl->boundViewportX != x0 || _impl->boundViewportY != y0 ||
+			 _impl->boundViewportW != w || _impl->boundViewportH != h)) {
 			d.wgpu.wgpuRenderPassEncoderSetViewport(_impl->renderPass, static_cast<f32>(x0), static_cast<f32>(y0),
 													static_cast<f32>(w), static_cast<f32>(h), 0.0f, 1.0f);
+			_impl->viewportBound = true;
+			_impl->boundViewportX = x0;
+			_impl->boundViewportY = y0;
+			_impl->boundViewportW = w;
+			_impl->boundViewportH = h;
 		}
 		SetScissor(rect);
 	}
@@ -316,8 +362,19 @@ namespace Shalltear::RHI {
 		const i32 y0 = std::clamp(rect.position.y, 0, passH);
 		const i32 x1 = std::clamp(rect.position.x + rect.size.x, x0, passW);
 		const i32 y1 = std::clamp(rect.position.y + rect.size.y, y0, passH);
-		d.wgpu.wgpuRenderPassEncoderSetScissorRect(_impl->renderPass, static_cast<u32>(x0), static_cast<u32>(y0),
-												   static_cast<u32>(x1 - x0), static_cast<u32>(y1 - y0));
+		const u32 sx = static_cast<u32>(x0);
+		const u32 sy = static_cast<u32>(y0);
+		const u32 sw = static_cast<u32>(x1 - x0);
+		const u32 sh = static_cast<u32>(y1 - y0);
+		if (!_impl->scissorBound || _impl->boundScissorX != sx || _impl->boundScissorY != sy ||
+			_impl->boundScissorW != sw || _impl->boundScissorH != sh) {
+			d.wgpu.wgpuRenderPassEncoderSetScissorRect(_impl->renderPass, sx, sy, sw, sh);
+			_impl->scissorBound = true;
+			_impl->boundScissorX = sx;
+			_impl->boundScissorY = sy;
+			_impl->boundScissorW = sw;
+			_impl->boundScissorH = sh;
+		}
 	}
 
 	void CommandList::BindTransientSet(u32 setIndex, TransientSet set) {
@@ -333,9 +390,20 @@ namespace Shalltear::RHI {
 			}
 			d.EnsureActiveComputePass(*_impl);
 			if (_impl->computePass) {
-				d.wgpu.wgpuComputePassEncoderSetBindGroup(_impl->computePass, setIndex, group, 0, nullptr);
+				if (setIndex >= MAX_DESCRIPTOR_SETS || _impl->boundComputeActiveSets[setIndex] != group) {
+					d.wgpu.wgpuComputePassEncoderSetBindGroup(_impl->computePass, setIndex, group, 0, nullptr);
+					if (setIndex < MAX_DESCRIPTOR_SETS) {
+						_impl->boundComputeActiveSets[setIndex] = group;
+					}
+				}
 			}
 		} else if (_impl->renderPass) {
+			if (setIndex < MAX_DESCRIPTOR_SETS && _impl->boundRenderSets[setIndex] == group) {
+				return;
+			}
+			if (setIndex < MAX_DESCRIPTOR_SETS) {
+				_impl->boundRenderSets[setIndex] = group;
+			}
 			d.wgpu.wgpuRenderPassEncoderSetBindGroup(_impl->renderPass, setIndex, group, 0, nullptr);
 		}
 	}
@@ -349,6 +417,14 @@ namespace Shalltear::RHI {
 		SLT_CORE_ASSERT_MSG(data.size() <= WEBGPU_PUSH_STRIDE, "push constant data exceeds 256 B slot");
 
 		FrameContext& frame = d.frames[d.frameIndex];
+		if (_impl->lastPushSize == static_cast<u32>(data.size()) &&
+			frame.pushUsed >= _impl->currentPushOffset + data.size() &&
+			std::memcmp(frame.pushCPU.data() + _impl->currentPushOffset, data.data(), data.size()) == 0) {
+			if (pipeline.bindsTable && !_impl->inRenderPass) {
+				BindSet3ForPass(d, *_impl, pipeline);
+			}
+			return;
+		}
 		if (frame.pushUsed + WEBGPU_PUSH_STRIDE > frame.pushCapacity) {
 			SLT_LOG_ERROR("Graphics", "WebGPU: push constant ring exhausted ({} B)", frame.pushCapacity);
 			return;
@@ -357,9 +433,14 @@ namespace Shalltear::RHI {
 		frame.pushUsed += WEBGPU_PUSH_STRIDE;
 		std::memcpy(frame.pushCPU.data() + offset, data.data(), data.size());
 		_impl->currentPushOffset = offset;
+		_impl->lastPushSize = static_cast<u32>(data.size());
 
 		if (pipeline.bindsTable) {
-			BindSet3ForPass(d, *_impl, pipeline);
+			if (_impl->inRenderPass) {
+				_impl->renderSet3Dirty = true;
+			} else {
+				BindSet3ForPass(d, *_impl, pipeline);
+			}
 		}
 	}
 
@@ -370,10 +451,18 @@ namespace Shalltear::RHI {
 			return;
 		}
 		WGPUBuffer gpuBuf = resource->inVertexHeap ? d.vertexHeap.buffer : resource->buffer;
+		const WGPUIndexFormat format = sixteenBit ? WGPUIndexFormat_Uint16 : WGPUIndexFormat_Uint32;
 		const u64 offset = resource->inVertexHeap ? resource->heapOffset : 0;
-		d.wgpu.wgpuRenderPassEncoderSetIndexBuffer(_impl->renderPass, gpuBuf,
-												   sixteenBit ? WGPUIndexFormat_Uint16 : WGPUIndexFormat_Uint32,
-												   offset, resource->gpuSize);
+		const u64 size = resource->gpuSize;
+		if (_impl->boundIndexBuffer == gpuBuf && _impl->boundIndexFormat == format &&
+			_impl->boundIndexOffset == offset && _impl->boundIndexSize == size) {
+			return;
+		}
+		d.wgpu.wgpuRenderPassEncoderSetIndexBuffer(_impl->renderPass, gpuBuf, format, offset, size);
+		_impl->boundIndexBuffer = gpuBuf;
+		_impl->boundIndexFormat = format;
+		_impl->boundIndexOffset = offset;
+		_impl->boundIndexSize = size;
 	}
 
 	void CommandList::Draw(u32 vertexCount, u32 instanceCount) {
@@ -382,6 +471,7 @@ namespace Shalltear::RHI {
 		if (d.lost || _impl->pipelineRefused || !_impl->renderPass) {
 			return;
 		}
+		EnsureGraphicsVariantBound(d, *_impl);
 		d.wgpu.wgpuRenderPassEncoderDraw(_impl->renderPass, vertexCount, instanceCount, 0, 0);
 	}
 
@@ -391,6 +481,7 @@ namespace Shalltear::RHI {
 		if (d.lost || _impl->pipelineRefused || !_impl->renderPass) {
 			return;
 		}
+		EnsureGraphicsVariantBound(d, *_impl);
 		d.wgpu.wgpuRenderPassEncoderDrawIndexed(_impl->renderPass, indexCount, instanceCount, firstIndex, 0, 0);
 	}
 
@@ -404,6 +495,7 @@ namespace Shalltear::RHI {
 		if (!resource) {
 			return;
 		}
+		EnsureGraphicsVariantBound(d, *_impl);
 		WGPUBuffer gpuBuf = resource->inVertexHeap ? d.vertexHeap.buffer : resource->buffer;
 		const u64 base = resource->inVertexHeap ? resource->heapOffset : 0;
 		d.wgpu.wgpuRenderPassEncoderDrawIndirect(_impl->renderPass, gpuBuf, base + offset);
@@ -422,10 +514,12 @@ namespace Shalltear::RHI {
 		if (!_impl->computePass) {
 			d.EnsureActiveComputePass(*_impl);
 			d.wgpu.wgpuComputePassEncoderSetPipeline(_impl->computePass, pipeline.computePipeline);
+			_impl->boundComputePipeline = pipeline.computePipeline;
 			for (u32 s = 0; s < pipeline.setCount && s < TABLE_SET; ++s) {
 				WGPUBindGroup bg = pipeline.setHasBindings[s] ? _impl->boundComputeSets[s] : d.table.emptyBindGroup;
 				if (bg) {
 					d.wgpu.wgpuComputePassEncoderSetBindGroup(_impl->computePass, s, bg, 0, nullptr);
+					_impl->boundComputeActiveSets[s] = bg;
 				}
 			}
 			BindSet3ForPass(d, *_impl, pipeline);
@@ -447,10 +541,12 @@ namespace Shalltear::RHI {
 		if (!_impl->computePass) {
 			d.EnsureActiveComputePass(*_impl);
 			d.wgpu.wgpuComputePassEncoderSetPipeline(_impl->computePass, pipeline.computePipeline);
+			_impl->boundComputePipeline = pipeline.computePipeline;
 			for (u32 s = 0; s < pipeline.setCount && s < TABLE_SET; ++s) {
 				WGPUBindGroup bg = pipeline.setHasBindings[s] ? _impl->boundComputeSets[s] : d.table.emptyBindGroup;
 				if (bg) {
 					d.wgpu.wgpuComputePassEncoderSetBindGroup(_impl->computePass, s, bg, 0, nullptr);
+					_impl->boundComputeActiveSets[s] = bg;
 				}
 			}
 			BindSet3ForPass(d, *_impl, pipeline);
