@@ -49,6 +49,7 @@ namespace Shalltear {
 		Vec2 _pendingRawDelta{};
 		Vec2I _pendingMouseScreenPos{};
 		bool _hasPendingMouseScreenPos = false;
+		bool _resizeDirty = false;
 
 		void QueueInputEvent(const InputEvent& ev) {
 			_pendingEvents.push_back(ev);
@@ -199,6 +200,7 @@ namespace Shalltear {
 		}
 
 		void SyncCanvasSize(Window::Impl& impl, bool publishEvents) {
+			_resizeDirty = false;
 			f32 newScale = 1.0f;
 			const Vec2I newSize = QueryCanvasPhysicalSize(newScale);
 			const bool scaleChanged = std::abs(newScale - impl.scale) > 0.001f;
@@ -385,6 +387,9 @@ namespace Shalltear {
 			if (impl && e) {
 				impl->minimized = e->hidden != 0;
 				SetFocusedState(*impl, !e->hidden);
+				if (!e->hidden) {
+					_resizeDirty = true;
+				}
 			}
 			return EM_FALSE;
 		}
@@ -396,6 +401,34 @@ namespace Shalltear {
 				InputInternal::SetRawDeltaActive(impl->pointerLocked);
 			}
 			return EM_FALSE;
+		}
+
+		void RequestCanvasPointerLock() {
+			EM_ASM({
+				window._sltWantPointerLock = 1;
+				var canvas = document.querySelector('#canvas');
+				if (canvas && canvas.requestPointerLock && document.pointerLockElement != canvas) {
+					try {
+						var res = canvas.requestPointerLock();
+						if (res && res.catch) {
+							res.catch(function(){});
+						}
+					} catch (e) {
+					}
+				}
+			});
+		}
+
+		void ExitCanvasPointerLock() {
+			EM_ASM({
+				window._sltWantPointerLock = 0;
+				if (document.pointerLockElement && document.exitPointerLock) {
+					try {
+						document.exitPointerLock();
+					} catch (e) {
+					}
+				}
+			});
 		}
 
 		void RegisterCallbacks(Window::Impl* impl) {
@@ -412,9 +445,53 @@ namespace Shalltear {
 			emscripten_set_blur_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, impl, true, &OnFocusEvent);
 			emscripten_set_visibilitychange_callback(impl, true, &OnVisibilityEvent);
 			emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, impl, true, &OnPointerLockChange);
+			EM_ASM({
+				window._sltCanvasResized = 0;
+				window._sltWantPointerLock = 0;
+				var canvas = document.querySelector('#canvas');
+				if (canvas) {
+					if (window._sltPointerLockClick) {
+						canvas.removeEventListener('mousedown', window._sltPointerLockClick);
+					}
+					window._sltPointerLockClick = function() {
+						if (window._sltWantPointerLock && canvas.requestPointerLock && document.pointerLockElement != canvas) {
+							try {
+								var res = canvas.requestPointerLock();
+								if (res && res.catch) {
+									res.catch(function(){});
+								}
+							} catch (e) {
+							}
+						}
+					};
+					canvas.addEventListener('mousedown', window._sltPointerLockClick);
+					if (window.ResizeObserver) {
+						if (window._sltCanvasResizeObserver) {
+							window._sltCanvasResizeObserver.disconnect();
+						}
+						window._sltCanvasResizeObserver = new ResizeObserver(function() {
+							window._sltCanvasResized = 1;
+						});
+						window._sltCanvasResizeObserver.observe(canvas);
+					}
+				}
+			});
 		}
 
 		void UnregisterCallbacks() {
+			EM_ASM({
+				window._sltWantPointerLock = 0;
+				var canvas = document.querySelector('#canvas');
+				if (canvas && window._sltPointerLockClick) {
+					canvas.removeEventListener('mousedown', window._sltPointerLockClick);
+					window._sltPointerLockClick = null;
+				}
+				if (window._sltCanvasResizeObserver) {
+					window._sltCanvasResizeObserver.disconnect();
+					window._sltCanvasResizeObserver = null;
+				}
+				window._sltCanvasResized = 0;
+			});
 			emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, false, nullptr);
 			emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, false, nullptr);
 			emscripten_set_mousedown_callback(CANVAS_SELECTOR, nullptr, false, nullptr);
@@ -443,6 +520,7 @@ namespace Shalltear {
 			_pendingEvents.clear();
 			_pendingRawDelta = {};
 			_hasPendingMouseScreenPos = false;
+			_resizeDirty = false;
 		}
 
 		bool CreateNative(Window& window, const WindowDesc& desc) {
@@ -483,7 +561,7 @@ namespace Shalltear {
 				_activeWindow = nullptr;
 			}
 			if (impl->pointerLocked) {
-				emscripten_exit_pointerlock();
+				ExitCanvasPointerLock();
 				InputInternal::SetRawDeltaActive(false);
 			}
 			WindowInternalAccess::GetImpl(window) = nullptr;
@@ -492,10 +570,15 @@ namespace Shalltear {
 
 		void Pump() {
 			if (_activeWindow) {
-				f32 scale = 1.0f;
-				const Vec2I size = QueryCanvasPhysicalSize(scale);
-				if (size.x != _activeWindow->clientSize.x || size.y != _activeWindow->clientSize.y ||
-					std::abs(scale - _activeWindow->scale) > 0.001f) {
+				const bool needsResizeCheck = _resizeDirty ||
+											  EM_ASM_INT({
+						if (window._sltCanvasResized) {
+							window._sltCanvasResized = 0;
+							return 1;
+						}
+						var dpr = window.devicePixelRatio || 1;
+						return Math.abs(dpr - $0) > 0.001 ? 1 : 0; }, static_cast<double>(_activeWindow->scale)) != 0;
+				if (needsResizeCheck) {
 					SyncCanvasSize(*_activeWindow, true);
 				}
 			}
@@ -734,11 +817,11 @@ namespace Shalltear {
 		const CursorMode previous = _impl->cursorMode;
 		_impl->cursorMode = mode;
 		if (previous == CursorMode::Locked && mode != CursorMode::Locked) {
-			emscripten_exit_pointerlock();
+			ExitCanvasPointerLock();
 			_impl->pointerLocked = false;
 			InputInternal::SetRawDeltaActive(false);
 		} else if (mode == CursorMode::Locked) {
-			emscripten_request_pointerlock(CANVAS_SELECTOR, EM_TRUE);
+			RequestCanvasPointerLock();
 		}
 		ApplyCanvasCursor(*_impl);
 	}
