@@ -11,6 +11,8 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
+
 [[vk::binding(0, 2)]] Texture3D sltPassVolume;
 [[vk::binding(1, 2)]] SamplerState sltVolumeSampler;
 
@@ -18,7 +20,7 @@ struct ProbePush {
 	// xyz: where in the volume to look, in normalized [0, 1] coordinates
 	float4 coord;
 };
-[[vk::push_constant]] ProbePush gProbe;
+SLT_PUSH_CONSTANT(ProbePush, gProbe)
 
 struct VSOutput {
 	float4 positionCS : SV_Position;

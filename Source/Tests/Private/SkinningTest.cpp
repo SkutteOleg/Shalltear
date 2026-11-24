@@ -1321,6 +1321,7 @@ namespace {
 			const Vector<u8>& spirv = _kernel.variants[SHADER_BASE_VARIANT].computeSpirv;
 			RHI::ComputePipelineDesc pipelineDesc;
 			pipelineDesc.spirv = {spirv.data(), spirv.size()};
+			pipelineDesc.bytecodeFormat = _kernel.bytecodeFormat;
 			pipelineDesc.bindings = {_kernel.bindings.data(), _kernel.bindings.size()};
 			pipelineDesc.pushConstantSize = _kernel.pushConstantSize;
 			_pipeline = _device->CreateComputePipeline(pipelineDesc);

@@ -143,6 +143,7 @@ namespace {
 		RHI::GraphicsPipelineDesc desc;
 		desc.vertexSpirv = {shader.variants[SHADER_BASE_VARIANT].vertexSpirv.data(), shader.variants[SHADER_BASE_VARIANT].vertexSpirv.size()};
 		desc.pixelSpirv = {shader.variants[SHADER_BASE_VARIANT].pixelSpirv.data(), shader.variants[SHADER_BASE_VARIANT].pixelSpirv.size()};
+		desc.bytecodeFormat = shader.bytecodeFormat;
 		desc.bindings = {shader.bindings.data(), shader.bindings.size()};
 		desc.pushConstantSize = shader.pushConstantSize;
 		desc.blend = shader.renderState.blend;
@@ -186,6 +187,7 @@ namespace {
 		const Vector<u8>& spirv = kernel.variants[SHADER_BASE_VARIANT].computeSpirv;
 		RHI::ComputePipelineDesc desc;
 		desc.spirv = {spirv.data(), spirv.size()};
+		desc.bytecodeFormat = kernel.bytecodeFormat;
 		desc.bindings = {kernel.bindings.data(), kernel.bindings.size()};
 		desc.pushConstantSize = kernel.pushConstantSize;
 		desc.debugName = "ComputeFixture";
@@ -1269,6 +1271,7 @@ TEST_F(RHIFixture, DepthPipelineHasNoPixelStage) {
 
 	RHI::GraphicsPipelineDesc desc;
 	desc.vertexSpirv = {base.vertexSpirv.data(), base.vertexSpirv.size()};
+	desc.bytecodeFormat = shader.bytecodeFormat;
 	desc.bindings = {shader.bindings.data(), shader.bindings.size()};
 	desc.pushConstantSize = shader.pushConstantSize;
 	desc.depth = RHI::DepthMode::TestWrite;
@@ -1369,6 +1372,7 @@ TEST_F(RHIFixture, DepthComparePassesFragmentsNameSays) {
 	for (const Row& row : rows) {
 		RHI::GraphicsPipelineDesc desc;
 		desc.vertexSpirv = {base.vertexSpirv.data(), base.vertexSpirv.size()};
+		desc.bytecodeFormat = shader.bytecodeFormat;
 		desc.bindings = {shader.bindings.data(), shader.bindings.size()};
 		desc.pushConstantSize = shader.pushConstantSize;
 		desc.depth = RHI::DepthMode::TestWrite;
@@ -1415,6 +1419,7 @@ TEST_F(RHIFixture, FrontFaceLastsUntilNextPipeline) {
 	const ShaderVariant& base = shader.variants[SHADER_BASE_VARIANT];
 	RHI::GraphicsPipelineDesc desc;
 	desc.vertexSpirv = {base.vertexSpirv.data(), base.vertexSpirv.size()};
+	desc.bytecodeFormat = shader.bytecodeFormat;
 	desc.bindings = {shader.bindings.data(), shader.bindings.size()};
 	desc.pushConstantSize = shader.pushConstantSize;
 	desc.depth = RHI::DepthMode::TestWrite;

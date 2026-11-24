@@ -1,11 +1,21 @@
 file(GLOB_RECURSE CORE_SOURCES "Private/*.cpp" "Private/*.h" "Public/*.h")
 shalltear_select_platform_sources(CORE_SOURCES)
+if(SHALLTEAR_RHI_BACKEND STREQUAL "WebGPU")
+    list(FILTER CORE_SOURCES EXCLUDE REGEX "/Private/Graphics/Vulkan/")
+    list(FILTER CORE_SOURCES EXCLUDE REGEX "/Private/Platform/[^/]+/(Windows|Linux)Vulkan\\.cpp$")
+else()
+    list(FILTER CORE_SOURCES EXCLUDE REGEX "/Private/Graphics/WebGPU/")
+    list(FILTER CORE_SOURCES EXCLUDE REGEX "/Private/Platform/[^/]+/(Windows|Linux|Web)WebGPU\\.cpp$")
+endif()
 
 add_library(ShalltearCore ${SHALLTEAR_LIB_TYPE} ${CORE_SOURCES})
 
 set_target_properties(ShalltearCore PROPERTIES LINKER_LANGUAGE CXX)
 
 target_compile_definitions(ShalltearCore PRIVATE SHALLTEAR_CORE_BUILD)
+if(SHALLTEAR_RHI_BACKEND STREQUAL "WebGPU")
+    target_compile_definitions(ShalltearCore PUBLIC SHALLTEAR_RHI_WEBGPU)
+endif()
 
 if(WIN32)
     target_compile_definitions(ShalltearCore PUBLIC _WIN32_WINNT=0x0A00)
@@ -65,22 +75,52 @@ set(SHALLTEAR_GENERATED_PUBLIC_DIR ${SHALLTEAR_GENERATED_PUBLIC_DIR} PARENT_SCOP
 configure_file(Private/BuildIdentity.generated.h.in
     ${SHALLTEAR_GENERATED_PUBLIC_DIR}/Shalltear/Core/BuildIdentity.generated.h @ONLY)
 
-set(SHALLTEAR_VULKAN_HEADERS_DIR ${CMAKE_SOURCE_DIR}/External/Submodules/Vulkan-Headers)
-set(SHALLTEAR_VMA_DIR ${CMAKE_SOURCE_DIR}/External/Submodules/VulkanMemoryAllocator)
-if(NOT EXISTS ${SHALLTEAR_VULKAN_HEADERS_DIR}/include/vulkan/vulkan.h OR NOT EXISTS ${SHALLTEAR_VMA_DIR}/include/vk_mem_alloc.h)
-    message(FATAL_ERROR "Graphics submodules missing. Run: git submodule update --init --recursive")
-endif()
+if(SHALLTEAR_RHI_BACKEND STREQUAL "WebGPU")
+    target_include_directories(ShalltearCore
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+            $<BUILD_INTERFACE:${SHALLTEAR_GENERATED_PUBLIC_DIR}>
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private
+            ${CMAKE_CURRENT_BINARY_DIR}/Generated
+    )
+    if(NOT EMSCRIPTEN)
+        set(SHALLTEAR_DAWN_DIR ${CMAKE_SOURCE_DIR}/External/Prebuilt/dawn)
+        if(NOT EXISTS ${SHALLTEAR_DAWN_DIR}/include/webgpu/webgpu.h)
+            message(FATAL_ERROR "Dawn WebGPU headers missing. Run: python Scripts/fetch_prebuilt.py --web")
+        endif()
+        target_include_directories(ShalltearCore PRIVATE ${SHALLTEAR_DAWN_DIR}/include)
+        if(WIN32)
+            set(SHALLTEAR_DAWN_LIBRARY ${SHALLTEAR_DAWN_DIR}/bin/webgpu_dawn.dll)
+        else()
+            set(SHALLTEAR_DAWN_LIBRARY ${SHALLTEAR_DAWN_DIR}/lib/libwebgpu_dawn.so)
+        endif()
+        if(EXISTS ${SHALLTEAR_DAWN_LIBRARY} AND NOT CMAKE_CROSSCOMPILING)
+            get_filename_component(slt_dawnName ${SHALLTEAR_DAWN_LIBRARY} NAME)
+            add_custom_command(TARGET ShalltearCore POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SHALLTEAR_DAWN_LIBRARY} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${slt_dawnName}
+                COMMENT "Staging ${slt_dawnName}"
+            )
+        endif()
+    endif()
+else()
+    set(SHALLTEAR_VULKAN_HEADERS_DIR ${CMAKE_SOURCE_DIR}/External/Submodules/Vulkan-Headers)
+    set(SHALLTEAR_VMA_DIR ${CMAKE_SOURCE_DIR}/External/Submodules/VulkanMemoryAllocator)
+    if(NOT EXISTS ${SHALLTEAR_VULKAN_HEADERS_DIR}/include/vulkan/vulkan.h OR NOT EXISTS ${SHALLTEAR_VMA_DIR}/include/vk_mem_alloc.h)
+        message(FATAL_ERROR "Graphics submodules missing. Run: git submodule update --init --recursive")
+    endif()
 
-target_include_directories(ShalltearCore
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
-        $<BUILD_INTERFACE:${SHALLTEAR_GENERATED_PUBLIC_DIR}>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Private
-        ${CMAKE_CURRENT_BINARY_DIR}/Generated
-        ${SHALLTEAR_VULKAN_HEADERS_DIR}/include
-        ${SHALLTEAR_VMA_DIR}/include
-)
+    target_include_directories(ShalltearCore
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Public>
+            $<BUILD_INTERFACE:${SHALLTEAR_GENERATED_PUBLIC_DIR}>
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private
+            ${CMAKE_CURRENT_BINARY_DIR}/Generated
+            ${SHALLTEAR_VULKAN_HEADERS_DIR}/include
+            ${SHALLTEAR_VMA_DIR}/include
+    )
+endif()
 
 if(CMAKE_HOST_WIN32)
     set(SHALLTEAR_DXC_LIBRARY ${CMAKE_SOURCE_DIR}/External/Prebuilt/dxc/bin/x64/dxcompiler.dll)

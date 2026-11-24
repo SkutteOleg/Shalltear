@@ -227,6 +227,7 @@ namespace {
 			RHI::GraphicsPipelineDesc desc;
 			desc.vertexSpirv = {shader->variants[SHADER_BASE_VARIANT].vertexSpirv.data(), shader->variants[SHADER_BASE_VARIANT].vertexSpirv.size()};
 			desc.pixelSpirv = {shader->variants[SHADER_BASE_VARIANT].pixelSpirv.data(), shader->variants[SHADER_BASE_VARIANT].pixelSpirv.size()};
+			desc.bytecodeFormat = shader->bytecodeFormat;
 			desc.bindings = {shader->bindings.data(), shader->bindings.size()};
 			desc.pushConstantSize = shader->pushConstantSize;
 			desc.blend = shader->renderState.blend;

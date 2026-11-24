@@ -567,6 +567,7 @@ TEST_F(BC6HSampleFixture, CodecDecodeMatchesGpu) {
 	RHI::GraphicsPipelineDesc pipelineDesc;
 	pipelineDesc.vertexSpirv = {code.vertexSpirv.data(), code.vertexSpirv.size()};
 	pipelineDesc.pixelSpirv = {code.pixelSpirv.data(), code.pixelSpirv.size()};
+	pipelineDesc.bytecodeFormat = blit.bytecodeFormat;
 	pipelineDesc.bindings = {blit.bindings.data(), blit.bindings.size()};
 	pipelineDesc.pushConstantSize = blit.pushConstantSize;
 	pipelineDesc.blend = blit.renderState.blend;

@@ -5,6 +5,9 @@
 #ifndef SHALLTEAR_SHARED
 #include "Graphics/ShaderCompiler.h"
 #include "Graphics/WGSLTranslator.h"
+#ifdef SHALLTEAR_RHI_WEBGPU
+#include "Graphics/WebGPU/WebGPUBCDecode.h"
+#endif
 #endif
 
 #include "Shalltear/Core/Asset/PakFormat.h"
@@ -12,6 +15,7 @@
 #include "Shalltear/Core/Graphics/RHIDevice.h"
 #include "Shalltear/Core/Graphics/ShaderAsset.h"
 #include "Shalltear/Core/Graphics/ShaderReflection.h"
+#include "Shalltear/Core/Graphics/TextureCodecs.h"
 
 #include <cstring>
 #include <filesystem>
@@ -206,3 +210,78 @@ TEST(PortableShaderTest, ShaderAssetCookRoundTripsBytecodeFormatAndReadOnlyBindi
 	EXPECT_FALSE(restored.bindings[2].readOnly);
 	EXPECT_EQ(restored.bindings[1].stages, RHI::ShaderStage::Vertex | RHI::ShaderStage::Pixel);
 }
+
+#if !defined(SHALLTEAR_SHARED) && defined(SHALLTEAR_RHI_WEBGPU)
+
+TEST(WebGPUBCDecodeTest, DecodesBC5BC7AndBC6HLevels) {
+	// BC5: constant endpoints (r0=200, r1=200, g0=64, g1=64, all indices 0)
+	{
+		u8 block[16]{};
+		block[0] = 200;
+		block[1] = 200;
+		block[8] = 64;
+		block[9] = 64;
+		u8 out[4 * 4 * 4]{};
+		ASSERT_TRUE(RHI::WebGPU::DecodeBlockCompressedLevel(RHI::Format::BC5Unorm, block, {4, 4}, out));
+		for (u32 px = 0; px < 16; ++px) {
+			EXPECT_EQ(out[px * 4 + 0], 200u);
+			EXPECT_EQ(out[px * 4 + 1], 64u);
+			EXPECT_EQ(out[px * 4 + 2], 0u);
+			EXPECT_EQ(out[px * 4 + 3], 255u);
+		}
+	}
+
+	// BC7 mode 6: round-trip via registered codec when available
+	if (const TextureCodec* codec = TextureCodecs::Find(RHI::Format::BC7Unorm); codec && codec->encode) {
+		u8 rgba[4 * 4 * 4]{};
+		for (u32 px = 0; px < 16; ++px) {
+			rgba[px * 4 + 0] = 180;
+			rgba[px * 4 + 1] = 90;
+			rgba[px * 4 + 2] = 45;
+			rgba[px * 4 + 3] = 255;
+		}
+		TextureEncodeInput input;
+		input.texels = rgba;
+		input.texelFormat = RHI::Format::RGBA8Unorm;
+		input.size = {4, 4};
+		input.meaning = TexelMeaning::Linear;
+		Vector<u8> encoded{GetMemoryResource(MemTag::Graphics)};
+		ASSERT_TRUE(codec->encode(RHI::Format::BC7Unorm, input, encoded));
+		u8 decoded[4 * 4 * 4]{};
+		ASSERT_TRUE(RHI::WebGPU::DecodeBlockCompressedLevel(RHI::Format::BC7Unorm, {encoded.data(), encoded.size()}, {4, 4}, decoded));
+		for (u32 px = 0; px < 16; ++px) {
+			EXPECT_NEAR(decoded[px * 4 + 0], 180, 4);
+			EXPECT_NEAR(decoded[px * 4 + 1], 90, 4);
+			EXPECT_NEAR(decoded[px * 4 + 2], 45, 4);
+			EXPECT_NEAR(decoded[px * 4 + 3], 255, 4);
+		}
+	}
+
+	// BC6H: round-trip an HDR constant tile via registered codec when available
+	if (const TextureCodec* codec = TextureCodecs::Find(RHI::Format::BC6HUFloat); codec && codec->encode) {
+		u16 rgba16[4 * 4 * 4]{};
+		for (u32 px = 0; px < 16; ++px) {
+			rgba16[px * 4 + 0] = 0x3C00; // 1.0
+			rgba16[px * 4 + 1] = 0x3800; // 0.5
+			rgba16[px * 4 + 2] = 0x4000; // 2.0
+			rgba16[px * 4 + 3] = 0x3C00; // 1.0
+		}
+		TextureEncodeInput input;
+		input.texels = {reinterpret_cast<const u8*>(rgba16), sizeof(rgba16)};
+		input.texelFormat = RHI::Format::RGBA16Float;
+		input.size = {4, 4};
+		input.meaning = TexelMeaning::Linear;
+		Vector<u8> encoded{GetMemoryResource(MemTag::Graphics)};
+		ASSERT_TRUE(codec->encode(RHI::Format::BC6HUFloat, input, encoded));
+		u16 decoded[4 * 4 * 4]{};
+		std::span<u8> dstBytes(reinterpret_cast<u8*>(decoded), sizeof(decoded));
+		ASSERT_TRUE(RHI::WebGPU::DecodeBlockCompressedLevel(RHI::Format::BC6HUFloat, {encoded.data(), encoded.size()}, {4, 4}, dstBytes));
+		for (u32 px = 0; px < 16; ++px) {
+			EXPECT_EQ(decoded[px * 4 + 3], 0x3C00u);
+			EXPECT_GT(decoded[px * 4 + 2], decoded[px * 4 + 0]);
+			EXPECT_GT(decoded[px * 4 + 0], decoded[px * 4 + 1]);
+		}
+	}
+}
+
+#endif

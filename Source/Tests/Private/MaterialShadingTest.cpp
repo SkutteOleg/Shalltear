@@ -1911,9 +1911,15 @@ TEST_F(MaterialShadingFixture, DepthProgramsInterfaceFitsInsideForwardOnes) {
 	if (!CompilerAvailable()) {
 		GTEST_SKIP() << "dxcompiler.dll unavailable";
 	}
-	Asset* asset = AssetDatabase::LoadAsset(Path("engine://Shaders/Lit.hlsl"));
-	ASSERT_NE(asset, nullptr);
-	ShaderAsset* lit = static_cast<ShaderAsset*>(asset);
+	const RHI::ShaderBytecodeFormat savedFormat = ShaderAsset::GetDefaultImportBytecodeFormat();
+	ShaderAsset::SetDefaultImportBytecodeFormat(RHI::ShaderBytecodeFormat::Spirv);
+	struct RestoreFormat {
+		RHI::ShaderBytecodeFormat format;
+		~RestoreFormat() { ShaderAsset::SetDefaultImportBytecodeFormat(format); }
+	} restore{savedFormat};
+	ShaderAsset litShader;
+	ASSERT_TRUE(litShader.Import(FileSystem::Resolve(Path("engine://Shaders/Lit.hlsl"))));
+	ShaderAsset* lit = &litShader;
 	const ShaderVariant& base = lit->variants[SHADER_BASE_VARIANT];
 	ASSERT_TRUE(base.HasProgram(ShaderProgramKind::Depth));
 
@@ -1958,9 +1964,15 @@ TEST_F(MaterialShadingFixture, ClipDepthStageHasNoOutput) {
 	if (!CompilerAvailable()) {
 		GTEST_SKIP() << "dxcompiler.dll unavailable";
 	}
-	Asset* asset = AssetDatabase::LoadAsset(Path("engine://Shaders/Lit.hlsl"));
-	ASSERT_NE(asset, nullptr);
-	ShaderAsset* lit = static_cast<ShaderAsset*>(asset);
+	const RHI::ShaderBytecodeFormat savedFormat = ShaderAsset::GetDefaultImportBytecodeFormat();
+	ShaderAsset::SetDefaultImportBytecodeFormat(RHI::ShaderBytecodeFormat::Spirv);
+	struct RestoreFormat {
+		RHI::ShaderBytecodeFormat format;
+		~RestoreFormat() { ShaderAsset::SetDefaultImportBytecodeFormat(format); }
+	} restore{savedFormat};
+	ShaderAsset litShader;
+	ASSERT_TRUE(litShader.Import(FileSystem::Resolve(Path("engine://Shaders/Lit.hlsl"))));
+	ShaderAsset* lit = &litShader;
 	const str clip[] = {str(ShaderAlphaClipKeyword)};
 	const u32 index = lit->GetOrCompileVariant({clip, 1});
 	ASSERT_NE(index, SHADER_BASE_VARIANT);

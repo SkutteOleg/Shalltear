@@ -28,19 +28,19 @@ slt_addr ShalltearAddrFromWords(uint lowWord, uint highWord) {
 #endif
 
 uint ShalltearLoadU32(slt_addr a) {
-	return a.y != 0u ? sltVertexHeap.Load(a.x) : sltTransientRing.Load(a.x);
+	return a.y == 2u ? sltVertexHeap.Load(a.x) : sltTransientRing.Load(a.x);
 }
 
 uint2 ShalltearLoadU32x2(slt_addr a) {
-	return a.y != 0u ? sltVertexHeap.Load2(a.x) : sltTransientRing.Load2(a.x);
+	return a.y == 2u ? sltVertexHeap.Load2(a.x) : sltTransientRing.Load2(a.x);
 }
 
 uint3 ShalltearLoadU32x3(slt_addr a) {
-	return a.y != 0u ? sltVertexHeap.Load3(a.x) : sltTransientRing.Load3(a.x);
+	return a.y == 2u ? sltVertexHeap.Load3(a.x) : sltTransientRing.Load3(a.x);
 }
 
 uint4 ShalltearLoadU32x4(slt_addr a) {
-	return a.y != 0u ? sltVertexHeap.Load4(a.x) : sltTransientRing.Load4(a.x);
+	return a.y == 2u ? sltVertexHeap.Load4(a.x) : sltTransientRing.Load4(a.x);
 }
 
 float ShalltearLoadF32(slt_addr a) {

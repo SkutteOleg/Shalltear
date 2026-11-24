@@ -9555,6 +9555,9 @@ namespace Shalltear {
 
 		state.device = RHI::Device::Create(desc);
 		state.renderingAvailable = state.device != nullptr;
+		if (state.renderingAvailable) {
+			ShaderAsset::SetDefaultImportBytecodeFormat(state.device->GetCapabilities().shaderFormat);
+		}
 
 		Handle<RenderState> self(&state);
 		EventBus& bus = EventBus::GetGlobal();
@@ -9837,6 +9840,11 @@ namespace Shalltear {
 			RHI::Device::Destroy(state.device);
 			state.device = nullptr;
 		}
+#ifdef SHALLTEAR_RHI_WEBGPU
+		ShaderAsset::SetDefaultImportBytecodeFormat(RHI::ShaderBytecodeFormat::WGSL);
+#else
+		ShaderAsset::SetDefaultImportBytecodeFormat(RHI::ShaderBytecodeFormat::Spirv);
+#endif
 
 		Delete(_state);
 		_state = nullptr;

@@ -1,5 +1,11 @@
 #pragma shalltear_kernel
 
+#ifdef SHALLTEAR_WEBGPU
+#define SLT_FIXTURE_PUSH(Type, Name) [[vk::binding(0, 3)]] cbuffer SltPushBlock { Type Name; };
+#else
+#define SLT_FIXTURE_PUSH(Type, Name) [[vk::push_constant]] Type Name;
+#endif
+
 // THE RHI TIER'S ONE KERNEL (VisualEffects.md §3.1). What it does is chosen by
 // `mode`, so every compute case compiles one file:
 //   0  values[i] = base + i, for i < count, after `spin` rounds of work that
@@ -19,7 +25,7 @@ struct ComputePush {
 	// reaches the store and the loop cannot be removed
 	uint mask;
 };
-[[vk::push_constant]] ComputePush push;
+SLT_FIXTURE_PUSH(ComputePush, push)
 
 [numthreads(64, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID) {

@@ -828,6 +828,7 @@ def fetch_dawn() -> Path:
             shutil.rmtree(target)
         (target / "bin").mkdir(parents=True)
         (target / "include" / "webgpu").mkdir(parents=True)
+        (target / "include" / "dawn").mkdir(parents=True)
 
         if HOST_IS_WINDOWS:
             archive = tmp / f"dawn-x64-{DAWN_VERSION}.zip"
@@ -850,6 +851,22 @@ def fetch_dawn() -> Path:
                         os.chmod(tint_path, 0o755)
                     elif rel == "include/dawn/webgpu.h":
                         header_path.write_bytes(tf.extractfile(member).read())
+                    elif rel == "include/dawn/dawn_version.h":
+                        (target / "include" / "dawn" / "dawn_version.h").write_bytes(tf.extractfile(member).read())
+
+        version_header = target / "include" / "dawn" / "dawn_version.h"
+        if not version_header.is_file():
+            version_header.write_text(
+                "#ifndef INCLUDE_DAWN_DAWN_VERSION_H_\n"
+                "#define INCLUDE_DAWN_DAWN_VERSION_H_\n"
+                "#include <stdint.h>\n"
+                "#define DAWN_MAKE_VERSION(major, minor) ((UINT64_C(major) << UINT64_C(40)) | UINT64_C(minor))\n"
+                "#define DAWN_MAJOR_VERSION 1\n"
+                "#define DAWN_MINOR_VERSION 2026112200\n"
+                "#define DAWN_VERSION DAWN_MAKE_VERSION(DAWN_MAJOR_VERSION, DAWN_MINOR_VERSION)\n"
+                "#endif\n",
+                encoding="utf-8",
+            )
 
         with zipfile.ZipFile(em_pkg) as zf:
             zf.extractall(target)

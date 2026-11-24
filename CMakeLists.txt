@@ -11,6 +11,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(SHALLTEAR_BUILD_SHARED "Build engine modules as shared libs (.dll)" ON)
 
+if(EMSCRIPTEN)
+    set(SHALLTEAR_RHI_BACKEND "WebGPU" CACHE STRING "RHI backend (Vulkan or WebGPU)" FORCE)
+else()
+    set(SHALLTEAR_RHI_BACKEND "Vulkan" CACHE STRING "RHI backend (Vulkan or WebGPU)")
+endif()
+set_property(CACHE SHALLTEAR_RHI_BACKEND PROPERTY STRINGS Vulkan WebGPU)
+if(NOT SHALLTEAR_RHI_BACKEND STREQUAL "Vulkan" AND NOT SHALLTEAR_RHI_BACKEND STREQUAL "WebGPU")
+    message(FATAL_ERROR "Shalltear: unsupported SHALLTEAR_RHI_BACKEND='${SHALLTEAR_RHI_BACKEND}' (expected Vulkan or WebGPU)")
+endif()
+
 option(SHALLTEAR_BUILD_TESTS "Build Shalltear unit tests" ON)
 
 option(SHALLTEAR_BUILD_BENCHMARKS "Build Shalltear micro-benchmarks" ON)

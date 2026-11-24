@@ -50,6 +50,18 @@
 			"cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "SHALLTEAR_BUILD_SHARED": "OFF" }
 		},
 		{
+			"name": "webgpu-debug",
+			"inherits": "toolchain",
+			"displayName": "WebGPU Debug (static, Dawn)",
+			"description": "Native Windows build using the WebGPU RHI backed by Dawn",
+			"binaryDir": "${sourceDir}/build-webgpu",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"SHALLTEAR_BUILD_SHARED": "OFF",
+				"SHALLTEAR_RHI_BACKEND": "WebGPU"
+			}
+		},
+		{
 			"name": "linux-toolchain",
 			"hidden": true,
 			"description": "Same toolchain + the Linux target pack from Scripts/fetch_prebuilt.py --linux",
@@ -98,6 +110,7 @@
 		{ "name": "release", "configurePreset": "release" },
 		{ "name": "static-debug", "configurePreset": "static-debug" },
 		{ "name": "static-release", "configurePreset": "static-release" },
+		{ "name": "webgpu-debug", "configurePreset": "webgpu-debug" },
 		{ "name": "linux-debug", "configurePreset": "linux-debug" },
 		{ "name": "linux-release", "configurePreset": "linux-release" },
 		{ "name": "linux-static-debug", "configurePreset": "linux-static-debug" },
@@ -108,6 +121,7 @@
 		{ "name": "release", "configurePreset": "release", "output": { "outputOnFailure": true } },
 		{ "name": "static-debug", "configurePreset": "static-debug", "output": { "outputOnFailure": true } },
 		{ "name": "static-release", "configurePreset": "static-release", "output": { "outputOnFailure": true } },
+		{ "name": "webgpu-debug", "configurePreset": "webgpu-debug", "output": { "outputOnFailure": true } },
 		{ "name": "linux-debug", "configurePreset": "linux-debug", "output": { "outputOnFailure": true } },
 		{ "name": "linux-release", "configurePreset": "linux-release", "output": { "outputOnFailure": true } },
 		{ "name": "linux-static-debug", "configurePreset": "linux-static-debug", "output": { "outputOnFailure": true } },

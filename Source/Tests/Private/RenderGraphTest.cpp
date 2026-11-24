@@ -709,6 +709,7 @@ TEST(RenderGraphBufferDeviceTest, SharedBufferWritesOrdered) {
 	const Vector<u8>& spirv = kernel.variants[SHADER_BASE_VARIANT].computeSpirv;
 	RHI::ComputePipelineDesc pipelineDesc;
 	pipelineDesc.spirv = {spirv.data(), spirv.size()};
+	pipelineDesc.bytecodeFormat = kernel.bytecodeFormat;
 	pipelineDesc.bindings = {kernel.bindings.data(), kernel.bindings.size()};
 	pipelineDesc.pushConstantSize = kernel.pushConstantSize;
 	RHI::PipelineHandle pipeline = device->CreateComputePipeline(pipelineDesc);

@@ -338,6 +338,7 @@ namespace {
 		RHI::GraphicsPipelineDesc pipelineDesc;
 		pipelineDesc.vertexSpirv = {shader->variants[SHADER_BASE_VARIANT].vertexSpirv.data(), shader->variants[SHADER_BASE_VARIANT].vertexSpirv.size()};
 		pipelineDesc.pixelSpirv = {shader->variants[SHADER_BASE_VARIANT].pixelSpirv.data(), shader->variants[SHADER_BASE_VARIANT].pixelSpirv.size()};
+		pipelineDesc.bytecodeFormat = shader->bytecodeFormat;
 		pipelineDesc.bindings = {shader->bindings.data(), shader->bindings.size()};
 		pipelineDesc.pushConstantSize = shader->pushConstantSize;
 		pipelineDesc.blend = shader->renderState.blend;

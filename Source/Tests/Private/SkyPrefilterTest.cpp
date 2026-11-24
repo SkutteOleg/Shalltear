@@ -139,6 +139,7 @@ namespace {
 			RHI::GraphicsPipelineDesc pipelineDesc;
 			pipelineDesc.vertexSpirv = {code.vertexSpirv.data(), code.vertexSpirv.size()};
 			pipelineDesc.pixelSpirv = {code.pixelSpirv.data(), code.pixelSpirv.size()};
+			pipelineDesc.bytecodeFormat = _shader.bytecodeFormat;
 			pipelineDesc.bindings = {_shader.bindings.data(), _shader.bindings.size()};
 			pipelineDesc.pushConstantSize = _shader.pushConstantSize;
 			pipelineDesc.blend = _shader.renderState.blend;

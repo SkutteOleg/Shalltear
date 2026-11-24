@@ -48,7 +48,15 @@ float ShalltearDebugViewDepth(float storedZ) {
 }
 
 float4 PSMain(VSOutput input) : SV_Target {
+#ifdef SHALLTEAR_WEBGPU
+	uint width = 1u;
+	uint height = 1u;
+	sltSource.GetDimensions(width, height);
+	int2 texel = clamp(int2(input.uv * float2(width, height)), int2(0, 0), int2(int(width) - 1, int(height) - 1));
+	float4 source = sltSource.Load(int3(texel, 0));
+#else
 	float4 source = sltSource.Sample(sltSourceSampler, input.uv);
+#endif
 	float3 display = float3(0.0, 0.0, 0.0);
 
 	if (gDebug.mode == SHALLTEAR_DEBUG_VIEW_DEPTH) {

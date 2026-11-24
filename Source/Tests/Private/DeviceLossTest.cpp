@@ -31,6 +31,7 @@ namespace {
 		RHI::GraphicsPipelineDesc desc;
 		desc.vertexSpirv = {base.vertexSpirv.data(), base.vertexSpirv.size()};
 		desc.pixelSpirv = {base.pixelSpirv.data(), base.pixelSpirv.size()};
+		desc.bytecodeFormat = shader.bytecodeFormat;
 		desc.bindings = {shader.bindings.data(), shader.bindings.size()};
 		desc.pushConstantSize = shader.pushConstantSize;
 		desc.blend = shader.renderState.blend;
@@ -46,6 +47,7 @@ namespace {
 		const Vector<u8>& spirv = kernel.variants[SHADER_BASE_VARIANT].computeSpirv;
 		RHI::ComputePipelineDesc desc;
 		desc.spirv = {spirv.data(), spirv.size()};
+		desc.bytecodeFormat = kernel.bytecodeFormat;
 		desc.bindings = {kernel.bindings.data(), kernel.bindings.size()};
 		desc.pushConstantSize = kernel.pushConstantSize;
 		desc.debugName = "LossKernel";
