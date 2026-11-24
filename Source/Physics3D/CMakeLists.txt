@@ -61,6 +61,10 @@ if(SHALLTEAR_PHYSICS_BACKEND STREQUAL "box3d")
 		target_compile_options(Physics3D PRIVATE /fp:contract-)
 	endif()
 
+	if(EMSCRIPTEN)
+		target_compile_options(Physics3D PRIVATE -msimd128 -msse2)
+	endif()
+
 	target_compile_definitions(Physics3D PRIVATE $<$<CONFIG:RelWithDebInfo>:B3_ENABLE_ASSERT>)
 
 	target_compile_definitions(Physics3D PRIVATE BOX3D_VALIDATE)

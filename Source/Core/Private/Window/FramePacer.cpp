@@ -5,6 +5,7 @@
 #include "Shalltear/Core/Window/WindowSystem.h"
 
 #include "Graphics/PresentPolicy.h"
+#include "Platform/Process.h"
 #include "ScreenInternal.h"
 #include "Window/FramePacing.h"
 #include "Window/WindowInternal.h"
@@ -53,12 +54,18 @@ namespace Shalltear {
 		}
 		const FramePacingInternal::Pacing pacing = FramePacingInternal::ResolvePacing(inputs);
 
+		const bool externallyPaced = Platform::IsExternallyPaced();
+
 		if (pacing.paused) {
 			if (!_paused) {
 				_paused = true;
 				SLT_LOG_INFO("Screen", "paused: game window doesn't have focus (Run In Background is off)");
 			}
-			WindowSystem::WaitEvents(FramePacingInternal::PAUSED_WAIT_SECONDS);
+			if (externallyPaced) {
+				WindowSystem::PumpEvents();
+			} else {
+				WindowSystem::WaitEvents(FramePacingInternal::PAUSED_WAIT_SECONDS);
+			}
 			return false;
 		}
 		const bool resumed = _paused;
@@ -68,18 +75,20 @@ namespace Shalltear {
 			SLT_LOG_INFO("Screen", "resumed: game window has focus");
 		}
 
-		const u64 frequency = Time::GetTicksPerSecond();
-		const u64 interval = static_cast<u64>(pacing.intervalSeconds * static_cast<f64>(frequency));
-		u64 now = Time::GetTicks();
-		if (interval > 0 && _anchorTicks != 0) {
-			const u64 due = _anchorTicks + interval;
-			while (now < due) {
-				WindowBackend::Sleep(static_cast<f64>(due - now) / static_cast<f64>(frequency));
-				now = Time::GetTicks();
+		if (!externallyPaced) {
+			const u64 frequency = Time::GetTicksPerSecond();
+			const u64 interval = static_cast<u64>(pacing.intervalSeconds * static_cast<f64>(frequency));
+			u64 now = Time::GetTicks();
+			if (interval > 0 && _anchorTicks != 0) {
+				const u64 due = _anchorTicks + interval;
+				while (now < due) {
+					WindowBackend::Sleep(static_cast<f64>(due - now) / static_cast<f64>(frequency));
+					now = Time::GetTicks();
+				}
+				_anchorTicks = now - due < interval ? due : now;
+			} else {
+				_anchorTicks = now;
 			}
-			_anchorTicks = now - due < interval ? due : now;
-		} else {
-			_anchorTicks = now;
 		}
 
 		WindowSystem::PumpEvents();
@@ -88,6 +97,10 @@ namespace Shalltear {
 		}
 		_timer.Tick();
 		return true;
+	}
+
+	void RunMainLoop(bool (*step)(void*), void (*onExit)(int, void*), void* user) {
+		Platform::RunMainLoop(step, onExit, user);
 	}
 
 } // namespace Shalltear

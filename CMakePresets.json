@@ -103,6 +103,35 @@
 			"description": "Also configures on Windows (Linux players link with it)",
 			"binaryDir": "${sourceDir}/build-linux-static-release",
 			"cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "SHALLTEAR_BUILD_SHARED": "OFF" }
+		},
+		{
+			"name": "web-toolchain",
+			"hidden": true,
+			"description": "Emscripten wasm32 toolchain from Scripts/fetch_prebuilt.py --web",
+			"generator": "Ninja",
+			"toolchainFile": "${sourceDir}/CMake/Toolchains/Web-wasm32.cmake",
+			"cacheVariables": { "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" }
+		},
+		{
+			"name": "web-static-debug",
+			"inherits": "web-toolchain",
+			"displayName": "Web Debug (wasm32, single-threaded)",
+			"binaryDir": "${sourceDir}/build-web-debug",
+			"cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "SHALLTEAR_WEB_THREADS": "OFF" }
+		},
+		{
+			"name": "web-static-release",
+			"inherits": "web-toolchain",
+			"displayName": "Web Release (wasm32, single-threaded)",
+			"binaryDir": "${sourceDir}/build-web-release",
+			"cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "SHALLTEAR_WEB_THREADS": "OFF" }
+		},
+		{
+			"name": "web-threads-static-release",
+			"inherits": "web-toolchain",
+			"displayName": "Web Release (wasm32, pthreads)",
+			"binaryDir": "${sourceDir}/build-web-threads-release",
+			"cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "SHALLTEAR_WEB_THREADS": "ON" }
 		}
 	],
 	"buildPresets": [
@@ -114,7 +143,10 @@
 		{ "name": "linux-debug", "configurePreset": "linux-debug" },
 		{ "name": "linux-release", "configurePreset": "linux-release" },
 		{ "name": "linux-static-debug", "configurePreset": "linux-static-debug" },
-		{ "name": "linux-static-release", "configurePreset": "linux-static-release" }
+		{ "name": "linux-static-release", "configurePreset": "linux-static-release" },
+		{ "name": "web-static-debug", "configurePreset": "web-static-debug" },
+		{ "name": "web-static-release", "configurePreset": "web-static-release" },
+		{ "name": "web-threads-static-release", "configurePreset": "web-threads-static-release" }
 	],
 	"testPresets": [
 		{ "name": "debug", "configurePreset": "debug", "output": { "outputOnFailure": true } },

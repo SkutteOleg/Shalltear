@@ -9,6 +9,7 @@ namespace Shalltear {
 		Win32,
 		Xlib,
 		Wayland,
+		WebCanvas,
 	};
 
 	struct NativeWindowHandle {

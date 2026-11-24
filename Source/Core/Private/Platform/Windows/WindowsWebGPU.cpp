@@ -37,6 +37,14 @@ namespace Shalltear::RHI::WebGPUPlatform {
 		return true;
 	}
 
+	WGPUDevice TryGetPreinitializedDevice() {
+		return nullptr;
+	}
+
+	WGPUTextureFormat GetPreferredSurfaceFormat() {
+		return WGPUTextureFormat_BGRA8Unorm;
+	}
+
 	WGPUSurface CreateSurface(const WebGPUProcs& wgpu, WGPUInstance instance, const NativeWindowHandle& window) {
 		if (window.system != NativeWindowSystem::Win32 || !window.window || !window.display) {
 			return nullptr;

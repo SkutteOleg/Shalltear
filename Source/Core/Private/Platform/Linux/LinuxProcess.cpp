@@ -93,4 +93,20 @@ namespace Shalltear::Platform {
 		return true;
 	}
 
+	bool SupportsBackgroundThreads() {
+		return true;
+	}
+
+	bool IsExternallyPaced() {
+		return false;
+	}
+
+	void RunMainLoop(bool (*step)(void*), void (*onExit)(int, void*), void* user) {
+		while (step && step(user)) {
+		}
+		if (onExit) {
+			onExit(0, user);
+		}
+	}
+
 } // namespace Shalltear::Platform

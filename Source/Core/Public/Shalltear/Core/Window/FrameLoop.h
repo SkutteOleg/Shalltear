@@ -42,4 +42,7 @@ namespace Shalltear {
 		bool _paused = false;
 	};
 
+	// drives frame stepping (loops synchronously on desktop, yields to requestAnimationFrame on Web)
+	SHALLTEAR_CORE_API void RunMainLoop(bool (*step)(void*), void (*onExit)(int, void*), void* user);
+
 } // namespace Shalltear

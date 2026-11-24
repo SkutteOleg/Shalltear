@@ -14,6 +14,7 @@
 #include "AudioVoiceEffects.h"
 
 #include "Shalltear/Core/Event.h"
+#include "Shalltear/Core/Jobs/JobSystem.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
 #include "Shalltear/Core/Module/ModuleEvents.h"
@@ -119,7 +120,7 @@ namespace Shalltear {
 			_renderer.Initialize(limit + HeadroomFor(limit, _maxRealVoices), DecodersFor(_maxRealVoices));
 			_voices.Initialize(limit, HeadroomFor(limit, _maxRealVoices));
 			_buses.Initialize(AudioRenderer::MAX_BUSES);
-			_streamer.Start(StreamsFor(_maxRealVoices), true);
+			_streamer.Start(StreamsFor(_maxRealVoices), JobSystem::GetWorkerCount() > 0);
 			_retiringStreams = New<Vector<RetiringStream>>(MemTag::Audio, GetMemoryResource(MemTag::Audio));
 			_retiringStreams->reserve(StreamsFor(_maxRealVoices));
 			_liveStreams = 0;
@@ -289,6 +290,9 @@ namespace Shalltear {
 		void AudioSystem::Pump() {
 			if (!_up) {
 				return;
+			}
+			if (JobSystem::GetWorkerCount() == 0) {
+				_streamer.Pump();
 			}
 			DrainEvents();
 			UpdateComposites();
@@ -2062,7 +2066,7 @@ namespace Shalltear {
 			}
 			_streamer.Stop();
 			DestroyRetiredStreams(true);
-			_streamer.Start(StreamsFor(real), true);
+			_streamer.Start(StreamsFor(real), JobSystem::GetWorkerCount() > 0);
 			_retiringStreams->reserve(StreamsFor(real));
 
 			u32 capacity = limit + HeadroomFor(limit, real);

@@ -120,7 +120,7 @@ namespace Shalltear::RHI {
 
 		void OnUncapturedError(WGPUDevice const*, WGPUErrorType type, WGPUStringView message, void*, void*) {
 			const std::string_view text = message.data ? std::string_view(message.data, message.length) : std::string_view("<no message>");
-			const char* kind = type == WGPUErrorType_Validation ? "Validation"
+			const char* kind = type == WGPUErrorType_Validation	   ? "Validation"
 							   : type == WGPUErrorType_OutOfMemory ? "OutOfMemory"
 																   : "Internal";
 			SLT_LOG_ERROR("WebGPU", "[{}] {}", kind, text);
@@ -473,6 +473,26 @@ namespace Shalltear::RHI {
 		if (!instance) {
 			rebuildFailure = "wgpuCreateInstance failed";
 			return false;
+		}
+
+		if (WGPUDevice preinitialized = WebGPUPlatform::TryGetPreinitializedDevice()) {
+			device = preinitialized;
+			queue = wgpu.wgpuDeviceGetQueue(device);
+			wgpu.wgpuDeviceGetLimits(device, &limits);
+			textureCompressionBC = wgpu.wgpuDeviceHasFeature(device, WGPUFeatureName_TextureCompressionBC) != 0;
+			float32Filterable = wgpu.wgpuDeviceHasFeature(device, WGPUFeatureName_Float32Filterable) != 0;
+			if (!rebuild) {
+				AdapterInfo adInfo;
+				adInfo.name = "WebGPU Browser Adapter";
+				adInfo.discrete = true;
+				adInfo.apiVersion = 1;
+				adapters.clear();
+				adapters.push_back(std::move(adInfo));
+				selectedAdapter = 0;
+			}
+			SLT_LOG_INFO("Graphics", "WebGPU device ready (preinitialized): '{}' (BC={}, float32Filter={})",
+						 adapters.empty() ? str("WebGPU") : adapters[0].name, textureCompressionBC, float32Filterable);
+			return true;
 		}
 
 		struct AdapterResult {
@@ -828,7 +848,9 @@ namespace Shalltear::RHI {
 			queue = nullptr;
 		}
 		if (device) {
-			wgpu.wgpuDeviceDestroy(device);
+			if (adapter) {
+				wgpu.wgpuDeviceDestroy(device);
+			}
 			wgpu.wgpuDeviceRelease(device);
 			device = nullptr;
 		}
@@ -948,6 +970,14 @@ namespace Shalltear::RHI {
 			return;
 		}
 		impl->FlushCpuToGpuBuffers();
+
+		if (!WebGPUPlatform::SupportsWaitAny()) {
+			impl->wgpu.wgpuInstanceProcessEvents(impl->instance);
+			for (u32 i = 0; i < FRAMES_IN_FLIGHT; ++i) {
+				impl->DrainFrameReadbacks(impl->frames[i], false);
+			}
+			return;
+		}
 
 		bool done = false;
 		WGPUQueueWorkDoneCallbackInfo cb{};

@@ -1,0 +1,145 @@
+#include "Platform/Web/Window/WebKeyMap.h"
+
+#include <utility>
+
+namespace Shalltear::Web {
+
+	namespace {
+
+		struct WebKeyEntry {
+			std::string_view code;
+			Key key;
+		};
+
+		constexpr WebKeyEntry WEB_KEY_MAP[] = {
+			{"KeyA", Key::A},
+			{"KeyB", Key::B},
+			{"KeyC", Key::C},
+			{"KeyD", Key::D},
+			{"KeyE", Key::E},
+			{"KeyF", Key::F},
+			{"KeyG", Key::G},
+			{"KeyH", Key::H},
+			{"KeyI", Key::I},
+			{"KeyJ", Key::J},
+			{"KeyK", Key::K},
+			{"KeyL", Key::L},
+			{"KeyM", Key::M},
+			{"KeyN", Key::N},
+			{"KeyO", Key::O},
+			{"KeyP", Key::P},
+			{"KeyQ", Key::Q},
+			{"KeyR", Key::R},
+			{"KeyS", Key::S},
+			{"KeyT", Key::T},
+			{"KeyU", Key::U},
+			{"KeyV", Key::V},
+			{"KeyW", Key::W},
+			{"KeyX", Key::X},
+			{"KeyY", Key::Y},
+			{"KeyZ", Key::Z},
+			{"Digit0", Key::D0},
+			{"Digit1", Key::D1},
+			{"Digit2", Key::D2},
+			{"Digit3", Key::D3},
+			{"Digit4", Key::D4},
+			{"Digit5", Key::D5},
+			{"Digit6", Key::D6},
+			{"Digit7", Key::D7},
+			{"Digit8", Key::D8},
+			{"Digit9", Key::D9},
+			{"F1", Key::F1},
+			{"F2", Key::F2},
+			{"F3", Key::F3},
+			{"F4", Key::F4},
+			{"F5", Key::F5},
+			{"F6", Key::F6},
+			{"F7", Key::F7},
+			{"F8", Key::F8},
+			{"F9", Key::F9},
+			{"F10", Key::F10},
+			{"F11", Key::F11},
+			{"F12", Key::F12},
+			{"F13", Key::F13},
+			{"F14", Key::F14},
+			{"F15", Key::F15},
+			{"F16", Key::F16},
+			{"F17", Key::F17},
+			{"F18", Key::F18},
+			{"F19", Key::F19},
+			{"F20", Key::F20},
+			{"F21", Key::F21},
+			{"F22", Key::F22},
+			{"F23", Key::F23},
+			{"F24", Key::F24},
+			{"Numpad0", Key::Kp0},
+			{"Numpad1", Key::Kp1},
+			{"Numpad2", Key::Kp2},
+			{"Numpad3", Key::Kp3},
+			{"Numpad4", Key::Kp4},
+			{"Numpad5", Key::Kp5},
+			{"Numpad6", Key::Kp6},
+			{"Numpad7", Key::Kp7},
+			{"Numpad8", Key::Kp8},
+			{"Numpad9", Key::Kp9},
+			{"NumpadDecimal", Key::KpDecimal},
+			{"NumpadDivide", Key::KpDivide},
+			{"NumpadMultiply", Key::KpMultiply},
+			{"NumpadSubtract", Key::KpSubtract},
+			{"NumpadAdd", Key::KpAdd},
+			{"NumpadEnter", Key::KpEnter},
+			{"NumpadEqual", Key::KpEqual},
+			{"Escape", Key::Escape},
+			{"Enter", Key::Enter},
+			{"Tab", Key::Tab},
+			{"Backspace", Key::Backspace},
+			{"Insert", Key::Insert},
+			{"Delete", Key::Delete},
+			{"Home", Key::Home},
+			{"End", Key::End},
+			{"PageUp", Key::PageUp},
+			{"PageDown", Key::PageDown},
+			{"ArrowLeft", Key::Left},
+			{"ArrowRight", Key::Right},
+			{"ArrowUp", Key::Up},
+			{"ArrowDown", Key::Down},
+			{"Space", Key::Space},
+			{"CapsLock", Key::CapsLock},
+			{"ScrollLock", Key::ScrollLock},
+			{"NumLock", Key::NumLock},
+			{"PrintScreen", Key::PrintScreen},
+			{"Pause", Key::Pause},
+			{"ContextMenu", Key::Menu},
+			{"ShiftLeft", Key::LeftShift},
+			{"ControlLeft", Key::LeftCtrl},
+			{"AltLeft", Key::LeftAlt},
+			{"MetaLeft", Key::LeftSuper},
+			{"ShiftRight", Key::RightShift},
+			{"ControlRight", Key::RightCtrl},
+			{"AltRight", Key::RightAlt},
+			{"MetaRight", Key::RightSuper},
+			{"Quote", Key::Apostrophe},
+			{"Comma", Key::Comma},
+			{"Minus", Key::Minus},
+			{"Period", Key::Period},
+			{"Slash", Key::Slash},
+			{"Semicolon", Key::Semicolon},
+			{"Equal", Key::Equal},
+			{"BracketLeft", Key::LeftBracket},
+			{"Backslash", Key::Backslash},
+			{"BracketRight", Key::RightBracket},
+			{"Backquote", Key::GraveAccent},
+		};
+
+	} // anonymous namespace
+
+	Key KeyFromWebCode(std::string_view code) {
+		for (const WebKeyEntry& entry : WEB_KEY_MAP) {
+			if (entry.code == code) {
+				return entry.key;
+			}
+		}
+		return Key::Unknown;
+	}
+
+} // namespace Shalltear::Web

@@ -2,6 +2,8 @@
 
 #if defined(_WIN32)
 #define SLT_PLATFORM_WINDOWS
+#elif defined(__EMSCRIPTEN__)
+#define SLT_PLATFORM_WEB
 #elif defined(__ANDROID__)
 #define SLT_PLATFORM_ANDROID
 #error "Shalltear: Android support isn't yet implemented"
@@ -24,8 +26,10 @@
 #define SLT_CPU_X64
 #elif defined(__aarch64__) || defined(_M_ARM64)
 #define SLT_CPU_ARM64
+#elif defined(__wasm32__)
+#define SLT_CPU_WASM32
 #else
-#error "Shalltear: unsupported CPU architecture (x64 and arm64 only)"
+#error "Shalltear: unsupported CPU architecture (x64, arm64, and wasm32 only)"
 #endif
 
 // clang defines _MSC_VER (wtf), test __clang__ first

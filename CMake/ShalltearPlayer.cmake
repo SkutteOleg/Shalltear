@@ -266,11 +266,38 @@ function(_shalltear_add_player_impl MODULE_NAME)
 		endif()
 	elseif(MINGW)
 		target_link_options(${playerTarget} PRIVATE -Wl,-s)
-	elseif(NOT WIN32)
+	elseif(NOT WIN32 AND NOT EMSCRIPTEN)
 		target_link_options(${playerTarget} PRIVATE $<$<NOT:$<CONFIG:Debug>>:-Wl,-s>)
 	endif()
 
-	if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	if(EMSCRIPTEN)
+		set_target_properties(${playerTarget} PROPERTIES SUFFIX ".js")
+		set(webInitialMem "134217728")
+		if(DEFINED SHALLTEAR_WEB_INITIAL_MEMORY_BYTES)
+			set(webInitialMem "${SHALLTEAR_WEB_INITIAL_MEMORY_BYTES}")
+		endif()
+		set(webAllowGrowth "1")
+		if(DEFINED SHALLTEAR_WEB_ALLOW_MEMORY_GROWTH AND NOT SHALLTEAR_WEB_ALLOW_MEMORY_GROWTH)
+			set(webAllowGrowth "0")
+		endif()
+		target_link_options(${playerTarget} PRIVATE
+			"--use-port=${SHALLTEAR_EMDAWNWEBGPU_PORT}:cpp_bindings=false"
+			"-sINITIAL_MEMORY=${webInitialMem}"
+			"-sALLOW_MEMORY_GROWTH=${webAllowGrowth}"
+			"-sMAXIMUM_MEMORY=2147483648"
+			"-sSTACK_SIZE=4194304"
+			"-sFETCH=1"
+			"-sEXIT_RUNTIME=0"
+			"-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,FS,IDBFS,callMain"
+			"-lidbfs.js"
+			"-lwebsocket.js")
+		if(SHALLTEAR_WEB_THREADS)
+			target_link_options(${playerTarget} PRIVATE
+				"-pthread"
+				"-sSHARED_MEMORY=1"
+				"-sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency")
+		endif()
+	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		set_target_properties(${playerTarget} PROPERTIES SUFFIX ".${CMAKE_SYSTEM_PROCESSOR}")
 		# looked up by name at boot (BootManifest.cpp)
 		target_link_options(${playerTarget} PRIVATE -static-libstdc++ "-Wl,--export-dynamic-symbol=ShalltearRegisterCoreExtensions")

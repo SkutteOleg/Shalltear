@@ -4,6 +4,7 @@
 #include "Shalltear/Core/Memory.h"
 
 #include "Module/EngineStateTable.h"
+#include "Platform/Process.h"
 
 #include <algorithm>
 #include <atomic>
@@ -166,6 +167,10 @@ namespace Shalltear {
 	static void ExecuteNode(JobNode* node);
 
 	static void DispatchNode(JobNode* node) {
+		if (_data->queues.empty()) {
+			ExecuteNode(node);
+			return;
+		}
 		if (node->type == JobType::LongRunning) {
 			std::lock_guard lock(_data->longRunningMutex);
 			_data->longRunningThreads.emplace_back([node]() {
@@ -235,10 +240,14 @@ namespace Shalltear {
 			_data->freeEdges.push_back(MAX_EDGES - 1 - i);
 		}
 
-		u32 numThreads = std::thread::hardware_concurrency();
-		if (numThreads == 0)
-			numThreads = 4;
-		u32 workerCount = std::max(1u, numThreads - 1);
+		u32 workerCount = 0;
+		if (Platform::SupportsBackgroundThreads()) {
+			u32 numThreads = std::thread::hardware_concurrency();
+			if (numThreads == 0) {
+				numThreads = 4;
+			}
+			workerCount = std::max(1u, numThreads - 1);
+		}
 
 		_data->isRunning.store(true, std::memory_order_release);
 
@@ -348,6 +357,9 @@ namespace Shalltear {
 	}
 
 	void JobSystem::WaitFor(JobHandle handle) {
+		if (!_data || _data->queues.empty()) {
+			return;
+		}
 		JobNode* node = Resolve(handle);
 		if (!node)
 			return;

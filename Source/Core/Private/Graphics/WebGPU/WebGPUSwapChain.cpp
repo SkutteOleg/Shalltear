@@ -35,53 +35,56 @@ namespace Shalltear::RHI {
 				return false;
 			}
 
-			WGPUSurfaceCapabilities caps{};
-			d.wgpu.wgpuSurfaceGetCapabilities(impl.surface, d.adapter, &caps);
-
-			WGPUTextureFormat chosen = WGPUTextureFormat_BGRA8Unorm;
-			if (caps.formatCount > 0 && caps.formats) {
-				chosen = caps.formats[0];
-				for (size_t i = 0; i < caps.formatCount; ++i) {
-					if (caps.formats[i] == WGPUTextureFormat_BGRA8Unorm) {
-						chosen = WGPUTextureFormat_BGRA8Unorm;
-						break;
-					}
-					if (caps.formats[i] == WGPUTextureFormat_RGBA8Unorm) {
-						chosen = WGPUTextureFormat_RGBA8Unorm;
-					}
-				}
-			}
-
+			WGPUTextureFormat chosen = WebGPUPlatform::GetPreferredSurfaceFormat();
 			WGPUPresentMode presentMode = WGPUPresentMode_Fifo;
-			if (!vsync && caps.presentModeCount > 0 && caps.presentModes) {
-				for (size_t i = 0; i < caps.presentModeCount; ++i) {
-					if (caps.presentModes[i] == WGPUPresentMode_Mailbox) {
-						presentMode = WGPUPresentMode_Mailbox;
-						break;
-					}
-					if (caps.presentModes[i] == WGPUPresentMode_Immediate) {
-						presentMode = WGPUPresentMode_Immediate;
-					}
-				}
-			}
-
 			WGPUCompositeAlphaMode alphaMode = WGPUCompositeAlphaMode_Opaque;
-			if (caps.alphaModeCount > 0 && caps.alphaModes) {
-				alphaMode = caps.alphaModes[0];
-				for (size_t i = 0; i < caps.alphaModeCount; ++i) {
-					if (caps.alphaModes[i] == WGPUCompositeAlphaMode_Opaque) {
-						alphaMode = WGPUCompositeAlphaMode_Opaque;
-						break;
+			WGPUTextureUsage extraCopy = WGPUTextureUsage_CopySrc;
+			WGPUTextureUsage extraDst = WGPUTextureUsage_CopyDst;
+
+			if (d.adapter) {
+				WGPUSurfaceCapabilities caps{};
+				d.wgpu.wgpuSurfaceGetCapabilities(impl.surface, d.adapter, &caps);
+
+				if (caps.formatCount > 0 && caps.formats) {
+					chosen = caps.formats[0];
+					for (size_t i = 0; i < caps.formatCount; ++i) {
+						if (caps.formats[i] == WGPUTextureFormat_BGRA8Unorm) {
+							chosen = WGPUTextureFormat_BGRA8Unorm;
+							break;
+						}
+						if (caps.formats[i] == WGPUTextureFormat_RGBA8Unorm) {
+							chosen = WGPUTextureFormat_RGBA8Unorm;
+						}
 					}
 				}
+
+				if (!vsync && caps.presentModeCount > 0 && caps.presentModes) {
+					for (size_t i = 0; i < caps.presentModeCount; ++i) {
+						if (caps.presentModes[i] == WGPUPresentMode_Mailbox) {
+							presentMode = WGPUPresentMode_Mailbox;
+							break;
+						}
+						if (caps.presentModes[i] == WGPUPresentMode_Immediate) {
+							presentMode = WGPUPresentMode_Immediate;
+						}
+					}
+				}
+
+				if (caps.alphaModeCount > 0 && caps.alphaModes) {
+					alphaMode = caps.alphaModes[0];
+					for (size_t i = 0; i < caps.alphaModeCount; ++i) {
+						if (caps.alphaModes[i] == WGPUCompositeAlphaMode_Opaque) {
+							alphaMode = WGPUCompositeAlphaMode_Opaque;
+							break;
+						}
+					}
+				}
+
+				extraCopy = (caps.usages & WGPUTextureUsage_CopySrc) ? WGPUTextureUsage_CopySrc : WGPUTextureUsage_None;
+				extraDst = (caps.usages & WGPUTextureUsage_CopyDst) ? WGPUTextureUsage_CopyDst : WGPUTextureUsage_None;
+
+				d.wgpu.wgpuSurfaceCapabilitiesFreeMembers(caps);
 			}
-
-			const WGPUTextureUsage extraCopy =
-				(caps.usages & WGPUTextureUsage_CopySrc) ? WGPUTextureUsage_CopySrc : WGPUTextureUsage_None;
-			const WGPUTextureUsage extraDst =
-				(caps.usages & WGPUTextureUsage_CopyDst) ? WGPUTextureUsage_CopyDst : WGPUTextureUsage_None;
-
-			d.wgpu.wgpuSurfaceCapabilitiesFreeMembers(caps);
 
 			WGPUSurfaceConfiguration config{};
 			config.device = d.device;

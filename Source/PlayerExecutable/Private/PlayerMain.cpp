@@ -31,6 +31,7 @@
 #include <cstring>
 #include <exception>
 #include <filesystem>
+#include <optional>
 #include <string>
 
 namespace Shalltear {
@@ -89,6 +90,21 @@ namespace Shalltear {
 			}
 		};
 
+		struct PlayerSession {
+			PlayerOptions options;
+			BootManifest manifest;
+			Handle<Window> window;
+			std::optional<PlayerWindowPolicy> quitPolicy;
+			std::optional<FramePacer> pacer;
+			std::optional<FixedTimestep> fixed;
+			i32 framesRemaining = -1;
+			i32 frameIndex = 0;
+			bool running = false;
+			int exitCode = 0;
+		};
+
+		int _lastExitCode = 0;
+
 		str GetExecutableDirectory() {
 			return FileSystem::GetExecutablePath().GetDirectory();
 		}
@@ -124,121 +140,177 @@ namespace Shalltear {
 			window.SetIcon(images);
 		}
 
-	} // anonymous namespace
-
-	static int RunGame(const PlayerOptions& options) {
-		BootManifest manifest;
-		str error;
-		if (!ReadBootManifest(manifest, error)) {
-			SLT_LOG_FATAL("Player", "{}", error);
-			return 1;
-		}
-
-		SettingsPaths paths = Settings::GetDefaultPaths();
-		paths.user = {};
-		paths.userProject = {};
-		UsePackagedProjectSettings(paths);
-		const Path userData = FileSystem::GetUserDataDirectory();
-		if (!manifest.productName.empty() && !userData.ToString().empty()) {
-			paths.userProject = userData / manifest.productName / "Settings.ini";
-		} else {
-			SLT_LOG_WARN("Player", "this build has no product name (player preferences can't be saved)");
-		}
-		Settings::Initialize(paths);
-
-		WindowSystem::Initialize();
-		RenderSystem::Initialize();
-		UISystem::Initialize();
-		SceneSystem::Initialize();
-
-		InitializeLinkedPackages();
-		RegisterGameCoreExtensions();
-
-		SLT_LOG_INFO("Player", "{} {} (build {}, {}), {} scene(s)",
-					 manifest.productName.empty() ? "Shalltear game" : manifest.productName,
-					 BuildStamp::Version, BuildStamp::Number,
-					 BuildStamp::TimeIso.empty() ? std::string_view("no build time") : BuildStamp::TimeIso,
-					 manifest.scenes.size());
-
-		ScreenLaunch launch = options.screen;
-		launch.title = manifest.productName.empty() ? str("Shalltear") : manifest.productName;
-		Handle<Window> window = Screen::CreateGameWindow(launch);
-		if (!window.IsValid()) {
-			SLT_LOG_FATAL("Player", "main window creation failed");
-			return 1;
-		}
-		ApplyPackagedIcon(*window.Get());
-
-		PlayerWindowPolicy quitPolicy;
-		quitPolicy.Subscribe();
-
-		if (manifest.scenes.empty()) {
-			SLT_LOG_WARN("Player", "this build stages no scenes (window will be empty)");
-		} else {
-			str what;
-			if (!LoadBootScene(manifest.scenes[0], what)) {
-				SLT_LOG_FATAL("Player", "the boot scene didn't load: {}", what);
-				return 1;
+		bool StepPlayerFrame(void* user) {
+			auto* session = static_cast<PlayerSession*>(user);
+			if (!session || WindowSystem::GetWindowCount() == 0 || session->framesRemaining == 0) {
+				return false;
 			}
-		}
 
-		FramePacer pacer(options.frames > 0);
-		FixedTimestep fixed(Time::GetFrame().fixedDeltaTime, Time::GetFrame().maximumDeltaTime);
-		i32 framesRemaining = options.frames;
-		i32 frameIndex = 0;
-		while (WindowSystem::GetWindowCount() > 0 && framesRemaining != 0) {
-			if (!pacer.BeginFrame()) {
-				continue;
-			}
-			if (frameIndex++ == options.loseDeviceFrame && RenderSystem::IsRenderingAvailable()) {
-				RenderSystem::GetDevice()->SimulateLoss(options.failedRebuilds);
-			}
-			Time::BeginFrame(pacer.GetUnscaledDeltaTime());
+			try {
+				if (!session->pacer->BeginFrame()) {
+					return WindowSystem::GetWindowCount() > 0 && session->framesRemaining != 0;
+				}
+				if (session->frameIndex++ == session->options.loseDeviceFrame && RenderSystem::IsRenderingAvailable()) {
+					RenderSystem::GetDevice()->SimulateLoss(session->options.failedRebuilds);
+				}
+				Time::BeginFrame(session->pacer->GetUnscaledDeltaTime());
 
-			SceneSystem::BeginFrame();
+				SceneSystem::BeginFrame();
 
-			const FrameTime& frame = Time::GetFrame();
-			fixed.Configure(frame.fixedDeltaTime, frame.maximumDeltaTime);
+				const FrameTime& frame = Time::GetFrame();
+				session->fixed->Configure(frame.fixedDeltaTime, frame.maximumDeltaTime);
 
-			// not Time::GetDeltaTime (clock advances during the walk)
-			const f32 gameDeltaSeconds = frame.ComputeGameDelta();
+				// not Time::GetDeltaTime (clock advances during the walk)
+				const f32 gameDeltaSeconds = frame.ComputeGameDelta();
 
-			u32 steps = fixed.Advance(gameDeltaSeconds);
-			FrameStageArgs stageArgs;
+				const u32 steps = session->fixed->Advance(gameDeltaSeconds);
+				FrameStageArgs stageArgs;
 
-			for (FrameStage stage : FRAME_STAGES) {
-				switch (stage) {
-				case FrameStage::FixedUpdate:
-					for (u32 i = 0; i < steps; ++i) {
+				for (FrameStage stage : FRAME_STAGES) {
+					switch (stage) {
+					case FrameStage::FixedUpdate:
+						for (u32 i = 0; i < steps; ++i) {
+							FrameStages::Run(stage, stageArgs);
+						}
+						break;
+					case FrameStage::Update:
+					case FrameStage::UIUpdate:
+					case FrameStage::LateUpdate:
+					case FrameStage::EndFrame:
 						FrameStages::Run(stage, stageArgs);
+						break;
+					case FrameStage::Render:
+						AssetDatabase::CollectGarbage();
+						FrameStages::Run(stage, stageArgs);
+						break;
 					}
-					break;
-				case FrameStage::Update:
-				case FrameStage::UIUpdate:
-				case FrameStage::LateUpdate:
-				case FrameStage::EndFrame:
-					FrameStages::Run(stage, stageArgs);
-					break;
-				case FrameStage::Render:
-					AssetDatabase::CollectGarbage();
-					FrameStages::Run(stage, stageArgs);
-					break;
+				}
+
+				if (session->framesRemaining > 0 && --session->framesRemaining == 0) {
+					SLT_LOG_INFO("Player", "--frames run complete after {} frame(s). Closing",
+								 Time::GetFrameCount());
+					WindowSystem::RequestDestroy(session->window);
+				}
+			} catch (const std::exception& e) {
+				SLT_LOG_FATAL("Core", "Exception caught: {}", e.what());
+				session->exitCode = -1;
+				return false;
+			} catch (...) {
+				SLT_LOG_FATAL("Core", "Unknown exception caught");
+				session->exitCode = -1;
+				return false;
+			}
+
+			return WindowSystem::GetWindowCount() > 0 && session->framesRemaining != 0;
+		}
+
+		void ShutdownPlayerSession(int code, void* user) {
+			auto* session = static_cast<PlayerSession*>(user);
+			if (!session) {
+				return;
+			}
+			if (session->exitCode == 0 && code != 0) {
+				session->exitCode = code;
+			}
+			if (session->quitPolicy) {
+				session->quitPolicy->Unsubscribe();
+				session->quitPolicy.reset();
+			}
+			if (session->running) {
+				SLT_LOG_INFO("Player", "player exited after {} frame(s)", Time::GetFrameCount());
+			}
+			session->manifest = {};
+
+			// not the reverse of init
+			SceneSystem::Terminate();
+			Settings::Terminate();
+			UISystem::Terminate();
+			AssetDatabase::Terminate();
+			RenderSystem::Terminate();
+			WindowSystem::Terminate();
+			FileSystem::Unmount("project");
+			FileSystem::Unmount("engine");
+
+			// MemTag::Editor must be 0 in a player
+			MemoryManager::LogReport();
+
+			LogManager::Terminate();
+			JobSystem::Terminate();
+
+			_lastExitCode = session->exitCode;
+			delete session;
+		}
+
+		bool InitializeGame(PlayerSession& session) {
+			str error;
+			if (!ReadBootManifest(session.manifest, error)) {
+				SLT_LOG_FATAL("Player", "{}", error);
+				session.exitCode = 1;
+				return false;
+			}
+
+			SettingsPaths paths = Settings::GetDefaultPaths();
+			paths.user = {};
+			paths.userProject = {};
+			UsePackagedProjectSettings(paths);
+			const Path userData = FileSystem::GetUserDataDirectory();
+			if (!session.manifest.productName.empty() && !userData.ToString().empty()) {
+				paths.userProject = userData / session.manifest.productName / "Settings.ini";
+			} else {
+				SLT_LOG_WARN("Player", "this build has no product name (player preferences can't be saved)");
+			}
+			Settings::Initialize(paths);
+
+			WindowSystem::Initialize();
+			RenderSystem::Initialize();
+			UISystem::Initialize();
+			SceneSystem::Initialize();
+
+			InitializeLinkedPackages();
+			RegisterGameCoreExtensions();
+
+			SLT_LOG_INFO("Player", "{} {} (build {}, {}), {} scene(s)",
+						 session.manifest.productName.empty() ? "Shalltear game" : session.manifest.productName,
+						 BuildStamp::Version, BuildStamp::Number,
+						 BuildStamp::TimeIso.empty() ? std::string_view("no build time") : BuildStamp::TimeIso,
+						 session.manifest.scenes.size());
+
+			ScreenLaunch launch = session.options.screen;
+			launch.title = session.manifest.productName.empty() ? str("Shalltear") : session.manifest.productName;
+			session.window = Screen::CreateGameWindow(launch);
+			if (!session.window.IsValid()) {
+				SLT_LOG_FATAL("Player", "main window creation failed");
+				session.exitCode = 1;
+				return false;
+			}
+			ApplyPackagedIcon(*session.window.Get());
+
+			session.quitPolicy.emplace();
+			session.quitPolicy->Subscribe();
+
+			if (session.manifest.scenes.empty()) {
+				SLT_LOG_WARN("Player", "this build stages no scenes (window will be empty)");
+			} else {
+				str what;
+				if (!LoadBootScene(session.manifest.scenes[0], what)) {
+					SLT_LOG_FATAL("Player", "the boot scene didn't load: {}", what);
+					session.exitCode = 1;
+					return false;
 				}
 			}
 
-			if (framesRemaining > 0 && --framesRemaining == 0) {
-				SLT_LOG_INFO("Player", "--frames run complete after {} frame(s). Closing",
-							 Time::GetFrameCount());
-				WindowSystem::RequestDestroy(window);
-			}
+			session.pacer.emplace(session.options.frames > 0);
+			session.fixed.emplace(Time::GetFrame().fixedDeltaTime, Time::GetFrame().maximumDeltaTime);
+			session.framesRemaining = session.options.frames;
+			session.frameIndex = 0;
+			session.running = true;
+			return true;
 		}
-		// bus has a handle to this stack local
-		quitPolicy.Unsubscribe();
-		SLT_LOG_INFO("Player", "player exited after {} frame(s)", Time::GetFrameCount());
-		return 0;
-	}
+
+	} // anonymous namespace
 
 	static int RunPlayer(int argc, char* argv[]) {
+		_lastExitCode = 0;
 		PlayerOptions options = ParseOptions(argc, argv);
 
 		JobSystem::Initialize();
@@ -265,47 +337,41 @@ namespace Shalltear {
 		FileSystem::Mount("project", Path(root));
 		SLT_LOG_INFO("Player", "project:// -> {}", root);
 
-		int exitCode = 0;
+		auto* session = new PlayerSession();
+		session->options = options;
+
+		bool readyToRun = false;
 		try {
 			AssetDatabase::Initialize();
 
 			str mountError;
 			if (!MountStagedContent(root, mountError)) {
 				SLT_LOG_FATAL("Player", "{}", mountError);
-				exitCode = 1;
+				session->exitCode = 1;
 			} else if (options.thirdPartyNotices) {
-				exitCode = PrintThirdPartyNotices(root);
+				session->exitCode = PrintThirdPartyNotices(root);
 			} else {
 				UnpackThirdPartyNotices(root);
-				exitCode = RunGame(options);
+				readyToRun = InitializeGame(*session);
 			}
 		} catch (const std::exception& e) {
 			SLT_LOG_FATAL("Core", "Exception caught: {}", e.what());
-			exitCode = -1;
+			session->exitCode = -1;
 		} catch (...) {
 			SLT_LOG_FATAL("Core", "Unknown exception caught");
-			exitCode = -1;
+			session->exitCode = -1;
 		}
 
-		// not the reverse of init
-		SceneSystem::Terminate();
-		Settings::Terminate();
-		UISystem::Terminate();
-		AssetDatabase::Terminate();
-		RenderSystem::Terminate();
-		WindowSystem::Terminate();
-		FileSystem::Unmount("project");
-		FileSystem::Unmount("engine");
+		if (!readyToRun) {
+			ShutdownPlayerSession(session->exitCode, session);
+			return _lastExitCode;
+		}
 
-		// MemTag::Editor must be 0 in a player
-		MemoryManager::LogReport();
-
-		LogManager::Terminate();
-		JobSystem::Terminate();
-		return exitCode;
+		RunMainLoop(&StepPlayerFrame, &ShutdownPlayerSession, session);
+		return _lastExitCode;
 	}
 
-} //namespace Shalltear
+} // namespace Shalltear
 
 int main(int argc, char* argv[]) {
 	return Shalltear::RunPlayer(argc, argv);

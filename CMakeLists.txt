@@ -120,6 +120,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         endif()
         list(APPEND SHALLTEAR_CXX_RUNTIME_FILES "${slt_runtimeFile}")
     endforeach()
+elseif(EMSCRIPTEN)
+    set(CMAKE_STATIC_LIBRARY_PREFIX "")
+    set(SHALLTEAR_CXX_RUNTIME_FILES "")
 endif()
 
 if(SHALLTEAR_BUILD_SHARED)
@@ -153,8 +156,10 @@ set(SHALLTEAR_INSTALL_LIB Lib)
 set(SHALLTEAR_INSTALL_INCLUDE Include)
 
 add_subdirectory(Source/Core)
-# after Core which it links, before the editor that loads it
-add_subdirectory(Source/ImportPipeline)
+if(NOT EMSCRIPTEN)
+    # after Core which it links, before the editor that loads it
+    add_subdirectory(Source/ImportPipeline)
+endif()
 # configured in every tree -> linked only when enabled
 add_subdirectory(Source/Physics3D)
 add_subdirectory(Source/Animation)
@@ -164,19 +169,21 @@ add_subdirectory(Source/PostProcessing)
 add_subdirectory(Source/Audio)
 # packages load at project open
 add_subdirectory(Source/VisualEffects)
-add_subdirectory(Source/Network)
-add_subdirectory(Source/Graphs)
-add_subdirectory(Source/NodeShader)
-add_subdirectory(Source/CSharp)
-add_subdirectory(Source/Physics3DCSharp)
-add_subdirectory(Source/AudioCSharp)
-add_subdirectory(Source/AnimationCSharp)
-add_subdirectory(Source/NetworkCSharp)
-add_subdirectory(Source/PostProcessingCSharp)
-add_subdirectory(Source/VisualEffectsCSharp)
-add_subdirectory(Source/ImportPipelineCSharp)
-add_subdirectory(Source/Editor)
-add_subdirectory(Source/EditorExecutable)
+if(NOT EMSCRIPTEN)
+    add_subdirectory(Source/Network)
+    add_subdirectory(Source/Graphs)
+    add_subdirectory(Source/NodeShader)
+    add_subdirectory(Source/CSharp)
+    add_subdirectory(Source/Physics3DCSharp)
+    add_subdirectory(Source/AudioCSharp)
+    add_subdirectory(Source/AnimationCSharp)
+    add_subdirectory(Source/NetworkCSharp)
+    add_subdirectory(Source/PostProcessingCSharp)
+    add_subdirectory(Source/VisualEffectsCSharp)
+    add_subdirectory(Source/ImportPipelineCSharp)
+    add_subdirectory(Source/Editor)
+    add_subdirectory(Source/EditorExecutable)
+endif()
 add_subdirectory(Source/PlayerExecutable)
 
 if(SHALLTEAR_BUILD_TESTS)
@@ -222,83 +229,88 @@ endfunction()
 
 shalltear_forbid_shared_pch("${CMAKE_SOURCE_DIR}")
 
-# every public header compiles alone (none relies on PCH)
-set(SHALLTEAR_HeaderCheck_TUS "")
-set(SHALLTEAR_StrippedHeaderCheck_TUS "")
-set(SHALLTEAR_PUBLIC_HEADER_FILES "")
+if(NOT EMSCRIPTEN)
+    # every public header compiles alone (none relies on PCH)
+    set(SHALLTEAR_HeaderCheck_TUS "")
+    set(SHALLTEAR_StrippedHeaderCheck_TUS "")
+    set(SHALLTEAR_PUBLIC_HEADER_FILES "")
 
-get_property(SHALLTEAR_PACKAGE_PUBLIC_DIR_LIST GLOBAL PROPERTY SHALLTEAR_PACKAGE_PUBLIC_DIRS)
-set(SHALLTEAR_PUBLIC_DIRS
-    ${CMAKE_SOURCE_DIR}/Source/Core/Public
-    ${CMAKE_SOURCE_DIR}/Source/Editor/Public
-    ${SHALLTEAR_PACKAGE_PUBLIC_DIR_LIST})
+    get_property(SHALLTEAR_PACKAGE_PUBLIC_DIR_LIST GLOBAL PROPERTY SHALLTEAR_PACKAGE_PUBLIC_DIRS)
+    set(SHALLTEAR_PUBLIC_DIRS
+        ${CMAKE_SOURCE_DIR}/Source/Core/Public
+        ${CMAKE_SOURCE_DIR}/Source/Editor/Public
+        ${SHALLTEAR_PACKAGE_PUBLIC_DIR_LIST})
 
-foreach(module_public_dir ${SHALLTEAR_PUBLIC_DIRS})
-    file(GLOB_RECURSE module_headers RELATIVE ${module_public_dir} ${module_public_dir}/*.h)
-    foreach(header ${module_headers})
-        list(APPEND SHALLTEAR_PUBLIC_HEADER_FILES ${module_public_dir}/${header})
-        string(REPLACE "/" "_" tu_name ${header})
-        string(REGEX REPLACE "\\.h$" ".cpp" tu_name ${tu_name})
-        set(tu_content "#include \"${header}\"\n")
-        foreach(flavor HeaderCheck StrippedHeaderCheck)
-            set(tu_path ${CMAKE_BINARY_DIR}/${flavor}/${tu_name})
-            # rewrite changed content only to avoid dirtying the target
-            if(EXISTS ${tu_path})
-                file(READ ${tu_path} tu_existing)
-            else()
-                set(tu_existing "")
-            endif()
-            if(NOT tu_existing STREQUAL tu_content)
-                file(WRITE ${tu_path} ${tu_content})
-            endif()
-            list(APPEND SHALLTEAR_${flavor}_TUS ${tu_path})
+    foreach(module_public_dir ${SHALLTEAR_PUBLIC_DIRS})
+        file(GLOB_RECURSE module_headers RELATIVE ${module_public_dir} ${module_public_dir}/*.h)
+        foreach(header ${module_headers})
+            list(APPEND SHALLTEAR_PUBLIC_HEADER_FILES ${module_public_dir}/${header})
+            string(REPLACE "/" "_" tu_name ${header})
+            string(REGEX REPLACE "\\.h$" ".cpp" tu_name ${tu_name})
+            set(tu_content "#include \"${header}\"\n")
+            foreach(flavor HeaderCheck StrippedHeaderCheck)
+                set(tu_path ${CMAKE_BINARY_DIR}/${flavor}/${tu_name})
+                # rewrite changed content only to avoid dirtying the target
+                if(EXISTS ${tu_path})
+                    file(READ ${tu_path} tu_existing)
+                else()
+                    set(tu_existing "")
+                endif()
+                if(NOT tu_existing STREQUAL tu_content)
+                    file(WRITE ${tu_path} ${tu_content})
+                endif()
+                list(APPEND SHALLTEAR_${flavor}_TUS ${tu_path})
+            endforeach()
         endforeach()
     endforeach()
-endforeach()
 
-add_library(ShalltearHeaderCheck STATIC EXCLUDE_FROM_ALL ${SHALLTEAR_HeaderCheck_TUS})
-target_include_directories(ShalltearHeaderCheck PRIVATE
-    ${SHALLTEAR_PUBLIC_DIRS}
-    ${SHALLTEAR_GENERATED_PUBLIC_DIR}
-)
-
-# stripper bug should fail the build
-find_package(Python3 COMPONENTS Interpreter QUIET)
-set(SHALLTEAR_STRIP_PYTHON "${Python3_EXECUTABLE}")
-
-if(SHALLTEAR_STRIP_PYTHON)
-    set(SHALLTEAR_STRIPPED_PUBLIC_DIR ${CMAKE_BINARY_DIR}/StrippedPublic)
-    set(SHALLTEAR_STRIP_SCRIPT ${CMAKE_SOURCE_DIR}/Scripts/strip_sdk_source.py)
-
-    # script only rewrites changed files
-    add_custom_command(
-        OUTPUT ${CMAKE_BINARY_DIR}/StrippedPublic.stamp
-        COMMAND ${SHALLTEAR_STRIP_PYTHON} ${SHALLTEAR_STRIP_SCRIPT} --self-test
-        COMMAND ${SHALLTEAR_STRIP_PYTHON} ${SHALLTEAR_STRIP_SCRIPT}
-            --out ${SHALLTEAR_STRIPPED_PUBLIC_DIR}
-            ${SHALLTEAR_PUBLIC_DIRS}
-        COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/StrippedPublic.stamp
-        DEPENDS ${SHALLTEAR_STRIP_SCRIPT} ${SHALLTEAR_PUBLIC_HEADER_FILES}
-        COMMENT "Stripping public headers for packaged-source guard"
-        VERBATIM)
-    add_custom_target(ShalltearStripPublicHeaders DEPENDS ${CMAKE_BINARY_DIR}/StrippedPublic.stamp)
-
-    add_library(ShalltearStrippedHeaderCheck STATIC EXCLUDE_FROM_ALL ${SHALLTEAR_StrippedHeaderCheck_TUS})
-    add_dependencies(ShalltearStrippedHeaderCheck ShalltearStripPublicHeaders)
-    # add_dependencies only orders and ninja plans mtimes before stripping
-    set_source_files_properties(${SHALLTEAR_StrippedHeaderCheck_TUS} PROPERTIES
-        OBJECT_DEPENDS ${CMAKE_BINARY_DIR}/StrippedPublic.stamp)
-    target_include_directories(ShalltearStrippedHeaderCheck PRIVATE
-        ${SHALLTEAR_STRIPPED_PUBLIC_DIR}
+    add_library(ShalltearHeaderCheck STATIC EXCLUDE_FROM_ALL ${SHALLTEAR_HeaderCheck_TUS})
+    target_include_directories(ShalltearHeaderCheck PRIVATE
+        ${SHALLTEAR_PUBLIC_DIRS}
         ${SHALLTEAR_GENERATED_PUBLIC_DIR}
     )
 
-    if(SHALLTEAR_BUILD_TESTS)
-        add_test(NAME SdkSourceStrip.SelfTest
-            COMMAND ${SHALLTEAR_STRIP_PYTHON} ${SHALLTEAR_STRIP_SCRIPT} --self-test)
+    # stripper bug should fail the build
+    find_package(Python3 COMPONENTS Interpreter QUIET)
+    set(SHALLTEAR_STRIP_PYTHON "${Python3_EXECUTABLE}")
+
+    if(SHALLTEAR_STRIP_PYTHON)
+        set(SHALLTEAR_STRIPPED_PUBLIC_DIR ${CMAKE_BINARY_DIR}/StrippedPublic)
+        set(SHALLTEAR_STRIP_SCRIPT ${CMAKE_SOURCE_DIR}/Scripts/strip_sdk_source.py)
+
+        # script only rewrites changed files
+        add_custom_command(
+            OUTPUT ${CMAKE_BINARY_DIR}/StrippedPublic.stamp
+            COMMAND ${SHALLTEAR_STRIP_PYTHON} ${SHALLTEAR_STRIP_SCRIPT} --self-test
+            COMMAND ${SHALLTEAR_STRIP_PYTHON} ${SHALLTEAR_STRIP_SCRIPT}
+                --out ${SHALLTEAR_STRIPPED_PUBLIC_DIR}
+                ${SHALLTEAR_PUBLIC_DIRS}
+            COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/StrippedPublic.stamp
+            DEPENDS ${SHALLTEAR_STRIP_SCRIPT} ${SHALLTEAR_PUBLIC_HEADER_FILES}
+            COMMENT "Stripping public headers for packaged-source guard"
+            VERBATIM)
+        add_custom_target(ShalltearStripPublicHeaders DEPENDS ${CMAKE_BINARY_DIR}/StrippedPublic.stamp)
+
+        add_library(ShalltearStrippedHeaderCheck STATIC EXCLUDE_FROM_ALL ${SHALLTEAR_StrippedHeaderCheck_TUS})
+        add_dependencies(ShalltearStrippedHeaderCheck ShalltearStripPublicHeaders)
+        # add_dependencies only orders and ninja plans mtimes before stripping
+        set_source_files_properties(${SHALLTEAR_StrippedHeaderCheck_TUS} PROPERTIES
+            OBJECT_DEPENDS ${CMAKE_BINARY_DIR}/StrippedPublic.stamp)
+        target_include_directories(ShalltearStrippedHeaderCheck PRIVATE
+            ${SHALLTEAR_STRIPPED_PUBLIC_DIR}
+            ${SHALLTEAR_GENERATED_PUBLIC_DIR}
+        )
+
+        if(SHALLTEAR_BUILD_TESTS)
+            add_test(NAME SdkSourceStrip.SelfTest
+                COMMAND ${SHALLTEAR_STRIP_PYTHON} ${SHALLTEAR_STRIP_SCRIPT} --self-test)
+        endif()
+    else()
+        message(STATUS "no Python 3 interpreter found: ShalltearStrippedHeaderCheck is unavailable, `cmake --install` will refuse to package")
     endif()
 else()
-    message(STATUS "no Python 3 interpreter found: ShalltearStrippedHeaderCheck is unavailable, `cmake --install` will refuse to package")
+    find_package(Python3 COMPONENTS Interpreter QUIET)
+    set(SHALLTEAR_STRIP_PYTHON "${Python3_EXECUTABLE}")
 endif()
 
 # makes find_package(Shalltear) work + the build tree a valid SDK
@@ -317,9 +329,11 @@ endif()
 
 # consumers should see only the published names
 set_target_properties(ShalltearCore PROPERTIES EXPORT_NAME Core)
-set_target_properties(ShalltearEditor PROPERTIES EXPORT_NAME Editor)
-
-set(SHALLTEAR_EXPORTED_TARGETS ShalltearCore ShalltearEditor)
+set(SHALLTEAR_EXPORTED_TARGETS ShalltearCore)
+if(TARGET ShalltearEditor)
+    set_target_properties(ShalltearEditor PROPERTIES EXPORT_NAME Editor)
+    list(APPEND SHALLTEAR_EXPORTED_TARGETS ShalltearEditor)
+endif()
 
 get_property(SHALLTEAR_PACKAGE_ID_LIST GLOBAL PROPERTY SHALLTEAR_PACKAGE_IDS)
 get_property(SHALLTEAR_PACKAGE_TARGET_LIST GLOBAL PROPERTY SHALLTEAR_PACKAGE_TARGETS)
@@ -328,28 +342,29 @@ if(SHALLTEAR_PACKAGE_TARGET_LIST)
     list(APPEND SHALLTEAR_EXPORTED_TARGETS ${SHALLTEAR_PACKAGE_TARGET_LIST})
 endif()
 
-set(SHALLTEAR_EDITOR_LINKED_DECLARATIONS "")
-set(SHALLTEAR_EDITOR_LINKED_ROWS "")
-if(NOT SHALLTEAR_BUILD_SHARED AND SHALLTEAR_PACKAGE_TARGET_LIST)
-    list(LENGTH SHALLTEAR_PACKAGE_TARGET_LIST slt_linkedPackageCount)
-    math(EXPR slt_linkedPackageLast "${slt_linkedPackageCount} - 1")
-    foreach(slt_index RANGE ${slt_linkedPackageLast})
-        list(GET SHALLTEAR_PACKAGE_ID_LIST ${slt_index} slt_packageId)
-        list(GET SHALLTEAR_PACKAGE_TARGET_LIST ${slt_index} slt_packageTarget)
-        string(APPEND SHALLTEAR_EDITOR_LINKED_DECLARATIONS "SLT_DECLARE_LINKED_PACKAGE(${slt_packageTarget})\n")
-        string(APPEND SHALLTEAR_EDITOR_LINKED_ROWS
-            "\t\t{\"${slt_packageId}\", &SLT_DETAIL_PACKAGE_SYMBOL(${slt_packageTarget})},\n")
-    endforeach()
-    target_link_libraries(ShalltearEditor PRIVATE ${SHALLTEAR_PACKAGE_TARGET_LIST})
-endif()
+if(TARGET ShalltearEditor)
+    set(SHALLTEAR_EDITOR_LINKED_DECLARATIONS "")
+    set(SHALLTEAR_EDITOR_LINKED_ROWS "")
+    if(NOT SHALLTEAR_BUILD_SHARED AND SHALLTEAR_PACKAGE_TARGET_LIST)
+        list(LENGTH SHALLTEAR_PACKAGE_TARGET_LIST slt_linkedPackageCount)
+        math(EXPR slt_linkedPackageLast "${slt_linkedPackageCount} - 1")
+        foreach(slt_index RANGE ${slt_linkedPackageLast})
+            list(GET SHALLTEAR_PACKAGE_ID_LIST ${slt_index} slt_packageId)
+            list(GET SHALLTEAR_PACKAGE_TARGET_LIST ${slt_index} slt_packageTarget)
+            string(APPEND SHALLTEAR_EDITOR_LINKED_DECLARATIONS "SLT_DECLARE_LINKED_PACKAGE(${slt_packageTarget})\n")
+            string(APPEND SHALLTEAR_EDITOR_LINKED_ROWS
+                "\t\t{\"${slt_packageId}\", &SLT_DETAIL_PACKAGE_SYMBOL(${slt_packageTarget})},\n")
+        endforeach()
+        target_link_libraries(ShalltearEditor PRIVATE ${SHALLTEAR_PACKAGE_TARGET_LIST})
+    endif()
 
-# shared editor maps package DLLs at runtime
-if(SHALLTEAR_BUILD_SHARED AND SHALLTEAR_PACKAGE_TARGET_LIST)
-    add_dependencies(ShalltearEditorExecutable ${SHALLTEAR_PACKAGE_TARGET_LIST})
-endif()
+    # shared editor maps package DLLs at runtime
+    if(SHALLTEAR_BUILD_SHARED AND SHALLTEAR_PACKAGE_TARGET_LIST)
+        add_dependencies(ShalltearEditorExecutable ${SHALLTEAR_PACKAGE_TARGET_LIST})
+    endif()
 
-set(SHALLTEAR_EDITOR_LINKED_FILE ${CMAKE_BINARY_DIR}/ShalltearGenerated/EditorLinkedPackages.generated.cpp)
-file(GENERATE OUTPUT ${SHALLTEAR_EDITOR_LINKED_FILE} CONTENT
+    set(SHALLTEAR_EDITOR_LINKED_FILE ${CMAKE_BINARY_DIR}/ShalltearGenerated/EditorLinkedPackages.generated.cpp)
+    file(GENERATE OUTPUT ${SHALLTEAR_EDITOR_LINKED_FILE} CONTENT
 "// GENERATED by the engine's build. Do not edit manually.
 
 #include \"PackageHost.h\"
@@ -369,7 +384,8 @@ ${SHALLTEAR_EDITOR_LINKED_ROWS}\t\t{nullptr, nullptr}
 
 } // namespace Shalltear
 ")
-target_sources(ShalltearEditor PRIVATE ${SHALLTEAR_EDITOR_LINKED_FILE})
+    target_sources(ShalltearEditor PRIVATE ${SHALLTEAR_EDITOR_LINKED_FILE})
+endif()
 
 if(NOT SHALLTEAR_BUILD_SHARED)
     # exported for "linking only" because freetype headers never public
@@ -389,13 +405,17 @@ if(SHALLTEAR_BUILD_SHARED)
 endif()
 
 install(DIRECTORY Source/Core/Public/ DESTINATION ${SHALLTEAR_INSTALL_INCLUDE} FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY Source/Editor/Public/ DESTINATION ${SHALLTEAR_INSTALL_INCLUDE} FILES_MATCHING PATTERN "*.h")
+if(TARGET ShalltearEditor)
+    install(DIRECTORY Source/Editor/Public/ DESTINATION ${SHALLTEAR_INSTALL_INCLUDE} FILES_MATCHING PATTERN "*.h")
+endif()
 install(DIRECTORY ${SHALLTEAR_GENERATED_PUBLIC_DIR}/ DESTINATION ${SHALLTEAR_INSTALL_INCLUDE} FILES_MATCHING PATTERN "*.h")
 
-install(DIRECTORY EngineAssets DESTINATION ${SHALLTEAR_INSTALL_BIN})
+if(NOT EMSCRIPTEN)
+    install(DIRECTORY EngineAssets DESTINATION ${SHALLTEAR_INSTALL_BIN})
 
-if(EXISTS ${SHALLTEAR_DXC_LIBRARY})
-    install(FILES ${SHALLTEAR_DXC_LIBRARY} DESTINATION ${SHALLTEAR_INSTALL_BIN})
+    if(EXISTS ${SHALLTEAR_DXC_LIBRARY})
+        install(FILES ${SHALLTEAR_DXC_LIBRARY} DESTINATION ${SHALLTEAR_INSTALL_BIN})
+    endif()
 endif()
 
 if(SHALLTEAR_CXX_RUNTIME_FILES)
@@ -470,6 +490,9 @@ set(SHALLTEAR_CONFIG_TOOLCHAIN_FILE "")
 if(SHALLTEAR_LINUX_PACK)
     set(SHALLTEAR_CONFIG_TOOLCHAIN_FILE "\${SHALLTEAR_PACKAGE_ROOT}/${SHALLTEAR_INSTALL_CMAKE}/Toolchains/Linux-x64.cmake")
     install(FILES ${CMAKE_SOURCE_DIR}/CMake/Toolchains/Linux-x64.cmake DESTINATION ${SHALLTEAR_INSTALL_CMAKE}/Toolchains)
+elseif(EMSCRIPTEN)
+    set(SHALLTEAR_CONFIG_TOOLCHAIN_FILE "\${SHALLTEAR_PACKAGE_ROOT}/${SHALLTEAR_INSTALL_CMAKE}/Toolchains/Web-wasm32.cmake")
+    install(FILES ${CMAKE_SOURCE_DIR}/CMake/Toolchains/Web-wasm32.cmake DESTINATION ${SHALLTEAR_INSTALL_CMAKE}/Toolchains)
 endif()
 configure_file(
     ${CMAKE_SOURCE_DIR}/CMake/ShalltearConfig.cmake.in
@@ -525,6 +548,8 @@ endif()
 set(SHALLTEAR_CONFIG_COMPILER_PATH "${CMAKE_CXX_COMPILER}")
 if(SHALLTEAR_LINUX_PACK)
     set(SHALLTEAR_CONFIG_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/CMake/Toolchains/Linux-x64.cmake")
+elseif(EMSCRIPTEN)
+    set(SHALLTEAR_CONFIG_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/CMake/Toolchains/Web-wasm32.cmake")
 endif()
 configure_file(
     ${CMAKE_SOURCE_DIR}/CMake/ShalltearConfig.cmake.in

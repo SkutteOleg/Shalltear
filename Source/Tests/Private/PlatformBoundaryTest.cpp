@@ -19,6 +19,7 @@ namespace {
 		"__APPLE__",
 		"__ANDROID__",
 		"__MINGW32__",
+		"__EMSCRIPTEN__",
 		"SLT_PLATFORM_",
 	};
 
@@ -39,6 +40,7 @@ namespace {
 		"<X11/",
 		"<wayland-",
 		"<xkbcommon/",
+		"<emscripten",
 	};
 
 	constexpr std::string_view DeclaringFiles[] = {

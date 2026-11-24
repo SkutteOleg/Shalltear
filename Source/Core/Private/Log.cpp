@@ -37,6 +37,7 @@ namespace Shalltear {
 
 		std::atomic<bool> isRunning{false};
 		std::atomic<bool> isTerminated{false};
+		bool asyncWorker = false;
 	};
 
 	static LogManagerData* _boundContext = nullptr;
@@ -233,7 +234,10 @@ namespace Shalltear {
 		if (config.enableFileSink)
 			AddSink(std::make_shared<FileSink>(config.fileSinkPath));
 
-		data.workerJob = JobSystem::Submit([]() { AsyncLogWorker(); }, JobType::LongRunning);
+		data.asyncWorker = JobSystem::GetWorkerCount() > 0;
+		if (data.asyncWorker) {
+			data.workerJob = JobSystem::Submit([]() { AsyncLogWorker(); }, JobType::LongRunning);
+		}
 
 		if (!data.sinks.empty())
 			SLT_LOG_INFO("Core", "Log subsystem initialized");
@@ -241,6 +245,9 @@ namespace Shalltear {
 
 	void LogManager::DrainBeforeImageUnload() {
 		auto& data = GetLogContext();
+		if (!data.asyncWorker) {
+			return;
+		}
 		std::unique_lock<std::mutex> lock(data.queueMutex);
 		if (data.enqueued == data.delivered) {
 			return;
@@ -284,7 +291,10 @@ namespace Shalltear {
 
 		data.queueCondition.notify_one();
 
-		JobSystem::WaitFor(data.workerJob);
+		if (data.asyncWorker) {
+			JobSystem::WaitFor(data.workerJob);
+			data.asyncWorker = false;
+		}
 
 		{
 			std::lock_guard<std::mutex> lock(data.queueMutex);
@@ -343,6 +353,19 @@ namespace Shalltear {
 		event.file = file;
 		event.line = line;
 		event.function = function;
+
+		if (!data.asyncWorker) {
+			std::vector<std::shared_ptr<ILogSink>> localSinks;
+			{
+				std::lock_guard<std::mutex> lock(data.queueMutex);
+				localSinks = data.sinks;
+			}
+			for (const auto& sink : localSinks) {
+				sink->ReceiveLog(event);
+				sink->Flush();
+			}
+			return;
+		}
 
 		{
 			std::lock_guard<std::mutex> lock(data.queueMutex);

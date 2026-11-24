@@ -23,4 +23,10 @@ namespace Shalltear::Platform {
 
 	bool RunProcessCapture(const str& executable, std::span<const str> arguments, str& outOutput, i32& outExitCode);
 
+	bool SupportsBackgroundThreads();
+
+	bool IsExternallyPaced();
+
+	void RunMainLoop(bool (*step)(void*), void (*onExit)(int, void*), void* user);
+
 } // namespace Shalltear::Platform
