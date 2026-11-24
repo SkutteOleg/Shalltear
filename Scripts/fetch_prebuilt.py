@@ -85,6 +85,33 @@ VULKANRT_VERSION = "1.4.321.0"
 VULKANRT_URL = f"https://sdk.lunarg.com/sdk/download/{VULKANRT_VERSION}/windows/vulkan-runtime-components.zip"
 VULKANRT_SHA256 = "f8ba79303face4b72a2f302f1a46e8c918995b54fbf24c0c9fc6c3d3ef525dca"
 
+DAWN_VERSION = "2026-11-22"
+DAWN_WIN_URL = f"https://github.com/mmozeiko/build-dawn/releases/download/{DAWN_VERSION}/dawn-x64-{DAWN_VERSION}.zip"
+DAWN_WIN_SHA256 = "c1115388e50bd24ab8b2641a235dac1c2e7666bb11472e72599150d2d8cb47bc"
+DAWN_LINUX_RELEASE = "v20261120.121236"
+DAWN_LINUX_COMMIT = "fec851bab7b360449e3de9ebf771bd13d7942194"
+DAWN_LINUX_URL = (
+    f"https://github.com/google/dawn/releases/download/{DAWN_LINUX_RELEASE}/"
+    f"Dawn-{DAWN_LINUX_COMMIT}-ubuntu-latest-Release.tar.gz"
+)
+DAWN_LINUX_SHA256 = "1f887d5afc896789b16fa9f671a62eca1c8ef57b7c8f5e19f7ecadfe31941e2a"
+EMDAWNWEBGPU_URL = (
+    f"https://github.com/google/dawn/releases/download/{DAWN_LINUX_RELEASE}/"
+    f"emdawnwebgpu_pkg-{DAWN_LINUX_RELEASE}.zip"
+)
+EMDAWNWEBGPU_SHA256 = "15e946ab48abb1777aa8f0300fd00ca452292d7948d692e0a405926b646944a2"
+DAWN_LICENSE_URL = "https://raw.githubusercontent.com/google/dawn/90dcd33551d8b1a646861a5cdef7887434b63867/LICENSE"
+DAWN_LICENSE_SHA256 = "1c43dfd13b306e5bac47839ea90cd1882249a75c92963ade400d4c1165e42228"
+
+EMSDK_VERSION = "7.0.1"
+EMSDK_HASH = "9146b21a8350e85c9934cf570f7a6ceb7470623b"
+EMSDK_WIN_URL = f"https://storage.googleapis.com/webassembly/emscripten-releases-builds/win/{EMSDK_HASH}/wasm-binaries.zip"
+EMSDK_WIN_SHA256 = "5a8913d76bd0f36ca575864236fc5049cd25a7cbe5d4d730b9814f50f8755a81"
+EMSDK_LINUX_URL = f"https://storage.googleapis.com/webassembly/emscripten-releases-builds/linux/{EMSDK_HASH}/wasm-binaries.tar.xz"
+EMSDK_LINUX_SHA256 = "aebab2ffa9b758d56db9e41adfacb0bf00f95800970c64f5e6a0ae7631066b5c"
+EMSDK_LICENSE_URL = "https://raw.githubusercontent.com/emscripten-core/emscripten/main/LICENSE"
+EMSDK_LICENSE_SHA256 = "620a78084fc7ca97c0b5dea9abf891f3ffcadfdbf305276f099c9c4e12fc1d86"
+
 DOTNET_PIN_PATH = ROOT_DIR / "Source" / "CSharp" / "DotNetPin.json"
 
 
@@ -779,12 +806,117 @@ def fetch_libclang() -> Path:
     return dll_path
 
 
+def fetch_dawn() -> Path:
+    target = PREBUILT_DIR / "dawn"
+    tint_name = "tint.exe" if HOST_IS_WINDOWS else "tint"
+    tint_path = target / "bin" / tint_name
+    header_path = target / "include" / "webgpu" / "webgpu.h"
+    port_path = target / "emdawnwebgpu_pkg" / "emdawnwebgpu.port.py"
+    if is_current(target, DAWN_VERSION) and tint_path.is_file() and header_path.is_file() and port_path.is_file():
+        print(f"dawn/tint {DAWN_VERSION} already fetched. Skipping")
+        return target
+
+    print(f"fetching Dawn + Tint {DAWN_VERSION} + emdawnwebgpu {DAWN_LINUX_RELEASE}")
+    with tempfile.TemporaryDirectory() as tmp_str:
+        tmp = Path(tmp_str)
+        em_pkg = tmp / f"emdawnwebgpu_pkg-{DAWN_LINUX_RELEASE}.zip"
+        download_verified(EMDAWNWEBGPU_URL, EMDAWNWEBGPU_SHA256, em_pkg)
+        lic_file = tmp / "DAWN_LICENSE"
+        download_verified(DAWN_LICENSE_URL, DAWN_LICENSE_SHA256, lic_file)
+
+        if target.exists():
+            shutil.rmtree(target)
+        (target / "bin").mkdir(parents=True)
+        (target / "include" / "webgpu").mkdir(parents=True)
+
+        if HOST_IS_WINDOWS:
+            archive = tmp / f"dawn-x64-{DAWN_VERSION}.zip"
+            download_verified(DAWN_WIN_URL, DAWN_WIN_SHA256, archive)
+            with zipfile.ZipFile(archive) as zf:
+                (target / "bin" / "tint.exe").write_bytes(zf.read("dawn-x64/tint.exe"))
+                (target / "bin" / "webgpu_dawn.dll").write_bytes(zf.read("dawn-x64/webgpu_dawn.dll"))
+                header_path.write_bytes(zf.read("dawn-x64/webgpu.h"))
+        else:
+            archive = tmp / f"Dawn-{DAWN_LINUX_COMMIT}-ubuntu-latest-Release.tar.gz"
+            download_verified(DAWN_LINUX_URL, DAWN_LINUX_SHA256, archive)
+            prefix = f"Dawn-{DAWN_LINUX_COMMIT}-ubuntu-latest-Release/"
+            with tarfile.open(archive, mode="r:gz") as tf:
+                for member in tf:
+                    if not member.isfile():
+                        continue
+                    rel = member.name[len(prefix):] if member.name.startswith(prefix) else member.name
+                    if rel == "bin/tint":
+                        tint_path.write_bytes(tf.extractfile(member).read())
+                        os.chmod(tint_path, 0o755)
+                    elif rel == "include/dawn/webgpu.h":
+                        header_path.write_bytes(tf.extractfile(member).read())
+
+        with zipfile.ZipFile(em_pkg) as zf:
+            zf.extractall(target)
+        shutil.copyfile(lic_file, target / "LICENSE")
+
+    if not tint_path.is_file() or not header_path.is_file() or not port_path.is_file():
+        raise RuntimeError(f"Dawn/Tint staging incomplete under {target}")
+    write_marker(target, DAWN_VERSION)
+    print(f"dawn/tint -> {target}")
+    return target
+
+
+def fetch_emsdk() -> Path:
+    target = PREBUILT_DIR / "emsdk"
+    emxx = target / "install" / "emscripten" / ("em++.exe" if HOST_IS_WINDOWS else "em++")
+    em_config = target / ".emscripten"
+    if is_current(target, EMSDK_VERSION) and emxx.is_file() and em_config.is_file():
+        print(f"emsdk {EMSDK_VERSION} already fetched. Skipping")
+        return target
+
+    print(f"fetching Emscripten {EMSDK_VERSION}")
+    with tempfile.TemporaryDirectory() as tmp_str:
+        tmp = Path(tmp_str)
+        lic_file = tmp / "EMSCRIPTEN_LICENSE"
+        download_verified(EMSDK_LICENSE_URL, EMSDK_LICENSE_SHA256, lic_file)
+        if HOST_IS_WINDOWS:
+            archive = tmp / f"emsdk-{EMSDK_VERSION}-win.zip"
+            download_verified(EMSDK_WIN_URL, EMSDK_WIN_SHA256, archive)
+            if target.exists():
+                shutil.rmtree(target)
+            target.mkdir(parents=True)
+            with zipfile.ZipFile(archive) as zf:
+                zf.extractall(target)
+        else:
+            archive = tmp / f"emsdk-{EMSDK_VERSION}-linux.tar.xz"
+            download_verified(EMSDK_LINUX_URL, EMSDK_LINUX_SHA256, archive)
+            if target.exists():
+                shutil.rmtree(target)
+            target.mkdir(parents=True)
+            with tarfile.open(archive, mode="r:xz") as tf:
+                tf.extractall(target)
+        shutil.copyfile(lic_file, target / "LICENSE")
+
+    node = shutil.which("node") or "node"
+    node_path = str(Path(node).resolve()) if shutil.which("node") else node
+    cfg = (
+        f"LLVM_ROOT = {str((target / 'install' / 'bin').resolve())!r}\n"
+        f"BINARYEN_ROOT = {str((target / 'install').resolve())!r}\n"
+        f"EMSCRIPTEN_ROOT = {str((target / 'install' / 'emscripten').resolve())!r}\n"
+        f"NODE_JS = {node_path!r}\n"
+        f"CACHE = {str((target / 'cache').resolve())!r}\n"
+    )
+    em_config.write_text(cfg, encoding="utf-8")
+    if not emxx.is_file():
+        raise RuntimeError(f"{emxx} missing after Emscripten extract")
+    write_marker(target, EMSDK_VERSION)
+    print(f"emsdk -> {target}")
+    return target
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lavapipe", action="store_true", help="also fetch the CI software Vulkan driver + loader")
     parser.add_argument("--skip-dxc", action="store_true", help="skip the DXC fetch")
     parser.add_argument("--toolchain", action="store_true", help="also fetch llvm-mingw/cmake/ninja (what the SDK bundles)")
     parser.add_argument("--linux", action="store_true", help="also build the Linux target pack (sysroot + C++ runtime). Needs --toolchain once")
+    parser.add_argument("--web", action="store_true", help="also fetch Dawn/Tint + emdawnwebgpu + Emscripten (WebGPU/WASM target)")
     parser.add_argument("--dotnet", action="store_true", help="also fetch the pinned .NET SDK (C# scripting)")
     parser.add_argument("--dotnet-packs", action="store_true",
                         help="also restore the pinned NativeAOT packages (C# players then build offline). Implies --dotnet")
@@ -817,6 +949,9 @@ def main() -> int:
             fetch_ninja_linux()
     if args.linux or (args.toolchain and not HOST_IS_WINDOWS):
         fetch_linux_pack()
+    if args.web:
+        fetch_dawn()
+        fetch_emsdk()
     if args.dotnet or args.dotnet_packs:
         fetch_dotnet()
     if args.dotnet_packs:

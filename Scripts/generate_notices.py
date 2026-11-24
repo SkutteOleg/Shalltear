@@ -448,6 +448,24 @@ COMPONENTS: tuple[Component, ...] = (
 		),
 	),
 	Component(
+		name="Google Dawn and Tint (WebGPU & WGSL compiler)",
+		scope="editor",
+		license="BSD-3-Clause",
+		where="SPIR-V to WGSL shader translation for Web builds and native "
+			  "WebGPU test backend (tint, webgpu.h, emdawnwebgpu)",
+		version=lambda: "Dawn 2026-11-22 (emdawnwebgpu v20261120.121236)",
+		text=lambda: read("Scripts/ThirdParty/dawn/LICENSE"),
+	),
+	Component(
+		name="Emscripten SDK (WebAssembly toolchain)",
+		scope="editor",
+		license="MIT and University of Illinois/NCSA Open Source License (dual)",
+		where="optional WebAssembly cross-compiler and browser runtime glue "
+			  "for Web targets (bundled when building an offline Web SDK)",
+		version=lambda: "Emscripten 7.0.1",
+		text=lambda: read("Scripts/ThirdParty/emscripten/LICENSE"),
+	),
+	Component(
 		name="Clang, LLD and the LLVM toolchain (bundled in Toolchain/LLVM)",
 		scope="editor",
 		license="Apache License 2.0 with LLVM Exceptions",
