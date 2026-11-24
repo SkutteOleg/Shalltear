@@ -26,6 +26,8 @@ TARGET_RIDS = ("linux-x64", "win-x64")
 WASM_PACKS = (
 	"Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
 	"Microsoft.NETCore.App.Runtime.Mono.multithread.browser-wasm",
+	"Microsoft.NETCore.App.Runtime.AOT.linux-x64.Cross.browser-wasm",
+	"Microsoft.NETCore.App.Runtime.AOT.win-x64.Cross.browser-wasm",
 	"Microsoft.NET.Runtime.WebAssembly.Sdk",
 )
 SUPPORTED_PHASES = ("active", "maintenance")

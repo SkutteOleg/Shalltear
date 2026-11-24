@@ -538,9 +538,11 @@ def fetch_dotnet_wasm_packs() -> None:
     pin = json.loads(DOTNET_PIN_PATH.read_text(encoding="utf-8"))
     version = pin["runtimeVersion"]
     packs = pin.get("packs") or {}
+    host_rid = "win-x64" if HOST_IS_WINDOWS else "linux-x64"
     wanted = [
         f"microsoft.netcore.app.runtime.mono.browser-wasm/{version}",
         f"microsoft.netcore.app.runtime.mono.multithread.browser-wasm/{version}",
+        f"microsoft.netcore.app.runtime.aot.{host_rid}.cross.browser-wasm/{version}",
         f"microsoft.net.runtime.webassembly.sdk/{version}",
         f"microsoft.net.illink.tasks/{version}",
     ]
@@ -565,6 +567,10 @@ def fetch_dotnet_wasm_packs() -> None:
             dest_dir.mkdir(parents=True, exist_ok=True)
             with zipfile.ZipFile(tmp_archive) as zf:
                 zf.extractall(dest_dir)
+            if not HOST_IS_WINDOWS:
+                aot_bin = dest_dir / "tools" / "mono-aot-cross"
+                if aot_bin.is_file():
+                    os.chmod(aot_bin, 0o755)
             shutil.copy2(tmp_archive, archive)
             (dest_dir / f"{pkg_id}.{ver}.nupkg.sha512").write_text(
                 base64.b64encode(bytes.fromhex(digest)).decode("ascii"), encoding="ascii")

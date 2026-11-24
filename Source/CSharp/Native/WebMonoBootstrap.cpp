@@ -34,6 +34,10 @@ void mono_marshal_ilgen_init(void);
 void mono_method_builder_ilgen_init(void);
 void mono_sgen_mono_ilgen_init(void);
 void mono_trace_init(void);
+int monoeg_g_setenv(const char* variable, const char* value, int overwrite);
+#if defined(SHALLTEAR_WEB_AOT)
+void ShalltearWebMonoRegisterAOTModules(void);
+#endif
 void mono_bundled_resources_add_assembly_resource(const char* id, const char* name, const uint8_t* data,
 												  uint32_t size, void (*freeFunc)(void*, void*), void* freeData);
 void mono_wasm_install_get_native_to_interp_tramp(void* (*cb)(MonoMethod*, void*));
@@ -289,7 +293,13 @@ extern "C" int32_t ShalltearScriptsInitialize(const void* engine, void* managed)
 		mono_dl_fallback_register(&ShalltearWebMonoDlLoad, &ShalltearWebMonoDlSym, nullptr, nullptr);
 		mono_wasm_install_get_native_to_interp_tramp(&ResolveNativeToInterp);
 		mono_wasm_install_interp_to_native_callback(&ResolveInterpToNative);
+#if defined(SHALLTEAR_WEB_AOT)
+		monoeg_g_setenv("MONO_AOT_MODE", "aot", 1);
+		ShalltearWebMonoRegisterAOTModules();
+		mono_jit_set_aot_mode(MONO_AOT_MODE_LLVMONLY_INTERP);
+#else
 		mono_jit_set_aot_mode(MONO_AOT_MODE_INTERP_ONLY);
+#endif
 		mono_icall_table_init();
 		mono_ee_interp_init("-jiterpreter");
 		mono_marshal_ilgen_init();

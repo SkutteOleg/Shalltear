@@ -318,6 +318,15 @@ namespace Shalltear {
 		validation.help = "enable extra WebGPU error diagnostics in browser console";
 		validation.defaultValue = "false";
 		out.push_back(std::move(validation));
+
+		BuildSettingDesc aotCompile;
+		aotCompile.key = "aotCompile";
+		aotCompile.type = BuildSettingType::Bool;
+		aotCompile.merge = BuildMergePolicy::Replace;
+		aotCompile.label = "AOT Compile C# (Release)";
+		aotCompile.help = "compile C# assemblies ahead of time to WebAssembly in Release builds for near-native script performance";
+		aotCompile.defaultValue = "true";
+		out.push_back(std::move(aotCompile));
 	}
 
 	void WebTarget::Validate(const str&, const ResolvedProfile& profile, Vector<BuildIssue>& out) const {

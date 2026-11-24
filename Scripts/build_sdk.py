@@ -197,6 +197,7 @@ DAWN_WEB_RULES = (
 WEB_NUGET_PACKS = (
 	'microsoft.netcore.app.runtime.mono.browser-wasm',
 	'microsoft.netcore.app.runtime.mono.multithread.browser-wasm',
+	'microsoft.netcore.app.runtime.aot.%s.cross.browser-wasm' % ('win-x64' if os.name == 'nt' else 'linux-x64'),
 	'microsoft.net.runtime.webassembly.sdk',
 	'microsoft.net.illink.tasks',
 )

@@ -17,12 +17,17 @@ internal static class Program {
 	public static int Main(string[] args) {
 		bool emitViews = false;
 		bool emitWasmM2N = false;
+		bool aotWebMono = false;
+		bool aotThreads = false;
 		string? projectRoot = null;
 		string? outDir = null;
 		string? dllDir = null;
 		string? existingHeader = null;
 		string? outFile = null;
 		string? manifestFile = null;
+		string? aotCompiler = null;
+		string? tableOut = null;
+		string? cmakeOut = null;
 		string? targetFile = null;
 		string? oldName = null;
 		string? newName = null;
@@ -38,6 +43,21 @@ internal static class Program {
 				break;
 			case "--emit-wasm-m2n":
 				emitWasmM2N = true;
+				break;
+			case "--aot-web-mono":
+				aotWebMono = true;
+				break;
+			case "--threads":
+				aotThreads = true;
+				break;
+			case "--compiler":
+				aotCompiler = Next();
+				break;
+			case "--table-out":
+				tableOut = Next();
+				break;
+			case "--cmake-out":
+				cmakeOut = Next();
 				break;
 			case "--dll-dir":
 				dllDir = Next();
@@ -73,6 +93,15 @@ internal static class Program {
 				refsFile = Next();
 				break;
 			}
+		}
+
+		if (aotWebMono) {
+			if (string.IsNullOrWhiteSpace(aotCompiler) || string.IsNullOrWhiteSpace(dllDir) ||
+				string.IsNullOrWhiteSpace(outDir) || string.IsNullOrWhiteSpace(tableOut) || string.IsNullOrWhiteSpace(cmakeOut)) {
+				Console.Error.WriteLine("usage: Shalltear.Refactor --aot-web-mono --compiler <exe> --dll-dir <dir> --out-dir <dir> --table-out <c> --cmake-out <cmake> [--threads]");
+				return 2;
+			}
+			return WasmAotCompiler.Run(aotCompiler, dllDir, outDir, tableOut, cmakeOut, aotThreads);
 		}
 
 		if (emitWasmM2N) {

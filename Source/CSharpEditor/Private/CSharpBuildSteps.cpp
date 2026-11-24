@@ -130,8 +130,12 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return setting ? setting->value : str{};
 		}
 
-		bool ResolvedBool(const BuildContext& context, std::string_view key) {
-			const str lowered = StringUtil::ToLower(ResolvedString(context, key));
+		bool ResolvedBool(const BuildContext& context, std::string_view key, bool fallback = false) {
+			const ResolvedSetting* setting = context.profile ? context.profile->Find(key) : nullptr;
+			if (!setting || setting->value.empty()) {
+				return fallback;
+			}
+			const str lowered = StringUtil::ToLower(setting->value);
 			return lowered == "true" || lowered == "1" || lowered == "yes" || lowered == "on";
 		}
 
@@ -143,14 +147,18 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return IsSingleFileBuild(context) || (context.target && IsWeb(context.target->GetId()));
 		}
 
-		bool FindWebMonoPacks(const BuildContext& context, const str& sdkRoot, bool enableThreads, str& outMonoPack, str& outWASMSDK, str& outLinkerPath) {
+		bool FindWebMonoPacks(const BuildContext& context, const str& sdkRoot, bool enableThreads, str& outMonoPack, str& outWASMSDK, str& outLinkerPath, str& outAOTCross) {
 			outMonoPack.clear();
 			outWASMSDK.clear();
 			outLinkerPath.clear();
+			outAOTCross.clear();
 
-			const str runtimeVersion = DotNetToolchain::GetPin().runtimeVersion;
+			const DotNetToolchain::Pin& pin = DotNetToolchain::GetPin();
+			const str& runtimeVersion = pin.runtimeVersion;
 			const str monoPackageId = enableThreads ? "microsoft.netcore.app.runtime.mono.multithread.browser-wasm"
 													: "microsoft.netcore.app.runtime.mono.browser-wasm";
+			const str aotPackageId = "microsoft.netcore.app.runtime.aot." + pin.hostRid + ".cross.browser-wasm";
+			const str aotExe = pin.hostRid.starts_with("win") ? "mono-aot-cross.exe" : "mono-aot-cross";
 
 			Vector<fs::path> nugetRoots{GetMemoryResource(MemTag::Editor)};
 			auto addRoot = [&](const fs::path& dir) {
@@ -217,6 +225,13 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 						}
 						ec.clear();
 					}
+				}
+				if (outAOTCross.empty()) {
+					const fs::path candidate = root / aotPackageId / runtimeVersion / "tools" / aotExe;
+					if (fs::is_regular_file(candidate, ec)) {
+						outAOTCross = candidate.generic_string();
+					}
+					ec.clear();
 				}
 			}
 			return !outMonoPack.empty() && !outWASMSDK.empty() && !outLinkerPath.empty();
@@ -603,12 +618,21 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 			str arguments;
 			if (IsWeb(targetId)) {
+				const bool enableThreads = ResolvedBool(context, "enableThreads");
+				const bool wantAOT = context.configuration == "Release" && ResolvedBool(context, "aotCompile", true);
 				str monoPack;
 				str wasmSDK;
 				str linkerPath;
-				if (!FindWebMonoPacks(context, state.sdkRoot, ResolvedBool(context, "enableThreads"), monoPack, wasmSDK, linkerPath)) {
+				str aotCross;
+				if (!FindWebMonoPacks(context, state.sdkRoot, enableThreads, monoPack, wasmSDK, linkerPath, aotCross)) {
 					context.AddIssue(BuildIssueSeverity::Error, "",
 									 "WebAssembly .NET runtime packs were not found. Run `python Scripts/fetch_prebuilt.py --web`");
+					state.stage = Stage::Idle;
+					return BuildStepStatus::Failed;
+				}
+				if (wantAOT && aotCross.empty()) {
+					context.AddIssue(BuildIssueSeverity::Error, "aotCompile",
+									 "WebAssembly AOT cross-compiler pack was not found. Run `python Scripts/fetch_prebuilt.py --web` (or set aotCompile = false)");
 					state.stage = Stage::Idle;
 					return BuildStepStatus::Failed;
 				}
@@ -618,6 +642,13 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				arguments += " " + QuoteCommandArgument("-p:ShalltearWebMonoPackDir=" + monoPack);
 				arguments += " " + QuoteCommandArgument("-p:ShalltearWebAssemblySdkDir=" + wasmSDK);
 				arguments += " " + QuoteCommandArgument("-p:ShalltearILLinkPath=" + linkerPath);
+				if (enableThreads) {
+					arguments += " -p:ShalltearWebThreads=true";
+				}
+				if (wantAOT) {
+					arguments += " -p:ShalltearWebAot=true";
+					arguments += " " + QuoteCommandArgument("-p:ShalltearWebAotCross=" + aotCross);
+				}
 				arguments += PlayerPackagesArgument();
 				if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
 					arguments += " -p:ShalltearRenameScripts=true";
@@ -802,12 +833,19 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				return BuildStepStatus::Failed;
 			}
 			if (IsWeb(context.target->GetId())) {
+				const bool wantAOT = context.configuration == "Release" && ResolvedBool(context, "aotCompile", true);
 				str monoPack;
 				str wasmSDK;
 				str linkerPath;
-				if (!FindWebMonoPacks(context, state.sdkRoot, ResolvedBool(context, "enableThreads"), monoPack, wasmSDK, linkerPath)) {
+				str aotCross;
+				if (!FindWebMonoPacks(context, state.sdkRoot, ResolvedBool(context, "enableThreads"), monoPack, wasmSDK, linkerPath, aotCross)) {
 					context.AddIssue(BuildIssueSeverity::Error, "target",
 									 "C# scripts for Web need the WebAssembly .NET runtime packs. Run `python Scripts/fetch_prebuilt.py --web`");
+					return BuildStepStatus::Failed;
+				}
+				if (wantAOT && aotCross.empty()) {
+					context.AddIssue(BuildIssueSeverity::Error, "aotCompile",
+									 "Release Web AOT needs the WebAssembly AOT cross-compiler pack. Run `python Scripts/fetch_prebuilt.py --web` (or set aotCompile = false)");
 					return BuildStepStatus::Failed;
 				}
 			}

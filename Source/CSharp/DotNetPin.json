@@ -17,6 +17,8 @@
 		"microsoft.dotnet.ilcompiler/10.0.15": "71934b7fa3f06c7ad739a6d6cdda89e7713f92e0cda1a07457f54fead93bf4a04f447f7741132c08f24c3f5f2a6fbd555b63ef6d058820700990875f49b9fd8a",
 		"microsoft.net.illink.tasks/10.0.15": "abf72e6718bc5cfc1ae1da4afbbcbdb772a82fb4faa90654b48aaa37de982b1d4a720aff6e10f42b753e39a2e5ad6567e91db752bb04afc14046a29856e13766",
 		"microsoft.net.runtime.webassembly.sdk/10.0.15": "3f8275bb6ef4672b9a354aa71347502312fb7962cd65737e17915dcad7076978fb9bc440e4d401091d98f1c09732d2d63ad387fa8c2265df91bffd8c81d0a9f3",
+		"microsoft.netcore.app.runtime.aot.linux-x64.cross.browser-wasm/10.0.15": "d3938b82bd08f990cfa1b8c373bdaac18b9281a4836efbc078ab9ff5d05122d854f96cb97253f6e4231a2d67d35f53c7620c88f33a40468fd0f8cbf2c7f4aa51",
+		"microsoft.netcore.app.runtime.aot.win-x64.cross.browser-wasm/10.0.15": "9f690a043cffe6cc8a090f63553f99ec43dcbefa2558d7ea93b14fe00bed6321393376e230a3209ed4a29fc0b3b6164af0b6dc8b2f39147d26fe4dd99a966c97",
 		"microsoft.netcore.app.runtime.linux-x64/10.0.15": "024eb2dc412ac0d4ff64be56100a066e3c63bbc322b17a67471611ca74627e8b5a28469d8615a4e7fcf6293bcd6e747202f32aadb376d534a7258e0dc594a1c5",
 		"microsoft.netcore.app.runtime.mono.browser-wasm/10.0.15": "7fce864dd1215aea4f1491c3a1e65d72a220f020255fb339ed411fc840776d634ef37bd9410b4f8ab3a1747c4ce77dd1551b64b7fce3b4fa9a4c3cd9f8459358",
 		"microsoft.netcore.app.runtime.mono.multithread.browser-wasm/10.0.15": "107c37482dd1543a6518d5253ddde5d7c1457f87faccfb91fcadc983799bb1622976e9d674263e880d6bfa0e975d453266806118784422a136b1735270d7d336",

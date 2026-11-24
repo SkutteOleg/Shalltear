@@ -72,6 +72,11 @@ TEST(WebTargetTest, RegisteredWithExpectedSettingsSchema) {
 	const BuildSettingDesc* validation = findKey("webgpuValidation");
 	ASSERT_NE(validation, nullptr);
 	EXPECT_EQ(validation->defaultValue, "false");
+
+	const BuildSettingDesc* aotCompile = findKey("aotCompile");
+	ASSERT_NE(aotCompile, nullptr);
+	EXPECT_EQ(aotCompile->type, BuildSettingType::Bool);
+	EXPECT_EQ(aotCompile->defaultValue, "true");
 }
 
 TEST(WebTargetTest, RendersWebIndexTemplate) {

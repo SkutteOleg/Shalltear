@@ -12,6 +12,21 @@ static class Program {
 	const string ERROR = "Shalltear.Renamer : error SLT3001 : ";
 
 	static int Main(string[] args) {
+		if (args.Length >= 2 && args[0] == "--normalize-wasm-callconv") {
+			MethodCallingConvention target = MethodCallingConvention.C;
+			for (int i = 2; i + 1 < args.Length; i += 2) {
+				if (args[i] == "--callconv" && string.Equals(args[i + 1], "default", StringComparison.OrdinalIgnoreCase)) {
+					target = MethodCallingConvention.Default;
+				}
+			}
+			try {
+				return WasmCallConvNormalizer.Run(args[1], target);
+			} catch (Exception error) {
+				Console.WriteLine(ERROR + error.Message);
+				Console.WriteLine(error.StackTrace);
+				return 1;
+			}
+		}
 		Options? options = Options.Parse(args, out string problem);
 		if (options == null) {
 			Console.WriteLine(ERROR + problem);
