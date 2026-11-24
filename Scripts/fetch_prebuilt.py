@@ -3,6 +3,7 @@
 """
 
 import argparse
+import base64
 import ctypes
 import filecmp
 import hashlib
@@ -533,6 +534,42 @@ def stale_packs(packages: Path, pinned: dict) -> list:
     return stale
 
 
+def fetch_dotnet_wasm_packs() -> None:
+    pin = json.loads(DOTNET_PIN_PATH.read_text(encoding="utf-8"))
+    version = pin["runtimeVersion"]
+    packs = pin.get("packs") or {}
+    wanted = [
+        f"microsoft.netcore.app.runtime.mono.browser-wasm/{version}",
+        f"microsoft.netcore.app.runtime.mono.multithread.browser-wasm/{version}",
+        f"microsoft.net.runtime.webassembly.sdk/{version}",
+    ]
+    packages = PREBUILT_DIR / "nuget"
+    missing = [name for name in wanted if name in packs and stale_packs(packages, {name: packs[name]})]
+    if not missing:
+        print(f".NET browser-wasm packages {version} already staged. Skipping")
+        return
+    packages.mkdir(parents=True, exist_ok=True)
+    for name in missing:
+        pkg_id, ver = name.split("/")
+        digest = packs[name]
+        dest_dir = packages / pkg_id / ver
+        archive = dest_dir / f"{pkg_id}.{ver}.nupkg"
+        url = f"https://api.nuget.org/v3-flatcontainer/{pkg_id}/{ver}/{pkg_id}.{ver}.nupkg"
+        print(f"fetching {pkg_id} {ver}")
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_archive = Path(tmp) / archive.name
+            download_verified(url, digest, tmp_archive, algorithm="sha512")
+            if dest_dir.exists():
+                shutil.rmtree(dest_dir)
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            with zipfile.ZipFile(tmp_archive) as zf:
+                zf.extractall(dest_dir)
+            shutil.copy2(tmp_archive, archive)
+            (dest_dir / f"{pkg_id}.{ver}.nupkg.sha512").write_text(
+                base64.b64encode(bytes.fromhex(digest)).decode("ascii"), encoding="ascii")
+    print(f".NET browser-wasm packages -> {packages}")
+
+
 def fetch_dotnet_packs() -> None:
     import update_dotnet_pin
 
@@ -969,6 +1006,8 @@ def main() -> int:
     if args.web:
         fetch_dawn()
         fetch_emsdk()
+        if DOTNET_PIN_PATH.is_file():
+            fetch_dotnet_wasm_packs()
     if args.dotnet or args.dotnet_packs:
         fetch_dotnet()
     if args.dotnet_packs:

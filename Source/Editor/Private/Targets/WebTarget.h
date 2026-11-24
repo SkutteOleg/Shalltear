@@ -2,10 +2,11 @@
 
 #include "Shalltear/Editor/BuildPipeline.h"
 #include "Shalltear/Editor/BuildTarget.h"
+#include "Shalltear/Editor/EditorAPI.h"
 
 namespace Shalltear {
 
-	class WebTarget : public IBuildTarget {
+	class SHALLTEAR_EDITOR_API WebTarget : public IBuildTarget {
 	public:
 		static constexpr std::string_view Triple = "wasm32-unknown-emscripten";
 
@@ -20,7 +21,7 @@ namespace Shalltear {
 
 		static BuildStepStatus StageStep(BuildContext& context);
 		static bool RenderIndexHTML(const str& title, const str& jsFile, const str& wasmFile,
-									bool enableThreads, str& outHTML);
+									bool enableThreads, str& outHTML, bool hasManaged = false);
 	};
 
 } // namespace Shalltear

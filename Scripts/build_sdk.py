@@ -160,8 +160,8 @@ CSHARP_RULES = (
 		 'Roslyn C# syntax parser and rewriter loaded by Shalltear.Refactor'),
 	Rule(('HeaderBinder/Shalltear.HeaderBinder.dll', 'HeaderBinder/Shalltear.HeaderBinder.runtimeconfig.json'), SHIP, ENGINE_LICENSE,
 		 'libclang C++ header binding generator for mixed C++/C# projects'),
-	Rule(('native/CRTShim.obj', 'native/CRTShimStatic.obj'), SHIP, ENGINE_LICENSE,
-		 "startup shims a game's script library or single-file player links"),
+	Rule(('native/CRTShim.obj', 'native/CRTShimStatic.obj', 'native/WebMonoTables.c', 'native/WebMonoBootstrap.cpp'), SHIP, ENGINE_LICENSE,
+		 "startup shims and WebAssembly bridge a game's script library or player links"),
 	Rule(('native/libs/clang_rt.builtins-x86_64.lib',), SHIP, LLVM_LICENSE,
 		 "compiler-rt builtins (the shim's stack probe)"),
 	Rule(('native/libs/*.lib',), SHIP, MINGW_RUNTIME_LICENSE,
@@ -276,6 +276,7 @@ def build_web_static(threaded=False):
 		"-DSHALLTEAR_BUILD_SHARED=OFF",
 		"-DSHALLTEAR_BUILD_TESTS=OFF",
 		"-DSHALLTEAR_BUILD_BENCHMARKS=OFF",
+		"-DSHALLTEAR_CSHARP=ON",
 		"-DCMAKE_BUILD_TYPE=Release",
 	]
 	run_cmd(cmake_cmd, cwd=build_path)

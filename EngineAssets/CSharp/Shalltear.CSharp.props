@@ -12,6 +12,8 @@
 		<DebugType>portable</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+		<DefaultItemExcludes>$(DefaultItemExcludes);Builds/**;Library/**</DefaultItemExcludes>
 		<RestoreAdditionalProjectFallbackFolders Condition="Exists('$(ShalltearPackagesRoot)')">$(RestoreAdditionalProjectFallbackFolders);$(ShalltearPackagesRoot)</RestoreAdditionalProjectFallbackFolders>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(ShalltearPlayerPackages)' != ''">

@@ -84,8 +84,14 @@ TEST(WebTargetTest, RendersWebIndexTemplate) {
 	EXPECT_NE(html.find("<title>Demo &lt;Game&gt;</title>"), str::npos);
 	EXPECT_NE(html.find("const JS_FILE = \"Demo.js\";"), str::npos);
 	EXPECT_NE(html.find("const THREADS_ENABLED = true;"), str::npos);
+	EXPECT_NE(html.find("const HAS_MANAGED = false;"), str::npos);
 	EXPECT_NE(html.find("preinitializedWebGPUDevice"), str::npos);
 	EXPECT_NE(html.find("IDBFS"), str::npos);
+
+	str managedHtml;
+	ASSERT_TRUE(WebTarget::RenderIndexHTML("Demo <Game>", "Demo.js", "Demo.wasm", false, managedHtml, true));
+	EXPECT_NE(managedHtml.find("const HAS_MANAGED = true;"), str::npos);
+	EXPECT_NE(managedHtml.find("managed-manifest.json"), str::npos);
 
 	FileSystem::Unmount("engine");
 }

@@ -147,6 +147,8 @@ CSHARP_CASES = (
 	('HeaderBinder/Shalltear.HeaderBinder.runtimeconfig.json', build_sdk.SHIP),
 	('native/CRTShim.obj', build_sdk.SHIP),
 	('native/CRTShimStatic.obj', build_sdk.SHIP),
+	('native/WebMonoTables.c', build_sdk.SHIP),
+	('native/WebMonoBootstrap.cpp', build_sdk.SHIP),
 	('native/libs/clang_rt.builtins-x86_64.lib', build_sdk.SHIP),
 	('native/libs/kernel32.lib', build_sdk.SHIP),
 	('Shalltear.Conformance.dll', build_sdk.DROP),

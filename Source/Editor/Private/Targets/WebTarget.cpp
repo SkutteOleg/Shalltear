@@ -393,12 +393,13 @@ namespace Shalltear {
 	}
 
 	bool WebTarget::RenderIndexHTML(const str& title, const str& jsFile, const str& wasmFile,
-									bool enableThreads, str& outHTML) {
+									bool enableThreads, str& outHTML, bool hasManaged) {
 		Vector<ScriptProjectOps::TemplateToken> tokens{GetMemoryResource(MemTag::Editor)};
 		tokens.push_back({"TITLE", EscapeHTML(title.empty() ? str("Shalltear") : title)});
 		tokens.push_back({"JS_FILE", jsFile});
 		tokens.push_back({"WASM_FILE", wasmFile});
 		tokens.push_back({"THREADS_ENABLED", enableThreads ? "true" : "false"});
+		tokens.push_back({"HAS_MANAGED", hasManaged ? "true" : "false"});
 		return ScriptProjectOps::RenderTemplate("WebIndex.html", tokens, outHTML);
 	}
 
@@ -424,9 +425,19 @@ namespace Shalltear {
 			productName = context.executableName;
 		}
 		const bool enableThreads = ResolvedBool(context.profile, "enableThreads", false);
+		bool hasManaged = fs::is_regular_file(fs::path{context.stagingDir + "/Managed/managed-manifest.json"}, ec);
+		if (!hasManaged) {
+			constexpr std::string_view PREFIX = "-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=";
+			for (const str& arg : context.extraConfigureArgs) {
+				if (arg.starts_with(PREFIX) && arg.size() > PREFIX.size()) {
+					hasManaged = true;
+					break;
+				}
+			}
+		}
 
 		str html;
-		if (!RenderIndexHTML(productName, jsFile, wasmFile, enableThreads, html)) {
+		if (!RenderIndexHTML(productName, jsFile, wasmFile, enableThreads, html, hasManaged)) {
 			context.AddIssue(BuildIssueSeverity::Error, "",
 							 "couldn't render EngineAssets/Templates/WebIndex.html.template (is engine:// mounted?)");
 			return BuildStepStatus::Failed;

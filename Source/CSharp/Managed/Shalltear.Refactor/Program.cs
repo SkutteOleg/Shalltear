@@ -16,8 +16,13 @@ internal static class Program {
 
 	public static int Main(string[] args) {
 		bool emitViews = false;
+		bool emitWasmM2N = false;
 		string? projectRoot = null;
 		string? outDir = null;
+		string? dllDir = null;
+		string? existingHeader = null;
+		string? outFile = null;
+		string? manifestFile = null;
 		string? targetFile = null;
 		string? oldName = null;
 		string? newName = null;
@@ -30,6 +35,21 @@ internal static class Program {
 			switch (arg) {
 			case "--emit-views":
 				emitViews = true;
+				break;
+			case "--emit-wasm-m2n":
+				emitWasmM2N = true;
+				break;
+			case "--dll-dir":
+				dllDir = Next();
+				break;
+			case "--existing":
+				existingHeader = Next();
+				break;
+			case "--out":
+				outFile = Next();
+				break;
+			case "--manifest":
+				manifestFile = Next();
 				break;
 			case "--project-root":
 				projectRoot = Next();
@@ -53,6 +73,14 @@ internal static class Program {
 				refsFile = Next();
 				break;
 			}
+		}
+
+		if (emitWasmM2N) {
+			if (string.IsNullOrWhiteSpace(dllDir) || string.IsNullOrWhiteSpace(outFile)) {
+				Console.Error.WriteLine("usage: Shalltear.Refactor --emit-wasm-m2n --dll-dir <dir> --out <header> [--existing <header>] [--manifest <json>]");
+				return 2;
+			}
+			return WasmM2NEmitter.Run(dllDir, existingHeader, outFile, manifestFile);
 		}
 
 		if (emitViews) {

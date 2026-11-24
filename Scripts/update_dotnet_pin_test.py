@@ -238,8 +238,10 @@ class RestoreTest(unittest.TestCase):
 		self.assertTrue(all("-r" not in command for command in players))
 		other = "linux-x64" if toolchain.HOST_IS_WINDOWS else "win-x64"
 		for project in self.projects:
-			self.assertEqual(project.count("<PackageDownload "), 1)
+			self.assertEqual(project.count("<PackageDownload "), 1 + len(update_dotnet_pin.WASM_PACKS))
 			self.assertIn(f'"runtime.{other}.Microsoft.DotNet.ILCompiler" Version="[10.0.15]"', project)
+			for wasm_pack in update_dotnet_pin.WASM_PACKS:
+				self.assertIn(f'"{wasm_pack}" Version="[10.0.15]"', project)
 		for _, env in self.commands:
 			self.assertEqual(env["DOTNET_ROOT"], str(self.dotnet.parent))
 			self.assertEqual(env["DOTNET_CLI_TELEMETRY_OPTOUT"], "1")

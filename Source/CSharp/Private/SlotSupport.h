@@ -365,8 +365,21 @@ namespace Shalltear::CSharpImpl::Slots {
 	}
 
 	template <typename T>
-	T FromBits(u64 bits) noexcept {
-		if constexpr (std::is_pointer_v<T>) {
+	struct FunctionBits {
+		u64 bits;
+		operator T() const noexcept { return reinterpret_cast<T>(static_cast<uintptr_t>(bits)); }
+		template <typename U>
+			requires(std::is_pointer_v<U> && std::is_function_v<std::remove_pointer_t<U>> && !std::same_as<U, T>)
+		operator U() const noexcept {
+			return reinterpret_cast<U>(static_cast<uintptr_t>(bits));
+		}
+	};
+
+	template <typename T>
+	auto FromBits(u64 bits) noexcept {
+		if constexpr (std::is_pointer_v<T> && std::is_function_v<std::remove_pointer_t<T>>) {
+			return FunctionBits<T>{bits};
+		} else if constexpr (std::is_pointer_v<T>) {
 			return reinterpret_cast<T>(static_cast<uintptr_t>(bits));
 		} else {
 			return static_cast<T>(bits);

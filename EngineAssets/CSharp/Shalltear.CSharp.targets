@@ -1,5 +1,9 @@
 <Project>
-	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
+	<UsingTask TaskName="Microsoft.WebAssembly.Build.Tasks.ManagedToNativeGenerator"
+			   AssemblyFile="$(ShalltearWebAssemblySdkDir)/tasks/net10.0/WasmAppBuilder.dll"
+			   Condition="'$(ShalltearWebPlayer)' == 'true' and Exists('$(ShalltearWebAssemblySdkDir)/tasks/net10.0/WasmAppBuilder.dll')" />
+
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true'">
 		<PublishAot>true</PublishAot>
 		<NativeLib Condition="'$(ShalltearSingleFilePlayer)' != 'true'">Shared</NativeLib>
 		<NativeLib Condition="'$(ShalltearSingleFilePlayer)' == 'true'">Static</NativeLib>
@@ -15,28 +19,28 @@
 		<WarningsAsErrors>$(WarningsAsErrors);IL2104;IL3053</WarningsAsErrors>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true'">
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true'">
 		<RuntimeHostConfigurationOption Include="Shalltear.LogOrigins" Value="false" Trim="true" />
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(Configuration)' == 'Release'">
 		<StackTraceSupport>false</StackTraceSupport>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
 	</PropertyGroup>
-	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(Configuration)' == 'Release'">
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(Configuration)' == 'Release'">
 		<RuntimeHostConfigurationOption Include="Shalltear.ThreadChecks" Value="false" Trim="true" />
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('win')) and '$(ShalltearWindowsLinker)' != 'VisualStudio'">
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and $(RuntimeIdentifier.StartsWith('win')) and '$(ShalltearWindowsLinker)' != 'VisualStudio'">
 		<ShalltearBundledLinker>true</ShalltearBundledLinker>
 		<IlcUseEnvironmentalTools>true</IlcUseEnvironmentalTools>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('win'))">
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and $(RuntimeIdentifier.StartsWith('win'))">
 		<LinkerArg Include="/PDBALTPATH:%25_PDB%25" />
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
 		<DisableUnsupportedError>true</DisableUnsupportedError>
 		<CppCompilerAndLinker>clang</CppCompilerAndLinker>
 		<LinkerFlavor>lld</LinkerFlavor>
@@ -44,12 +48,12 @@
 		<SysRoot>$(ShalltearLinuxSysRoot)</SysRoot>
 		<CompressSymbols>false</CompressSymbols>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearSingleFilePlayer)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+	<PropertyGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(ShalltearSingleFilePlayer)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
 		<CppLibCreator>llvm-ar</CppLibCreator>
 		<StripSymbols>false</StripSymbols>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+	<ItemGroup Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
 		<LinkerArg Include="-rtlib=compiler-rt" />
 		<LinkerArg Include="-unwindlib=libgcc" />
 	</ItemGroup>
@@ -60,7 +64,7 @@
 	</PropertyGroup>
 
 	<Target Name="ShalltearRenameScripts" BeforeTargets="WriteIlcRspFileForCompilation"
-			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearRenameScripts)' == 'true'">
+			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(ShalltearRenameScripts)' == 'true'">
 		<Error Condition="!Exists('$(ShalltearRenamerPath)')" Text="Shalltear.Renamer.dll was not found at '$(ShalltearRenamerPath)'. Set ShalltearRenamerPath (or ShalltearRenameScripts=false)" />
 		<ItemGroup>
 			<_ShalltearRenameInput Include="@(IlcCompileInput)" />
@@ -84,7 +88,7 @@
 		</ItemGroup>
 	</Target>
 
-	<Target Name="ShalltearSummarizePackageWarnings" BeforeTargets="WriteIlcRspFileForCompilation" Condition="'$(ShalltearPlayerBuild)' == 'true'">
+	<Target Name="ShalltearSummarizePackageWarnings" BeforeTargets="WriteIlcRspFileForCompilation" Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true'">
 		<ItemGroup>
 			<_ShalltearPackageAssembly Include="@(ManagedAssemblyToLink)" Condition="'%(ManagedAssemblyToLink.NuGetPackageId)' != '' and !$([System.String]::Copy('%(ManagedAssemblyToLink.NuGetPackageId)').StartsWith('Microsoft.NETCore.App')) and !$([System.String]::Copy('%(ManagedAssemblyToLink.NuGetPackageId)').StartsWith('runtime.'))" />
 			<ManagedAssemblyToLink Remove="@(_ShalltearPackageAssembly)" />
@@ -92,7 +96,7 @@
 		</ItemGroup>
 	</Target>
 
-	<Target Name="ShalltearCopyRuntimeNotices" AfterTargets="Publish" Condition="'$(ShalltearPlayerBuild)' == 'true'">
+	<Target Name="ShalltearCopyRuntimeNotices" AfterTargets="Publish" Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true'">
 		<PropertyGroup>
 			<_ShalltearRuntimePack>$([System.IO.Path]::GetFullPath('$(IlcFrameworkNativePath)../../../'))</_ShalltearRuntimePack>
 		</PropertyGroup>
@@ -100,11 +104,11 @@
 		<Copy SourceFiles="$(_ShalltearRuntimePack)LICENSE.TXT;$(_ShalltearRuntimePack)THIRD-PARTY-NOTICES.TXT" DestinationFolder="$(PublishDir)notices" SkipUnchangedFiles="true" />
 	</Target>
 
-	<Target Name="ShalltearCheckLinuxPack" BeforeTargets="LinkNative" Condition="'$(ShalltearPlayerBuild)' == 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
+	<Target Name="ShalltearCheckLinuxPack" BeforeTargets="LinkNative" Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and $(RuntimeIdentifier.StartsWith('linux'))">
 		<Error Condition="!Exists('$(ShalltearLinuxSysRoot)/usr/include')" Text="Linux target pack was not found at '$(ShalltearLinuxSysRoot)'. Run python Scripts/fetch_prebuilt.py --linux" />
 	</Target>
 
-	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true' and '$(ShalltearSingleFilePlayer)' != 'true'">
+	<Target Name="ShalltearUseBundledLinker" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(ShalltearSingleFilePlayer)' != 'true'">
 		<Error Condition="!Exists('$(ShalltearLinkerDir)lld-link.exe')" Text="lld-link.exe was not found in '$(ShalltearLinkerDir)'. Set ShalltearLinkerDir (or ShalltearWindowsLinker=VisualStudio)" />
 		<Error Condition="!Exists('$(ShalltearNativeDir)CRTShim.obj')" Text="CRTShim.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />
 		<PropertyGroup>
@@ -120,7 +124,7 @@
 		</ItemGroup>
 	</Target>
 
-	<Target Name="ShalltearUseBundledArchiver" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true' and '$(ShalltearSingleFilePlayer)' == 'true'">
+	<Target Name="ShalltearUseBundledArchiver" BeforeTargets="LinkNative" Condition="'$(ShalltearBundledLinker)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(ShalltearSingleFilePlayer)' == 'true'">
 		<Error Condition="!Exists('$(ShalltearLinkerDir)llvm-lib.exe')" Text="llvm-lib.exe was not found in '$(ShalltearLinkerDir)'. Set ShalltearLinkerDir (or ShalltearWindowsLinker=VisualStudio)" />
 		<PropertyGroup>
 			<CppLibCreator>$(ShalltearLinkerDir)llvm-lib.exe</CppLibCreator>
@@ -128,7 +132,7 @@
 	</Target>
 
 	<Target Name="ShalltearWriteStaticLinkCMake" AfterTargets="Publish"
-			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearSingleFilePlayer)' == 'true'">
+			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' != 'true' and '$(ShalltearSingleFilePlayer)' == 'true'">
 		<Error Condition="$(RuntimeIdentifier.StartsWith('win')) and !Exists('$(ShalltearNativeDir)CRTShimStatic.obj')"
 			   Text="CRTShimStatic.obj was not found in '$(ShalltearNativeDir)'. Set ShalltearNativeDir" />
 		<PropertyGroup>
@@ -180,6 +184,161 @@
 	<PropertyGroup>
 		<ShalltearRefactorPath Condition="'$(ShalltearRefactorPath)' == ''">$(ShalltearManagedDir)Refactor/Shalltear.Refactor.dll</ShalltearRefactorPath>
 	</PropertyGroup>
+
+	<Target Name="ShalltearPublishWebMono" AfterTargets="Build"
+			Condition="'$(ShalltearPlayerBuild)' == 'true' and '$(ShalltearWebPlayer)' == 'true'">
+		<Error Condition="!Exists('$(ShalltearWebMonoPackDir)/runtimes/browser-wasm/native/libmonosgen-2.0.a')"
+			   Text="WebAssembly Mono runtime pack was not found at '$(ShalltearWebMonoPackDir)'. Run python Scripts/fetch_prebuilt.py --web" />
+		<Error Condition="!Exists('$(ShalltearWebAssemblySdkDir)/tasks/net10.0/WasmAppBuilder.dll')"
+			   Text="WebAssembly SDK pack was not found at '$(ShalltearWebAssemblySdkDir)'. Run python Scripts/fetch_prebuilt.py --web" />
+		<Error Condition="!Exists('$(ShalltearILLinkPath)')"
+			   Text="ILLink was not found at '$(ShalltearILLinkPath)'. Run python Scripts/fetch_prebuilt.py --dotnet" />
+		<Error Condition="!Exists('$(ShalltearNativeDir)WebMonoTables.c') or !Exists('$(ShalltearNativeDir)WebMonoBootstrap.cpp')"
+			   Text="WebAssembly runtime bridge sources were not found in '$(ShalltearNativeDir)'" />
+		<Error Condition="!Exists('$(ShalltearRefactorPath)')"
+			   Text="Shalltear.Refactor.dll was not found at '$(ShalltearRefactorPath)'" />
+
+		<PropertyGroup>
+			<_ShalltearDotNetHost Condition="'$(DOTNET_HOST_PATH)' != ''">$(DOTNET_HOST_PATH)</_ShalltearDotNetHost>
+			<_ShalltearDotNetHost Condition="'$(_ShalltearDotNetHost)' == ''">dotnet</_ShalltearDotNetHost>
+			<_ShalltearWebMonoNative>$([System.IO.Path]::GetFullPath('$(ShalltearWebMonoPackDir)/runtimes/browser-wasm/native').Replace('\', '/'))</_ShalltearWebMonoNative>
+			<_ShalltearWebMonoBcl>$([System.IO.Path]::GetFullPath('$(ShalltearWebMonoPackDir)/runtimes/browser-wasm/lib/$(ShalltearTargetFramework)').Replace('\', '/'))</_ShalltearWebMonoBcl>
+			<_ShalltearWebInputDir>$([System.IO.Path]::GetFullPath('$(OutputPath)').Replace('\', '/'))</_ShalltearWebInputDir>
+			<_ShalltearWebPublishDir>$([System.IO.Path]::GetFullPath('$(PublishDir)').Replace('\', '/'))</_ShalltearWebPublishDir>
+			<_ShalltearWebNativeDir>$(_ShalltearWebPublishDir)native/</_ShalltearWebNativeDir>
+			<_ShalltearWebNativeSrcDir>$([System.IO.Path]::GetFullPath('$(ShalltearNativeDir)').Replace('\', '/'))</_ShalltearWebNativeSrcDir>
+			<_ShalltearWebRsp>$(BaseIntermediateOutputPath)web-illink.rsp</_ShalltearWebRsp>
+		</PropertyGroup>
+
+		<RemoveDir Directories="$(PublishDir);$(BaseIntermediateOutputPath)web-input/" />
+		<MakeDir Directories="$(PublishDir);$(_ShalltearWebNativeDir);$(PublishDir)notices/" />
+
+		<!-- optional Release symbol renaming before ILLink -->
+		<ItemGroup Condition="'$(ShalltearRenameScripts)' == 'true'">
+			<_ShalltearWebAllBinDll Include="$(OutputPath)*.dll" Exclude="$(OutputPath)GameScripts.dll" />
+			<_ShalltearWebRenameRef Include="@(_ShalltearWebAllBinDll)" />
+			<_ShalltearWebRenameRef Include="$(_ShalltearWebMonoNative)/*.dll" />
+			<_ShalltearWebRenameRef Include="$(_ShalltearWebMonoBcl)/*.dll" />
+		</ItemGroup>
+		<Error Condition="'$(ShalltearRenameScripts)' == 'true' and !Exists('$(ShalltearRenamerPath)')"
+			   Text="Shalltear.Renamer.dll was not found at '$(ShalltearRenamerPath)'. Set ShalltearRenamerPath (or ShalltearRenameScripts=false)" />
+		<RemoveDir Condition="'$(ShalltearRenameScripts)' == 'true'" Directories="$(ShalltearRenameRoot)" />
+		<MakeDir Condition="'$(ShalltearRenameScripts)' == 'true'" Directories="$(ShalltearRenameRoot);$(BaseIntermediateOutputPath)web-input/" />
+		<WriteLinesToFile Condition="'$(ShalltearRenameScripts)' == 'true'" File="$(ShalltearRenameRoot)references.txt" Lines="@(_ShalltearWebRenameRef)" Overwrite="true" />
+		<Exec Condition="'$(ShalltearRenameScripts)' == 'true'"
+			  Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRenamerPath)&quot; --out &quot;$(ShalltearRenameRoot)assemblies&quot; --map &quot;$(ShalltearRenameRoot)GameScripts.map&quot; --report &quot;$(ShalltearRenameRoot)report.txt&quot; --refs-file &quot;$(ShalltearRenameRoot)references.txt&quot; --replaced &quot;$(ShalltearRenameRoot)replaced.txt&quot; --copies &quot;$(ShalltearRenameRoot)copies.txt&quot; @(ShalltearRenameAssembly->'--rename &quot;%(Identity)&quot;', ' ') &quot;$(OutputPath)GameScripts.dll&quot;"
+			  StandardOutputImportance="low" />
+		<ReadLinesFromFile Condition="'$(ShalltearRenameScripts)' == 'true'" File="$(ShalltearRenameRoot)replaced.txt">
+			<Output TaskParameter="Lines" ItemName="_ShalltearWebRenameReplaced" />
+		</ReadLinesFromFile>
+		<ReadLinesFromFile Condition="'$(ShalltearRenameScripts)' == 'true'" File="$(ShalltearRenameRoot)copies.txt">
+			<Output TaskParameter="Lines" ItemName="_ShalltearWebRenameCopies" />
+		</ReadLinesFromFile>
+		<ItemGroup Condition="'$(ShalltearRenameScripts)' == 'true'">
+			<_ShalltearWebUnchangedBin Include="@(_ShalltearWebAllBinDll)" Exclude="@(_ShalltearWebRenameReplaced)" />
+			<_ShalltearWebRenamedOut Include="$(ShalltearRenameRoot)assemblies/*.dll" />
+		</ItemGroup>
+		<Copy Condition="'$(ShalltearRenameScripts)' == 'true'" SourceFiles="@(_ShalltearWebUnchangedBin)" DestinationFolder="$(BaseIntermediateOutputPath)web-input/" />
+		<Copy Condition="'$(ShalltearRenameScripts)' == 'true'" SourceFiles="@(_ShalltearWebRenamedOut)" DestinationFolder="$(BaseIntermediateOutputPath)web-input/" />
+		<PropertyGroup Condition="'$(ShalltearRenameScripts)' == 'true'">
+			<_ShalltearWebInputDir>$([System.IO.Path]::GetFullPath('$(BaseIntermediateOutputPath)web-input/').Replace('\', '/'))</_ShalltearWebInputDir>
+		</PropertyGroup>
+
+		<ItemGroup Condition="'$(ShalltearRenameScripts)' == 'true'">
+			<_ShalltearWebRootDll Include="$(_ShalltearWebInputDir)GameScripts.dll" />
+			<_ShalltearWebRootDll Include="@(_ShalltearWebRenameCopies->'$(_ShalltearWebInputDir)%(Filename)%(Extension)')" />
+		</ItemGroup>
+		<ItemGroup Condition="'$(ShalltearRenameScripts)' != 'true'">
+			<_ShalltearWebRootDll Include="$(_ShalltearWebInputDir)GameScripts.dll" />
+			<_ShalltearWebRootDll Include="@(ShalltearRenameAssembly->'$(_ShalltearWebInputDir)%(Identity).dll')" Condition="Exists('$(_ShalltearWebInputDir)%(Identity).dll')" />
+		</ItemGroup>
+
+		<ItemGroup>
+			<_ShalltearWebIllinkLine Include="-d &quot;$(_ShalltearWebMonoNative)&quot;" />
+			<_ShalltearWebIllinkLine Include="-d &quot;$(_ShalltearWebMonoBcl)&quot;" />
+			<_ShalltearWebIllinkLine Include="-d &quot;$(_ShalltearWebInputDir)&quot;" />
+			<_ShalltearWebIllinkLine Include="--trim-mode link" />
+			<_ShalltearWebIllinkLine Include="--action copyused" />
+			<_ShalltearWebIllinkLine Include="@(_ShalltearWebRootDll->'--action copy &quot;%(Filename)&quot;')" />
+			<_ShalltearWebIllinkLine Include="@(_ShalltearWebRootDll->'-a &quot;%(FullPath)&quot; all')" />
+			<_ShalltearWebIllinkLine Include="--feature System.Globalization.Invariant true" Condition="'$(InvariantGlobalization)' != 'false'" />
+			<_ShalltearWebIllinkLine Include="--feature System.Diagnostics.Debugger.IsSupported false" />
+			<_ShalltearWebIllinkLine Include="--feature System.Diagnostics.Tracing.EventSource.IsSupported false" />
+			<_ShalltearWebIllinkLine Include="--feature System.Resources.UseSystemResourceKeys true" />
+			<_ShalltearWebIllinkLine Include="--feature System.StartupHookProvider.IsSupported false" />
+			<_ShalltearWebIllinkLine Include="--feature System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting false" />
+			<_ShalltearWebIllinkLine Include="--feature System.Runtime.InteropServices.BuiltInComInterop.IsSupported false" />
+			<_ShalltearWebIllinkLine Include="--feature System.Runtime.InteropServices.EnableCppCLIHostActivation false" />
+			<_ShalltearWebIllinkLine Include="--feature Shalltear.LogOrigins false" />
+			<_ShalltearWebIllinkLine Include="--feature Shalltear.ThreadChecks false" Condition="'$(Configuration)' == 'Release'" />
+			<_ShalltearWebIllinkLine Include="--feature System.Diagnostics.StackTrace.IsSupported false" Condition="'$(Configuration)' == 'Release'" />
+			<_ShalltearWebIllinkLine Include="--nowarn IL2121" />
+			<_ShalltearWebIllinkLine Include="--deterministic" />
+			<_ShalltearWebIllinkLine Include="-out &quot;$(_ShalltearWebPublishDir)&quot;" />
+		</ItemGroup>
+		<WriteLinesToFile File="$(_ShalltearWebRsp)" Lines="@(_ShalltearWebIllinkLine)" Overwrite="true" />
+		<Exec Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearILLinkPath)&quot; &quot;@$(_ShalltearWebRsp)&quot;"
+			  StandardOutputImportance="low" />
+
+		<ItemGroup>
+			<_ShalltearWebPublishedDll Include="$(PublishDir)*.dll" />
+			<_ShalltearWebPInvokeModule Include="libSystem.Native" />
+			<_ShalltearWebPInvokeModule Include="libSystem.IO.Compression.Native" />
+		</ItemGroup>
+		<ManagedToNativeGenerator
+			Assemblies="@(_ShalltearWebPublishedDll)"
+			PInvokeModules="@(_ShalltearWebPInvokeModule)"
+			PInvokeOutputPath="$(_ShalltearWebNativeDir)pinvoke-table.h"
+			InterpToNativeOutputPath="$(_ShalltearWebNativeDir)wasm_m2n_invoke.g.h"
+			CacheFilePath="$(BaseIntermediateOutputPath)web-m2n-cache.txt" />
+
+		<Exec Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRefactorPath)&quot; --emit-wasm-m2n --dll-dir &quot;$(_ShalltearWebPublishDir)&quot; --existing &quot;$(_ShalltearWebNativeDir)wasm_m2n_invoke.g.h&quot; --out &quot;$(_ShalltearWebNativeDir)wasm_m2n_extra.g.h&quot; --manifest &quot;$(_ShalltearWebPublishDir)managed-manifest.json&quot;"
+			  StandardOutputImportance="low" />
+
+		<Error Condition="!Exists('$(ShalltearWebMonoPackDir)/THIRD-PARTY-NOTICES.TXT')"
+			   Text="THIRD-PARTY-NOTICES.TXT was not found in '$(ShalltearWebMonoPackDir)'" />
+		<Copy SourceFiles="$(ShalltearWebMonoPackDir)/LICENSE.TXT;$(ShalltearWebMonoPackDir)/THIRD-PARTY-NOTICES.TXT"
+			  DestinationFolder="$(PublishDir)notices" SkipUnchangedFiles="true" />
+
+		<ItemGroup>
+			<_ShalltearWebCMakeLine Include="# GENERATED by Shalltear.CSharp.targets. Do not edit manually." />
+			<_ShalltearWebCMakeLine Include="set(SHALLTEAR_CSHARP_WEB_MONO_INCLUDE_DIRS" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebNativeDir)&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/include/mono-2.0&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/include/wasm&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/src&quot;" />
+			<_ShalltearWebCMakeLine Include=")" />
+			<_ShalltearWebCMakeLine Include="set(SHALLTEAR_CSHARP_WEB_MONO_GENERATED_HEADERS" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebNativeDir)pinvoke-table.h&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebNativeDir)wasm_m2n_invoke.g.h&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebNativeDir)wasm_m2n_extra.g.h&quot;" />
+			<_ShalltearWebCMakeLine Include=")" />
+			<_ShalltearWebCMakeLine Include="set(SHALLTEAR_CSHARP_WEB_MONO_C_SOURCES &quot;$(_ShalltearWebNativeSrcDir)WebMonoTables.c&quot;)" />
+			<_ShalltearWebCMakeLine Include="set(SHALLTEAR_CSHARP_WEB_MONO_CXX_SOURCES &quot;$(_ShalltearWebNativeSrcDir)WebMonoBootstrap.cpp&quot;)" />
+			<_ShalltearWebCMakeLine Include="set(SHALLTEAR_CSHARP_STATIC_LIBS" />
+			<_ShalltearWebCMakeLine Include="	&quot;-Wl,--start-group&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmonosgen-2.0.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-ee-interp.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-icall-table.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-wasm-simd.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-component-marshal-ilgen-static.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-component-debugger-stub-static.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-component-diagnostics_tracing-stub-static.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libmono-component-hot_reload-stub-static.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libSystem.Native.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libSystem.IO.Compression.Native.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libz.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libbrotlicommon.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libbrotlidec.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;$(_ShalltearWebMonoNative)/libbrotlienc.a&quot;" />
+			<_ShalltearWebCMakeLine Include="	&quot;-Wl,--end-group&quot;" />
+			<_ShalltearWebCMakeLine Include=")" />
+		</ItemGroup>
+		<ItemGroup>
+			<_ShalltearWebCMakeNormLine Include="@(_ShalltearWebCMakeLine->Replace('\', '/'))" />
+		</ItemGroup>
+		<WriteLinesToFile File="$(PublishDir)static-link.cmake" Lines="@(_ShalltearWebCMakeNormLine)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+	</Target>
 
 	<Target Name="ShalltearEmitCppViews" AfterTargets="CoreCompile"
 			Condition="'$(ShalltearRootProject)' == 'true' and '$(ShalltearPlayerBuild)' != 'true' and '$(ShalltearEmitCppViews)' != 'false' and Exists('$(MSBuildProjectDirectory)/CMakeLists.txt') and Exists('$(ShalltearRefactorPath)')">

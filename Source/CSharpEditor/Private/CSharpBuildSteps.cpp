@@ -46,6 +46,9 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		constexpr std::string_view NameMap = "GameScripts.map";
 		constexpr std::string_view NoticesFolder = "notices";
 		constexpr std::string_view RuntimeNotices = "THIRD-PARTY-NOTICES-DotNet.txt";
+		constexpr std::string_view MANAGED_FOLDER = "Managed";
+		constexpr std::string_view MANAGED_MANIFEST = "managed-manifest.json";
+		constexpr std::string_view WEB_TRIPLE = "wasm32-unknown-emscripten";
 		constexpr std::string_view CommonArguments =
 			" -nologo -v:q -tl:off -clp:NoSummary -nodeReuse:false -p:UseSharedCompilation=false -p:GenerateFullPaths=true";
 		constexpr size_t UNPARSED_LINE_CAP = 30;
@@ -103,11 +106,18 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			if (targetId == "Windows" || targetId == "WindowsServer") {
 				return "win-x64";
 			}
-			return targetId == "Linux" || targetId == "LinuxServer" ? std::string_view("linux-x64") : std::string_view();
+			if (targetId == "Linux" || targetId == "LinuxServer") {
+				return "linux-x64";
+			}
+			return targetId == "Web" ? std::string_view("browser-wasm") : std::string_view();
 		}
 
 		bool IsLinux(std::string_view targetId) {
 			return RuntimeIdentifierOf(targetId).starts_with("linux");
+		}
+
+		bool IsWeb(std::string_view targetId) {
+			return targetId == "Web";
 		}
 
 		// must match GetPlayerLibraryName in NativeAOTHost.h
@@ -127,6 +137,89 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		bool IsSingleFileBuild(const BuildContext& context) {
 			return ResolvedBool(context, "singleFile");
+		}
+
+		bool IsStaticCSharpLink(const BuildContext& context) {
+			return IsSingleFileBuild(context) || (context.target && IsWeb(context.target->GetId()));
+		}
+
+		bool FindWebMonoPacks(const BuildContext& context, const str& sdkRoot, bool enableThreads, str& outMonoPack, str& outWasmSDK, str& outLinkerPath) {
+			outMonoPack.clear();
+			outWasmSDK.clear();
+			outLinkerPath.clear();
+
+			const str runtimeVersion = DotNetToolchain::GetPin().runtimeVersion;
+			const str monoPackageId = enableThreads ? "microsoft.netcore.app.runtime.mono.multithread.browser-wasm"
+													: "microsoft.netcore.app.runtime.mono.browser-wasm";
+
+			Vector<fs::path> nugetRoots{GetMemoryResource(MemTag::Editor)};
+			auto addRoot = [&](const fs::path& dir) {
+				std::error_code ec;
+				if (!dir.empty() && fs::is_directory(dir, ec)) {
+					nugetRoots.push_back(dir);
+				}
+			};
+
+			if (!sdkRoot.empty()) {
+				const CSharpProjectFiles::Options files = CSharpProjectFiles::GetDefaultOptions(context.projectRoot, sdkRoot);
+				addRoot(fs::path(files.packagesRoot));
+				addRoot(fs::path(sdkRoot).parent_path() / "NuGet");
+				addRoot(fs::path(sdkRoot).parent_path().parent_path() / "nuget");
+			}
+			if (const str cachePackages = DotNetToolchain::GetPackagesRoot(DotNetToolchain::GetCacheRoot(), DotNetToolchain::GetPin()); !cachePackages.empty()) {
+				addRoot(fs::path(cachePackages));
+			}
+			if (!context.sdkRoot.empty()) {
+				fs::path cur(context.sdkRoot);
+				for (i32 depth = 0; depth < 4 && !cur.empty(); ++depth) {
+					addRoot(cur / "Toolchain" / "NuGet");
+					addRoot(cur / "External" / "Prebuilt" / "nuget");
+					if (cur == cur.parent_path()) {
+						break;
+					}
+					cur = cur.parent_path();
+				}
+			}
+			if (const str editorExe = ScriptProjectOps::GetEditorExecutablePath(); !editorExe.empty()) {
+				fs::path cur = fs::path(editorExe).parent_path();
+				for (i32 depth = 0; depth < 4 && !cur.empty(); ++depth) {
+					addRoot(cur / "Toolchain" / "NuGet");
+					addRoot(cur / "External" / "Prebuilt" / "nuget");
+					if (cur == cur.parent_path()) {
+						break;
+					}
+					cur = cur.parent_path();
+				}
+			}
+
+			std::error_code ec;
+			for (const fs::path& root : nugetRoots) {
+				if (outMonoPack.empty()) {
+					const fs::path candidate = root / monoPackageId / runtimeVersion;
+					if (fs::is_regular_file(candidate / "runtimes" / "browser-wasm" / "native" / "libmonosgen-2.0.a", ec)) {
+						outMonoPack = candidate.generic_string();
+					}
+					ec.clear();
+				}
+				if (outWasmSDK.empty()) {
+					const fs::path candidate = root / "microsoft.net.runtime.webassembly.sdk" / runtimeVersion;
+					if (fs::is_regular_file(candidate / "tasks" / "net10.0" / "WasmAppBuilder.dll", ec)) {
+						outWasmSDK = candidate.generic_string();
+					}
+					ec.clear();
+				}
+				if (outLinkerPath.empty()) {
+					for (const char* tfm : {"net", "net10.0", "net8.0"}) {
+						const fs::path candidate = root / "microsoft.net.illink.tasks" / runtimeVersion / "tools" / tfm / "illink.dll";
+						if (fs::is_regular_file(candidate, ec)) {
+							outLinkerPath = candidate.generic_string();
+							break;
+						}
+						ec.clear();
+					}
+				}
+			}
+			return !outMonoPack.empty() && !outWasmSDK.empty() && !outLinkerPath.empty();
 		}
 
 		str FindCompilerDirectory(const BuildContext& context, str* outToolchainFile = nullptr) {
@@ -386,7 +479,9 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 			str commandLine = std::format("{} -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE={}", QuoteCommandArgument(toolchain.cmake.path),
 										  QuoteCommandArgument(context.projectRoot), QuoteCommandArgument(context.intermediateDir), context.configuration);
-			commandLine += " -DCMAKE_CXX_COMPILER=" + QuoteCommandArgument(toolchain.compiler.path);
+			if (toolchain.sdkCompilerTarget != WEB_TRIPLE) {
+				commandLine += " -DCMAKE_CXX_COMPILER=" + QuoteCommandArgument(toolchain.compiler.path);
+			}
 			commandLine += " -DCMAKE_MAKE_PROGRAM=" + QuoteCommandArgument(toolchain.ninja.path);
 			commandLine += " -DShalltear_ROOT=" + QuoteCommandArgument(context.sdkRoot);
 			if (!toolchain.sdkToolchainFile.empty()) {
@@ -500,28 +595,53 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Running;
 		}
 
-		BuildStepStatus StartShell(BuildContext& context, State& state, bool singleFile) {
-			str arguments = std::format("msbuild {} -restore -t:Publish -p:Configuration={} -p:RuntimeIdentifier={}",
-										QuoteCommandArgument(state.root + "/" + str(ShellProject)), context.configuration,
-										RuntimeIdentifierOf(context.target->GetId()));
+		BuildStepStatus StartShell(BuildContext& context, State& state, bool staticLink) {
+			const std::string_view targetId = context.target->GetId();
 			const str native = fs::path(DotNetToolchain::GetRuntimeAssemblyPath()).parent_path().generic_string() + "/native/";
-			arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native) + PlayerPackagesArgument();
-			if (singleFile) {
-				arguments += " -p:ShalltearSingleFilePlayer=true";
-			}
 			std::error_code ec;
 			fs::remove_all(fs::path(state.root) / RenameFolder, ec);
-			if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
-				arguments += " -p:ShalltearRenameScripts=true";
-			}
-			if (IsLinux(context.target->GetId())) {
-				arguments += " " + QuoteCommandArgument("-p:ShalltearLinuxSysRoot=" + FindLinuxSysRoot(context));
-				// ILCompiler finds clang/lld/llvm-objcopy on the search path
-				ChildEnvironment::PrependSearchPath(FindCompilerDirectory(context), &state.stage);
-			} else if (CSharpSettings::GetProject().windowsLinker == WindowsLinker::VisualStudio) {
-				arguments += " -p:ShalltearWindowsLinker=VisualStudio";
+
+			str arguments;
+			if (IsWeb(targetId)) {
+				str monoPack;
+				str wasmSDK;
+				str linkerPath;
+				if (!FindWebMonoPacks(context, state.sdkRoot, ResolvedBool(context, "enableThreads"), monoPack, wasmSDK, linkerPath)) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 "WebAssembly .NET runtime packs were not found. Run `python Scripts/fetch_prebuilt.py --web`");
+					state.stage = Stage::Idle;
+					return BuildStepStatus::Failed;
+				}
+				arguments = std::format("msbuild {} -restore -t:Build -p:Configuration={} -p:ShalltearWebPlayer=true",
+										QuoteCommandArgument(state.root + "/" + str(ShellProject)), context.configuration);
+				arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native);
+				arguments += " " + QuoteCommandArgument("-p:ShalltearWebMonoPackDir=" + monoPack);
+				arguments += " " + QuoteCommandArgument("-p:ShalltearWebAssemblySdkDir=" + wasmSDK);
+				arguments += " " + QuoteCommandArgument("-p:ShalltearILLinkPath=" + linkerPath);
+				arguments += PlayerPackagesArgument();
+				if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
+					arguments += " -p:ShalltearRenameScripts=true";
+				}
 			} else {
-				arguments += " " + QuoteCommandArgument("-p:ShalltearLinkerDir=" + FindCompilerDirectory(context) + "/");
+				arguments = std::format("msbuild {} -restore -t:Publish -p:Configuration={} -p:RuntimeIdentifier={}",
+										QuoteCommandArgument(state.root + "/" + str(ShellProject)), context.configuration,
+										RuntimeIdentifierOf(targetId));
+				arguments += " " + QuoteCommandArgument("-p:ShalltearNativeDir=" + native) + PlayerPackagesArgument();
+				if (staticLink) {
+					arguments += " -p:ShalltearSingleFilePlayer=true";
+				}
+				if (context.configuration == "Release" && CSharpSettings::GetProject().renameScriptNames) {
+					arguments += " -p:ShalltearRenameScripts=true";
+				}
+				if (IsLinux(targetId)) {
+					arguments += " " + QuoteCommandArgument("-p:ShalltearLinuxSysRoot=" + FindLinuxSysRoot(context));
+					// ILCompiler finds clang/lld/llvm-objcopy on the search path
+					ChildEnvironment::PrependSearchPath(FindCompilerDirectory(context), &state.stage);
+				} else if (CSharpSettings::GetProject().windowsLinker == WindowsLinker::VisualStudio) {
+					arguments += " -p:ShalltearWindowsLinker=VisualStudio";
+				} else {
+					arguments += " " + QuoteCommandArgument("-p:ShalltearLinkerDir=" + FindCompilerDirectory(context) + "/");
+				}
 			}
 			const bool started = Start(state, context, arguments);
 			ChildEnvironment::UnregisterOwnedBy(&state.stage);
@@ -534,10 +654,10 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return BuildStepStatus::Running;
 		}
 
-		BuildStepStatus RunCompileStep(BuildContext& context, bool singleFile);
+		BuildStepStatus RunCompileStep(BuildContext& context, bool staticLink);
 
 		BuildStepStatus FinishLoadOrStaticCompile(BuildContext& context, State& state) {
-			if (!IsSingleFileBuild(context)) {
+			if (!IsStaticCSharpLink(context)) {
 				return EndLoad(state, BuildStepStatus::Succeeded);
 			}
 			CSharpReload::SetBuildStarting(false);
@@ -657,7 +777,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				return BuildStepStatus::Failed;
 			}
 			const bool windowsHost = DotNetToolchain::GetPin().hostRid.starts_with("win");
-			if (!IsLinux(context.target->GetId()) && !windowsHost) {
+			if (!IsLinux(context.target->GetId()) && !IsWeb(context.target->GetId()) && !windowsHost) {
 				context.AddIssue(BuildIssueSeverity::Error, "target",
 								 std::format("C# scripts for {} compile on a Windows editor only. Build this profile there (or turn off C# Scripting package)",
 											 context.target->GetDisplayName()));
@@ -681,12 +801,23 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 											 DotNetToolchain::GetPin().sdkVersion));
 				return BuildStepStatus::Failed;
 			}
+			if (IsWeb(context.target->GetId())) {
+				str monoPack;
+				str wasmSDK;
+				str linkerPath;
+				if (!FindWebMonoPacks(context, state.sdkRoot, ResolvedBool(context, "enableThreads"), monoPack, wasmSDK, linkerPath)) {
+					context.AddIssue(BuildIssueSeverity::Error, "target",
+									 "C# scripts for Web need the WebAssembly .NET runtime packs. Run `python Scripts/fetch_prebuilt.py --web`");
+					return BuildStepStatus::Failed;
+				}
+			}
 			return BuildStepStatus::Succeeded;
 		}
 
-		bool ReadDotNetNotices(BuildContext& context, const fs::path& publish, std::string_view targetArtifact, str& outNotices) {
+		bool ReadDotNetNotices(BuildContext& context, const fs::path& publish, std::string_view targetArtifact, bool isWeb, str& outNotices) {
 			std::error_code ec;
-			str notices = std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion, targetArtifact);
+			str notices = isWeb ? std::format(".NET {} runtime/libraries, packaged with {} for WebAssembly\n\n", DotNetToolchain::GetPin().runtimeVersion, targetArtifact)
+								: std::format(".NET {} runtime/libraries, compiled into {} by NativeAOT\n\n", DotNetToolchain::GetPin().runtimeVersion, targetArtifact);
 			for (const std::string_view name : {"LICENSE.TXT", "THIRD-PARTY-NOTICES.TXT"}) {
 				const fs::path part = publish / NoticesFolder / name;
 				if (!fs::is_regular_file(part, ec)) {
@@ -699,7 +830,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return true;
 		}
 
-		BuildStepStatus RunCompileStep(BuildContext& context, bool singleFile) {
+		BuildStepStatus RunCompileStep(BuildContext& context, bool staticLink) {
 			State& state = GetState();
 			if (context.IsCancelRequested()) {
 				state.child.Kill();
@@ -720,7 +851,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				return Fail(context, state, scripts ? "C# script compile" : "C# native compile", exitCode);
 			}
 			if (scripts) {
-				return StartShell(context, state, singleFile);
+				return StartShell(context, state, staticLink);
 			}
 			state.stage = Stage::Idle;
 			if (state.warningCount > 0) {
@@ -738,27 +869,29 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					}
 				}
 			}
-			if (singleFile) {
+			if (staticLink) {
 				const fs::path publish = fs::path(state.root) / PublishFolder;
-				const fs::path staticLink = publish / "static-link.cmake";
-				if (!fs::is_regular_file(staticLink, ec)) {
+				const fs::path staticLinkFile = publish / "static-link.cmake";
+				if (!fs::is_regular_file(staticLinkFile, ec)) {
 					context.AddIssue(BuildIssueSeverity::Error, "",
-									 std::format("'{}' was not produced by NativeAOT publish", staticLink.generic_string()));
+									 std::format("'{}' was not produced by C# player publish", staticLinkFile.generic_string()));
 					return BuildStepStatus::Failed;
 				}
-				const str targetArtifact = !context.executableName.empty() ? (context.executableName + context.executableSuffix) : str("this executable");
-				str dotNetNotices;
-				if (!ReadDotNetNotices(context, publish, targetArtifact, dotNetNotices)) {
-					return BuildStepStatus::Failed;
+				if (IsSingleFileBuild(context)) {
+					const str targetArtifact = !context.executableName.empty() ? (context.executableName + context.executableSuffix) : str("this executable");
+					str dotNetNotices;
+					if (!ReadDotNetNotices(context, publish, targetArtifact, false, dotNetNotices)) {
+						return BuildStepStatus::Failed;
+					}
+					context.extraThirdPartyNotices.push_back(std::move(dotNetNotices));
 				}
-				context.extraThirdPartyNotices.push_back(std::move(dotNetNotices));
-				context.extraConfigureArgs.push_back("-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=" + QuoteCommandArgument(staticLink.generic_string()));
+				context.extraConfigureArgs.push_back("-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=" + QuoteCommandArgument(staticLinkFile.generic_string()));
 			}
 			return BuildStepStatus::Succeeded;
 		}
 
 		BuildStepStatus CompileStep(BuildContext& context) {
-			if (IsSingleFileBuild(context)) {
+			if (IsStaticCSharpLink(context)) {
 				return BuildStepStatus::Succeeded;
 			}
 			return RunCompileStep(context, false);
@@ -766,9 +899,70 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		BuildStepStatus StageStep(BuildContext& context) {
 			const fs::path publish = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / PublishFolder;
+			std::error_code ec;
+			if (IsWeb(context.target->GetId())) {
+				const fs::path manifest = publish / MANAGED_MANIFEST;
+				if (!fs::is_regular_file(manifest, ec)) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is missing. Build player again", manifest.generic_string()));
+					return BuildStepStatus::Failed;
+				}
+				const fs::path managedDir = fs::path(context.stagingDir) / MANAGED_FOLDER;
+				fs::remove_all(managedDir, ec);
+				ec.clear();
+				fs::create_directories(managedDir, ec);
+				if (ec) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't create '{}' ({})", managedDir.generic_string(), ec.message()));
+					return BuildStepStatus::Failed;
+				}
+				fs::copy_file(manifest, managedDir / MANAGED_MANIFEST, fs::copy_options::overwrite_existing, ec);
+				if (ec) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", manifest.generic_string(), ec.message()));
+					return BuildStepStatus::Failed;
+				}
+				u32 assemblyCount = 0;
+				for (fs::directory_iterator it(publish, ec), end; !ec && it != end; it.increment(ec)) {
+					std::error_code copied;
+					if (!it->is_regular_file(copied) || it->path().extension() != ".dll") {
+						continue;
+					}
+					fs::copy_file(it->path(), managedDir / it->path().filename(), fs::copy_options::overwrite_existing, copied);
+					if (copied) {
+						context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", it->path().generic_string(), copied.message()));
+						return BuildStepStatus::Failed;
+					}
+					++assemblyCount;
+				}
+				if (assemblyCount == 0) {
+					context.AddIssue(BuildIssueSeverity::Error, "", std::format("no managed assemblies were found in '{}'", publish.generic_string()));
+					return BuildStepStatus::Failed;
+				}
+				const str targetArtifact = !context.executableName.empty() ? (context.executableName + ".wasm") : str("this WebAssembly build");
+				str notices;
+				if (!ReadDotNetNotices(context, publish, targetArtifact, true, notices)) {
+					return BuildStepStatus::Failed;
+				}
+				const fs::path stagedNotices = fs::path(context.stagingDir) / RuntimeNotices;
+				if (!FileSystem::WriteTextFile(Path(stagedNotices.generic_string()), notices)) {
+					context.AddIssue(BuildIssueSeverity::Error, "",
+									 std::format("couldn't write '{}'. Check staging folder is writable", stagedNotices.generic_string()));
+					return BuildStepStatus::Failed;
+				}
+				const fs::path kept = fs::path(context.intermediateDir) / SymbolsFolder;
+				const fs::path map = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / RenameFolder / NameMap;
+				fs::remove(kept / NameMap, ec);
+				if (fs::is_regular_file(map, ec)) {
+					fs::create_directories(kept, ec);
+					ec.clear();
+					fs::copy_file(map, kept / map.filename(), fs::copy_options::overwrite_existing, ec);
+					if (ec) {
+						context.AddIssue(BuildIssueSeverity::Warning, "", std::format("couldn't keep '{}' ({})", map.generic_string(), ec.message()));
+					}
+				}
+				context.Log(std::format("staged {} WebAssembly managed assembly(ies) -> {}", assemblyCount, managedDir.generic_string()));
+				return BuildStepStatus::Succeeded;
+			}
 			const str libraryName = LibraryNameOf(context.target->GetId());
 			const fs::path library = publish / libraryName;
-			std::error_code ec;
 			if (IsSingleFileBuild(context)) {
 				// remove stale sidecar outputs if stagingDir was previously built with singleFile=false
 				fs::remove(fs::path(context.stagingDir) / libraryName, ec);
@@ -806,7 +1000,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 				}
 			}
 			str notices;
-			if (!ReadDotNetNotices(context, publish, libraryName, notices)) {
+			if (!ReadDotNetNotices(context, publish, libraryName, false, notices)) {
 				return BuildStepStatus::Failed;
 			}
 			const fs::path staged = fs::path(context.stagingDir) / RuntimeNotices;
@@ -832,6 +1026,10 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		}
 
 		BuildStepStatus GateStep(BuildContext& context) {
+			if (context.target && IsWeb(context.target->GetId())) {
+				context.Log("Web build stages trimmed WebAssembly assemblies under Managed/");
+				return BuildStepStatus::Succeeded;
+			}
 			State& state = GetState();
 			if (context.IsCancelRequested()) {
 				state.gating = false;

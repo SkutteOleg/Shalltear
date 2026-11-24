@@ -101,7 +101,9 @@
 
 			const JS_FILE = "{{JS_FILE}}";
 			const THREADS_ENABLED = {{THREADS_ENABLED}};
+			const HAS_MANAGED = {{HAS_MANAGED}};
 			const PAK_URL = "Data/Content.slpak";
+			const MANAGED_MANIFEST_URL = "Managed/managed-manifest.json";
 
 			const overlayEl = document.getElementById("overlay");
 			const statusEl = document.getElementById("status");
@@ -227,6 +229,34 @@
 				return merged;
 			}
 
+			async function fetchManagedAssemblies() {
+				if (!HAS_MANAGED) {
+					return null;
+				}
+				const manifestResp = await fetch(MANAGED_MANIFEST_URL);
+				if (!manifestResp.ok) {
+					throw new Error("Failed to fetch " + MANAGED_MANIFEST_URL + " (HTTP " + manifestResp.status + ")");
+				}
+				const manifestBytes = new Uint8Array(await manifestResp.arrayBuffer());
+				const manifestText = new TextDecoder().decode(manifestBytes);
+				const names = JSON.parse(manifestText);
+				if (!Array.isArray(names) || names.length === 0) {
+					throw new Error("Managed assembly manifest is empty");
+				}
+				let completed = 0;
+				const files = await Promise.all(names.map(async (name) => {
+					const resp = await fetch("Managed/" + name);
+					if (!resp.ok) {
+						throw new Error("Failed to fetch Managed/" + name + " (HTTP " + resp.status + ")");
+					}
+					const bytes = new Uint8Array(await resp.arrayBuffer());
+					completed += 1;
+					setProgress("Downloading scripts (" + completed + " / " + names.length + ")...", 72 + (completed / names.length) * 14);
+					return { name, bytes };
+				}));
+				return { manifestBytes, files };
+			}
+
 			function syncPersistentFS(FS, populate) {
 				return new Promise((resolve) => {
 					try {
@@ -256,12 +286,13 @@
 
 				try {
 					setProgress("Requesting WebGPU device...", 5);
-					const [gpuDevice, pakBytes] = await Promise.all([
+					const [gpuDevice, pakBytes, managedBundle] = await Promise.all([
 						initWebGPU(),
-						fetchContentPak()
+						fetchContentPak(),
+						fetchManagedAssemblies()
 					]);
 
-					setProgress("Loading WebAssembly runtime...", 80);
+					setProgress("Loading WebAssembly runtime...", 86);
 
 					window.Module = {
 						canvas: canvasEl,
@@ -274,6 +305,13 @@
 								const FS = window.Module.FS;
 								FS.mkdirTree("/app/Data");
 								FS.writeFile("/app/Data/Content.slpak", pakBytes);
+								if (managedBundle) {
+									FS.mkdirTree("/app/Managed");
+									FS.writeFile("/app/Managed/managed-manifest.json", managedBundle.manifestBytes);
+									for (const item of managedBundle.files) {
+										FS.writeFile("/app/Managed/" + item.name, item.bytes);
+									}
+								}
 								FS.mkdirTree("/persist/Pictures");
 								if (FS.filesystems && FS.filesystems.IDBFS) {
 									try {

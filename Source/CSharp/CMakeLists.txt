@@ -52,7 +52,7 @@ file(GLOB_RECURSE sltManagedInputs
 add_custom_command(
 	OUTPUT "${sltManagedStamp}"
 	COMMAND ${CMAKE_COMMAND} -E env
-		"DOTNET_ROOT=${sltDotNetRoot}" DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_CLI_UI_LANGUAGE=en-us
+		"DOTNET_ROOT=${sltDotNetRoot}" DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_MULTILEVEL_LOOKUP=0 DOTNET_CLI_UI_LANGUAGE=en-us
 		"${sltDotNet}" msbuild "${sltManagedDir}/Shalltear.Managed.slnx" -restore
 		-nologo -v:q -tl:off -clp:NoSummary -warnaserror -nodeReuse:false
 		-p:Configuration=${sltManagedConfig} -p:UseSharedCompilation=false -p:RestoreLockedMode=true
@@ -63,10 +63,23 @@ add_custom_command(
 	VERBATIM)
 add_custom_target(CSharpManaged DEPENDS "${sltManagedStamp}")
 
+set(sltNativeDir "${sltManagedOutput}/native")
+set(sltWebMonoFiles
+	"${sltNativeDir}/WebMonoTables.c"
+	"${sltNativeDir}/WebMonoBootstrap.cpp")
+add_custom_command(
+	OUTPUT ${sltWebMonoFiles}
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${sltNativeDir}"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/Native/WebMonoTables.c" "${sltNativeDir}/WebMonoTables.c"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/Native/WebMonoBootstrap.cpp" "${sltNativeDir}/WebMonoBootstrap.cpp"
+	DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Native/WebMonoTables.c" "${CMAKE_CURRENT_SOURCE_DIR}/Native/WebMonoBootstrap.cpp"
+	COMMENT "Staging WebAssembly C# runtime bridge"
+	VERBATIM)
+add_custom_target(CSharpWebNative DEPENDS ${sltWebMonoFiles})
+
 if(WIN32)
 	get_filename_component(sltToolchainBin "${CMAKE_CXX_COMPILER}" DIRECTORY)
 	get_filename_component(sltToolchainRoot "${sltToolchainBin}" DIRECTORY)
-	set(sltNativeDir "${sltManagedOutput}/native")
 	set(sltShimSource "${CMAKE_CURRENT_SOURCE_DIR}/Native/CRTShim.cpp")
 	set(sltShimGS "${CMAKE_CURRENT_SOURCE_DIR}/Native/Win64GS.inl")
 	set(sltShim "${sltNativeDir}/CRTShim.obj")
@@ -186,11 +199,11 @@ shalltear_add_package(CSharp SOURCES ${CSHARP_SOURCES})
 
 target_include_directories(CSharp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 target_compile_definitions(CSharp PRIVATE SHALLTEAR_CSHARP_BUILD)
-add_dependencies(CSharp CSharpManaged)
+add_dependencies(CSharp CSharpManaged CSharpWebNative)
 if(TARGET CSharpNative)
 	add_dependencies(CSharp CSharpNative)
 endif()
-if(NOT WIN32)
+if(NOT WIN32 AND NOT EMSCRIPTEN)
 	target_link_libraries(CSharp PRIVATE ${CMAKE_DL_LIBS})
 endif()
 if(SHALLTEAR_BUILD_TESTS)

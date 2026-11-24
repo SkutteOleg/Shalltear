@@ -23,6 +23,11 @@ PACKAGE_SOURCE = "https://api.nuget.org/v3/index.json"
 HOST_RIDS = ("linux-x64", "win-x64")
 HOST_RID = "win-x64" if toolchain.HOST_IS_WINDOWS else "linux-x64"
 TARGET_RIDS = ("linux-x64", "win-x64")
+WASM_PACKS = (
+	"Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
+	"Microsoft.NETCore.App.Runtime.Mono.multithread.browser-wasm",
+	"Microsoft.NET.Runtime.WebAssembly.Sdk",
+)
 SUPPORTED_PHASES = ("active", "maintenance")
 RELOAD_FIX_RUNTIME = {"10.0": "10.0.13"}
 
@@ -125,6 +130,9 @@ def restore_player_packs(dotnet, pin, work, packages):
 	downloads = "".join(
 		f'    <PackageDownload Include="runtime.{rid}.Microsoft.DotNet.ILCompiler" Version="[{pin["runtimeVersion"]}]" />\n'
 		for rid in HOST_RIDS if rid != HOST_RID)
+	downloads += "".join(
+		f'    <PackageDownload Include="{pkg}" Version="[{pin["runtimeVersion"]}]" />\n'
+		for pkg in WASM_PACKS)
 	project = work / "Player.csproj"
 	project.write_text(PLAYER_PROJECT.format(framework=pin["targetFramework"], downloads=downloads), encoding="utf-8")
 	(work / "nuget.config").write_text(NUGET_CONFIG, encoding="utf-8")

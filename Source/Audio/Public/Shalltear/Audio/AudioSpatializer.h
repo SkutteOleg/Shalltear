@@ -36,7 +36,10 @@ namespace Shalltear {
 
 	// planar, channel c frame i = data[c * stride + i]
 	struct AudioBlock {
-		f32* data = nullptr;
+		union {
+			f32* data = nullptr;
+			u64 dataSlot;
+		};
 		u32 channels = 0;
 		u32 frames = 0;
 		u32 stride = 0;
