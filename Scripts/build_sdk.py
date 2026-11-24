@@ -28,6 +28,8 @@ MINGW_HEADERS_LICENSE = "public domain and ZPL-2.1, with LGPL-2.1+ DirectX/DDK h
 MINGW_RUNTIME_LICENSE = "public domain and ZPL-2.1, plus MIT for winpthreads and winstorecompat"
 MONO_CECIL_LICENSE = "MIT"
 ROSLYN_LICENSE = "MIT"
+DAWN_LICENSE = "BSD-3-Clause"
+EMSCRIPTEN_LICENSE = "MIT and NCSA"
 
 SHIP, DROP = True, False
 
@@ -181,6 +183,17 @@ LIBCLANG_RULES = (
 		 "fetch_prebuilt.py's version marker"),
 )
 
+DAWN_WEB_RULES = (
+	Rule(('LICENSE',), SHIP, DAWN_LICENSE,
+		 "Dawn/Tint BSD-3-Clause license notice"),
+	Rule(('bin/tint.exe', 'bin/tint'), SHIP, DAWN_LICENSE,
+		 'Tint SPIR-V to WGSL translator invoked during Web shader cooking'),
+	Rule(('emdawnwebgpu_pkg/*',), SHIP, DAWN_LICENSE,
+		 'Emscripten Dawn WebGPU port linked into WebAssembly players'),
+	Rule(('bin/webgpu_dawn.dll', 'lib/libwebgpu_dawn.so', 'include/*', '.fetched'), DROP, '',
+		 'native Dawn test runtime / headers not needed for Web exports'),
+)
+
 
 def classify(relative, rules=LLVM_RULES):
 	for rule in rules:
@@ -245,6 +258,31 @@ def build_linux_static():
 	install_cmd = [
 		"cmake", "--install", ".", "--config", "Release",
 		"--prefix", os.path.join(SDK_DIR, 'Static', 'linux-x86_64'),
+	]
+	run_cmd(install_cmd, cwd=build_path)
+	return build_path
+
+
+def build_web_static(threaded=False):
+	flavor = 'wasm32-threads' if threaded else 'wasm32'
+	build_path = os.path.join(BUILD_DIR, 'STATIC-WEB-THREADS' if threaded else 'STATIC-WEB')
+	os.makedirs(build_path, exist_ok=True)
+	toolchain_file = os.path.join(ROOT_DIR, 'CMake', 'Toolchains', 'Web-wasm32.cmake')
+	cmake_cmd = [
+		"cmake", ROOT_DIR,
+		"-G", "Ninja",
+		f"-DCMAKE_TOOLCHAIN_FILE={toolchain_file}",
+		f"-DSHALLTEAR_WEB_THREADS={'ON' if threaded else 'OFF'}",
+		"-DSHALLTEAR_BUILD_SHARED=OFF",
+		"-DSHALLTEAR_BUILD_TESTS=OFF",
+		"-DSHALLTEAR_BUILD_BENCHMARKS=OFF",
+		"-DCMAKE_BUILD_TYPE=Release",
+	]
+	run_cmd(cmake_cmd, cwd=build_path)
+	run_cmd(["cmake", "--build", ".", "--config", "Release", "--parallel"], cwd=build_path)
+	install_cmd = [
+		"cmake", "--install", ".", "--config", "Release",
+		"--prefix", os.path.join(SDK_DIR, 'Static', flavor),
 	]
 	run_cmd(install_cmd, cwd=build_path)
 	return build_path
@@ -370,12 +408,12 @@ def copy_tree(source, destination, wanted=None):
 	return copied
 
 
-def verify_toolchain(bundle_dotnet=False, bundle_linux=False):
+def verify_toolchain(bundle_dotnet=False, bundle_linux=False, bundle_web=False):
 	llvm_root = os.path.join(TOOLCHAIN_DIR, 'LLVM')
 	libclang_root = os.path.join(TOOLCHAIN_DIR, 'libclang')
 	optional_roots = tuple(
 		os.path.join(TOOLCHAIN_DIR, name) + os.sep
-		for name in ('DotNet', 'NuGet', 'linux-x64')
+		for name in ('DotNet', 'NuGet', 'linux-x64', 'emsdk', 'dawn')
 	)
 	allowed = LLVM_BIN_ALLOWLIST | {'cmake.exe', 'ninja.exe', 'libclang.dll'}
 	offenders = []
@@ -425,6 +463,11 @@ def verify_toolchain(bundle_dotnet=False, bundle_linux=False):
 			TOOLCHAIN_DIR, 'linux-x64', 'sysroot', 'usr', 'include',
 			'x86_64-unknown-linux-gnu', 'c++', 'v1', '__config_site'
 		))
+	if bundle_web:
+		exe = '.exe' if os.name == 'nt' else ''
+		required.append(os.path.join(TOOLCHAIN_DIR, 'emsdk', 'install', 'emscripten', 'em++' + exe))
+		required.append(os.path.join(TOOLCHAIN_DIR, 'dawn', 'bin', 'tint' + exe))
+		required.append(os.path.join(TOOLCHAIN_DIR, 'dawn', 'emdawnwebgpu_pkg', 'emdawnwebgpu.port.py'))
 	offenders += [f"  missing: {path}" for path in required if not os.path.exists(path)]
 	if offenders:
 		print("Error: the staged toolchain isn't distributable:")
@@ -433,7 +476,7 @@ def verify_toolchain(bundle_dotnet=False, bundle_linux=False):
 	return executables, staged
 
 
-def stage_optional_bundles(bundle_dotnet=False, bundle_linux=False):
+def stage_optional_bundles(bundle_dotnet=False, bundle_linux=False, bundle_web=False):
 	if bundle_dotnet:
 		with open(DOTNET_PIN_PATH, 'r', encoding='utf-8') as f:
 			sdk_version = json.load(f)['sdkVersion']
@@ -458,9 +501,33 @@ def stage_optional_bundles(bundle_dotnet=False, bundle_linux=False):
 		count = copy_tree(linux_src, os.path.join(TOOLCHAIN_DIR, 'linux-x64'),
 						  lambda rel: rel != '.fetched')
 		print(f"  Linux  {count:>5} file(s)")
+	if bundle_web:
+		emsdk_src = os.path.join(PREBUILT_DIR, 'emsdk')
+		dawn_src = os.path.join(PREBUILT_DIR, 'dawn')
+		if not os.path.isdir(emsdk_src) or not os.path.isdir(dawn_src):
+			print("Error: --bundle-web requested but External/Prebuilt/emsdk or dawn is absent.")
+			print("  fix: python Scripts/fetch_prebuilt.py --web")
+			sys.exit(1)
+		emsdk_count = copy_tree(emsdk_src, os.path.join(TOOLCHAIN_DIR, 'emsdk'),
+								lambda rel: rel != '.fetched')
+		print(f"  Emscripten {emsdk_count:>5} file(s)")
+		dawn_unclassified = []
+		def dawn_wanted(relative):
+			rule = classify(relative, DAWN_WEB_RULES)
+			if rule is None:
+				dawn_unclassified.append(relative)
+				return False
+			return rule.verdict
+		dawn_count = copy_tree(dawn_src, os.path.join(TOOLCHAIN_DIR, 'dawn'), dawn_wanted)
+		print(f"  Dawn   {dawn_count:>5} file(s)")
+		if dawn_unclassified:
+			print(f"Error: {len(dawn_unclassified)} path(s) in dawn match no rule in DAWN_WEB_RULES.")
+			for relative in sorted(dawn_unclassified)[:40]:
+				print(f"    {relative}")
+			sys.exit(1)
 
 
-def stage_toolchain(bundle_dotnet=False, bundle_linux=False):
+def stage_toolchain(bundle_dotnet=False, bundle_linux=False, bundle_web=False):
 	unclassified = []
 	libclang_unclassified = []
 	sources = {
@@ -498,9 +565,9 @@ def stage_toolchain(bundle_dotnet=False, bundle_linux=False):
 			print(f"    {relative}")
 		sys.exit(1)
 
-	stage_optional_bundles(bundle_dotnet=bundle_dotnet, bundle_linux=bundle_linux)
+	stage_optional_bundles(bundle_dotnet=bundle_dotnet, bundle_linux=bundle_linux, bundle_web=bundle_web)
 
-	executables, staged = verify_toolchain(bundle_dotnet=bundle_dotnet, bundle_linux=bundle_linux)
+	executables, staged = verify_toolchain(bundle_dotnet=bundle_dotnet, bundle_linux=bundle_linux, bundle_web=bundle_web)
 	print(f"  verified {staged} staged file(s) (each has a rule shipping it)")
 	print(f"           {executables} of them executables (all on the allowlist)")
 
@@ -550,6 +617,8 @@ if __name__ == "__main__":
 						help="bundle the pinned .NET SDK and offline NuGet cache under Toolchain/")
 	parser.add_argument("--bundle-linux", action="store_true",
 						help="cross-compile the Linux static player target and bundle the Linux target pack")
+	parser.add_argument("--bundle-web", action="store_true",
+						help="cross-compile the WebAssembly static targets (wasm32 and wasm32-threads) and bundle Emscripten + Tint")
 	parser.add_argument("--no-archive", action="store_true",
 						help="skip creating the Dist/ archive after staging")
 	args = parser.parse_args()
@@ -572,8 +641,14 @@ if __name__ == "__main__":
 		print("\n======== Building Shalltear Engine (STATIC LINUX) ========")
 		build_linux_static()
 
+	if args.bundle_web:
+		print("\n======== Building Shalltear Engine (STATIC WEB wasm32) ========")
+		build_web_static(threaded=False)
+		print("\n======== Building Shalltear Engine (STATIC WEB wasm32-threads) ========")
+		build_web_static(threaded=True)
+
 	print("\n======== Staging the toolchain ========")
-	stage_toolchain(bundle_dotnet=args.bundle_dotnet, bundle_linux=args.bundle_linux)
+	stage_toolchain(bundle_dotnet=args.bundle_dotnet, bundle_linux=args.bundle_linux, bundle_web=args.bundle_web)
 	stage_csharp(os.path.join(SDK_DIR, 'CSharp'))
 
 	print("\n======== Finishing SDK ========")

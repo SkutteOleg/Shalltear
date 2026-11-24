@@ -4,7 +4,9 @@
 #include "Shalltear/Core/Memory.h"
 
 #include "Platform/EditorPlatform.h"
+#include "Shalltear/Editor/WebPreviewServer.h"
 #include "Targets/LinuxTarget.h"
+#include "Targets/WebTarget.h"
 #include "Targets/WindowsTarget.h"
 
 #include <vector>
@@ -30,6 +32,7 @@ namespace Shalltear {
 		const WindowsServerTarget _WindowsServer;
 		const LinuxTarget _Linux;
 		const LinuxServerTarget _LinuxServer;
+		const WebTarget _Web;
 
 		TargetState& State() {
 			if (!_state) {
@@ -61,9 +64,11 @@ namespace Shalltear {
 		Register(&_WindowsServer, nullptr);
 		Register(&_Linux, nullptr);
 		Register(&_LinuxServer, nullptr);
+		Register(&_Web, nullptr);
 	}
 
 	void BuildTargetRegistry::Shutdown() {
+		WebPreviewServer::Shutdown();
 		if (_state) {
 			Delete(_state);
 			_state = nullptr;

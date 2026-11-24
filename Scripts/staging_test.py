@@ -356,6 +356,38 @@ def check_archive_pruning(fail):
 	return len(cases) + 1
 
 
+def check_dawn_web_rules(fail):
+	checks = 0
+	cases = (
+		('LICENSE', build_sdk.SHIP),
+		('bin/tint.exe', build_sdk.SHIP),
+		('bin/tint', build_sdk.SHIP),
+		('emdawnwebgpu_pkg/emdawnwebgpu.port.py', build_sdk.SHIP),
+		('emdawnwebgpu_pkg/webgpu/include/webgpu/webgpu.h', build_sdk.SHIP),
+		('bin/webgpu_dawn.dll', build_sdk.DROP),
+		('include/webgpu/webgpu.h', build_sdk.DROP),
+		('.fetched', build_sdk.DROP),
+	)
+	for relative, expected in cases:
+		rule = build_sdk.classify(relative, build_sdk.DAWN_WEB_RULES)
+		if rule is None or rule.verdict is not expected:
+			fail("dawn/%s: expected %s" % (relative, 'SHIP' if expected else 'DROP'))
+		checks += 1
+	dawn_prebuilt = os.path.join(build_sdk.PREBUILT_DIR, 'dawn')
+	if os.path.isdir(dawn_prebuilt):
+		unclassified = []
+		for directory, _, files in os.walk(dawn_prebuilt):
+			for name in files:
+				relative = os.path.relpath(os.path.join(directory, name), dawn_prebuilt).replace(os.sep, '/')
+				if build_sdk.classify(relative, build_sdk.DAWN_WEB_RULES) is None:
+					unclassified.append(relative)
+		if unclassified:
+			fail("%d path(s) in External/Prebuilt/dawn match no rule: %s"
+				 % (len(unclassified), ', '.join(sorted(unclassified)[:5])))
+		checks += 1
+	return checks
+
+
 def main():
 	if '--list-unclassified' in sys.argv:
 		return list_unclassified()
@@ -368,6 +400,7 @@ def main():
 	total = check_rules(fail)
 	total += check_csharp_rules(fail)
 	total += check_libclang_rules(fail)
+	total += check_dawn_web_rules(fail)
 	total += check_archive_pruning(fail)
 	if os.path.isdir(PREBUILT):
 		total += check_real_tree(fail)

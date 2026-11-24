@@ -13,6 +13,7 @@
 
 #include "Shalltear/Editor/ChildProcess.h"
 #include "EditorConfig.h"
+#include "Platform/EditorPlatform.h"
 #include "SceneFileFlows.h"
 
 #include <format>
@@ -246,6 +247,11 @@ namespace Shalltear::BuildFlows {
 			if (lastSuccess->launchCommand.empty()) {
 				SLT_LOG_WARN("Build", "'{}' built, but its target produces nothing runnable on this machine",
 							 lastSuccess->profile);
+			} else if (lastSuccess->launchCommand.starts_with("http://") ||
+					   lastSuccess->launchCommand.starts_with("https://")) {
+				if (EditorPlatform::OpenWithDefaultApplication(lastSuccess->launchCommand)) {
+					SLT_LOG_INFO("Build", "opening {}", lastSuccess->launchCommand);
+				}
 			} else if (StartDetachedProcess(lastSuccess->launchCommand, lastSuccess->outputPath)) {
 				SLT_LOG_INFO("Build", "running {}", lastSuccess->launchCommand);
 			}

@@ -100,6 +100,8 @@ namespace Shalltear::CppToolchain {
 					directories.push_back(install + "/Toolchain/LLVM/bin");
 					directories.push_back(install + "/Toolchain/CMake/bin");
 					directories.push_back(install + "/Toolchain/Ninja");
+					directories.push_back(install + "/Toolchain/emsdk/install/emscripten");
+					directories.push_back(install + "/Toolchain/emsdk/upstream/emscripten");
 					return directories;
 				}
 				fs::path parent = probe.parent_path();
@@ -233,6 +235,9 @@ namespace Shalltear::CppToolchain {
 	}
 
 	std::string_view GetCompilerDriverName(const ToolchainInfo& info) {
+		if (info.sdkCompilerTarget == "wasm32-unknown-emscripten") {
+			return "em++";
+		}
 		return info.sdkToolchainFile.empty() ? "x86_64-w64-mingw32-clang++" : "clang++";
 	}
 

@@ -21,5 +21,5 @@ endif()
 target_link_libraries(ShalltearEditor PUBLIC ShalltearCore)
 
 if(WIN32)
-    target_link_libraries(ShalltearEditor PRIVATE ole32 uuid)
+    target_link_libraries(ShalltearEditor PRIVATE ole32 uuid ws2_32)
 endif()

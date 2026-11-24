@@ -19,6 +19,7 @@
 
 #include "BuildIcon.h"
 #include "Shalltear/Editor/ChildProcess.h"
+#include "Targets/WebTarget.h"
 
 #include <chrono>
 #include <cstring>
@@ -304,7 +305,9 @@ namespace Shalltear {
 			str commandLine = std::format("{} -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE={}", Quote(toolchain.cmake.path),
 										  Quote(sourceDirectory), Quote(context.intermediateDir),
 										  context.configuration);
-			commandLine += " -DCMAKE_CXX_COMPILER=" + Quote(toolchain.compiler.path);
+			if (toolchain.sdkCompilerTarget != WebTarget::Triple) {
+				commandLine += " -DCMAKE_CXX_COMPILER=" + Quote(toolchain.compiler.path);
+			}
 			commandLine += " -DCMAKE_MAKE_PROGRAM=" + Quote(toolchain.ninja.path);
 			commandLine += " -DShalltear_ROOT=" + Quote(context.sdkRoot);
 			if (!toolchain.sdkToolchainFile.empty()) {
@@ -572,6 +575,7 @@ namespace Shalltear {
 			CookOps::PakWriteDesc desc;
 			desc.shipDebugNames = !ResolvedBool(context, "stripDebugNames");
 			desc.compression = ResolveCompression(ResolvedString(context, "compressionMethod"));
+			desc.shaderFormat = context.shaderFormat;
 
 			if (context.bootManifest.empty()) {
 				context.AddIssue(BuildIssueSeverity::Error, "",
@@ -771,6 +775,7 @@ namespace Shalltear {
 		Register("compile", BuildPhase::Compile, &CompileStep, nullptr);
 		Register("cook-content", BuildPhase::Stage, &CookContentStep, nullptr);
 		Register("stage-runtime", BuildPhase::Stage, &StageRuntimeStep, nullptr);
+		Register("web-stage", BuildPhase::Stage, &WebTarget::StageStep, nullptr);
 		Register("post-build-command", BuildPhase::PostBuild, [](BuildContext& context) { return RunProfileCommand(context, "postBuildCommand", "postBuildCommand"); }, nullptr);
 	}
 

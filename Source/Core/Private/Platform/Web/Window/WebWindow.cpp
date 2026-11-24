@@ -44,6 +44,15 @@ namespace Shalltear {
 
 		Window::Impl* _activeWindow = nullptr;
 		str _clipboardText;
+		// DOM callbacks fire between requestAnimationFrame ticks, so queue and flush inside WindowBackend::Pump
+		Vector<InputEvent> _pendingEvents{GetMemoryResource(MemTag::Platform)};
+		Vec2 _pendingRawDelta{};
+		Vec2I _pendingMouseScreenPos{};
+		bool _hasPendingMouseScreenPos = false;
+
+		void QueueInputEvent(const InputEvent& ev) {
+			_pendingEvents.push_back(ev);
+		}
 
 		KeyMod ModsFromKeyboard(const EmscriptenKeyboardEvent& e) {
 			KeyMod mods = KeyMod::None;
@@ -250,7 +259,7 @@ namespace Shalltear {
 				ev.mods = mods;
 				ev.key = key;
 				ev.repeat = e->repeat != 0;
-				InputInternal::PushEvent(ev);
+				QueueInputEvent(ev);
 			}
 
 			if (eventType == EMSCRIPTEN_EVENT_KEYDOWN && !e->ctrlKey && !e->altKey && !e->metaKey) {
@@ -261,7 +270,7 @@ namespace Shalltear {
 					textEv.window = impl->self;
 					textEv.mods = mods;
 					textEv.codepoint = cp;
-					InputInternal::PushEvent(textEv);
+					QueueInputEvent(textEv);
 				}
 			}
 
@@ -281,7 +290,8 @@ namespace Shalltear {
 			}
 			const Vec2I pos = MousePosPhysical(*impl, *e);
 			impl->lastMousePx = pos;
-			InputInternal::SetMouseScreenPosition(pos);
+			_pendingMouseScreenPos = pos;
+			_hasPendingMouseScreenPos = true;
 
 			InputEvent ev;
 			ev.window = impl->self;
@@ -292,28 +302,28 @@ namespace Shalltear {
 			case EMSCRIPTEN_EVENT_MOUSEMOVE:
 				ev.type = InputEventType::MouseMove;
 				if (impl->pointerLocked) {
-					InputInternal::AddRawMouseDelta({static_cast<f32>(e->movementX) * impl->scale,
-													 static_cast<f32>(e->movementY) * impl->scale});
+					_pendingRawDelta.x += static_cast<f32>(e->movementX) * impl->scale;
+					_pendingRawDelta.y += static_cast<f32>(e->movementY) * impl->scale;
 				}
-				InputInternal::PushEvent(ev);
+				QueueInputEvent(ev);
 				return EM_FALSE;
 			case EMSCRIPTEN_EVENT_MOUSEDOWN:
 				ev.type = InputEventType::MouseDown;
 				ev.button = ButtonFromWeb(e->button);
-				InputInternal::PushEvent(ev);
+				QueueInputEvent(ev);
 				return EM_TRUE;
 			case EMSCRIPTEN_EVENT_MOUSEUP:
 				ev.type = InputEventType::MouseUp;
 				ev.button = ButtonFromWeb(e->button);
-				InputInternal::PushEvent(ev);
+				QueueInputEvent(ev);
 				return EM_FALSE;
 			case EMSCRIPTEN_EVENT_MOUSEENTER:
 				ev.type = InputEventType::MouseEnter;
-				InputInternal::PushEvent(ev);
+				QueueInputEvent(ev);
 				return EM_FALSE;
 			case EMSCRIPTEN_EVENT_MOUSELEAVE:
 				ev.type = InputEventType::MouseLeave;
-				InputInternal::PushEvent(ev);
+				QueueInputEvent(ev);
 				return EM_FALSE;
 			default:
 				return EM_FALSE;
@@ -338,7 +348,7 @@ namespace Shalltear {
 			ev.mods = ModsFromMouse(e->mouse);
 			ev.mousePosPx = MousePosPhysical(*impl, e->mouse);
 			ev.wheel = {static_cast<f32>(e->deltaX * scale), static_cast<f32>(-e->deltaY * scale)};
-			InputInternal::PushEvent(ev);
+			QueueInputEvent(ev);
 			return EM_TRUE;
 		}
 
@@ -430,6 +440,9 @@ namespace Shalltear {
 		void Terminate() {
 			_activeWindow = nullptr;
 			_clipboardText.clear();
+			_pendingEvents.clear();
+			_pendingRawDelta = {};
+			_hasPendingMouseScreenPos = false;
 		}
 
 		bool CreateNative(Window& window, const WindowDesc& desc) {
@@ -486,6 +499,18 @@ namespace Shalltear {
 					SyncCanvasSize(*_activeWindow, true);
 				}
 			}
+			if (_hasPendingMouseScreenPos) {
+				InputInternal::SetMouseScreenPosition(_pendingMouseScreenPos);
+				_hasPendingMouseScreenPos = false;
+			}
+			if (_pendingRawDelta.x != 0.0f || _pendingRawDelta.y != 0.0f) {
+				InputInternal::AddRawMouseDelta(_pendingRawDelta);
+				_pendingRawDelta = {};
+			}
+			for (const InputEvent& ev : _pendingEvents) {
+				InputInternal::PushEvent(ev);
+			}
+			_pendingEvents.clear();
 		}
 
 		void Wait(f64) {

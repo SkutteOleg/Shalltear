@@ -19,7 +19,7 @@ namespace Shalltear::RHI::WebGPUPlatform {
 
 	WGPUDevice TryGetPreinitializedDevice() {
 		const int hasDevice = EM_ASM_INT({
-			return (typeof Module != = 'undefined' && Module['preinitializedWebGPUDevice']) ? 1 : 0;
+			return (typeof Module != 'undefined' && Module['preinitializedWebGPUDevice']) ? 1 : 0;
 		});
 		if (!hasDevice) {
 			SLT_LOG_ERROR("Graphics", "WebGPU: Module.preinitializedWebGPUDevice is not set");
@@ -30,10 +30,10 @@ namespace Shalltear::RHI::WebGPUPlatform {
 
 	WGPUTextureFormat GetPreferredSurfaceFormat() {
 		const int isRGBA = EM_ASM_INT({
-			if (typeof navigator == = 'undefined' || !navigator.gpu) {
+			if (typeof navigator == 'undefined' || !navigator.gpu) {
 				return 0;
 			}
-			return navigator.gpu.getPreferredCanvasFormat() == = 'rgba8unorm' ? 1 : 0;
+			return navigator.gpu.getPreferredCanvasFormat() == 'rgba8unorm' ? 1 : 0;
 		});
 		return isRGBA ? WGPUTextureFormat_RGBA8Unorm : WGPUTextureFormat_BGRA8Unorm;
 	}

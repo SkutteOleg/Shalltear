@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shalltear/Core/Containers.h"
+#include "Shalltear/Core/Graphics/RHITypes.h"
 #include "Shalltear/Core/Types.h"
 
 #include "Shalltear/Editor/BuildProfile.h"
@@ -69,6 +70,7 @@ namespace Shalltear {
 
 		str executableName;
 		str executableSuffix = ".exe";
+		RHI::ShaderBytecodeFormat shaderFormat = RHI::ShaderBytecodeFormat::Spirv;
 
 		Vector<str> defines;
 		Vector<str> extraConfigureArgs;

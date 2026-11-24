@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="data:,">
+	<title>{{TITLE}}</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background: #0d1016;
+			color: #e6ebf5;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		}
+		#canvas {
+			position: fixed;
+			inset: 0;
+			width: 100vw;
+			height: 100vh;
+			display: block;
+			outline: none;
+			touch-action: none;
+		}
+		#overlay {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(13, 16, 22, 0.96);
+			z-index: 10;
+			transition: opacity 0.25s ease;
+		}
+		#overlay.hidden {
+			opacity: 0;
+			pointer-events: none;
+		}
+		.card {
+			width: min(440px, calc(100vw - 48px));
+			padding: 28px;
+			border-radius: 12px;
+			background: #161b26;
+			border: 1px solid #263044;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+		}
+		.title {
+			margin: 0 0 8px 0;
+			font-size: 20px;
+			font-weight: 600;
+		}
+		.status {
+			margin: 0 0 16px 0;
+			font-size: 14px;
+			color: #9ba8c0;
+			line-height: 1.5;
+		}
+		.bar-track {
+			height: 8px;
+			border-radius: 999px;
+			background: #232b3d;
+			overflow: hidden;
+		}
+		.bar-fill {
+			height: 100%;
+			width: 0%;
+			border-radius: 999px;
+			background: linear-gradient(90deg, #4b8bff, #6fd6ff);
+			transition: width 0.12s linear;
+		}
+		.error-box {
+			display: none;
+			margin-top: 14px;
+			padding: 12px 14px;
+			border-radius: 8px;
+			background: rgba(214, 69, 80, 0.14);
+			border: 1px solid rgba(214, 69, 80, 0.45);
+			color: #ffc2c7;
+			font-size: 13px;
+			line-height: 1.5;
+			white-space: pre-wrap;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" tabindex="0" oncontextmenu="event.preventDefault()"></canvas>
+	<div id="overlay">
+		<div class="card">
+			<h1 class="title">{{TITLE}}</h1>
+			<p id="status" class="status">Initializing WebGPU...</p>
+			<div class="bar-track"><div id="bar" class="bar-fill"></div></div>
+			<div id="error" class="error-box"></div>
+		</div>
+	</div>
+	<script>
+		(function () {
+			"use strict";
+
+			const JS_FILE = "{{JS_FILE}}";
+			const THREADS_ENABLED = {{THREADS_ENABLED}};
+			const PAK_URL = "Data/Content.slpak";
+
+			const overlayEl = document.getElementById("overlay");
+			const statusEl = document.getElementById("status");
+			const barEl = document.getElementById("bar");
+			const errorEl = document.getElementById("error");
+			const canvasEl = document.getElementById("canvas");
+
+			// Track AudioContexts created by the engine so the first user gesture unlocks WebAudio
+			const trackedAudioContexts = [];
+			const OrigAudioContext = window.AudioContext || window.webkitAudioContext;
+			if (OrigAudioContext) {
+				const WrappedAudioContext = function (...args) {
+					const ctx = new OrigAudioContext(...args);
+					trackedAudioContexts.push(ctx);
+					return ctx;
+				};
+				WrappedAudioContext.prototype = OrigAudioContext.prototype;
+				window.AudioContext = WrappedAudioContext;
+				if (window.webkitAudioContext) {
+					window.webkitAudioContext = WrappedAudioContext;
+				}
+			}
+
+			function unlockAudio() {
+				for (const ctx of trackedAudioContexts) {
+					if (ctx && ctx.state === "suspended") {
+						ctx.resume().catch(() => {});
+					}
+				}
+			}
+			window.addEventListener("pointerdown", unlockAudio, { passive: true });
+			window.addEventListener("keydown", unlockAudio, { passive: true });
+			window.addEventListener("touchstart", unlockAudio, { passive: true });
+
+			function setProgress(text, pct) {
+				statusEl.textContent = text;
+				barEl.style.width = Math.max(0, Math.min(100, pct)) + "%";
+			}
+
+			function showError(title, detail) {
+				statusEl.textContent = title;
+				barEl.style.width = "0%";
+				errorEl.textContent = detail;
+				errorEl.style.display = "block";
+			}
+
+			async function initWebGPU() {
+				if (!navigator.gpu) {
+					throw new Error(
+						"WebGPU is not available in this browser.\n" +
+						"Open this page in Chrome/Edge 113+, Firefox, or Safari 18+ with WebGPU enabled."
+					);
+				}
+				const adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+				if (!adapter) {
+					throw new Error("No compatible WebGPU graphics adapter was found on this system.");
+				}
+				const requiredFeatures = [];
+				if (adapter.features.has("texture-compression-bc")) {
+					requiredFeatures.push("texture-compression-bc");
+				}
+				if (adapter.features.has("float32-filterable")) {
+					requiredFeatures.push("float32-filterable");
+				}
+				const requiredLimits = {};
+				const wantedLimits = [
+					"maxStorageBufferBindingSize",
+					"maxBufferSize",
+					"maxBindGroups",
+					"maxTextureDimension2D",
+					"maxTextureArrayLayers",
+					"maxSampledTexturesPerShaderStage",
+					"maxStorageBuffersPerShaderStage",
+					"maxUniformBufferBindingSize"
+				];
+				for (const key of wantedLimits) {
+					if (typeof adapter.limits[key] === "number") {
+						requiredLimits[key] = adapter.limits[key];
+					}
+				}
+				const device = await adapter.requestDevice({ requiredFeatures, requiredLimits });
+				device.lost.then((info) => {
+					console.error("WebGPU device lost:", info.reason, info.message);
+				});
+				return device;
+			}
+
+			async function fetchContentPak() {
+				setProgress("Downloading content package...", 15);
+				const response = await fetch(PAK_URL);
+				if (!response.ok) {
+					throw new Error("Failed to fetch " + PAK_URL + " (HTTP " + response.status + ")");
+				}
+				const total = Number(response.headers.get("Content-Length") || 0);
+				if (!response.body || !response.body.getReader) {
+					const buf = new Uint8Array(await response.arrayBuffer());
+					setProgress("Content package ready", 75);
+					return buf;
+				}
+				const reader = response.body.getReader();
+				const chunks = [];
+				let received = 0;
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) {
+						break;
+					}
+					chunks.push(value);
+					received += value.byteLength;
+					if (total > 0) {
+						const pct = 15 + (received / total) * 60;
+						const mb = (received / (1024 * 1024)).toFixed(1);
+						const totalMb = (total / (1024 * 1024)).toFixed(1);
+						setProgress("Downloading content (" + mb + " / " + totalMb + " MB)...", pct);
+					}
+				}
+				const merged = new Uint8Array(received);
+				let offset = 0;
+				for (const chunk of chunks) {
+					merged.set(chunk, offset);
+					offset += chunk.byteLength;
+				}
+				return merged;
+			}
+
+			function syncPersistentFS(FS, populate) {
+				return new Promise((resolve) => {
+					try {
+						FS.syncfs(populate, (err) => {
+							if (err) {
+								console.warn("IDBFS sync warning:", err);
+							}
+							resolve();
+						});
+					} catch (e) {
+						console.warn("IDBFS unavailable:", e);
+						resolve();
+					}
+				});
+			}
+
+			async function boot() {
+				if (THREADS_ENABLED && !window.crossOriginIsolated) {
+					showError(
+						"Cross-Origin Isolation Required",
+						"This WebAssembly build uses threads (SharedArrayBuffer), which requires HTTP headers:\n" +
+						"  Cross-Origin-Opener-Policy: same-origin\n" +
+						"  Cross-Origin-Embedder-Policy: require-corp"
+					);
+					return;
+				}
+
+				try {
+					setProgress("Requesting WebGPU device...", 5);
+					const [gpuDevice, pakBytes] = await Promise.all([
+						initWebGPU(),
+						fetchContentPak()
+					]);
+
+					setProgress("Loading WebAssembly runtime...", 80);
+
+					window.Module = {
+						canvas: canvasEl,
+						preinitializedWebGPUDevice: gpuDevice,
+						noInitialRun: true,
+						print: (text) => console.log(text),
+						printErr: (text) => console.error(text),
+						onRuntimeInitialized: async function () {
+							try {
+								const FS = window.Module.FS;
+								FS.mkdirTree("/app/Data");
+								FS.writeFile("/app/Data/Content.slpak", pakBytes);
+								FS.mkdirTree("/persist/Pictures");
+								if (FS.filesystems && FS.filesystems.IDBFS) {
+									try {
+										FS.mount(FS.filesystems.IDBFS, {}, "/persist");
+										setProgress("Restoring saved data...", 92);
+										await syncPersistentFS(FS, true);
+										window.addEventListener("pagehide", () => {
+											syncPersistentFS(FS, false);
+										});
+										document.addEventListener("visibilitychange", () => {
+											if (document.hidden) {
+												syncPersistentFS(FS, false);
+											}
+										});
+									} catch (mountErr) {
+										console.warn("IDBFS mount skipped:", mountErr);
+									}
+								}
+								setProgress("Starting...", 100);
+								overlayEl.classList.add("hidden");
+								canvasEl.focus();
+								window.Module.callMain([]);
+							} catch (err) {
+								showError("Startup Failed", String(err && err.message ? err.message : err));
+							}
+						}
+					};
+
+					const script = document.createElement("script");
+					script.src = JS_FILE;
+					script.async = true;
+					script.onerror = () => {
+						showError("Runtime Load Failed", "Could not load " + JS_FILE);
+					};
+					document.body.appendChild(script);
+				} catch (err) {
+					showError("Unable to Start", String(err && err.message ? err.message : err));
+				}
+			}
+
+			boot();
+		})();
+	</script>
+</body>
+</html>
