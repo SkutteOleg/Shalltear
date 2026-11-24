@@ -434,19 +434,14 @@ namespace Shalltear {
 			productName = context.executableName;
 		}
 		const bool enableThreads = ResolvedBool(context.profile, "enableThreads", false);
-		bool hasManaged = fs::is_regular_file(fs::path{context.stagingDir + "/Managed/managed-manifest.json"}, ec);
-		if (!hasManaged) {
-			constexpr std::string_view PREFIX = "-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=";
-			for (const str& arg : context.extraConfigureArgs) {
-				if (arg.starts_with(PREFIX) && arg.size() > PREFIX.size()) {
-					hasManaged = true;
-					break;
-				}
-			}
+		const fs::path staleManaged = fs::path{context.stagingDir + "/Managed"};
+		if (fs::exists(staleManaged, ec)) {
+			fs::remove_all(staleManaged, ec);
 		}
+		ec.clear();
 
 		str html;
-		if (!RenderIndexHTML(productName, jsFile, wasmFile, enableThreads, html, hasManaged)) {
+		if (!RenderIndexHTML(productName, jsFile, wasmFile, enableThreads, html, false)) {
 			context.AddIssue(BuildIssueSeverity::Error, "",
 							 "couldn't render EngineAssets/Templates/WebIndex.html.template (is engine:// mounted?)");
 			return BuildStepStatus::Failed;

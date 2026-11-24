@@ -81,7 +81,8 @@ namespace Shalltear {
 			Vector<const PakDocumentSource*> documents{GetMemoryResource(MemTag::Editor)};
 			for (const PakDocumentSource& document : desc.documents) {
 				if (document.kind != PakDocumentKind::BootManifest && document.kind != PakDocumentKind::ProjectSettings &&
-					document.kind != PakDocumentKind::Icon && document.kind != PakDocumentKind::ThirdPartyNotices) {
+					document.kind != PakDocumentKind::Icon && document.kind != PakDocumentKind::ThirdPartyNotices &&
+					document.kind != PakDocumentKind::ManagedBundle) {
 					outError = std::format("document kind {} isn't one this build knows how to write",
 										   static_cast<u32>(document.kind));
 					return false;

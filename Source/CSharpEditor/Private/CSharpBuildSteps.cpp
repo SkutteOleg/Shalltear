@@ -923,6 +923,15 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					}
 					context.extraThirdPartyNotices.push_back(std::move(dotNetNotices));
 				}
+				if (context.target && IsWeb(context.target->GetId())) {
+					const fs::path manifest = publish / ManagedManifest;
+					if (!fs::is_regular_file(manifest, ec)) {
+						context.AddIssue(BuildIssueSeverity::Error, "",
+										 std::format("'{}' was not produced by WebAssembly C# publish", manifest.generic_string()));
+						return BuildStepStatus::Failed;
+					}
+					context.managedAssembliesDir = publish.generic_string();
+				}
 				context.extraConfigureArgs.push_back("-DSHALLTEAR_CSHARP_STATIC_LINK_CMAKE=" + QuoteCommandArgument(staticLinkFile.generic_string()));
 			}
 			return BuildStepStatus::Succeeded;
@@ -939,46 +948,11 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			const fs::path publish = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / PublishFolder;
 			std::error_code ec;
 			if (IsWeb(context.target->GetId())) {
-				const fs::path manifest = publish / ManagedManifest;
-				if (!fs::is_regular_file(manifest, ec)) {
-					context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is missing. Build player again", manifest.generic_string()));
-					return BuildStepStatus::Failed;
-				}
 				const fs::path managedDir = fs::path(context.stagingDir) / ManagedFolder;
-				if (fs::is_directory(managedDir, ec)) {
-					for (fs::directory_iterator it(managedDir, ec), end; !ec && it != end; it.increment(ec)) {
-						std::error_code removed;
-						fs::remove_all(it->path(), removed);
-					}
+				if (fs::exists(managedDir, ec)) {
+					fs::remove_all(managedDir, ec);
 				}
 				ec.clear();
-				fs::create_directories(managedDir, ec);
-				if (ec) {
-					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't create '{}' ({})", managedDir.generic_string(), ec.message()));
-					return BuildStepStatus::Failed;
-				}
-				fs::copy_file(manifest, managedDir / ManagedManifest, fs::copy_options::overwrite_existing, ec);
-				if (ec) {
-					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", manifest.generic_string(), ec.message()));
-					return BuildStepStatus::Failed;
-				}
-				u32 assemblyCount = 0;
-				for (fs::directory_iterator it(publish, ec), end; !ec && it != end; it.increment(ec)) {
-					std::error_code copied;
-					if (!it->is_regular_file(copied) || it->path().extension() != ".dll") {
-						continue;
-					}
-					fs::copy_file(it->path(), managedDir / it->path().filename(), fs::copy_options::overwrite_existing, copied);
-					if (copied) {
-						context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", it->path().generic_string(), copied.message()));
-						return BuildStepStatus::Failed;
-					}
-					++assemblyCount;
-				}
-				if (assemblyCount == 0) {
-					context.AddIssue(BuildIssueSeverity::Error, "", std::format("no managed assemblies were found in '{}'", publish.generic_string()));
-					return BuildStepStatus::Failed;
-				}
 				const str targetArtifact = !context.executableName.empty() ? (context.executableName + ".wasm") : str("this WebAssembly build");
 				str notices;
 				if (!ReadDotNetNotices(context, publish, targetArtifact, true, notices)) {
@@ -1001,7 +975,6 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 						context.AddIssue(BuildIssueSeverity::Warning, "", std::format("couldn't keep '{}' ({})", map.generic_string(), ec.message()));
 					}
 				}
-				context.Log(std::format("staged {} WebAssembly managed assembly(ies) -> {}", assemblyCount, managedDir.generic_string()));
 				return BuildStepStatus::Succeeded;
 			}
 			const str libraryName = LibraryNameOf(context.target->GetId());
@@ -1070,7 +1043,23 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 		BuildStepStatus GateStep(BuildContext& context) {
 			if (context.target && IsWeb(context.target->GetId())) {
-				context.Log("Web build stages trimmed WebAssembly assemblies under Managed/");
+				std::error_code ec;
+				const fs::path root(context.stagingDir);
+				u32 looseAssemblies = 0;
+				for (fs::recursive_directory_iterator it(root, ec), end; !ec && it != end; it.increment(ec)) {
+					std::error_code fileEc;
+					if (it->is_regular_file(fileEc) && StringUtil::ToLower(it->path().extension().generic_string()) == ".dll") {
+						const str rel = it->path().lexically_relative(root).generic_string();
+						context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is a loose managed assembly in Web staging output", rel));
+						++looseAssemblies;
+					}
+				}
+				if (looseAssemblies > 0) {
+					return BuildStepStatus::Failed;
+				}
+				const bool aotEnabled = context.configuration == "Release" && ResolvedBool(context, "aotCompile", true);
+				context.Log(aotEnabled ? "Web build embeds IL-stripped assemblies in Data/Content.slpak (0 loose .dll files)"
+									   : "Web build embeds assemblies in Data/Content.slpak (0 loose .dll files)");
 				return BuildStepStatus::Succeeded;
 			}
 			State& state = GetState();

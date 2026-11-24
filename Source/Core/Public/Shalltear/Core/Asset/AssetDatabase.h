@@ -34,6 +34,9 @@ namespace Shalltear {
 
 		static bool ReadPackageDocument(PakDocumentKind kind, str& out);
 
+		static bool ReadManagedBundle(void (*onAssembly)(const char* name, const u8* data, u32 size, void* user),
+									  void* user);
+
 		static Asset* LoadAsset(const Path& virtualPath);
 
 		static Asset* LoadAssetByGuid(const Guid& assetId);

@@ -12,7 +12,10 @@
 
 #include "Shalltear/Editor/CookOps.h"
 
+#include "LZ4Encode.h"
+
 #include <atomic>
+#include <cstring>
 #include <filesystem>
 
 using namespace Shalltear;
@@ -458,4 +461,85 @@ TEST_F(AssetSourceFixture, WritePathsRefuseWhilePackageIsMounted) {
 	asset.content = "should not reach disk";
 	AssetDatabase::SaveAsset(&asset);
 	EXPECT_FALSE(FileSystem::Exists(Path((_staged / "Assets/Saved.txt").generic_string())));
+}
+
+TEST_F(AssetSourceFixture, ManagedBundleRoundTripsRawAndLZ4) {
+	CookOps::PakAssetSource source;
+	source.guid = Guid(0x9201, 0x9202);
+	source.typeNameHash = StringHash("TextAsset").GetValue();
+	source.recordVersion = PAK_RECORD_VERSION;
+	Vector<CookOps::PakAssetSource> sources{GetMemoryResource(MemTag::Editor)};
+	sources.push_back(std::move(source));
+
+	const str nameA = "Tiny.dll";
+	const str rawA = "MZ_RAW";
+	const str nameB = "Stripped.dll";
+	str rawB(4096, '\0');
+	std::memcpy(rawB.data(), "MZ_STRIPPED", 11);
+	std::memcpy(rawB.data() + 4080, "TAIL_BYTES_1234", 15);
+
+	Vector<u8> compB{GetMemoryResource(MemTag::Editor)};
+	LZ4::Compress(reinterpret_cast<const u8*>(rawB.data()), rawB.size(), LZ4::Effort::Fast, compB);
+	ASSERT_LT(compB.size(), rawB.size());
+
+	const u32 tableEnd = static_cast<u32>(sizeof(PakManagedBundleHeader) + 2 * sizeof(PakManagedBundleEntry));
+	const u32 totalBytes = tableEnd + static_cast<u32>(nameA.size() + rawA.size() + nameB.size() + compB.size());
+	str bundle(totalBytes, '\0');
+	u8* dst = reinterpret_cast<u8*>(bundle.data());
+
+	PakManagedBundleHeader header{PAK_MANAGED_BUNDLE_MAGIC, 2};
+	std::memcpy(dst, &header, sizeof(header));
+
+	u32 cursor = tableEnd;
+	PakManagedBundleEntry entries[2]{};
+	entries[0].nameOffset = cursor;
+	entries[0].nameSize = static_cast<u32>(nameA.size());
+	std::memcpy(dst + cursor, nameA.data(), nameA.size());
+	cursor += entries[0].nameSize;
+	entries[0].dataOffset = cursor;
+	entries[0].rawSize = static_cast<u32>(rawA.size());
+	entries[0].storedSize = static_cast<u32>(rawA.size());
+	entries[0].codec = static_cast<u8>(PakCodec::None);
+	std::memcpy(dst + cursor, rawA.data(), rawA.size());
+	cursor += entries[0].storedSize;
+
+	entries[1].nameOffset = cursor;
+	entries[1].nameSize = static_cast<u32>(nameB.size());
+	std::memcpy(dst + cursor, nameB.data(), nameB.size());
+	cursor += entries[1].nameSize;
+	entries[1].dataOffset = cursor;
+	entries[1].rawSize = static_cast<u32>(rawB.size());
+	entries[1].storedSize = static_cast<u32>(compB.size());
+	entries[1].codec = static_cast<u8>(PakCodec::LZ4);
+	std::memcpy(dst + cursor, compB.data(), compB.size());
+
+	std::memcpy(dst + sizeof(PakManagedBundleHeader), entries, sizeof(entries));
+
+	CookOps::PakWriteDesc desc;
+	desc.documents.push_back({PakDocumentKind::ManagedBundle, bundle});
+	Vector<u8> package{GetMemoryResource(MemTag::Editor)};
+	str error;
+	ASSERT_TRUE(CookOps::BuildPackage(sources, desc, package, error)) << error;
+	WritePackage(package, "Managed.slpak");
+	CloseProject();
+
+	OpenStagedTree();
+	ASSERT_TRUE(AssetDatabase::MountPackage(StagedPackage("Managed.slpak"), error)) << error;
+
+	struct Seen {
+		Vector<str> names{GetMemoryResource(MemTag::Core)};
+		Vector<str> payloads{GetMemoryResource(MemTag::Core)};
+	} seen;
+	ASSERT_TRUE(AssetDatabase::ReadManagedBundle(
+		[](const char* name, const u8* data, u32 size, void* user) {
+			auto* out = static_cast<Seen*>(user);
+			out->names.emplace_back(name);
+			out->payloads.emplace_back(reinterpret_cast<const char*>(data), size);
+		},
+		&seen));
+	ASSERT_EQ(seen.names.size(), 2u);
+	EXPECT_EQ(seen.names[0], nameA);
+	EXPECT_EQ(seen.payloads[0], rawA);
+	EXPECT_EQ(seen.names[1], nameB);
+	EXPECT_EQ(seen.payloads[1], rawB);
 }

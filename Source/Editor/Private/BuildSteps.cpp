@@ -18,6 +18,7 @@
 #include "Shalltear/Editor/SettingsOps.h"
 
 #include "BuildIcon.h"
+#include "LZ4Encode.h"
 #include "Shalltear/Editor/ChildProcess.h"
 #include "Targets/WebTarget.h"
 
@@ -85,6 +86,109 @@ namespace Shalltear {
 				return CookOps::CookCompression::LZ4HC;
 			}
 			return CookOps::CookCompression::None;
+		}
+
+		bool BuildManagedBundleDocument(const str& managedDir, str& outBundle, u32& outCount, u64& outRawBytes, str& outError) {
+			outBundle.clear();
+			outCount = 0;
+			outRawBytes = 0;
+
+			const fs::path root(managedDir);
+			const fs::path manifestPath = root / "managed-manifest.json";
+			const str manifestText = FileSystem::ReadTextFile(Path(manifestPath.generic_string()), MemTag::Editor);
+			if (manifestText.empty()) {
+				outError = "couldn't read managed manifest '" + manifestPath.generic_string() + "'";
+				return false;
+			}
+			LinearAllocator arena(64 * 1024, MemTag::Editor);
+			const JSONValue manifest = JSONParse(manifestText, arena);
+			if (!manifest.IsArray() || manifest.Size() == 0) {
+				outError = "managed manifest '" + manifestPath.generic_string() + "' is invalid or empty";
+				return false;
+			}
+
+			struct StagedEntry {
+				str name;
+				Vector<u8> stored{GetMemoryResource(MemTag::Editor)};
+				u32 rawSize = 0;
+				PakCodec codec = PakCodec::None;
+			};
+			Vector<StagedEntry> entries{GetMemoryResource(MemTag::Editor)};
+			entries.reserve(manifest.Size());
+
+			Vector<u8> compressed{GetMemoryResource(MemTag::Editor)};
+			for (size_t i = 0; i < manifest.Size(); ++i) {
+				const JSONValue& item = manifest[i];
+				if (!item.IsString() || item.AsString().empty()) {
+					continue;
+				}
+				const str name(item.AsString());
+				const fs::path assemblyPath = root / name.c_str();
+				Buffer raw = FileSystem::ReadFile(Path(assemblyPath.generic_string()), MemTag::Editor);
+				if (!raw.data || raw.size == 0 || raw.size > 0xFFFFFFFFull) {
+					outError = "couldn't read managed assembly '" + assemblyPath.generic_string() + "'";
+					return false;
+				}
+
+				StagedEntry& entry = entries.emplace_back();
+				entry.name = name;
+				entry.rawSize = static_cast<u32>(raw.size);
+				outRawBytes += raw.size;
+
+				compressed.clear();
+				LZ4::Compress(raw.data, raw.size, LZ4::Effort::Fast, compressed);
+				if (!compressed.empty() && compressed.size() < raw.size) {
+					entry.codec = PakCodec::LZ4;
+					entry.stored = compressed;
+				} else {
+					entry.codec = PakCodec::None;
+					entry.stored.assign(raw.data, raw.data + raw.size);
+				}
+			}
+
+			if (entries.empty()) {
+				outError = "managed manifest '" + manifestPath.generic_string() + "' listed no assemblies";
+				return false;
+			}
+
+			u64 totalSize = sizeof(PakManagedBundleHeader) + entries.size() * sizeof(PakManagedBundleEntry);
+			for (const StagedEntry& entry : entries) {
+				totalSize += entry.name.size() + entry.stored.size();
+			}
+			if (totalSize > 0xFFFFFFFFull) {
+				outError = "managed assembly bundle exceeds 4 GiB limit";
+				return false;
+			}
+
+			outBundle.resize(static_cast<size_t>(totalSize));
+			u8* const dst = reinterpret_cast<u8*>(outBundle.data());
+
+			PakManagedBundleHeader header{};
+			header.magic = PAK_MANAGED_BUNDLE_MAGIC;
+			header.entryCount = static_cast<u32>(entries.size());
+			std::memcpy(dst, &header, sizeof(header));
+
+			u32 cursor = static_cast<u32>(sizeof(PakManagedBundleHeader) + entries.size() * sizeof(PakManagedBundleEntry));
+			for (size_t i = 0; i < entries.size(); ++i) {
+				const StagedEntry& entry = entries[i];
+				PakManagedBundleEntry record{};
+				record.nameOffset = cursor;
+				record.nameSize = static_cast<u32>(entry.name.size());
+				std::memcpy(dst + cursor, entry.name.data(), entry.name.size());
+				cursor += record.nameSize;
+
+				record.dataOffset = cursor;
+				record.rawSize = entry.rawSize;
+				record.storedSize = static_cast<u32>(entry.stored.size());
+				record.codec = static_cast<u8>(entry.codec);
+				std::memcpy(dst + cursor, entry.stored.data(), entry.stored.size());
+				cursor += record.storedSize;
+
+				std::memcpy(dst + sizeof(PakManagedBundleHeader) + i * sizeof(PakManagedBundleEntry), &record, sizeof(record));
+			}
+
+			outCount = static_cast<u32>(entries.size());
+			return true;
 		}
 
 		str ResolveEngineAssetsRoot() {
@@ -589,6 +693,18 @@ namespace Shalltear {
 			}
 			if (!context.windowIconDocument.empty()) {
 				desc.documents.push_back({PakDocumentKind::Icon, context.windowIconDocument});
+			}
+			if (!context.managedAssembliesDir.empty()) {
+				str managedBundle;
+				u32 assemblyCount = 0;
+				u64 rawBytes = 0;
+				if (!BuildManagedBundleDocument(context.managedAssembliesDir, managedBundle, assemblyCount, rawBytes, error)) {
+					context.AddIssue(BuildIssueSeverity::Error, "", "managed bundle cook failed: " + error);
+					return BuildStepStatus::Failed;
+				}
+				context.Log(std::format("packed {} WebAssembly managed assembly(ies) into Content.slpak ({} B -> {} B)",
+										assemblyCount, rawBytes, managedBundle.size()));
+				desc.documents.push_back({PakDocumentKind::ManagedBundle, std::move(managedBundle)});
 			}
 			const bool singleFile = ResolvedBool(context, "singleFile");
 			if (singleFile) {

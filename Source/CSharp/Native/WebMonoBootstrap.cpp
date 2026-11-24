@@ -27,6 +27,8 @@ void* ShalltearWebMonoLookupM2N(char* cookie);
 void* ShalltearWebMonoDlLoad(const char* name, int flags, char** err, void* userData);
 void* ShalltearWebMonoDlSym(void* handle, const char* name, char** err, void* userData);
 void* ShalltearWebMonoGetN2M(uint32_t token, const char* key, void* extraArg);
+bool ShalltearReadManagedBundle(void (*onAssembly)(const char* name, const uint8_t* data, uint32_t size, void* user),
+								void* user);
 
 void mono_icall_table_init(void);
 void mono_ee_interp_init(const char* opts);
@@ -279,11 +281,32 @@ namespace {
 		return true;
 	}
 
+	void OnPackagedAssembly(const char* name, const uint8_t* data, uint32_t size, void* user) {
+		if (!name || !data || size == 0) {
+			return;
+		}
+		uint8_t* copy = static_cast<uint8_t*>(std::malloc(size));
+		if (!copy) {
+			return;
+		}
+		std::memcpy(copy, data, size);
+		char* ownedName = strdup(name);
+		mono_bundled_resources_add_assembly_resource(ownedName, ownedName, copy, size, &FreeAssemblyBuffer, copy);
+		if (uint32_t* count = static_cast<uint32_t*>(user)) {
+			++(*count);
+		}
+	}
+
+	bool RegisterPackagedAssemblies() {
+		uint32_t count = 0;
+		return ShalltearReadManagedBundle(&OnPackagedAssembly, &count) && count > 0;
+	}
+
 } // anonymous namespace
 
 extern "C" int32_t ShalltearScriptsInitialize(const void* engine, void* managed) {
 	if (!_runtimeBooted) {
-		if (!RegisterBundledAssemblies("/app/Managed")) {
+		if (!RegisterPackagedAssemblies() && !RegisterBundledAssemblies("/app/Managed")) {
 			return -1;
 		}
 

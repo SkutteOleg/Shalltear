@@ -266,8 +266,38 @@ namespace Shalltear {
 		BootManifest = 1,
 		ProjectSettings = 2,
 		Icon = 3,
-		ThirdPartyNotices = 4
+		ThirdPartyNotices = 4,
+		ManagedBundle = 5
 	};
+
+	constexpr u32 PAK_MANAGED_BUNDLE_MAGIC = PakFourCC('S', 'L', 'M', 'B');
+
+	struct PakManagedBundleHeader {
+		u32 magic;
+		u32 entryCount;
+	};
+	static_assert(sizeof(PakManagedBundleHeader) == 8);
+	static_assert(offsetof(PakManagedBundleHeader, magic) == 0);
+	static_assert(offsetof(PakManagedBundleHeader, entryCount) == 4);
+	static_assert(std::has_unique_object_representations_v<PakManagedBundleHeader>);
+
+	struct PakManagedBundleEntry {
+		u32 nameOffset;
+		u32 nameSize;
+		u32 dataOffset;
+		u32 rawSize;
+		u32 storedSize;
+		u8 codec;
+		u8 pad[3];
+	};
+	static_assert(sizeof(PakManagedBundleEntry) == 24);
+	static_assert(offsetof(PakManagedBundleEntry, nameOffset) == 0);
+	static_assert(offsetof(PakManagedBundleEntry, nameSize) == 4);
+	static_assert(offsetof(PakManagedBundleEntry, dataOffset) == 8);
+	static_assert(offsetof(PakManagedBundleEntry, rawSize) == 12);
+	static_assert(offsetof(PakManagedBundleEntry, storedSize) == 16);
+	static_assert(offsetof(PakManagedBundleEntry, codec) == 20);
+	static_assert(std::has_unique_object_representations_v<PakManagedBundleEntry>);
 
 	// Icon document = PakIconImage + WindowIconImage texels per image
 	struct PakIconImage {

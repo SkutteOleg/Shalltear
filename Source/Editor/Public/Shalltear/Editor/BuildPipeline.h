@@ -90,6 +90,9 @@ namespace Shalltear {
 		// appended to embedded third-party notices in single-file builds
 		Vector<str> extraThirdPartyNotices;
 
+		// WebAssembly publish folder whose managed assemblies are packed into Content.slpak
+		str managedAssembliesDir;
+
 		Vector<u32> executableIconSizes;
 		Vector<u32> windowIconSizes;
 		str executableIconFile;

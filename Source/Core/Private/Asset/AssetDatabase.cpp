@@ -30,6 +30,7 @@
 #include "Asset/AssetBinder.h"
 #include "Asset/AssetDatabaseData.h"
 #include "Asset/AssetSource.h"
+#include "Asset/LZ4Decode.h"
 #include "Asset/EngineBuiltins.h"
 #include "Asset/ImportArtifact.h"
 #include "Asset/ImportArtifactStore.h"
@@ -1200,6 +1201,64 @@ namespace Shalltear {
 		return true;
 	}
 
+	bool AssetDatabase::ReadManagedBundle(void (*onAssembly)(const char* name, const u8* data, u32 size, void* user),
+										  void* user) {
+		if (!onAssembly) {
+			return false;
+		}
+		str document;
+		if (!ReadPackageDocument(PakDocumentKind::ManagedBundle, document)) {
+			return false;
+		}
+		if (document.size() < sizeof(PakManagedBundleHeader)) {
+			return false;
+		}
+		const u8* const bytes = reinterpret_cast<const u8*>(document.data());
+		PakManagedBundleHeader header{};
+		std::memcpy(&header, bytes, sizeof(header));
+		if (header.magic != PAK_MANAGED_BUNDLE_MAGIC || header.entryCount == 0) {
+			return false;
+		}
+		const u64 tableBytes = static_cast<u64>(header.entryCount) * sizeof(PakManagedBundleEntry);
+		if (tableBytes > document.size() - sizeof(PakManagedBundleHeader)) {
+			return false;
+		}
+		Buffer scratch;
+		for (u32 i = 0; i < header.entryCount; ++i) {
+			PakManagedBundleEntry entry{};
+			std::memcpy(&entry, bytes + sizeof(PakManagedBundleHeader) + static_cast<size_t>(i) * sizeof(PakManagedBundleEntry),
+						sizeof(entry));
+			if (entry.nameSize == 0 || entry.nameOffset > document.size() || entry.nameSize > document.size() - entry.nameOffset) {
+				return false;
+			}
+			if (entry.dataOffset > document.size() || entry.storedSize > document.size() - entry.dataOffset) {
+				return false;
+			}
+			str name(reinterpret_cast<const char*>(bytes + entry.nameOffset), entry.nameSize);
+			const u8* const stored = bytes + entry.dataOffset;
+			if (entry.codec == static_cast<u8>(PakCodec::None)) {
+				if (entry.storedSize != entry.rawSize) {
+					return false;
+				}
+				onAssembly(name.c_str(), stored, entry.rawSize, user);
+			} else if (entry.codec == static_cast<u8>(PakCodec::LZ4)) {
+				if (static_cast<u64>(entry.rawSize) > static_cast<u64>(entry.storedSize) * LZ4_MAX_RATIO) {
+					return false;
+				}
+				if (scratch.size < entry.rawSize) {
+					scratch.Allocate(entry.rawSize, MemTag::Asset);
+				}
+				if (!LZ4::Decompress(stored, entry.storedSize, scratch.data, entry.rawSize)) {
+					return false;
+				}
+				onAssembly(name.c_str(), scratch.data, entry.rawSize, user);
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	Asset* AssetDatabase::LoadAsset(const Path& virtualPath) {
 		SLT_PROFILE_ZONE("Asset.Load");
 		auto& data = GetData();
@@ -1660,3 +1719,8 @@ namespace Shalltear {
 	} // namespace ModuleInternal
 
 } // namespace Shalltear
+
+extern "C" SHALLTEAR_CORE_API bool ShalltearReadManagedBundle(
+	void (*onAssembly)(const char* name, const Shalltear::u8* data, Shalltear::u32 size, void* user), void* user) {
+	return Shalltear::AssetDatabase::ReadManagedBundle(onAssembly, user);
+}
