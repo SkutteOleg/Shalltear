@@ -454,6 +454,10 @@ namespace Shalltear {
 
 	} // namespace
 
+	bool JobSystem::SupportsBackgroundThreads() {
+		return Platform::SupportsBackgroundThreads();
+	}
+
 	u32 JobSystem::LaneCount(u32 count, u32 minPerLane) {
 		constexpr u32 LANES_PER_THREAD = 4;
 		const u32 workers = GetWorkerCount();

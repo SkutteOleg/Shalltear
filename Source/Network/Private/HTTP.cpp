@@ -20,7 +20,7 @@ namespace Shalltear::Net::HTTP {
 			Request request;
 			DoneCallback onDone;
 			ProgressCallback onProgress;
-			HTTPBackend::Control control;
+			std::shared_ptr<HTTPBackend::Control> control = std::make_shared<HTTPBackend::Control>();
 			std::atomic<u64> received{0};
 			std::atomic<u64> total{0};
 			std::atomic<bool> progressQueued{false};
@@ -28,12 +28,12 @@ namespace Shalltear::Net::HTTP {
 		};
 
 		void Abort(Transfer& transfer, bool timedOut) {
-			transfer.control.timedOut = transfer.control.timedOut || timedOut;
-			transfer.control.cancelled = true;
-			std::lock_guard<std::mutex> guard(transfer.control.abortLock);
-			if (transfer.control.abort) {
-				transfer.control.abort();
-				transfer.control.abort = nullptr;
+			transfer.control->timedOut = transfer.control->timedOut || timedOut;
+			transfer.control->cancelled = true;
+			std::lock_guard<std::mutex> guard(transfer.control->abortLock);
+			if (transfer.control->abort) {
+				transfer.control->abort();
+				transfer.control->abort = nullptr;
 			}
 		}
 
@@ -134,6 +134,75 @@ namespace Shalltear::Net::HTTP {
 			});
 		}
 
+		void FinalizeDownload(const str& target, Response& response) {
+			if (target.empty()) {
+				return;
+			}
+			const std::filesystem::path partial =
+				std::filesystem::path(reinterpret_cast<const char8_t*>(target.c_str())).concat(".download");
+			const bool succeeded = response.status >= 200 && response.status < 300;
+			std::error_code ec;
+			bool moved = false;
+			if (response.result == Result::Ok && succeeded) {
+				std::ofstream file(partial, std::ios::binary | std::ios::trunc);
+				if (!file) {
+					response.result = Result::Failed;
+					response.error = "can't open " + target + ".download for writing";
+				} else {
+					if (!response.body.empty()) {
+						file.write(reinterpret_cast<const char*>(response.body.data()),
+								   static_cast<std::streamsize>(response.body.size()));
+					}
+					const bool ok = static_cast<bool>(file);
+					file.close();
+					if (!ok) {
+						response.result = Result::Failed;
+						response.error = "can't write " + target;
+					} else {
+						std::filesystem::rename(partial,
+												std::filesystem::path(reinterpret_cast<const char8_t*>(target.c_str())), ec);
+						moved = !ec;
+						if (ec) {
+							response.result = Result::Failed;
+							response.error = "can't move download into place: " + ec.message();
+						} else {
+							response.body.clear();
+						}
+					}
+				}
+			}
+			if (!moved) {
+				std::filesystem::remove(partial, ec);
+			}
+		}
+
+		void PostFinished(const std::shared_ptr<Transfer>& transfer, Response response) {
+			transfer->control->write = nullptr;
+			transfer->control->progress = nullptr;
+			Dispatcher::Post([transfer, finished = std::move(response)]() {
+				{
+					HTTPState& state = State();
+					std::lock_guard<std::mutex> guard(state.lock);
+					state.active.erase(transfer->id);
+				}
+				if (transfer->onDone) {
+					transfer->onDone(finished);
+				}
+			});
+		}
+
+		void StartAsyncTransfer(const std::shared_ptr<Transfer>& transfer) {
+			transfer->control->progress = [transfer](u64 received, u64 total) {
+				transfer->received = received;
+				transfer->total = total;
+				QueueProgress(transfer);
+			};
+			HTTPBackend::StartAsync(transfer->request, transfer->control, [transfer](Response response) {
+				FinalizeDownload(transfer->request.downloadPath, response);
+				PostFinished(transfer, std::move(response));
+			});
+		}
+
 		void Run(const std::shared_ptr<Transfer>& transfer) {
 			if (transfer->request.timeoutSeconds > 0.0f) {
 				const std::chrono::duration<f32> limit(transfer->request.timeoutSeconds);
@@ -153,7 +222,7 @@ namespace Shalltear::Net::HTTP {
 				}
 			}
 			if (target.empty() || file) {
-				transfer->control.write = [&](std::span<const u8> bytes) {
+				transfer->control->write = [&](std::span<const u8> bytes) {
 					if (target.empty()) {
 						response.body.insert(response.body.end(), bytes.begin(), bytes.end());
 					} else {
@@ -162,18 +231,18 @@ namespace Shalltear::Net::HTTP {
 					}
 					return !writeFailed;
 				};
-				transfer->control.progress = [&transfer](u64 received, u64 total) {
+				transfer->control->progress = [&transfer](u64 received, u64 total) {
 					transfer->received = received;
 					transfer->total = total;
 					QueueProgress(transfer);
 				};
-				if (transfer->control.cancelled) {
-					response.result = transfer->control.timedOut ? Result::TimedOut : Result::Cancelled;
-					response.error = transfer->control.timedOut ? "timed out" : "cancelled";
+				if (transfer->control->cancelled) {
+					response.result = transfer->control->timedOut ? Result::TimedOut : Result::Cancelled;
+					response.error = transfer->control->timedOut ? "timed out" : "cancelled";
 				} else if (!HTTPBackend::IsAvailable()) {
 					response.error = "no HTTP backend on this system";
 				} else {
-					HTTPBackend::Perform(transfer->request, response, transfer->control);
+					HTTPBackend::Perform(transfer->request, response, *transfer->control);
 				}
 			}
 			if (!target.empty()) {
@@ -197,18 +266,7 @@ namespace Shalltear::Net::HTTP {
 				response.result = Result::Failed;
 				response.error = "can't write " + target;
 			}
-			transfer->control.write = nullptr;
-			transfer->control.progress = nullptr;
-			Dispatcher::Post([transfer, finished = std::move(response)]() {
-				{
-					HTTPState& state = State();
-					std::lock_guard<std::mutex> guard(state.lock);
-					state.active.erase(transfer->id);
-				}
-				if (transfer->onDone) {
-					transfer->onDone(finished);
-				}
-			});
+			PostFinished(transfer, std::move(response));
 		}
 
 	} // anonymous namespace
@@ -235,7 +293,11 @@ namespace Shalltear::Net::HTTP {
 			state.active.emplace(transfer->id, transfer);
 		}
 		const RequestId id = transfer->id;
-		Workers::Run(Workers::Pool::HTTP, [transfer] { Run(transfer); });
+		if (HTTPBackend::SupportsAsync()) {
+			StartAsyncTransfer(transfer);
+		} else {
+			Workers::Run(Workers::Pool::HTTP, [transfer] { Run(transfer); });
+		}
 		return id;
 	}
 

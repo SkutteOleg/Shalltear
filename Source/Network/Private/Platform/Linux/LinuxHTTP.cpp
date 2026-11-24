@@ -222,4 +222,11 @@ namespace Shalltear::Net::HTTPBackend {
 		}
 	}
 
+	bool SupportsAsync() {
+		return false;
+	}
+
+	void StartAsync(const HTTP::Request&, std::shared_ptr<Control>, std::function<void(HTTP::Response)>) {
+	}
+
 } // namespace Shalltear::Net::HTTPBackend

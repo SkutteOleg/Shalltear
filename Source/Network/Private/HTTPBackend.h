@@ -5,6 +5,7 @@
 
 #include <atomic>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <span>
 
@@ -24,7 +25,10 @@ namespace Shalltear::Net::HTTPBackend {
 	};
 
 	bool IsAvailable();
+	bool SupportsAsync();
 	// body streamed to control.write, everything else into response
 	void Perform(const HTTP::Request& request, HTTP::Response& response, Control& control);
+	void StartAsync(const HTTP::Request& request, std::shared_ptr<Control> control,
+					std::function<void(HTTP::Response)> onComplete);
 
 } // namespace Shalltear::Net::HTTPBackend

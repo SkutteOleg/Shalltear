@@ -244,4 +244,11 @@ namespace Shalltear::Net::HTTPBackend {
 		response.result = control.cancelled ? HTTP::Result::Cancelled : HTTP::Result::Ok;
 	}
 
+	bool SupportsAsync() {
+		return false;
+	}
+
+	void StartAsync(const HTTP::Request&, std::shared_ptr<Control>, std::function<void(HTTP::Response)>) {
+	}
+
 } // namespace Shalltear::Net::HTTPBackend

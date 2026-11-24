@@ -70,6 +70,7 @@ namespace Shalltear {
 		}
 
 		static u32 GetWorkerCount();
+		static bool SupportsBackgroundThreads();
 
 		static constexpr u32 MAX_LANES = 64;
 

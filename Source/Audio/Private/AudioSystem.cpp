@@ -120,7 +120,7 @@ namespace Shalltear {
 			_renderer.Initialize(limit + HeadroomFor(limit, _maxRealVoices), DecodersFor(_maxRealVoices));
 			_voices.Initialize(limit, HeadroomFor(limit, _maxRealVoices));
 			_buses.Initialize(AudioRenderer::MAX_BUSES);
-			_streamer.Start(StreamsFor(_maxRealVoices), JobSystem::GetWorkerCount() > 0);
+			_streamer.Start(StreamsFor(_maxRealVoices), JobSystem::SupportsBackgroundThreads());
 			_retiringStreams = New<Vector<RetiringStream>>(MemTag::Audio, GetMemoryResource(MemTag::Audio));
 			_retiringStreams->reserve(StreamsFor(_maxRealVoices));
 			_liveStreams = 0;
@@ -291,7 +291,7 @@ namespace Shalltear {
 			if (!_up) {
 				return;
 			}
-			if (JobSystem::GetWorkerCount() == 0) {
+			if (!JobSystem::SupportsBackgroundThreads()) {
 				_streamer.Pump();
 			}
 			DrainEvents();
@@ -2066,7 +2066,7 @@ namespace Shalltear {
 			}
 			_streamer.Stop();
 			DestroyRetiredStreams(true);
-			_streamer.Start(StreamsFor(real), JobSystem::GetWorkerCount() > 0);
+			_streamer.Start(StreamsFor(real), JobSystem::SupportsBackgroundThreads());
 			_retiringStreams->reserve(StreamsFor(real));
 
 			u32 capacity = limit + HeadroomFor(limit, real);

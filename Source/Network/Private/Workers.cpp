@@ -1,5 +1,7 @@
 #include "NetworkInternal.h"
 
+#include "Shalltear/Core/Jobs/JobSystem.h"
+
 #include <condition_variable>
 #include <deque>
 #include <thread>
@@ -12,6 +14,12 @@ namespace Shalltear::Net::Workers {
 			explicit PoolState(u32 limit) : maxThreads(limit) {}
 
 			void Run(std::function<void()> job) {
+				if (!JobSystem::SupportsBackgroundThreads()) {
+					if (job) {
+						job();
+					}
+					return;
+				}
 				std::lock_guard<std::mutex> guard(lock);
 				queue.push_back(std::move(job));
 				if (idle == 0 && threads.size() < maxThreads) {
