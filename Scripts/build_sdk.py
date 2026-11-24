@@ -194,6 +194,26 @@ DAWN_WEB_RULES = (
 		 'native Dawn test runtime / headers not needed for Web exports'),
 )
 
+WEB_NUGET_PACKS = (
+	'microsoft.netcore.app.runtime.mono.browser-wasm',
+	'microsoft.netcore.app.runtime.mono.multithread.browser-wasm',
+	'microsoft.net.runtime.webassembly.sdk',
+	'microsoft.net.illink.tasks',
+)
+
+EMSCRIPTEN_CONFIG_TEXT = (
+	"import os as _os\n"
+	"import shutil as _shutil\n"
+	"_root = _os.path.dirname(_os.path.abspath(__file__))\n"
+	"LLVM_ROOT = _os.path.join(_root, 'install', 'bin')\n"
+	"BINARYEN_ROOT = _os.path.join(_root, 'install')\n"
+	"EMSCRIPTEN_ROOT = _os.path.join(_root, 'install', 'emscripten')\n"
+	"CACHE = _os.path.join(_root, 'cache')\n"
+	"_node = _shutil.which('node')\n"
+	"if _node:\n"
+	"    NODE_JS = _node\n"
+)
+
 
 def classify(relative, rules=LLVM_RULES):
 	for rule in rules:
@@ -466,9 +486,12 @@ def verify_toolchain(bundle_dotnet=False, bundle_linux=False, bundle_web=False):
 		))
 	if bundle_web:
 		exe = '.exe' if os.name == 'nt' else ''
+		required.append(os.path.join(TOOLCHAIN_DIR, 'emsdk', '.emscripten'))
 		required.append(os.path.join(TOOLCHAIN_DIR, 'emsdk', 'install', 'emscripten', 'em++' + exe))
 		required.append(os.path.join(TOOLCHAIN_DIR, 'dawn', 'bin', 'tint' + exe))
 		required.append(os.path.join(TOOLCHAIN_DIR, 'dawn', 'emdawnwebgpu_pkg', 'emdawnwebgpu.port.py'))
+		for pack in WEB_NUGET_PACKS:
+			required.append(os.path.join(TOOLCHAIN_DIR, 'NuGet', pack))
 	offenders += [f"  missing: {path}" for path in required if not os.path.exists(path)]
 	if offenders:
 		print("Error: the staged toolchain isn't distributable:")
@@ -509,9 +532,22 @@ def stage_optional_bundles(bundle_dotnet=False, bundle_linux=False, bundle_web=F
 			print("Error: --bundle-web requested but External/Prebuilt/emsdk or dawn is absent.")
 			print("  fix: python Scripts/fetch_prebuilt.py --web")
 			sys.exit(1)
-		emsdk_count = copy_tree(emsdk_src, os.path.join(TOOLCHAIN_DIR, 'emsdk'),
+		emsdk_dst = os.path.join(TOOLCHAIN_DIR, 'emsdk')
+		emsdk_count = copy_tree(emsdk_src, emsdk_dst,
 								lambda rel: rel != '.fetched')
+		with open(os.path.join(emsdk_dst, '.emscripten'), 'w', encoding='utf-8', newline='\n') as f:
+			f.write(EMSCRIPTEN_CONFIG_TEXT)
 		print(f"  Emscripten {emsdk_count:>5} file(s)")
+		if not bundle_dotnet:
+			web_nuget_count = 0
+			for pack in WEB_NUGET_PACKS:
+				pack_src = os.path.join(PREBUILT_DIR, 'nuget', pack)
+				if not os.path.isdir(pack_src):
+					print(f"Error: --bundle-web requested but {pack_src} is absent.")
+					print("  fix: python Scripts/fetch_prebuilt.py --web")
+					sys.exit(1)
+				web_nuget_count += copy_tree(pack_src, os.path.join(TOOLCHAIN_DIR, 'NuGet', pack))
+			print(f"  WebNuGet {web_nuget_count:>4} file(s)")
 		dawn_unclassified = []
 		def dawn_wanted(relative):
 			rule = classify(relative, DAWN_WEB_RULES)

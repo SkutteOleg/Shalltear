@@ -542,6 +542,7 @@ def fetch_dotnet_wasm_packs() -> None:
         f"microsoft.netcore.app.runtime.mono.browser-wasm/{version}",
         f"microsoft.netcore.app.runtime.mono.multithread.browser-wasm/{version}",
         f"microsoft.net.runtime.webassembly.sdk/{version}",
+        f"microsoft.net.illink.tasks/{version}",
     ]
     packages = PREBUILT_DIR / "nuget"
     missing = [name for name in wanted if name in packs and stale_packs(packages, {name: packs[name]})]
@@ -947,14 +948,17 @@ def fetch_emsdk() -> Path:
                 tf.extractall(target)
         shutil.copyfile(lic_file, target / "LICENSE")
 
-    node = shutil.which("node") or "node"
-    node_path = str(Path(node).resolve()) if shutil.which("node") else node
     cfg = (
-        f"LLVM_ROOT = {str((target / 'install' / 'bin').resolve())!r}\n"
-        f"BINARYEN_ROOT = {str((target / 'install').resolve())!r}\n"
-        f"EMSCRIPTEN_ROOT = {str((target / 'install' / 'emscripten').resolve())!r}\n"
-        f"NODE_JS = {node_path!r}\n"
-        f"CACHE = {str((target / 'cache').resolve())!r}\n"
+        "import os as _os\n"
+        "import shutil as _shutil\n"
+        "_root = _os.path.dirname(_os.path.abspath(__file__))\n"
+        "LLVM_ROOT = _os.path.join(_root, 'install', 'bin')\n"
+        "BINARYEN_ROOT = _os.path.join(_root, 'install')\n"
+        "EMSCRIPTEN_ROOT = _os.path.join(_root, 'install', 'emscripten')\n"
+        "CACHE = _os.path.join(_root, 'cache')\n"
+        "_node = _shutil.which('node')\n"
+        "if _node:\n"
+        "    NODE_JS = _node\n"
     )
     em_config.write_text(cfg, encoding="utf-8")
     if not emxx.is_file():

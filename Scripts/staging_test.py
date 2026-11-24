@@ -387,6 +387,19 @@ def check_dawn_web_rules(fail):
 			fail("%d path(s) in External/Prebuilt/dawn match no rule: %s"
 				 % (len(unclassified), ', '.join(sorted(unclassified)[:5])))
 		checks += 1
+	dummy_root = os.path.abspath(os.path.join(tempfile.gettempdir(), 'shalltear_emsdk_reloc_check'))
+	em_env = {'__file__': os.path.join(dummy_root, '.emscripten')}
+	exec(build_sdk.EMSCRIPTEN_CONFIG_TEXT, em_env)
+	expected_paths = {
+		'LLVM_ROOT': os.path.join(dummy_root, 'install', 'bin'),
+		'BINARYEN_ROOT': os.path.join(dummy_root, 'install'),
+		'EMSCRIPTEN_ROOT': os.path.join(dummy_root, 'install', 'emscripten'),
+		'CACHE': os.path.join(dummy_root, 'cache'),
+	}
+	for key, expected in expected_paths.items():
+		if em_env.get(key) != expected:
+			fail("EMSCRIPTEN_CONFIG_TEXT %s = %r, expected %r" % (key, em_env.get(key), expected))
+		checks += 1
 	return checks
 
 
