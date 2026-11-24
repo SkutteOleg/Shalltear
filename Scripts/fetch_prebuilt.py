@@ -955,7 +955,7 @@ def fetch_emsdk() -> Path:
         "LLVM_ROOT = _os.path.join(_root, 'install', 'bin')\n"
         "BINARYEN_ROOT = _os.path.join(_root, 'install')\n"
         "EMSCRIPTEN_ROOT = _os.path.join(_root, 'install', 'emscripten')\n"
-        "CACHE = _os.path.join(_root, 'cache')\n"
+        "CACHE = _os.path.join(_root, 'install', 'emscripten', 'cache')\n"
         "_node = _shutil.which('node')\n"
         "if _node:\n"
         "    NODE_JS = _node\n"

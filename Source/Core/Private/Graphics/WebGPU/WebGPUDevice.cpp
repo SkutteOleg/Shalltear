@@ -1168,12 +1168,16 @@ namespace Shalltear::RHI {
 		SLT_CORE_ASSERT(size > 0 && IsPowerOfTwo(alignment));
 
 		FrameContext& frame = impl->frames[impl->frameIndex];
+		const u64 paddedSize = AlignUp(size, 16);
 		const u64 offset = AlignUp(frame.transientUsed, alignment);
-		if (offset + size > frame.transientCapacity) {
-			SLT_LOG_ERROR("Graphics", "WebGPU: transient ring exhausted ({} + {} > {} B)", offset, size, frame.transientCapacity);
+		if (offset + paddedSize > frame.transientCapacity) {
+			SLT_LOG_ERROR("Graphics", "WebGPU: transient ring exhausted ({} + {} > {} B)", offset, paddedSize, frame.transientCapacity);
 			return {};
 		}
-		frame.transientUsed = offset + size;
+		if (paddedSize > size) {
+			std::memset(frame.transientCPU.data() + offset + size, 0, static_cast<size_t>(paddedSize - size));
+		}
+		frame.transientUsed = offset + paddedSize;
 
 		TransientAllocation alloc;
 		alloc.buffer = frame.transientHandle;

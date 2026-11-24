@@ -907,7 +907,12 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					return BuildStepStatus::Failed;
 				}
 				const fs::path managedDir = fs::path(context.stagingDir) / ManagedFolder;
-				fs::remove_all(managedDir, ec);
+				if (fs::is_directory(managedDir, ec)) {
+					for (fs::directory_iterator it(managedDir, ec), end; !ec && it != end; it.increment(ec)) {
+						std::error_code removed;
+						fs::remove_all(it->path(), removed);
+					}
+				}
 				ec.clear();
 				fs::create_directories(managedDir, ec);
 				if (ec) {

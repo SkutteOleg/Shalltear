@@ -394,7 +394,7 @@ def check_dawn_web_rules(fail):
 		'LLVM_ROOT': os.path.join(dummy_root, 'install', 'bin'),
 		'BINARYEN_ROOT': os.path.join(dummy_root, 'install'),
 		'EMSCRIPTEN_ROOT': os.path.join(dummy_root, 'install', 'emscripten'),
-		'CACHE': os.path.join(dummy_root, 'cache'),
+		'CACHE': os.path.join(dummy_root, 'install', 'emscripten', 'cache'),
 	}
 	for key, expected in expected_paths.items():
 		if em_env.get(key) != expected:

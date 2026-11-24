@@ -1229,7 +1229,12 @@ struct BlitVSOut {
 				WGPUBuffer gpuBuf = buffer->inVertexHeap ? impl.vertexHeap.buffer : buffer->buffer;
 				const u64 baseOffset = buffer->inVertexHeap ? buffer->heapOffset : 0;
 				const u64 offset = baseOffset + staged.a;
-				const u64 range = staged.b == WHOLE_BUFFER ? (buffer->gpuSize - staged.a) : AlignUp(staged.b, 4);
+				// WGSL pads uniform structs to 16-byte multiples, so uniform bindings must round up
+				const u64 rangeAlign = staged.type == DescriptorType::UniformBuffer ? 16 : 4;
+				u64 range = staged.b == WHOLE_BUFFER ? (buffer->gpuSize - staged.a) : AlignUp(staged.b, rangeAlign);
+				if (staged.a + range > buffer->gpuSize) {
+					range = buffer->gpuSize - staged.a;
+				}
 				entry.buffer = gpuBuf;
 				entry.offset = offset;
 				entry.size = range;

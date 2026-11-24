@@ -101,7 +101,8 @@ namespace Shalltear::RHI {
 
 		BufferResource created;
 		created.size = desc.size;
-		created.gpuSize = AlignUp(std::max<u64>(desc.size, 4), 4);
+		const u64 minAlign = HasFlag(desc.usage, BufferUsage::Uniform) ? 16 : 4;
+		created.gpuSize = AlignUp(std::max<u64>(desc.size, minAlign), minAlign);
 		created.usage = desc.usage;
 		created.access = desc.access;
 		if (desc.access == MemoryAccess::CPUToGPU || desc.access == MemoryAccess::Readback) {
