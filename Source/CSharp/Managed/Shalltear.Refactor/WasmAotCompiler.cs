@@ -42,8 +42,10 @@ internal static class WasmAotCompiler {
 			string stem = Path.GetFileNameWithoutExtension(dllName);
 			string bcPath = Path.Combine(fullOutDir, dllName + ".bc");
 			string asmPath = Path.Combine(fullOutDir, dllName + ".s");
+			string tokPath = Path.Combine(fullOutDir, dllName + ".tokens");
 			string bcArg = bcPath.Replace('\\', '/');
 			string asmArg = asmPath.Replace('\\', '/');
+			string tokArg = tokPath.Replace('\\', '/');
 
 			ProcessStartInfo psi = new() {
 				FileName = compilerPath,
@@ -59,7 +61,7 @@ internal static class WasmAotCompiler {
 			if (enableThreads) {
 				psi.ArgumentList.Add("--wasm-gc-safepoints");
 			}
-			psi.ArgumentList.Add($"--aot=llvmonly,interp,static,direct-icalls,deterministic,mattr=simd,no-opt,asmonly,outfile={asmArg},llvm-outfile={bcArg}");
+			psi.ArgumentList.Add($"--aot=llvmonly,interp,static,direct-icalls,deterministic,mattr=simd,no-opt,asmonly,outfile={asmArg},llvm-outfile={bcArg},trimming-eligible-methods-outfile={tokArg}");
 			psi.ArgumentList.Add(dllPath);
 
 			using Process? proc = Process.Start(psi);

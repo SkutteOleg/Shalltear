@@ -27,6 +27,15 @@ static class Program {
 				return 1;
 			}
 		}
+		if (args.Length >= 3 && args[0] == "--strip-wasm-il") {
+			try {
+				return WasmILStripper.Run(args[1], args[2]);
+			} catch (Exception error) {
+				Console.WriteLine(ERROR + error.Message);
+				Console.WriteLine(error.StackTrace);
+				return 1;
+			}
+		}
 		Options? options = Options.Parse(args, out string problem);
 		if (options == null) {
 			Console.WriteLine(ERROR + problem);

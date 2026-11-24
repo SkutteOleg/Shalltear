@@ -308,6 +308,9 @@
 		<Exec Condition="'$(ShalltearWebAot)' == 'true'"
 			  Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRefactorPath)&quot; --aot-web-mono --compiler &quot;$(ShalltearWebAotCross)&quot; --dll-dir &quot;$(_ShalltearWebPublishDir)&quot; --out-dir &quot;$(_ShalltearWebAotDir)&quot; --table-out &quot;$(_ShalltearWebAotDir)web_aot_modules.g.c&quot; --cmake-out &quot;$(_ShalltearWebAotDir)aot-bitcode.cmake&quot; $(_ShalltearWebAotThreadsArg)"
 			  StandardOutputImportance="low" />
+		<Exec Condition="'$(ShalltearWebAot)' == 'true'"
+			  Command="&quot;$(_ShalltearDotNetHost)&quot; &quot;$(ShalltearRenamerPath)&quot; --strip-wasm-il &quot;$(_ShalltearWebPublishDir)&quot; &quot;$(_ShalltearWebAotDir)&quot;"
+			  StandardOutputImportance="low" />
 
 		<Error Condition="!Exists('$(ShalltearWebMonoPackDir)/THIRD-PARTY-NOTICES.TXT')"
 			   Text="THIRD-PARTY-NOTICES.TXT was not found in '$(ShalltearWebMonoPackDir)'" />
