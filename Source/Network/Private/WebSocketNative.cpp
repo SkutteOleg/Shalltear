@@ -12,7 +12,7 @@ namespace Shalltear::Net::WebSocketNative {
 
 	namespace {
 
-		constexpr std::string_view HANDSHAKE_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+		constexpr std::string_view HandshakeGuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 		constexpr size_t MAX_HANDSHAKE_BYTES = 64 * 1024;
 		constexpr size_t MAX_MESSAGE_BYTES = 32 * 1024 * 1024;
 
@@ -127,9 +127,9 @@ namespace Shalltear::Net::WebSocketNative {
 
 		str ComputeAcceptKey(std::string_view clientKey) {
 			str combined;
-			combined.reserve(clientKey.size() + HANDSHAKE_GUID.size());
+			combined.reserve(clientKey.size() + HandshakeGuid.size());
 			combined.append(clientKey);
-			combined.append(HANDSHAKE_GUID);
+			combined.append(HandshakeGuid);
 			const std::array<u8, 20> digest = ComputeHandshakeHash(combined);
 			return EncodeBase64(digest);
 		}

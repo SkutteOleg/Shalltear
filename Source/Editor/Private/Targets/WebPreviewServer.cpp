@@ -188,7 +188,7 @@ namespace Shalltear::WebPreviewServer {
 				return;
 			}
 			const std::span<const u8> span = data.data ? std::span<const u8>(data.data, data.size) : std::span<const u8>{};
-			SendResponse(client, 200, "OK", MimeTypeForPath(decoded), span, isolated, isHead);
+			SendResponse(client, 200, "OK", MIMETypeForPath(decoded), span, isolated, isHead);
 		}
 
 		void WorkerLoop() {
@@ -206,7 +206,7 @@ namespace Shalltear::WebPreviewServer {
 
 	} // anonymous namespace
 
-	std::string_view MimeTypeForPath(std::string_view path) {
+	std::string_view MIMETypeForPath(std::string_view path) {
 		const size_t dot = path.rfind('.');
 		if (dot == std::string_view::npos) {
 			return "application/octet-stream";

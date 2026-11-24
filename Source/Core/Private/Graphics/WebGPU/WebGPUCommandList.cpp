@@ -14,7 +14,7 @@ namespace Shalltear::RHI {
 			FrameContext& frame = d.frames[d.frameIndex];
 			d.EnsureFrameSet3BindGroups(frame);
 			const bool rw = pipeline.isCompute && pipeline.tableWritable;
-			WGPUBindGroup group = rw ? frame.set3ComputeRWGroup : frame.set3GraphicsGroup;
+			WGPUBindGroup group = rw ? frame.set3ComputeReadWriteGroup : frame.set3GraphicsGroup;
 			const u32 dynOffset = cmd.currentPushOffset;
 			if (cmd.inRenderPass && cmd.renderPass) {
 				d.wgpu.wgpuRenderPassEncoderSetBindGroup(cmd.renderPass, TABLE_SET, group, 1, &dynOffset);
@@ -22,7 +22,7 @@ namespace Shalltear::RHI {
 				d.wgpu.wgpuComputePassEncoderSetBindGroup(cmd.computePass, TABLE_SET, group, 1, &dynOffset);
 			}
 			cmd.set3Bound = true;
-			cmd.set3BoundRW = rw;
+			cmd.set3BoundReadWrite = rw;
 		}
 
 		void EnsureGraphicsVariantBound(DeviceImpl& d, CommandListImpl& cmd) {
@@ -355,7 +355,7 @@ namespace Shalltear::RHI {
 		}
 		const u32 offset = static_cast<u32>(frame.pushUsed);
 		frame.pushUsed += WEBGPU_PUSH_STRIDE;
-		std::memcpy(frame.pushCpu.data() + offset, data.data(), data.size());
+		std::memcpy(frame.pushCPU.data() + offset, data.data(), data.size());
 		_impl->currentPushOffset = offset;
 
 		if (pipeline.bindsTable) {

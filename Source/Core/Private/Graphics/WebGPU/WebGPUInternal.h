@@ -190,7 +190,7 @@ namespace Shalltear::RHI {
 		static constexpr u32 ATLAS_CUBE_SLOTS = 16;
 
 		WGPUBindGroupLayout graphicsLayout = nullptr;
-		WGPUBindGroupLayout computeRWLayout = nullptr;
+		WGPUBindGroupLayout computeReadWriteLayout = nullptr;
 		WGPUBindGroup emptyBindGroup = nullptr;
 		WGPUBuffer atlasMetaBuffer = nullptr;
 		WGPUTexture atlas2D = nullptr;
@@ -303,7 +303,7 @@ namespace Shalltear::RHI {
 		f32 depthBiasSlope = 0.0f;
 		u32 currentPushOffset = 0;
 		bool set3Bound = false;
-		bool set3BoundRW = false;
+		bool set3BoundReadWrite = false;
 		WGPUBindGroup boundComputeSets[MAX_DESCRIPTOR_SETS] = {};
 		RectI passArea{};
 		Format passColorFormats[MAX_COLOR_ATTACHMENTS] = {};
@@ -320,17 +320,17 @@ namespace Shalltear::RHI {
 
 		WGPUBuffer transientBuffer = nullptr;
 		BufferHandle transientHandle;
-		Vector<u8> transientCpu{GetMemoryResource(MemTag::Graphics)};
+		Vector<u8> transientCPU{GetMemoryResource(MemTag::Graphics)};
 		u64 transientCapacity = 0;
 		u64 transientUsed = 256;
 
 		WGPUBuffer pushBuffer = nullptr;
-		Vector<u8> pushCpu{GetMemoryResource(MemTag::Graphics)};
+		Vector<u8> pushCPU{GetMemoryResource(MemTag::Graphics)};
 		u64 pushCapacity = 0;
 		u64 pushUsed = 0;
 
 		WGPUBindGroup set3GraphicsGroup = nullptr;
-		WGPUBindGroup set3ComputeRWGroup = nullptr;
+		WGPUBindGroup set3ComputeReadWriteGroup = nullptr;
 		u64 set3HeapVersion = 0;
 
 		Vector<std::shared_ptr<PendingReadback>> pendingReadbacks{GetMemoryResource(MemTag::Graphics)};
@@ -414,7 +414,7 @@ namespace Shalltear::RHI {
 		bool CreateBufferObject(BufferResource& resource, const char* debugName);
 		bool CreateTextureObjects(TextureResource& resource, const char* debugName);
 		bool CreateSamplerObject(SamplerResource& resource, const char* debugName);
-		void FlushCpuToGpuBuffers();
+		void FlushCPUToGPUBuffers();
 		void FlushDeletionQueue(DeletionQueue& queue);
 		DeletionQueue& DeletionQueueForDestroy();
 		void DrainFrameReadbacks(FrameContext& frame, bool wait);

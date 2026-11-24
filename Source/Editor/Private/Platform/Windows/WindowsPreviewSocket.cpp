@@ -17,7 +17,7 @@ namespace Shalltear::EditorPlatform::PreviewSocket {
 
 		std::once_flag _wsaOnce;
 
-		void EnsureWSA() {
+		void EnsureWinsock() {
 			std::call_once(_wsaOnce, [] {
 				WSADATA data{};
 				::WSAStartup(MAKEWORD(2, 2), &data);
@@ -31,7 +31,7 @@ namespace Shalltear::EditorPlatform::PreviewSocket {
 	} // anonymous namespace
 
 	Handle ListenLoopback(u16& outPort) {
-		EnsureWSA();
+		EnsureWinsock();
 		outPort = 0;
 
 		SOCKET sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

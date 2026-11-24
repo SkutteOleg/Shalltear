@@ -2,46 +2,45 @@
 # 1 line per declaration the codemod would rewrite
 
 [run]
-translation_units = 929
+translation_units = 1154
 parse_failures = 0
-named_declarations_seen = 201292
-dictionary_sha256 = cf88c4983e2c7e7d902f325c0426cf01d18cb8a0e40ff27d2885c89640464ef3
+named_declarations_seen = 83482
+dictionary_sha256 = e5d544398bcc709eb1c545b0febdc88b36b70ed98287112d8d46ed2cf6dda3ff
 
 [dispositions]
 finding = 0
-conforming = 88328
+conforming = 49417
 unresolved = 0
-nonIdentifier = 45132
-noBindingRow = 51888
+nonIdentifier = 14238
+noBindingRow = 19665
 styleNotBound = 0
-vendor = 24
-generated = 12846
-reserved = 35
-kept = 19
-foreignNamespace = 42
-foreignOverride = 2978
-TOTAL = 201292
+vendor = 11
+generated = 66
+reserved = 27
+kept = 17
+foreignNamespace = 38
+foreignOverride = 3
+TOTAL = 83482
 balances = True
 
 [unmapped_cursor_kinds]
 # reached no binding row. A kind here that OUGHT to be renamed is
 # an unhandled case (not a skip). Check this list before each phase
-DECL_REF_EXPR = 17928
-CALL_EXPR = 11539
-CONSTRUCTOR = 7029
-CXX_BASE_SPECIFIER = 4393
-NAMESPACE_REF = 3031
-UNEXPOSED_EXPR = 2941
-TEMPLATE_REF = 2006
-MEMBER_REF_EXPR = 1174
-TYPE_REF = 688
-OVERLOADED_DECL_REF = 487
-USING_DECLARATION = 380
-MEMBER_REF = 216
-NAMESPACE_ALIAS = 72
-SIZE_OF_PACK_EXPR = 2
+DECL_REF_EXPR = 9002
+CALL_EXPR = 3622
+UNEXPOSED_EXPR = 2693
+MEMBER_REF_EXPR = 1052
+NAMESPACE_REF = 915
+TEMPLATE_REF = 880
+TYPE_REF = 475
+CONSTRUCTOR = 360
+CXX_BASE_SPECIFIER = 207
+OVERLOADED_DECL_REF = 185
+MEMBER_REF = 169
+USING_DECLARATION = 79
+NAMESPACE_ALIAS = 22
+SIZE_OF_PACK_EXPR = 3
 CONCEPT_DECL = 1
-UNEXPOSED_DECL = 1
 
 [unresolved]
 

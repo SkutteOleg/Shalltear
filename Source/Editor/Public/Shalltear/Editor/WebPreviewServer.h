@@ -16,6 +16,6 @@ namespace Shalltear::WebPreviewServer {
 
 	SHALLTEAR_EDITOR_API bool IsRunning();
 
-	SHALLTEAR_EDITOR_API std::string_view MimeTypeForPath(std::string_view path);
+	SHALLTEAR_EDITOR_API std::string_view MIMETypeForPath(std::string_view path);
 
 } // namespace Shalltear::WebPreviewServer

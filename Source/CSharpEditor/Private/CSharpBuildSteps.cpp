@@ -46,9 +46,9 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 		constexpr std::string_view NameMap = "GameScripts.map";
 		constexpr std::string_view NoticesFolder = "notices";
 		constexpr std::string_view RuntimeNotices = "THIRD-PARTY-NOTICES-DotNet.txt";
-		constexpr std::string_view MANAGED_FOLDER = "Managed";
-		constexpr std::string_view MANAGED_MANIFEST = "managed-manifest.json";
-		constexpr std::string_view WEB_TRIPLE = "wasm32-unknown-emscripten";
+		constexpr std::string_view ManagedFolder = "Managed";
+		constexpr std::string_view ManagedManifest = "managed-manifest.json";
+		constexpr std::string_view WebTriple = "wasm32-unknown-emscripten";
 		constexpr std::string_view CommonArguments =
 			" -nologo -v:q -tl:off -clp:NoSummary -nodeReuse:false -p:UseSharedCompilation=false -p:GenerateFullPaths=true";
 		constexpr size_t UNPARSED_LINE_CAP = 30;
@@ -143,9 +143,9 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			return IsSingleFileBuild(context) || (context.target && IsWeb(context.target->GetId()));
 		}
 
-		bool FindWebMonoPacks(const BuildContext& context, const str& sdkRoot, bool enableThreads, str& outMonoPack, str& outWasmSDK, str& outLinkerPath) {
+		bool FindWebMonoPacks(const BuildContext& context, const str& sdkRoot, bool enableThreads, str& outMonoPack, str& outWASMSDK, str& outLinkerPath) {
 			outMonoPack.clear();
-			outWasmSDK.clear();
+			outWASMSDK.clear();
 			outLinkerPath.clear();
 
 			const str runtimeVersion = DotNetToolchain::GetPin().runtimeVersion;
@@ -201,10 +201,10 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					}
 					ec.clear();
 				}
-				if (outWasmSDK.empty()) {
+				if (outWASMSDK.empty()) {
 					const fs::path candidate = root / "microsoft.net.runtime.webassembly.sdk" / runtimeVersion;
 					if (fs::is_regular_file(candidate / "tasks" / "net10.0" / "WasmAppBuilder.dll", ec)) {
-						outWasmSDK = candidate.generic_string();
+						outWASMSDK = candidate.generic_string();
 					}
 					ec.clear();
 				}
@@ -219,7 +219,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					}
 				}
 			}
-			return !outMonoPack.empty() && !outWasmSDK.empty() && !outLinkerPath.empty();
+			return !outMonoPack.empty() && !outWASMSDK.empty() && !outLinkerPath.empty();
 		}
 
 		str FindCompilerDirectory(const BuildContext& context, str* outToolchainFile = nullptr) {
@@ -479,7 +479,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 
 			str commandLine = std::format("{} -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE={}", QuoteCommandArgument(toolchain.cmake.path),
 										  QuoteCommandArgument(context.projectRoot), QuoteCommandArgument(context.intermediateDir), context.configuration);
-			if (toolchain.sdkCompilerTarget != WEB_TRIPLE) {
+			if (toolchain.sdkCompilerTarget != WebTriple) {
 				commandLine += " -DCMAKE_CXX_COMPILER=" + QuoteCommandArgument(toolchain.compiler.path);
 			}
 			commandLine += " -DCMAKE_MAKE_PROGRAM=" + QuoteCommandArgument(toolchain.ninja.path);
@@ -901,12 +901,12 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 			const fs::path publish = fs::path(GetPlayerRoot(context.projectRoot, context.profile->name)) / PublishFolder;
 			std::error_code ec;
 			if (IsWeb(context.target->GetId())) {
-				const fs::path manifest = publish / MANAGED_MANIFEST;
+				const fs::path manifest = publish / ManagedManifest;
 				if (!fs::is_regular_file(manifest, ec)) {
 					context.AddIssue(BuildIssueSeverity::Error, "", std::format("'{}' is missing. Build player again", manifest.generic_string()));
 					return BuildStepStatus::Failed;
 				}
-				const fs::path managedDir = fs::path(context.stagingDir) / MANAGED_FOLDER;
+				const fs::path managedDir = fs::path(context.stagingDir) / ManagedFolder;
 				fs::remove_all(managedDir, ec);
 				ec.clear();
 				fs::create_directories(managedDir, ec);
@@ -914,7 +914,7 @@ namespace Shalltear::CSharpEditor::CSharpBuildSteps {
 					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't create '{}' ({})", managedDir.generic_string(), ec.message()));
 					return BuildStepStatus::Failed;
 				}
-				fs::copy_file(manifest, managedDir / MANAGED_MANIFEST, fs::copy_options::overwrite_existing, ec);
+				fs::copy_file(manifest, managedDir / ManagedManifest, fs::copy_options::overwrite_existing, ec);
 				if (ec) {
 					context.AddIssue(BuildIssueSeverity::Error, "", std::format("couldn't stage '{}' ({})", manifest.generic_string(), ec.message()));
 					return BuildStepStatus::Failed;

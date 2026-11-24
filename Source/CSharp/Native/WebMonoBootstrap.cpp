@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include <emscripten/emscripten.h>
 #include <mono/jit/jit.h>
 #include <mono/jit/mono-private-unstable.h>
 #include <mono/metadata/appdomain.h>
@@ -20,6 +19,9 @@
 #include <mono/utils/mono-logger.h>
 
 extern "C" {
+
+void emscripten_async_call(void (*func)(void*), void* arg, int millis);
+int getentropy(void* buffer, size_t length);
 
 void* ShalltearWebMonoLookupM2N(char* cookie);
 void* ShalltearWebMonoDlLoad(const char* name, int flags, char** err, void* userData);
@@ -92,19 +94,14 @@ int mono_wasm_browser_entropy(uint8_t* buffer, int32_t length) {
 	if (!buffer || length <= 0) {
 		return 0;
 	}
-	EM_ASM(
-		{
-			var len = $1;
-			var view = HEAPU8.subarray($0, $0 + len);
-			if (typeof crypto != 'undefined' && crypto.getRandomValues) {
-				crypto.getRandomValues(view);
-			} else {
-				for (var i = 0; i < len; ++i) {
-					view[i] = (Math.random() * 256) | 0;
-				}
-			}
-		},
-		buffer, length);
+	int32_t offset = 0;
+	while (offset < length) {
+		const size_t chunk = static_cast<size_t>(length - offset) > 256 ? 256 : static_cast<size_t>(length - offset);
+		if (getentropy(buffer + offset, chunk) != 0) {
+			return -1;
+		}
+		offset += static_cast<int32_t>(chunk);
+	}
 	return 0;
 }
 
@@ -125,7 +122,6 @@ void schedule_background_exec(void) {
 	emscripten_async_call(&OnMonoBackgroundExec, nullptr, 0);
 }
 
-#ifdef __EMSCRIPTEN_PTHREADS__
 void mono_wasm_pthread_set_name(int32_t) {
 }
 
@@ -149,7 +145,6 @@ void mono_wasm_start_deputy_thread_async(void) {
 
 void mono_wasm_start_io_thread_async(void) {
 }
-#endif
 
 } // extern "C"
 

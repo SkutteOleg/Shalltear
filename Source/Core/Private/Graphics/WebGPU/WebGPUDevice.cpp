@@ -432,7 +432,7 @@ namespace Shalltear::RHI {
 		}
 	}
 
-	void DeviceImpl::FlushCpuToGpuBuffers() {
+	void DeviceImpl::FlushCPUToGPUBuffers() {
 		if (lost || !queue) {
 			return;
 		}
@@ -629,7 +629,7 @@ namespace Shalltear::RHI {
 			}
 			f.transientCapacity = transientCap;
 			f.transientUsed = BINDING_OFFSET_ALIGNMENT;
-			f.transientCpu.assign(static_cast<size_t>(transientCap), 0);
+			f.transientCPU.assign(static_cast<size_t>(transientCap), 0);
 
 			auto [index, gen] = buffers.Acquire();
 			BufferResource& tRes = buffers.slots[index].resource;
@@ -652,7 +652,7 @@ namespace Shalltear::RHI {
 			}
 			f.pushCapacity = pushCap;
 			f.pushUsed = 0;
-			f.pushCpu.assign(static_cast<size_t>(pushCap), 0);
+			f.pushCPU.assign(static_cast<size_t>(pushCap), 0);
 
 			EnsureFrameSet3BindGroups(f);
 		}
@@ -694,9 +694,9 @@ namespace Shalltear::RHI {
 				wgpu.wgpuBindGroupRelease(f.set3GraphicsGroup);
 				f.set3GraphicsGroup = nullptr;
 			}
-			if (f.set3ComputeRWGroup) {
-				wgpu.wgpuBindGroupRelease(f.set3ComputeRWGroup);
-				f.set3ComputeRWGroup = nullptr;
+			if (f.set3ComputeReadWriteGroup) {
+				wgpu.wgpuBindGroupRelease(f.set3ComputeReadWriteGroup);
+				f.set3ComputeReadWriteGroup = nullptr;
 			}
 			if (f.transientHandle.IsValid()) {
 				if (BufferResource* tRes = buffers.Resolve(f.transientHandle)) {
@@ -715,8 +715,8 @@ namespace Shalltear::RHI {
 				wgpu.wgpuBufferRelease(f.pushBuffer);
 				f.pushBuffer = nullptr;
 			}
-			f.transientCpu.clear();
-			f.pushCpu.clear();
+			f.transientCPU.clear();
+			f.pushCPU.clear();
 			f.hasWorkDoneFuture = false;
 		}
 
@@ -969,7 +969,7 @@ namespace Shalltear::RHI {
 		if (impl->lost || !impl->queue) {
 			return;
 		}
-		impl->FlushCpuToGpuBuffers();
+		impl->FlushCPUToGPUBuffers();
 
 		if (!WebGPUPlatform::SupportsWaitAny()) {
 			impl->wgpu.wgpuInstanceProcessEvents(impl->instance);
@@ -1088,7 +1088,7 @@ namespace Shalltear::RHI {
 		cmd.depthBiasSlope = 0.0f;
 		cmd.currentPushOffset = 0;
 		cmd.set3Bound = false;
-		cmd.set3BoundRW = false;
+		cmd.set3BoundReadWrite = false;
 
 		impl->inFrame = true;
 		return &frame.commandList;
@@ -1112,13 +1112,13 @@ namespace Shalltear::RHI {
 		// Flush CPU staging buffers before queue submit so commands see all written data
 		if (frame.transientUsed > BINDING_OFFSET_ALIGNMENT && frame.transientBuffer) {
 			const u64 bytes = AlignUp(frame.transientUsed, 4);
-			impl->wgpu.wgpuQueueWriteBuffer(impl->queue, frame.transientBuffer, 0, frame.transientCpu.data(), bytes);
+			impl->wgpu.wgpuQueueWriteBuffer(impl->queue, frame.transientBuffer, 0, frame.transientCPU.data(), bytes);
 		}
 		if (frame.pushUsed > 0 && frame.pushBuffer) {
 			const u64 bytes = AlignUp(frame.pushUsed, 4);
-			impl->wgpu.wgpuQueueWriteBuffer(impl->queue, frame.pushBuffer, 0, frame.pushCpu.data(), bytes);
+			impl->wgpu.wgpuQueueWriteBuffer(impl->queue, frame.pushBuffer, 0, frame.pushCPU.data(), bytes);
 		}
-		impl->FlushCpuToGpuBuffers();
+		impl->FlushCPUToGPUBuffers();
 
 		WGPUCommandBufferDescriptor cbDesc{};
 		WGPUCommandBuffer cb = impl->wgpu.wgpuCommandEncoderFinish(frame.commandListImpl.encoder, &cbDesc);
@@ -1178,7 +1178,7 @@ namespace Shalltear::RHI {
 		TransientAllocation alloc;
 		alloc.buffer = frame.transientHandle;
 		alloc.offset = offset;
-		alloc.cpu = frame.transientCpu.data() + offset;
+		alloc.cpu = frame.transientCPU.data() + offset;
 		return alloc;
 	}
 

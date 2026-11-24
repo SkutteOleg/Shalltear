@@ -727,7 +727,7 @@ struct BlitVSOut {
 		};
 
 		table.graphicsLayout = buildSet3Layout(false);
-		table.computeRWLayout = buildSet3Layout(true);
+		table.computeReadWriteLayout = buildSet3Layout(true);
 
 		WGPUBindGroupLayout emptyLayout = GetOrCreateSetLayout({});
 		if (emptyLayout) {
@@ -764,7 +764,7 @@ struct BlitVSOut {
 		blitPipeLayoutDesc.bindGroupLayouts = &table.blitLayout;
 		table.blitPipelineLayout = wgpu.wgpuDeviceCreatePipelineLayout(device, &blitPipeLayoutDesc);
 
-		return table.graphicsLayout && table.computeRWLayout && table.blitShader && table.blitPipelineLayout;
+		return table.graphicsLayout && table.computeReadWriteLayout && table.blitShader && table.blitPipelineLayout;
 	}
 
 	void DeviceImpl::DestroyTable() {
@@ -798,9 +798,9 @@ struct BlitVSOut {
 			wgpu.wgpuBindGroupLayoutRelease(table.graphicsLayout);
 			table.graphicsLayout = nullptr;
 		}
-		if (table.computeRWLayout) {
-			wgpu.wgpuBindGroupLayoutRelease(table.computeRWLayout);
-			table.computeRWLayout = nullptr;
+		if (table.computeReadWriteLayout) {
+			wgpu.wgpuBindGroupLayoutRelease(table.computeReadWriteLayout);
+			table.computeReadWriteLayout = nullptr;
 		}
 		if (table.atlasSampler) {
 			wgpu.wgpuSamplerRelease(table.atlasSampler);
@@ -847,16 +847,16 @@ struct BlitVSOut {
 	}
 
 	void DeviceImpl::EnsureFrameSet3BindGroups(FrameContext& frame) {
-		if (frame.set3HeapVersion == vertexHeap.version && frame.set3GraphicsGroup && frame.set3ComputeRWGroup) {
+		if (frame.set3HeapVersion == vertexHeap.version && frame.set3GraphicsGroup && frame.set3ComputeReadWriteGroup) {
 			return;
 		}
 		if (frame.set3GraphicsGroup) {
 			frame.deletionQueue.bindGroups.push_back(frame.set3GraphicsGroup);
 			frame.set3GraphicsGroup = nullptr;
 		}
-		if (frame.set3ComputeRWGroup) {
-			frame.deletionQueue.bindGroups.push_back(frame.set3ComputeRWGroup);
-			frame.set3ComputeRWGroup = nullptr;
+		if (frame.set3ComputeReadWriteGroup) {
+			frame.deletionQueue.bindGroups.push_back(frame.set3ComputeReadWriteGroup);
+			frame.set3ComputeReadWriteGroup = nullptr;
 		}
 
 		auto makeGroup = [&](WGPUBindGroupLayout layout) -> WGPUBindGroup {
@@ -898,7 +898,7 @@ struct BlitVSOut {
 		};
 
 		frame.set3GraphicsGroup = makeGroup(table.graphicsLayout);
-		frame.set3ComputeRWGroup = makeGroup(table.computeRWLayout);
+		frame.set3ComputeReadWriteGroup = makeGroup(table.computeReadWriteLayout);
 		frame.set3HeapVersion = vertexHeap.version;
 	}
 
@@ -1368,7 +1368,7 @@ struct BlitVSOut {
 			Vector<WGPUBindGroupLayoutEntry> entries{GetMemoryResource(MemTag::Graphics)};
 			for (u32 set = 0; set < setCount; ++set) {
 				if (set == TABLE_SET) {
-					setLayouts[set] = (isCompute && outTableWritable) ? impl.table.computeRWLayout : impl.table.graphicsLayout;
+					setLayouts[set] = (isCompute && outTableWritable) ? impl.table.computeReadWriteLayout : impl.table.graphicsLayout;
 					continue;
 				}
 				entries.clear();
