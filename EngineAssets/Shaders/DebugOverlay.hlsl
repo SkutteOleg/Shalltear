@@ -2,6 +2,7 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 #include "Shadows.hlsli"
 
@@ -20,7 +21,7 @@ struct ShalltearDebugOverlayPush {
 	float pad;
 };
 
-[[vk::push_constant]] ShalltearDebugOverlayPush gOverlay;
+SLT_PUSH_CONSTANT(ShalltearDebugOverlayPush, gOverlay)
 
 struct VSOutput {
 	float4 positionCS : SV_Position;

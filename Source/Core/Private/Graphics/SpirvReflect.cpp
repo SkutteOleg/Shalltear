@@ -51,9 +51,11 @@ namespace Shalltear {
 		enum SpvDecoration : u32 {
 			DecorationSpecId = 1,
 			DecorationBlock = 2,
+			DecorationBufferBlock = 3,
 			DecorationMatrixStride = 7,
 			DecorationArrayStride = 6,
 			DecorationBuiltIn = 11,
+			DecorationNonWritable = 24,
 			DecorationLocation = 30,
 			DecorationBinding = 33,
 			DecorationDescriptorSet = 34,
@@ -80,7 +82,7 @@ namespace Shalltear {
 		};
 
 		struct Decorations {
-			bool hasSet = false, hasBinding = false, hasLocation = false, hasBuiltIn = false, isBlock = false;
+			bool hasSet = false, hasBinding = false, hasLocation = false, hasBuiltIn = false, isBlock = false, isBufferBlock = false, nonWritable = false;
 			u32 set = 0, binding = 0;
 		};
 
@@ -195,6 +197,12 @@ namespace Shalltear {
 					case DecorationBlock:
 						decor.isBlock = true;
 						break;
+					case DecorationBufferBlock:
+						decor.isBufferBlock = true;
+						break;
+					case DecorationNonWritable:
+						decor.nonWritable = true;
+						break;
 					case DecorationArrayStride:
 						arrayStrides[operands[0]] = operands[2];
 						break;
@@ -209,6 +217,9 @@ namespace Shalltear {
 				}
 				break;
 			case OpMemberDecorate:
+				if (operandCount >= 3 && operands[2] == DecorationNonWritable) {
+					decorations[operands[0]].nonWritable = true;
+				}
 				if (operandCount >= 4) {
 					u64 key = (static_cast<u64>(operands[0]) << 32) | operands[1];
 					if (operands[2] == DecorationOffset) {
@@ -423,25 +434,46 @@ namespace Shalltear {
 				u32 pointee = pointeeOf(variable.typeId);
 				auto typeIt = types.find(pointee);
 				u16 typeOp = typeIt != types.end() ? typeIt->second.op : u16{0};
+				auto pointeeDecor = decorations.find(pointee);
+				const bool isStorageBuffer = variable.storageClass == StorageStorageBuffer ||
+											 (variable.storageClass == StorageUniform &&
+											  pointeeDecor != decorations.end() && pointeeDecor->second.isBufferBlock);
 
+				bool portablePushBlock = false;
 				if (binding.set == RHI::TABLE_SET) {
-					if (typeOp != OpTypeRuntimeArray) {
-						reflection.error = std::format("resource '{}' in set {} isn't a texture table array", nameOf(id), RHI::TABLE_SET);
-						return reflection;
-					}
-					typeIt = types.find(typeIt->second.words[0]);
-					typeOp = typeIt != types.end() ? typeIt->second.op : u16{0};
-					const bool sampler = typeOp == OpTypeSampler && binding.binding == RHI::TABLE_SAMPLERS_BINDING;
-					RHI::TextureDimension dimension = RHI::TextureDimension::Count;
-					if (typeOp == OpTypeImage) {
-						dimension = ImageDimension(typeIt->second.words[1], typeIt->second.words[3] != 0);
-					}
-					const bool image = (binding.binding == RHI::TABLE_TEXTURES_2D_BINDING && dimension == RHI::TextureDimension::Texture2D) ||
-									   (binding.binding == RHI::TABLE_TEXTURES_CUBE_BINDING && dimension == RHI::TextureDimension::Cube) ||
-									   (binding.binding == RHI::TABLE_TEXTURES_3D_BINDING && dimension == RHI::TextureDimension::Texture3D);
-					if (!sampler && !image) {
-						reflection.error = std::format("resource '{}' doesn't match texture table binding {}", nameOf(id), binding.binding);
-						return reflection;
+					if (typeOp == OpTypeRuntimeArray) {
+						typeIt = types.find(typeIt->second.words[0]);
+						typeOp = typeIt != types.end() ? typeIt->second.op : u16{0};
+						const bool sampler = typeOp == OpTypeSampler && binding.binding == RHI::TABLE_SAMPLERS_BINDING;
+						RHI::TextureDimension dimension = RHI::TextureDimension::Count;
+						if (typeOp == OpTypeImage) {
+							dimension = ImageDimension(typeIt->second.words[1], typeIt->second.words[3] != 0);
+						}
+						const bool image = (binding.binding == RHI::TABLE_TEXTURES_2D_BINDING && dimension == RHI::TextureDimension::Texture2D) ||
+										   (binding.binding == RHI::TABLE_TEXTURES_CUBE_BINDING && dimension == RHI::TextureDimension::Cube) ||
+										   (binding.binding == RHI::TABLE_TEXTURES_3D_BINDING && dimension == RHI::TextureDimension::Texture3D);
+						if (!sampler && !image) {
+							reflection.error = std::format("resource '{}' doesn't match texture table binding {}", nameOf(id), binding.binding);
+							return reflection;
+						}
+					} else {
+						const bool isPushUbo = binding.binding == RHI::TABLE_PUSH_BINDING &&
+											   !isStorageBuffer &&
+											   (variable.storageClass == StorageUniform || typeOp == OpTypeStruct);
+						const bool isStorage = (binding.binding == RHI::TABLE_TRANSIENT_RING_BINDING ||
+												binding.binding == RHI::TABLE_VERTEX_HEAP_BINDING ||
+												binding.binding == RHI::TABLE_ATLAS_META_BINDING) &&
+											   isStorageBuffer;
+						const bool isAtlas2D = binding.binding == RHI::TABLE_ATLAS_2D_BINDING && typeOp == OpTypeImage &&
+											   ImageDimension(typeIt->second.words[1], typeIt->second.words[3] != 0) == RHI::TextureDimension::Texture2D;
+						const bool isAtlasCube = binding.binding == RHI::TABLE_ATLAS_CUBE_BINDING && typeOp == OpTypeImage &&
+												 ImageDimension(typeIt->second.words[1], typeIt->second.words[3] != 0) == RHI::TextureDimension::CubeArray;
+						const bool isAtlasSampler = binding.binding == RHI::TABLE_ATLAS_SAMPLER_BINDING && typeOp == OpTypeSampler;
+						if (!isPushUbo && !isStorage && !isAtlas2D && !isAtlasCube && !isAtlasSampler) {
+							reflection.error = std::format("resource '{}' in set {} isn't a texture table array", nameOf(id), RHI::TABLE_SET);
+							return reflection;
+						}
+						portablePushBlock = isPushUbo;
 					}
 				} else if (typeOp == OpTypeArray || typeOp == OpTypeRuntimeArray) {
 					reflection.error = std::format("resource '{}' is an array of descriptors (unsupported)", nameOf(id));
@@ -452,8 +484,10 @@ namespace Shalltear {
 					return reflection;
 				}
 
-				if (variable.storageClass == StorageStorageBuffer) {
+				if (isStorageBuffer) {
 					binding.type = RHI::DescriptorType::StorageBuffer;
+					binding.readOnly = decorIt->second.nonWritable ||
+									   (pointeeDecor != decorations.end() && pointeeDecor->second.nonWritable);
 				} else if (variable.storageClass == StorageUniform) {
 					binding.type = RHI::DescriptorType::UniformBuffer;
 				} else if (typeOp == OpTypeImage) {
@@ -468,6 +502,11 @@ namespace Shalltear {
 				}
 
 				reflection.bindings.push_back(binding);
+
+				if (portablePushBlock && typeOp == OpTypeStruct) {
+					reflection.pushConstantSize = std::max(reflection.pushConstantSize, sizeOfType(sizeOfType, pointee));
+					break;
+				}
 
 				ShaderResourceInfo resource;
 				resource.set = binding.set;
@@ -545,6 +584,7 @@ namespace Shalltear {
 						return false;
 					}
 					existing.stages = existing.stages | binding.stages;
+					existing.readOnly = existing.readOnly && binding.readOnly;
 					merged = true;
 					break;
 				}

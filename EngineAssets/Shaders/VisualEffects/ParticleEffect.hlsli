@@ -1,16 +1,18 @@
 #ifndef SHALLTEAR_PARTICLE_EFFECT_HLSLI
 #define SHALLTEAR_PARTICLE_EFFECT_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
+
 // must match the package's C++ header layout
 
 static const uint SLT_PARTICLE_EFFECT_HEADER = 96;
 
 float SltParticleEffectFloat(uint offset) {
-	return vk::RawBufferLoad<float>(SltParticleEffectAddress() + offset, 4);
+	return ShalltearLoadF32(ShalltearAddrAdd(SltParticleEffectAddress(), offset));
 }
 
 uint SltParticleEffectWord(uint offset) {
-	return vk::RawBufferLoad<uint>(SltParticleEffectAddress() + offset, 4);
+	return ShalltearLoadU32(ShalltearAddrAdd(SltParticleEffectAddress(), offset));
 }
 
 float2 SltParticleEffectFloat2(uint offset) {
@@ -71,8 +73,8 @@ float4 SltParticleCameraSize(uint record) {
 	return SltParticleEffectFloat4(record + 256);
 }
 
-uint64_t SltParticleMeshAddress(uint record, uint at) {
-	return uint64_t(SltParticleEffectWord(record + at)) | (uint64_t(SltParticleEffectWord(record + at + 4)) << 32);
+slt_addr SltParticleMeshAddress(uint record, uint at) {
+	return ShalltearAddrFromWords(SltParticleEffectWord(record + at), SltParticleEffectWord(record + at + 4));
 }
 
 uint SltParticleMeshCount(uint record, uint which) {
@@ -84,7 +86,7 @@ uint SltParticleMeshIndex(uint record, float index) {
 	if (at >= SltParticleMeshCount(record, 1)) {
 		return 0;
 	}
-	return vk::RawBufferLoad<uint>(SltParticleMeshAddress(record, 8) + uint64_t(at) * 4, 4);
+	return ShalltearLoadU32(ShalltearAddrAdd(SltParticleMeshAddress(record, 8), at * 4u));
 }
 
 float4 SltParticleMeshVertex(uint record, float vertex, uint channel) {
@@ -92,21 +94,21 @@ float4 SltParticleMeshVertex(uint record, float vertex, uint channel) {
 	if (at >= SltParticleMeshCount(record, 0)) {
 		return float4(0.0, 0.0, 0.0, 0.0);
 	}
-	uint64_t base = SltParticleMeshAddress(record, 0) + uint64_t(at) * 52;
+	slt_addr base = ShalltearAddrAdd(SltParticleMeshAddress(record, 0), at * 52u);
 	if (channel == 0) {
-		return float4(vk::RawBufferLoad<float3>(base, 4), 0.0);
+		return float4(ShalltearLoadF32x3(base), 0.0);
 	}
 	if (channel == 1) {
-		return float4(vk::RawBufferLoad<float3>(base + 16, 4), 0.0);
+		return float4(ShalltearLoadF32x3(ShalltearAddrAdd(base, 16u)), 0.0);
 	}
 	if (channel == 2) {
-		return vk::RawBufferLoad<float4>(base + 32, 4);
+		return ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
 	}
 	if (channel == 3) {
-		uint packed = vk::RawBufferLoad<uint>(base + 48, 4);
+		uint packed = ShalltearLoadU32(ShalltearAddrAdd(base, 48u));
 		return float4(uint4(packed, packed >> 8, packed >> 16, packed >> 24) & 255) / 255.0;
 	}
-	return float4(vk::RawBufferLoad<float>(base + 12, 4), vk::RawBufferLoad<float>(base + 28, 4), 0.0, 0.0);
+	return float4(ShalltearLoadF32(ShalltearAddrAdd(base, 12u)), ShalltearLoadF32(ShalltearAddrAdd(base, 28u)), 0.0, 0.0);
 }
 
 uint SltParticleEffectIdBase() {

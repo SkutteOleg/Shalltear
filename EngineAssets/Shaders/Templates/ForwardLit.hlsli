@@ -16,7 +16,7 @@
 
 float4 PSMain(ShalltearVaryings input, bool isFrontFace : SV_IsFrontFace) : SV_Target {
 	ShalltearSurfaceInput surfaceInput = ShalltearBuildPixelSurfaceInput(input, isFrontFace);
-	const uint64_t drawAddress = ShalltearVaryingsDrawAddress(input);
+	const slt_addr drawAddress = ShalltearVaryingsDrawAddress(input);
 
 	ShalltearSurface surface = ShalltearDefaultSurface();
 	ShalltearSurfaceFunction(surfaceInput, surface);

@@ -1327,6 +1327,22 @@ namespace Shalltear::RHI {
 		return _impl->adapters[_impl->selectedAdapter];
 	}
 
+	DeviceCapabilities Device::GetCapabilities() const {
+		DeviceCapabilities caps;
+		caps.bufferDeviceAddress = true;
+		caps.bindlessTextureTable = true;
+		caps.pushConstants = true;
+		caps.dynamicFrontFace = true;
+		caps.dynamicDepthBias = true;
+		caps.wireframeFill = _impl->fillModeNonSolid;
+		caps.persistentBufferMapping = true;
+		caps.syncReadback = true;
+		caps.textureCompressionBC = _impl->textureCompressionBC;
+		caps.maxSampleCount = 4;
+		caps.shaderFormat = ShaderBytecodeFormat::Spirv;
+		return caps;
+	}
+
 	u32 Device::GetSupportedSampleCounts(Format format, TextureUsage usage) const {
 		DeviceImpl* impl = _impl;
 		if (format == Format::Unknown || !impl->physicalDevice) {

@@ -29,8 +29,24 @@ struct ShalltearShadowMap {
 };
 
 ShalltearShadowMap ShalltearLoadShadowMap(uint index) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(sltShadowMapAddress, index * SHALLTEAR_SHADOW_MAP_STRIDE);
+	ShalltearShadowMap map;
+	map.column0 = ShalltearLoadF32x4(base);
+	map.column1 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+	map.column2 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+	map.column3 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 48u));
+	map.uvBounds = ShalltearLoadF32x4(ShalltearAddrAdd(base, 64u));
+	float4 tail = ShalltearLoadF32x4(ShalltearAddrAdd(base, 80u));
+	map.farDepth = tail.x;
+	map.worldTexelSize = tail.y;
+	map.depthBias = tail.z;
+	map.normalBias = tail.w;
+	return map;
+#else
 	return vk::RawBufferLoad<ShalltearShadowMap>(
 		sltShadowMapAddress + uint64_t(index) * SHALLTEAR_SHADOW_MAP_STRIDE, 16);
+#endif
 }
 
 // steepest receiver slope as a tangent ~84 degrees
@@ -189,7 +205,7 @@ float ShalltearObjectShadow(uint index, float3 positionWS, float3 positionDdx, f
 float ShalltearDirectionalShadow(uint firstMap, uint packed, float3 positionWS, float3 positionDdx, float3 positionDdy,
 								 float3 normalWS, float3 lightDirection, float viewDepth) {
 	uint count = packed & 0xFFu;
-	if (sltShadowMapAddress == 0 || count == 0) {
+	if (!ShalltearAddrValid(sltShadowMapAddress) || count == 0) {
 		return 1.0;
 	}
 	uint cascade = ShalltearCascadeIndexOf(firstMap, count, viewDepth);
@@ -231,7 +247,7 @@ uint ShalltearPointFaceOf(float3 fromLight) {
 
 float ShalltearPunctualShadow(uint firstMap, uint count, float3 lightPosition, float3 positionWS,
 							  float3 positionDdx, float3 positionDdy, float3 normalWS) {
-	if (sltShadowMapAddress == 0 || count == 0) {
+	if (!ShalltearAddrValid(sltShadowMapAddress) || count == 0) {
 		return 1.0;
 	}
 	float3 toSurface = positionWS - lightPosition;

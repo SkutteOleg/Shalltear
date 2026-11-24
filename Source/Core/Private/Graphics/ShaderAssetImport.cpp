@@ -2,6 +2,7 @@
 
 #include "Graphics/ShaderCache.h"
 #include "Graphics/ShaderCompiler.h"
+#include "Graphics/WGSLTranslator.h"
 #include "Graphics/ShaderInterfaces.h"
 
 #include "Shalltear/Core/Graphics/ShaderReflection.h"
@@ -595,13 +596,45 @@ namespace Shalltear {
 		}
 
 		// compiles must share debug info/optimization flags
-		ShaderCompileMode CompileMode(bool skipOptimizations) {
+		ShaderCompileMode CompileMode(bool skipOptimizations, bool forWGSL = false) {
+			if (forWGSL) {
+#if !defined(SHALLTEAR_CONFIG_RELEASE)
+				(void)skipOptimizations;
+				return ShaderCompileMode::Unoptimized;
+#else
+				return skipOptimizations ? ShaderCompileMode::Unoptimized : ShaderCompileMode::Optimized;
+#endif
+			}
 #if !defined(SHALLTEAR_CONFIG_RELEASE)
 			(void)skipOptimizations;
 			return ShaderCompileMode::Debug;
 #else
 			return skipOptimizations ? ShaderCompileMode::Unoptimized : ShaderCompileMode::Optimized;
 #endif
+		}
+
+		bool TranslateVariantToWGSL(ShaderVariant& variant, const Path& sourcePath) {
+			auto convert = [&](Vector<u8>& blob, const char* stageName) -> bool {
+				if (blob.empty()) {
+					return true;
+				}
+				Vector<u8> wgsl{GetMemoryResource(MemTag::Asset)};
+				str error;
+				if (!WGSLTranslator::TranslateSpirvToWGSL({blob.data(), blob.size()}, wgsl, error)) {
+					SLT_LOG_ERROR("Graphics", "ShaderAsset: '{}' ({}) SPIR-V -> WGSL failed: {}",
+								  sourcePath.ToString(), stageName, error);
+					return false;
+				}
+				blob = std::move(wgsl);
+				return true;
+			};
+			return convert(variant.vertexSpirv, "VS") &&
+				   convert(variant.pixelSpirv, "PS") &&
+				   convert(variant.depthVertexSpirv, "DepthVS") &&
+				   convert(variant.depthPixelSpirv, "DepthPS") &&
+				   convert(variant.depthClipPixelSpirv, "DepthClipPS") &&
+				   convert(variant.depthValuePixelSpirv, "DepthValuePS") &&
+				   convert(variant.computeSpirv, "CS");
 		}
 
 		void KeywordDefines(std::span<const str> keywords, Vector<str>& out) {
@@ -851,9 +884,15 @@ namespace Shalltear {
 			SLT_LOG_WARN("Graphics", "'{}': a kernel has no depth program (shalltear_depth_program ignored)", sourcePath.ToString());
 		}
 
+		const RHI::ShaderBytecodeFormat targetFormat = GetDefaultImportBytecodeFormat();
+		const bool forWGSL = targetFormat == RHI::ShaderBytecodeFormat::WGSL;
+
 		ShaderCompileInput input;
 		if (!ResolveCompileInput(sourcePath, std::move(source), integrator, ShaderProgramKind::Forward, input)) {
 			return false;
+		}
+		if (forWGSL) {
+			input.defines.push_back("SHALLTEAR_WEBGPU=1");
 		}
 
 		dependencies.clear();
@@ -873,7 +912,7 @@ namespace Shalltear {
 				SLT_LOG_WARN("Graphics", "'{}': a kernel takes no shalltear_keyword ({} keyword(s) dropped)", sourcePath.ToString(), keywords.size());
 				keywords.clear();
 			}
-			if (!ObtainStage(input, sourcePath, ShaderStageKind::Compute, {}, CompileMode(skipOptimizations),
+			if (!ObtainStage(input, sourcePath, ShaderStageKind::Compute, {}, CompileMode(skipOptimizations, forWGSL),
 							 dependencies, base.computeSpirv)) {
 				return false;
 			}
@@ -893,11 +932,11 @@ namespace Shalltear {
 			threadGroupSize = kernelReflection.threadGroupSize;
 			MergeMaterialInterfaces(kernelReflection, SpirvReflection{}, uniformBlocks, resources);
 		} else {
-			if (!ObtainStage(input, sourcePath, ShaderStageKind::Vertex, {}, CompileMode(skipOptimizations),
+			if (!ObtainStage(input, sourcePath, ShaderStageKind::Vertex, {}, CompileMode(skipOptimizations, forWGSL),
 							 dependencies, base.vertexSpirv)) {
 				return false;
 			}
-			if (!ObtainStage(input, sourcePath, ShaderStageKind::Pixel, {}, CompileMode(skipOptimizations),
+			if (!ObtainStage(input, sourcePath, ShaderStageKind::Pixel, {}, CompileMode(skipOptimizations, forWGSL),
 							 dependencies, base.pixelSpirv)) {
 				return false;
 			}
@@ -1127,7 +1166,12 @@ namespace Shalltear {
 			return std::find(brokenGroups.begin(), brokenGroups.end(), binding.member) != brokenGroups.end();
 		});
 
-		ObtainDepthProgram(sourcePath, integrator, depthProgram, depthValue, input, CompileMode(skipOptimizations), {}, dependencies, base);
+		Vector<str> depthDefines{GetMemoryResource(MemTag::Asset)};
+		if (forWGSL) {
+			depthDefines.push_back("SHALLTEAR_WEBGPU=1");
+		}
+		ObtainDepthProgram(sourcePath, integrator, depthProgram, depthValue, input, CompileMode(skipOptimizations, forWGSL),
+						   {depthDefines.data(), depthDefines.size()}, dependencies, base);
 		if (base.HasProgram(ShaderProgramKind::Depth)) {
 			str difference;
 			if (!DepthProgramFitsInterface(*this, base, difference)) {
@@ -1139,6 +1183,11 @@ namespace Shalltear {
 				base.depthValuePixelSpirv.clear();
 			}
 		}
+
+		if (forWGSL && !TranslateVariantToWGSL(base, sourcePath)) {
+			return false;
+		}
+		bytecodeFormat = targetFormat;
 
 		variants.clear();
 		variants.push_back(std::move(base));
@@ -1158,22 +1207,29 @@ namespace Shalltear {
 			return SHADER_BASE_VARIANT;
 		}
 
+		const bool forWGSL = bytecodeFormat == RHI::ShaderBytecodeFormat::WGSL;
 		ShaderCompileInput input;
 		if (!ResolveCompileInput(sourcePath, std::move(source), integrator, ShaderProgramKind::Forward, input)) {
 			SLT_LOG_WARN("Graphics", "shader '{}': its integrator template is unavailable (drawing the base variant)", virtualPath);
 			return SHADER_BASE_VARIANT;
 		}
+		if (forWGSL) {
+			input.defines.push_back("SHALLTEAR_WEBGPU=1");
+		}
 
 		Vector<str> defines{GetMemoryResource(MemTag::Asset)};
 		KeywordDefines({wanted.data(), wanted.size()}, defines);
+		if (forWGSL) {
+			defines.push_back("SHALLTEAR_WEBGPU=1");
+		}
 
 		ShaderVariant variant;
 		Vector<Dependency> scratchDependencies{GetMemoryResource(MemTag::Asset)};
 		scratchDependencies.assign(dependencies.begin(), dependencies.end());
 		if (!ObtainStage(input, sourcePath, ShaderStageKind::Vertex, {defines.data(), defines.size()},
-						 CompileMode(skipOptimizations), scratchDependencies, variant.vertexSpirv) ||
+						 CompileMode(skipOptimizations, forWGSL), scratchDependencies, variant.vertexSpirv) ||
 			!ObtainStage(input, sourcePath, ShaderStageKind::Pixel, {defines.data(), defines.size()},
-						 CompileMode(skipOptimizations), scratchDependencies, variant.pixelSpirv)) {
+						 CompileMode(skipOptimizations, forWGSL), scratchDependencies, variant.pixelSpirv)) {
 			SLT_LOG_ERROR("Graphics", "shader '{}': variant compile failed (drawing the base variant)", virtualPath);
 			return SHADER_BASE_VARIANT;
 		}
@@ -1200,14 +1256,18 @@ namespace Shalltear {
 			return SHADER_BASE_VARIANT;
 		}
 
-		ObtainDepthProgram(sourcePath, integrator, depthProgram, depthValue, input, CompileMode(skipOptimizations), {defines.data(), defines.size()},
-						   scratchDependencies, variant);
+		ObtainDepthProgram(sourcePath, integrator, depthProgram, depthValue, input, CompileMode(skipOptimizations, forWGSL),
+						   {defines.data(), defines.size()}, scratchDependencies, variant);
 		if (variant.HasProgram(ShaderProgramKind::Depth) && !DepthProgramFitsInterface(*this, variant, error)) {
 			SLT_LOG_ERROR("Graphics", "shader '{}': this keyword set's depth-only program {} (no shadows)", virtualPath, error);
 			variant.depthVertexSpirv.clear();
 			variant.depthPixelSpirv.clear();
 			variant.depthClipPixelSpirv.clear();
 			variant.depthValuePixelSpirv.clear();
+		}
+
+		if (forWGSL && !TranslateVariantToWGSL(variant, sourcePath)) {
+			return SHADER_BASE_VARIANT;
 		}
 
 		variant.keywordHash = hash;

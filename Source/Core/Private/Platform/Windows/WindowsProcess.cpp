@@ -117,4 +117,87 @@ namespace Shalltear::Platform {
 		::localtime_s(&out, &time);
 	}
 
+	bool RunProcessCapture(const str& executable, std::span<const str> arguments, str& outOutput, i32& outExitCode) {
+		outOutput.clear();
+		outExitCode = -1;
+
+		auto quoteArg = [](const str& arg) {
+			bool needsQuotes = arg.empty();
+			for (char c : arg) {
+				if (c == ' ' || c == '\t' || c == '"') {
+					needsQuotes = true;
+					break;
+				}
+			}
+			if (!needsQuotes) {
+				return arg;
+			}
+			str result = "\"";
+			size_t backslashes = 0;
+			for (char c : arg) {
+				if (c == '\\') {
+					++backslashes;
+				} else if (c == '"') {
+					result.append(backslashes * 2 + 1, '\\');
+					result.push_back('"');
+					backslashes = 0;
+				} else {
+					result.append(backslashes, '\\');
+					backslashes = 0;
+					result.push_back(c);
+				}
+			}
+			result.append(backslashes * 2, '\\');
+			result.push_back('"');
+			return result;
+		};
+
+		str commandLine = quoteArg(executable);
+		for (const str& arg : arguments) {
+			commandLine.push_back(' ');
+			commandLine += quoteArg(arg);
+		}
+		std::wstring wideCommand = StringUtil::UTF8ToWide(commandLine);
+
+		SECURITY_ATTRIBUTES sa{};
+		sa.nLength = sizeof(sa);
+		sa.bInheritHandle = TRUE;
+		HANDLE readPipe = nullptr;
+		HANDLE writePipe = nullptr;
+		if (!::CreatePipe(&readPipe, &writePipe, &sa, 0)) {
+			return false;
+		}
+		::SetHandleInformation(readPipe, HANDLE_FLAG_INHERIT, 0);
+
+		STARTUPINFOW si{};
+		si.cb = sizeof(si);
+		si.dwFlags = STARTF_USESTDHANDLES;
+		si.hStdOutput = writePipe;
+		si.hStdError = writePipe;
+		si.hStdInput = ::GetStdHandle(STD_INPUT_HANDLE);
+
+		PROCESS_INFORMATION pi{};
+		BOOL created = ::CreateProcessW(nullptr, wideCommand.data(), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi);
+		::CloseHandle(writePipe);
+		if (!created) {
+			::CloseHandle(readPipe);
+			return false;
+		}
+
+		char buffer[4096];
+		DWORD bytesRead = 0;
+		while (::ReadFile(readPipe, buffer, sizeof(buffer), &bytesRead, nullptr) && bytesRead > 0) {
+			outOutput.append(buffer, bytesRead);
+		}
+		::CloseHandle(readPipe);
+
+		::WaitForSingleObject(pi.hProcess, INFINITE);
+		DWORD code = 1;
+		::GetExitCodeProcess(pi.hProcess, &code);
+		outExitCode = static_cast<i32>(code);
+		::CloseHandle(pi.hThread);
+		::CloseHandle(pi.hProcess);
+		return true;
+	}
+
 } // namespace Shalltear::Platform

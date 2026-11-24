@@ -3,6 +3,7 @@
 #include "Shalltear/Core/Asset/PakFormat.h"
 #include "Shalltear/Core/Containers.h"
 #include "Shalltear/Core/FileSystem.h"
+#include "Shalltear/Core/Graphics/RHITypes.h"
 #include "Shalltear/Core/Types.h"
 
 #include "Shalltear/Editor/EditorAPI.h"
@@ -45,6 +46,7 @@ namespace Shalltear {
 			bool shipDebugNames = true;
 			u32 pageSize = PAK_DEFAULT_PAGE_SIZE;
 			CookCompression compression = CookCompression::None;
+			RHI::ShaderBytecodeFormat shaderFormat = RHI::ShaderBytecodeFormat::Spirv;
 			Vector<str> strings{GetMemoryResource(MemTag::Editor)};
 
 			Vector<PakDocumentSource> documents{GetMemoryResource(MemTag::Editor)};

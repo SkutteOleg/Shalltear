@@ -4,6 +4,7 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 
 [[vk::binding(0, 1)]] Texture2D sltSceneColor;
@@ -14,7 +15,7 @@ struct ShalltearPresentPush {
 	uint tonemap;
 };
 
-[[vk::push_constant]] ShalltearPresentPush gPresent;
+SLT_PUSH_CONSTANT(ShalltearPresentPush, gPresent)
 
 struct VSOutput {
 	float4 positionCS : SV_Position;

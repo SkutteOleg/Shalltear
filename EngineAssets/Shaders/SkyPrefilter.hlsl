@@ -2,6 +2,8 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
+
 struct ShalltearPrefilterPush {
 	uint face;
 	float roughness;
@@ -9,7 +11,7 @@ struct ShalltearPrefilterPush {
 	float sourceMipCount;
 	float2 targetSize;
 };
-[[vk::push_constant]] ShalltearPrefilterPush gPrefilter;
+SLT_PUSH_CONSTANT(ShalltearPrefilterPush, gPrefilter)
 
 [[vk::binding(0, 0)]] TextureCube sltPrefilterSource;
 [[vk::binding(1, 0)]] SamplerState sltPrefilterSampler;

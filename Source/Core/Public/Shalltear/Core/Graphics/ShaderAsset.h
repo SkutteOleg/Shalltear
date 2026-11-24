@@ -97,6 +97,7 @@ namespace Shalltear {
 		Vector<RHI::DescriptorBindingDesc> bindings{GetMemoryResource(MemTag::Asset)};
 		u32 pushConstantSize = 0;
 		Vec3I threadGroupSize{};
+		RHI::ShaderBytecodeFormat bytecodeFormat = RHI::ShaderBytecodeFormat::Spirv;
 
 		bool IsKernel() const { return !variants.empty() && variants[SHADER_BASE_VARIANT].HasProgram(ShaderProgramKind::Compute); }
 
@@ -105,6 +106,8 @@ namespace Shalltear {
 		u32 FindVariant(u64 keywordHash) const;
 		u32 GetOrCompileVariant(std::span<const str> enabled);
 		static u64 KeywordSetHash(std::span<const str> enabled);
+		static RHI::ShaderBytecodeFormat GetDefaultImportBytecodeFormat();
+		static void SetDefaultImportBytecodeFormat(RHI::ShaderBytecodeFormat format);
 
 		Vector<UniformBlockLayout> uniformBlocks{GetMemoryResource(MemTag::Asset)};
 		Vector<ShaderResourceInfo> resources{GetMemoryResource(MemTag::Asset)};

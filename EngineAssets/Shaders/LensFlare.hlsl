@@ -3,6 +3,8 @@
 #pragma shalltear_cull off
 #pragma shalltear_default flareTexture white
 
+#include "ShalltearBufferAccess.hlsli"
+
 [[vk::binding(0, 1)]] Texture2D flareTexture;
 [[vk::binding(1, 1)]] SamplerState flareSampler;
 
@@ -11,12 +13,12 @@
 
 // must match LensFlarePush in LensFlarePass.cpp
 struct ShalltearLensFlarePush {
-	uint64_t base;
+	slt_addr base;
 	uint quadOffset;
 	float invAspect;
 };
 
-[[vk::push_constant]] ShalltearLensFlarePush gFlare;
+SLT_PUSH_CONSTANT(ShalltearLensFlarePush, gFlare)
 
 // must match FlareSource in LensFlarePass.cpp
 struct ShalltearFlareSource {
@@ -94,9 +96,42 @@ float ShalltearFlareVisibility(ShalltearFlareSource source) {
 	return visible / float(source.samples);
 }
 
+ShalltearFlareQuad ShalltearLoadFlareQuad(uint instanceId) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(gFlare.base, gFlare.quadOffset + instanceId * 64u);
+	ShalltearFlareQuad q;
+	q.centerHalf = ShalltearLoadF32x4(base);
+	q.color = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+	q.shape = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+	uint4 tail = ShalltearLoadU32x4(ShalltearAddrAdd(base, 48u));
+	q.rotation = asfloat(tail.x);
+	q.source = tail.y;
+	q.kindFlags = tail.z;
+	q.gradient = tail.w;
+	return q;
+#else
+	return vk::RawBufferLoad<ShalltearFlareQuad>(gFlare.base + gFlare.quadOffset + uint64_t(instanceId) * 64, 16);
+#endif
+}
+
+ShalltearFlareSource ShalltearLoadFlareSource(uint sourceIndex) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(gFlare.base, sourceIndex * 32u);
+	ShalltearFlareSource s;
+	s.screenDepth = ShalltearLoadF32x4(base);
+	uint4 tail = ShalltearLoadU32x4(ShalltearAddrAdd(base, 16u));
+	s.radius = float2(asfloat(tail.x), asfloat(tail.y));
+	s.samples = tail.z;
+	s.offScreenVisible = tail.w;
+	return s;
+#else
+	return vk::RawBufferLoad<ShalltearFlareSource>(gFlare.base + uint64_t(sourceIndex) * 32, 16);
+#endif
+}
+
 VSOutput VSMain(uint vertexId : SV_VertexID, uint instanceId : SV_InstanceID) {
-	ShalltearFlareQuad quad = vk::RawBufferLoad<ShalltearFlareQuad>(gFlare.base + gFlare.quadOffset + uint64_t(instanceId) * 64, 16);
-	ShalltearFlareSource source = vk::RawBufferLoad<ShalltearFlareSource>(gFlare.base + uint64_t(quad.source) * 32, 16);
+	ShalltearFlareQuad quad = ShalltearLoadFlareQuad(instanceId);
+	ShalltearFlareSource source = ShalltearLoadFlareSource(quad.source);
 	float visibility = ShalltearFlareVisibility(source);
 
 	float2 local = SHALLTEAR_FLARE_CORNERS[vertexId];
@@ -119,8 +154,8 @@ VSOutput VSMain(uint vertexId : SV_VertexID, uint instanceId : SV_InstanceID) {
 float4 ShalltearFlareGradient(uint offset, float t) {
 	float x = saturate(t) * float(SHALLTEAR_FLARE_GRADIENT_STEPS - 1);
 	uint i = min(uint(x), uint(SHALLTEAR_FLARE_GRADIENT_STEPS - 2));
-	float4 a = vk::RawBufferLoad<float4>(gFlare.base + offset + uint64_t(i) * 16, 16);
-	float4 b = vk::RawBufferLoad<float4>(gFlare.base + offset + uint64_t(i + 1) * 16, 16);
+	float4 a = ShalltearLoadF32x4(ShalltearAddrAdd(gFlare.base, offset + i * 16u));
+	float4 b = ShalltearLoadF32x4(ShalltearAddrAdd(gFlare.base, offset + (i + 1u) * 16u));
 	return lerp(a, b, x - float(i));
 }
 

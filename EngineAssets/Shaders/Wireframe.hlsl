@@ -11,7 +11,7 @@ struct ShalltearWirePush {
 	ShalltearDrawHeader draw;
 	uint color; // SRGB RGBA8, Color32 layout
 };
-[[vk::push_constant]] ShalltearWirePush gWire;
+SLT_PUSH_CONSTANT(ShalltearWirePush, gWire)
 
 struct VSOutput {
 	float4 positionCS : SV_Position;

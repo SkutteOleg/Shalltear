@@ -4,6 +4,7 @@
 #pragma shalltear_depth test_write
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 
 // 108/128 push bytes
@@ -19,7 +20,7 @@ struct ShalltearGridPush {
 	uint axisAlongXColor;
 	uint axisAlongZColor;
 };
-[[vk::push_constant]] ShalltearGridPush gGrid;
+SLT_PUSH_CONSTANT(ShalltearGridPush, gGrid)
 
 // grid loses every depth tie (floors sit at y = 0)
 static const float SHALLTEAR_GRID_DEPTH_BIAS = 1.0 / 1024.0;

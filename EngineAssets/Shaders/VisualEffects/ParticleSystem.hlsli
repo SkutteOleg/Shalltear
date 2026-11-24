@@ -1,6 +1,8 @@
 #ifndef SHALLTEAR_PARTICLE_SYSTEM_HLSLI
 #define SHALLTEAR_PARTICLE_SYSTEM_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
+
 #define SLT_PARTICLE_KERNEL_GROUP 64
 
 [[vk::binding(0, 0)]] RWByteAddressBuffer sltParticleLists;
@@ -15,7 +17,7 @@ struct SltParticleFrame {
 	uint outputCount;
 	uint updateGroupSize;
 	uint batchFresh;
-	uint64_t instances;
+	slt_addr instances;
 	float sortViewX;
 	float sortViewY;
 	float sortViewZ;
@@ -29,7 +31,7 @@ struct SltParticleFrame {
 	uint parentCapacity;
 	uint events;
 };
-[[vk::push_constant]] SltParticleFrame sltParticle;
+SLT_PUSH_CONSTANT(SltParticleFrame, sltParticle)
 
 static const uint SLT_PARTICLE_INSTANCE_BYTES = 32;
 static const uint SLT_PARTICLE_ADVANCES = 1;
@@ -44,7 +46,7 @@ struct SltParticleInstance {
 	float deltaTime;
 	uint frame;
 	uint drawTable;
-	uint64_t effect;
+	slt_addr effect;
 	uint lists;
 	uint attributes;
 	uint arguments;
@@ -71,9 +73,9 @@ uint SltParticleEnter(uint slot) {
 	uint4 words = uint4(0u, 0u, 0u, 0u);
 	uint4 more = uint4(0u, 0u, 0u, 0u);
 	if (slot - sltParticle.firstSlot < sltParticle.slots) {
-		uint64_t at = sltParticle.instances + uint64_t(slot) * SLT_PARTICLE_INSTANCE_BYTES;
-		words = vk::RawBufferLoad<uint4>(at, 4);
-		more = vk::RawBufferLoad<uint4>(at + 16, 4);
+		slt_addr at = ShalltearAddrAdd(sltParticle.instances, slot * SLT_PARTICLE_INSTANCE_BYTES);
+		words = ShalltearLoadU32x4(at);
+		more = ShalltearLoadU32x4(ShalltearAddrAdd(at, 16u));
 	}
 	sltInstance.slot = slot;
 	sltInstance.flags = words.x;
@@ -82,7 +84,7 @@ uint SltParticleEnter(uint slot) {
 	sltInstance.deltaTime = asfloat(words.w);
 	sltInstance.frame = more.x;
 	sltInstance.drawTable = more.y;
-	sltInstance.effect = uint64_t(more.z) | (uint64_t(more.w) << 32);
+	sltInstance.effect = ShalltearAddrFromWords(more.z, more.w);
 	sltInstance.lists = slot * SltParticleSlotListsBytes();
 	sltInstance.attributes = slot * SltParticleSlotAttributesBytes();
 	sltInstance.arguments = slot * SltParticleSlotArgumentsBytes();
@@ -93,7 +95,7 @@ bool SltParticleEnterUpdate(uint3 id) {
 	return (SltParticleEnter(sltParticle.firstSlot + id.y) & SLT_PARTICLE_ADVANCES) != 0;
 }
 
-uint64_t SltParticleEffectAddress() {
+slt_addr SltParticleEffectAddress() {
 	return sltInstance.effect;
 }
 

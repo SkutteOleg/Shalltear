@@ -401,6 +401,7 @@ namespace Shalltear::RHI {
 		u32 binding = 0;
 		DescriptorType type = DescriptorType::UniformBuffer;
 		ShaderStage stages = ShaderStage::None;
+		bool readOnly = false;
 	};
 
 	inline constexpr u64 WHOLE_BUFFER = ~0ull;
@@ -418,6 +419,34 @@ namespace Shalltear::RHI {
 	inline constexpr u32 TABLE_TEXTURES_3D_BINDING = 3;
 	inline constexpr u32 TABLE_NONE = ~0u;
 
+	// portable set 3 bindings (used by backends without push constants or bindless arrays)
+	inline constexpr u32 TABLE_PUSH_BINDING = 0;
+	inline constexpr u32 TABLE_TRANSIENT_RING_BINDING = 1;
+	inline constexpr u32 TABLE_VERTEX_HEAP_BINDING = 2;
+	inline constexpr u32 TABLE_ATLAS_META_BINDING = 3;
+	inline constexpr u32 TABLE_ATLAS_2D_BINDING = 4;
+	inline constexpr u32 TABLE_ATLAS_CUBE_BINDING = 5;
+	inline constexpr u32 TABLE_ATLAS_SAMPLER_BINDING = 6;
+
+	enum class ShaderBytecodeFormat : u8 {
+		Spirv = 0,
+		WGSL
+	};
+
+	struct DeviceCapabilities {
+		bool bufferDeviceAddress = true;
+		bool bindlessTextureTable = true;
+		bool pushConstants = true;
+		bool dynamicFrontFace = true;
+		bool dynamicDepthBias = true;
+		bool wireframeFill = true;
+		bool persistentBufferMapping = true;
+		bool syncReadback = true;
+		bool textureCompressionBC = true;
+		u32 maxSampleCount = 4;
+		ShaderBytecodeFormat shaderFormat = ShaderBytecodeFormat::Spirv;
+	};
+
 	struct SpecializationConstant {
 		u32 id = 0;
 		u32 value = 0;
@@ -429,6 +458,7 @@ namespace Shalltear::RHI {
 		std::span<const u8> vertexSpirv;
 		std::span<const u8> pixelSpirv;
 		std::span<const SpecializationConstant> pixelConstants;
+		ShaderBytecodeFormat bytecodeFormat = ShaderBytecodeFormat::Spirv;
 
 		std::span<const DescriptorBindingDesc> bindings;
 		u32 pushConstantSize = 0;
@@ -457,6 +487,7 @@ namespace Shalltear::RHI {
 	// bound outside a render pass only
 	struct ComputePipelineDesc {
 		std::span<const u8> spirv;
+		ShaderBytecodeFormat bytecodeFormat = ShaderBytecodeFormat::Spirv;
 		std::span<const DescriptorBindingDesc> bindings;
 		u32 pushConstantSize = 0;
 		const char* debugName = nullptr;

@@ -25,8 +25,21 @@ namespace Shalltear {
 	namespace {
 
 		std::atomic<u32> liveMeshReaders{0};
+#ifdef SHALLTEAR_RHI_WEBGPU
+		std::atomic<u8> _defaultImportFormat{static_cast<u8>(RHI::ShaderBytecodeFormat::WGSL)};
+#else
+		std::atomic<u8> _defaultImportFormat{static_cast<u8>(RHI::ShaderBytecodeFormat::Spirv)};
+#endif
 
 	} // anonymous namespace
+
+	RHI::ShaderBytecodeFormat ShaderAsset::GetDefaultImportBytecodeFormat() {
+		return static_cast<RHI::ShaderBytecodeFormat>(_defaultImportFormat.load(std::memory_order_relaxed));
+	}
+
+	void ShaderAsset::SetDefaultImportBytecodeFormat(RHI::ShaderBytecodeFormat format) {
+		_defaultImportFormat.store(static_cast<u8>(format), std::memory_order_relaxed);
+	}
 
 	u32 SceneRequests::CountLiveMeshReaders() { return liveMeshReaders.load(std::memory_order_relaxed); }
 
@@ -182,6 +195,7 @@ namespace Shalltear {
 		bindings = std::move(imported.bindings);
 		pushConstantSize = imported.pushConstantSize;
 		threadGroupSize = imported.threadGroupSize;
+		bytecodeFormat = imported.bytecodeFormat;
 		uniformBlocks = std::move(imported.uniformBlocks);
 		resources = std::move(imported.resources);
 		renderState = imported.renderState;
@@ -273,7 +287,11 @@ namespace Shalltear {
 			descriptor.Write(binding.set);
 			descriptor.Write(binding.binding);
 			descriptor.Write(static_cast<u8>(binding.type));
-			descriptor.Write(static_cast<u8>(binding.stages));
+			u8 stageFlags = static_cast<u8>(binding.stages);
+			if (binding.readOnly) {
+				stageFlags |= 0x80u;
+			}
+			descriptor.Write(stageFlags);
 		}
 
 		descriptor.Write(static_cast<u32>(uniformBlocks.size()));
@@ -320,6 +338,7 @@ namespace Shalltear {
 				descriptor.Write(declared.numbers[i]);
 			}
 		}
+		descriptor.Write(static_cast<u8>(bytecodeFormat));
 
 		for (const ShaderVariant& variant : variants) {
 			payload.WriteBytes(variant.vertexSpirv.data(), variant.vertexSpirv.size());
@@ -410,7 +429,8 @@ namespace Shalltear {
 			descriptor.Read(type);
 			descriptor.Read(stages);
 			binding.type = static_cast<RHI::DescriptorType>(type);
-			binding.stages = static_cast<RHI::ShaderStage>(stages);
+			binding.readOnly = (stages & 0x80u) != 0u;
+			binding.stages = static_cast<RHI::ShaderStage>(stages & 0x7Fu);
 			readBindings.push_back(binding);
 		}
 
@@ -495,6 +515,9 @@ namespace Shalltear {
 			readDefaults.push_back(std::move(declared));
 		}
 
+		u8 readBytecodeFormat = 0;
+		descriptor.Read(readBytecodeFormat);
+
 		Vector<ShaderVariant> readVariants{GetMemoryResource(MemTag::Asset)};
 		for (VariantRecord& record : variantRecords) {
 			if (payload.Failed()) {
@@ -518,6 +541,9 @@ namespace Shalltear {
 
 		pushConstantSize = readPushConstantSize;
 		threadGroupSize = readThreadGroupSize;
+		bytecodeFormat = readBytecodeFormat == static_cast<u8>(RHI::ShaderBytecodeFormat::WGSL)
+							 ? RHI::ShaderBytecodeFormat::WGSL
+							 : RHI::ShaderBytecodeFormat::Spirv;
 		integrator = readIntegrator <= static_cast<u8>(ShaderTemplate::Sky) ? static_cast<ShaderTemplate>(readIntegrator)
 																			: ShaderTemplate::None;
 		memberDefaults = std::move(readDefaults);

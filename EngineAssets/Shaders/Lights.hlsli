@@ -24,7 +24,27 @@ struct ShalltearLight {
 #define SHALLTEAR_LIGHT_FLAG_EVERY_LAYER 0x200u
 
 ShalltearLight ShalltearLoadLight(uint index) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(sltLightAddress, index * SHALLTEAR_LIGHT_STRIDE);
+	float4 w0 = ShalltearLoadF32x4(base);
+	float4 w1 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+	float4 w2 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+	uint4 w3 = ShalltearLoadU32x4(ShalltearAddrAdd(base, 48u));
+	ShalltearLight light;
+	light.position = w0.xyz;
+	light.invRangeSquared = w0.w;
+	light.color = w1.xyz;
+	light.spotScale = w1.w;
+	light.direction = w2.xyz;
+	light.spotOffset = w2.w;
+	light.shadowIndex = w3.x;
+	light.shadowCount = w3.y;
+	light.shadowStrength = asfloat(w3.z);
+	light.info = w3.w;
+	return light;
+#else
 	return vk::RawBufferLoad<ShalltearLight>(sltLightAddress + uint64_t(index) * SHALLTEAR_LIGHT_STRIDE, 16);
+#endif
 }
 
 bool ShalltearLightReaches(ShalltearLight light, uint drawLayers) {
@@ -47,8 +67,22 @@ float3 ShalltearLightCookieColor(ShalltearLight light, float3 positionWS, float3
 	if ((light.info & SHALLTEAR_LIGHT_FLAG_COOKIE) == 0) {
 		return float3(1.0, 1.0, 1.0);
 	}
-	ShalltearLightCookie cookie =
-		vk::RawBufferLoad<ShalltearLightCookie>(sltLightAddress + uint64_t(light.info >> 16) * SHALLTEAR_LIGHT_STRIDE, 16);
+	ShalltearLightCookie cookie;
+#ifdef SHALLTEAR_WEBGPU
+	{
+		slt_addr base = ShalltearAddrAdd(sltLightAddress, (light.info >> 16) * SHALLTEAR_LIGHT_STRIDE);
+		cookie.row0 = ShalltearLoadF32x4(base);
+		cookie.row1 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+		cookie.row2 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+		uint4 tail = ShalltearLoadU32x4(ShalltearAddrAdd(base, 48u));
+		cookie.entry = tail.x;
+		cookie.projection = tail.y;
+		cookie.pad0 = tail.z;
+		cookie.pad1 = tail.w;
+	}
+#else
+	cookie = vk::RawBufferLoad<ShalltearLightCookie>(sltLightAddress + uint64_t(light.info >> 16) * SHALLTEAR_LIGHT_STRIDE, 16);
+#endif
 	float4 position = float4(positionWS, 1.0);
 	float3 h = float3(dot(cookie.row0, position), dot(cookie.row1, position), dot(cookie.row2, position));
 	float3 hDdx = float3(dot(cookie.row0.xyz, positionDdx), dot(cookie.row1.xyz, positionDdx), dot(cookie.row2.xyz, positionDdx));
@@ -105,13 +139,13 @@ uint ShalltearClusterOf(float2 positionSS, float viewZ) {
 
 // entry.y = light count in bits 0-7, decal count in 8-15
 uint2 ShalltearClusterEntry(uint cluster) {
-	return vk::RawBufferLoad<uint2>(sltClusterAddress + uint64_t(cluster) * 8, 8);
+	return ShalltearLoadU32x2(ShalltearAddrAdd(sltClusterAddress, cluster * 8u));
 }
 
 // flat list begins after the table
 uint ShalltearClusterLight(uint2 entry, uint slot) {
-	uint64_t indices = sltClusterAddress + uint64_t(sltClusterDims.x * sltClusterDims.y * sltClusterDims.z) * 8;
-	return vk::RawBufferLoad<uint>(indices + uint64_t(entry.x + slot) * 4, 4);
+	slt_addr indices = ShalltearAddrAdd(sltClusterAddress, (sltClusterDims.x * sltClusterDims.y * sltClusterDims.z) * 8u);
+	return ShalltearLoadU32(ShalltearAddrAdd(indices, (entry.x + slot) * 4u));
 }
 
 float ShalltearViewDepth(float3 positionWS) {

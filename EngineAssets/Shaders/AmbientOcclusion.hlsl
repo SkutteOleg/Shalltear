@@ -2,6 +2,8 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
+
 [[vk::binding(0, 2)]] Texture2D<float> sltSceneDepth;
 [[vk::binding(2, 2)]] Texture2D sltSceneNormals;
 [[vk::binding(3, 2)]] Texture2D<float> sltPassInput0;
@@ -19,7 +21,7 @@ struct ShalltearAmbientOcclusionPush {
 	float4 extentStepSlices;
 };
 
-[[vk::push_constant]] ShalltearAmbientOcclusionPush gAO;
+SLT_PUSH_CONSTANT(ShalltearAmbientOcclusionPush, gAO)
 
 #define SHALLTEAR_AO_STEP_ESTIMATE 0
 #define SHALLTEAR_AO_STEP_BLUR_X 1

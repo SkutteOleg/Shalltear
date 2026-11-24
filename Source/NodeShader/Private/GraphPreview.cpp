@@ -436,8 +436,9 @@ ShalltearPreviewInput ShalltearPreviewBuild(float2 tileUV, bool threeD)
 							[](const GraphExternal& external) { return external.expression.find("ShalltearSunDisc(") != str::npos; })) {
 				text += "#include \"SunDisc.hlsli\"\n";
 			}
+			text += "#include \"ShalltearBufferAccess.hlsli\"\n";
 			text += "struct ShalltearPreviewPush\n{\n\tfloat4 time;\n};\n";
-			text += "[[vk::push_constant]] ShalltearPreviewPush sltPreview;\n\n";
+			text += "SLT_PUSH_CONSTANT(ShalltearPreviewPush, sltPreview)\n\n";
 			text += "static const uint SLT_PREVIEW_COLUMNS = " + std::to_string(ATLAS_COLUMNS) + ";\n";
 			text += "static const uint SLT_PREVIEW_ROWS = " + std::to_string(out.rows) + ";\n";
 			text += "static const uint SLT_PREVIEW_THREE_D[" + std::to_string(count) + "] = {";

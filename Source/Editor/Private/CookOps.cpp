@@ -764,17 +764,39 @@ namespace Shalltear {
 					outError = std::format("{} didn't load", guid.ToString());
 					return false;
 				}
+				const Asset* cookTarget = loaded;
+				ShaderAsset webShader;
 				if (loaded->GetAssetTypeId() == StringHash("ShaderAsset")) {
 					ShaderAsset& shader = *static_cast<ShaderAsset*>(loaded);
-					for (const CookClosure::ShaderVariantRequest& request : closure.variantRequests) {
-						if (request.shader == guid) {
-							shader.GetOrCompileVariant({request.keywords.data(), request.keywords.size()});
+					if (desc.shaderFormat != shader.bytecodeFormat && !shader.virtualPath.empty()) {
+						const RHI::ShaderBytecodeFormat previousFormat = ShaderAsset::GetDefaultImportBytecodeFormat();
+						ShaderAsset::SetDefaultImportBytecodeFormat(desc.shaderFormat);
+						webShader.assetId = shader.assetId;
+						webShader.virtualPath = shader.virtualPath;
+						const bool imported = webShader.Import(Path(shader.virtualPath));
+						ShaderAsset::SetDefaultImportBytecodeFormat(previousFormat);
+						if (!imported) {
+							AssetDatabase::UnloadAsset(loaded);
+							outError = std::format("'{}' failed to compile for target shader format", shader.virtualPath);
+							return false;
+						}
+						for (const CookClosure::ShaderVariantRequest& request : closure.variantRequests) {
+							if (request.shader == guid) {
+								webShader.GetOrCompileVariant({request.keywords.data(), request.keywords.size()});
+							}
+						}
+						cookTarget = &webShader;
+					} else {
+						for (const CookClosure::ShaderVariantRequest& request : closure.variantRequests) {
+							if (request.shader == guid) {
+								shader.GetOrCompileVariant({request.keywords.data(), request.keywords.size()});
+							}
 						}
 					}
 				}
 
 				PakAssetSource source;
-				bool cooked = CookAsset(*loaded, strings, source, outError);
+				bool cooked = CookAsset(*cookTarget, strings, source, outError);
 				AssetDatabase::UnloadAsset(loaded);
 				if (!cooked) {
 					return false;

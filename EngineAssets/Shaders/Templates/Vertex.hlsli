@@ -22,7 +22,7 @@
 #error "a surface shader declares custom interpolators and no SHALLTEAR_VERTEX_FUNCTION to write them"
 #endif
 
-[[vk::push_constant]] ShalltearDrawHeader gDraw;
+SLT_PUSH_CONSTANT(ShalltearDrawHeader, gDraw)
 
 struct ShalltearVaryings {
 	float4 positionCS : SV_Position;
@@ -43,7 +43,7 @@ struct ShalltearVaryings {
 	nointerpolation uint instance : SHALLTEAR_INSTANCE;
 };
 
-uint64_t ShalltearVaryingsDrawAddress(ShalltearVaryings input) {
+slt_addr ShalltearVaryingsDrawAddress(ShalltearVaryings input) {
 	return ShalltearInstanceDrawAddress(gDraw.drawAddress, input.instance);
 }
 

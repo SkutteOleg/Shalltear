@@ -6,6 +6,7 @@
 #include "Shalltear/Core/StringHash.h"
 
 #include <atomic>
+#include <cwchar>
 #include <deque>
 #include <filesystem>
 #include <mutex>
@@ -308,7 +309,20 @@ namespace Shalltear {
 		args.push_back(L"-T");
 		args.push_back(stage == ShaderStageKind::Vertex ? L"vs_6_0" : stage == ShaderStageKind::Pixel ? L"ps_6_0"
 																									  : L"cs_6_0");
-		args.insert(args.end(), std::begin(FIXED_ARGUMENTS), std::end(FIXED_ARGUMENTS));
+		bool forWebGPU = false;
+		for (const str& define : defines) {
+			if (define == "SHALLTEAR_WEBGPU=1" || define == "SHALLTEAR_WEBGPU") {
+				forWebGPU = true;
+				break;
+			}
+		}
+		for (const wchar_t* arg : FIXED_ARGUMENTS) {
+			if (forWebGPU && std::wcscmp(arg, L"-fspv-target-env=vulkan1.3") == 0) {
+				args.push_back(L"-fspv-target-env=vulkan1.1");
+			} else {
+				args.push_back(arg);
+			}
+		}
 		if (mode != ShaderCompileMode::Optimized) {
 			args.push_back(L"-Od");
 		}

@@ -2,6 +2,7 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 
 [[vk::binding(0, 2)]] Texture2D sltSceneColor;
@@ -17,10 +18,10 @@ struct ShalltearPostProcessPush {
 	float4 extentAndStep;
 	float4 bloomTintAndIntensity;
 	float4 bloomParams;
-	uint64_t gradeAddress;
+	slt_addr gradeAddress;
 };
 
-[[vk::push_constant]] ShalltearPostProcessPush gPost;
+SLT_PUSH_CONSTANT(ShalltearPostProcessPush, gPost)
 
 // must match PostProcessGrade in PostProcessPass.cpp
 struct ShalltearPostGrade {
@@ -166,6 +167,25 @@ float3 ShalltearBloomThreshold(float3 color) {
 	return color * contribution;
 }
 
+ShalltearPostGrade ShalltearLoadPostGrade(slt_addr address) {
+#ifdef SHALLTEAR_WEBGPU
+	ShalltearPostGrade g;
+	g.colorFilterAndContrast = ShalltearLoadF32x4(address);
+	g.hueSaturationExposure = ShalltearLoadF32x4(ShalltearAddrAdd(address, 16u));
+	g.whiteBalance0 = ShalltearLoadF32x4(ShalltearAddrAdd(address, 32u));
+	g.whiteBalance1 = ShalltearLoadF32x4(ShalltearAddrAdd(address, 48u));
+	g.whiteBalance2 = ShalltearLoadF32x4(ShalltearAddrAdd(address, 64u));
+	g.shadows = ShalltearLoadF32x4(ShalltearAddrAdd(address, 80u));
+	g.midtones = ShalltearLoadF32x4(ShalltearAddrAdd(address, 96u));
+	g.highlights = ShalltearLoadF32x4(ShalltearAddrAdd(address, 112u));
+	g.limits = ShalltearLoadF32x4(ShalltearAddrAdd(address, 128u));
+	g.flags = ShalltearLoadU32x4(ShalltearAddrAdd(address, 144u));
+	return g;
+#else
+	return vk::RawBufferLoad<ShalltearPostGrade>(address, 16);
+#endif
+}
+
 float4 PSMain(VSOutput input) : SV_Target {
 	uint step = (uint)(gPost.extentAndStep.z + 0.5);
 	float2 sourceTexel = ShalltearBloomSourceTexel(step);
@@ -187,7 +207,7 @@ float4 PSMain(VSOutput input) : SV_Target {
 	float3 color = sltSceneColor.Sample(sltSceneSampler, input.uv).rgb;
 
 	bool decoded = gShalltearGammaColorSpace &&
-				   (gPost.bloomTintAndIntensity.w > 0.0 || gPost.extentAndStep.w > 0.5 || gPost.gradeAddress != 0);
+				   (gPost.bloomTintAndIntensity.w > 0.0 || gPost.extentAndStep.w > 0.5 || ShalltearAddrValid(gPost.gradeAddress));
 	if (decoded) {
 		color = ShalltearSrgbToLinearUnclamped(color);
 	}
@@ -206,9 +226,9 @@ float4 PSMain(VSOutput input) : SV_Target {
 		color *= lerp(gPost.vignetteColorAndIntensity.rgb, 1.0, factor);
 	}
 
-	if (gPost.gradeAddress != 0) {
+	if (ShalltearAddrValid(gPost.gradeAddress)) {
 		// after bloom, before curve
-		color = ShalltearPostGradeColor(color, vk::RawBufferLoad<ShalltearPostGrade>(gPost.gradeAddress, 16));
+		color = ShalltearPostGradeColor(color, ShalltearLoadPostGrade(gPost.gradeAddress));
 	}
 
 	return float4(decoded ? ShalltearLinearToSrgbUnclamped(color) : color, 1.0);

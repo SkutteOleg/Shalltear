@@ -1,21 +1,22 @@
 #pragma shalltear_kernel
+#define SHALLTEAR_VERTEX_HEAP_RW 1
 #include "ShalltearCommon.hlsli"
 
 // must match GPUSkinningPush in Skinning.h
 struct ShalltearSkinningPush {
-	uint64_t source;
-	uint64_t output;
-	uint64_t influences;
-	uint64_t matrices;
-	uint64_t morphRanges;
-	uint64_t morphDeltas;
-	uint64_t frameScales;
+	slt_addr source;
+	slt_addr output;
+	slt_addr influences;
+	slt_addr matrices;
+	slt_addr morphRanges;
+	slt_addr morphDeltas;
+	slt_addr frameScales;
 	uint vertexCount;
 	uint influenceCount;
 	uint jointCount;
 	uint flags;
 };
-[[vk::push_constant]] ShalltearSkinningPush gSkin;
+SLT_PUSH_CONSTANT(ShalltearSkinningPush, gSkin)
 
 #define SHALLTEAR_SKINNING_GROUP_SIZE 64u
 #define SHALLTEAR_SKINNING_ROW (65535u * SHALLTEAR_SKINNING_GROUP_SIZE)
@@ -39,15 +40,15 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 	}
 	ShalltearVertex vertex = ShalltearLoadVertex(gSkin.source, index);
 
-	if (gSkin.frameScales != 0) {
-		uint2 range = vk::RawBufferLoad<uint2>(gSkin.morphRanges + uint64_t(index) * 8, 8);
+	if (ShalltearAddrValid(gSkin.frameScales)) {
+		uint2 range = ShalltearLoadU32x2(ShalltearAddrAdd(gSkin.morphRanges, index * 8u));
 		for (uint entry = range.x; entry < range.x + range.y; ++entry) {
-			uint64_t at = gSkin.morphDeltas + uint64_t(entry) * SHALLTEAR_MORPH_DELTA_STRIDE;
-			float4 position = vk::RawBufferLoad<float4>(at, 16);
-			float scale = vk::RawBufferLoad<float>(gSkin.frameScales + uint64_t(asuint(position.w)) * 4, 4);
+			slt_addr at = ShalltearAddrAdd(gSkin.morphDeltas, entry * SHALLTEAR_MORPH_DELTA_STRIDE);
+			float4 position = ShalltearLoadF32x4(at);
+			float scale = ShalltearLoadF32(ShalltearAddrAdd(gSkin.frameScales, asuint(position.w) * 4u));
 			if (scale != 0.0) {
 				vertex.position += position.xyz * scale;
-				vertex.normal += vk::RawBufferLoad<float4>(at + 16, 16).xyz * scale;
+				vertex.normal += ShalltearLoadF32x4(ShalltearAddrAdd(at, 16u)).xyz * scale;
 			}
 		}
 		if ((gSkin.flags & SHALLTEAR_SKINNING_RENORMALIZE) != 0) {
@@ -55,10 +56,10 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 		}
 	}
 
-	if (gSkin.matrices != 0 && index < gSkin.influenceCount) {
-		uint64_t at = gSkin.influences + uint64_t(index) * SHALLTEAR_INFLUENCE_STRIDE;
-		uint2 packed = vk::RawBufferLoad<uint2>(at, 8);
-		float4 weights = vk::RawBufferLoad<float4>(at + 8, 8);
+	if (ShalltearAddrValid(gSkin.matrices) && index < gSkin.influenceCount) {
+		slt_addr at = ShalltearAddrAdd(gSkin.influences, index * SHALLTEAR_INFLUENCE_STRIDE);
+		uint2 packed = ShalltearLoadU32x2(at);
+		float4 weights = ShalltearLoadF32x4(ShalltearAddrAdd(at, 8u));
 		uint joints[4] = {packed.x & 0xFFFFu, packed.x >> 16, packed.y & 0xFFFFu, packed.y >> 16};
 
 		float4 column0 = float4(0.0, 0.0, 0.0, 0.0);
@@ -71,11 +72,11 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 			if (weight == 0.0 || joints[k] >= gSkin.jointCount) {
 				continue;
 			}
-			uint64_t matrix = gSkin.matrices + uint64_t(joints[k]) * 64;
-			column0 += vk::RawBufferLoad<float4>(matrix, 16) * weight;
-			column1 += vk::RawBufferLoad<float4>(matrix + 16, 16) * weight;
-			column2 += vk::RawBufferLoad<float4>(matrix + 32, 16) * weight;
-			column3 += vk::RawBufferLoad<float4>(matrix + 48, 16) * weight;
+			slt_addr matrix = ShalltearAddrAdd(gSkin.matrices, joints[k] * 64u);
+			column0 += ShalltearLoadF32x4(matrix) * weight;
+			column1 += ShalltearLoadF32x4(ShalltearAddrAdd(matrix, 16u)) * weight;
+			column2 += ShalltearLoadF32x4(ShalltearAddrAdd(matrix, 32u)) * weight;
+			column3 += ShalltearLoadF32x4(ShalltearAddrAdd(matrix, 48u)) * weight;
 			total += weight;
 		}
 
@@ -96,9 +97,9 @@ void CSMain(uint3 id : SV_DispatchThreadID) {
 		}
 	}
 
-	uint64_t output = gSkin.output + uint64_t(index) * SHALLTEAR_VERTEX_STRIDE;
-	vk::RawBufferStore<float4>(output, float4(vertex.position, vertex.u), 4);
-	vk::RawBufferStore<float4>(output + 16, float4(vertex.normal, vertex.v), 4);
-	vk::RawBufferStore<float4>(output + 32, vertex.tangent, 4);
-	vk::RawBufferStore<uint>(output + 48, vertex.color, 4);
+	slt_addr output = ShalltearAddrAdd(gSkin.output, index * SHALLTEAR_VERTEX_STRIDE);
+	ShalltearStoreF32x4(output, float4(vertex.position, vertex.u));
+	ShalltearStoreF32x4(ShalltearAddrAdd(output, 16u), float4(vertex.normal, vertex.v));
+	ShalltearStoreF32x4(ShalltearAddrAdd(output, 32u), vertex.tangent);
+	ShalltearStoreU32(ShalltearAddrAdd(output, 48u), vertex.color);
 }

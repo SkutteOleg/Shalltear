@@ -4,6 +4,7 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 #include "CascadeSelect.hlsli"
 
@@ -24,7 +25,7 @@ struct ShalltearDebugViewPush {
 	float4 cascadeTint[4];
 };
 
-[[vk::push_constant]] ShalltearDebugViewPush gDebug;
+SLT_PUSH_CONSTANT(ShalltearDebugViewPush, gDebug)
 
 struct VSOutput {
 	float4 positionCS : SV_Position;

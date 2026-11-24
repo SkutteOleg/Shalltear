@@ -32,14 +32,14 @@ ShalltearFog ShalltearEvaluateFog(float3 positionWS) {
 	fog.color = float3(0.0, 0.0, 0.0);
 	fog.amount = 0.0;
 	uint count = uint(sltFogLayerCount);
-	if (count == 0 || sltEnvironmentAddress == 0) {
+	if (count == 0 || !ShalltearAddrValid(sltEnvironmentAddress)) {
 		return fog;
 	}
 	float distance = ShalltearFogDistance(positionWS);
 	for (uint index = 0; index < count; ++index) {
-		uint64_t layer = sltEnvironmentAddress + SHALLTEAR_FOG_OFFSET + uint64_t(index) * SHALLTEAR_FOG_STRIDE;
-		float4 colorShare = vk::RawBufferLoad<float4>(layer, 16);
-		float4 params = vk::RawBufferLoad<float4>(layer + 16, 16);
+		slt_addr layer = ShalltearAddrAdd(sltEnvironmentAddress, SHALLTEAR_FOG_OFFSET + index * SHALLTEAR_FOG_STRIDE);
+		float4 colorShare = ShalltearLoadF32x4(layer);
+		float4 params = ShalltearLoadF32x4(ShalltearAddrAdd(layer, 16u));
 		float taken = colorShare.a * (1.0 - ShalltearFogVisibility(params, distance));
 		fog.color += colorShare.rgb * taken;
 		fog.amount += taken;

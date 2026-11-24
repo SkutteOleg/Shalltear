@@ -1,6 +1,7 @@
 #ifndef SHALLTEAR_PARTICLE_SORT_PASS_HLSLI
 #define SHALLTEAR_PARTICLE_SORT_PASS_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
 #include "VisualEffects/ParticleOrder.hlsli"
 
 [[vk::binding(0, 0)]] RWByteAddressBuffer sltSortKeys;
@@ -13,7 +14,7 @@ struct SltParticleSortFrame {
 	uint last;
 	uint order;
 };
-[[vk::push_constant]] SltParticleSortFrame sltSort;
+SLT_PUSH_CONSTANT(SltParticleSortFrame, sltSort)
 
 #define SLT_PARTICLE_SORT_LOCAL 1024
 #define SLT_PARTICLE_SORT_LOCAL_THREADS 256

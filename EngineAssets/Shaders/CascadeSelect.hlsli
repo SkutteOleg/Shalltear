@@ -7,8 +7,8 @@
 #define SHALLTEAR_SHADOW_MAP_FAR_OFFSET 80
 
 float ShalltearCascadeFar(uint index) {
-	return vk::RawBufferLoad<float>(
-		sltShadowMapAddress + uint64_t(index) * SHALLTEAR_SHADOW_MAP_STRIDE + SHALLTEAR_SHADOW_MAP_FAR_OFFSET, 4);
+	return ShalltearLoadF32(
+		ShalltearAddrAdd(sltShadowMapAddress, index * SHALLTEAR_SHADOW_MAP_STRIDE + SHALLTEAR_SHADOW_MAP_FAR_OFFSET));
 }
 
 uint ShalltearCascadeIndexOf(uint firstMap, uint count, float viewDepth) {

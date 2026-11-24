@@ -2,6 +2,8 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
+
 // must match GPUMomentResolvePush in RenderSystem.cpp
 struct ShalltearMomentResolvePush {
 	int2 tileOrigin;
@@ -11,7 +13,7 @@ struct ShalltearMomentResolvePush {
 	int radius;
 	uint samples;
 };
-[[vk::push_constant]] ShalltearMomentResolvePush gResolve;
+SLT_PUSH_CONSTANT(ShalltearMomentResolvePush, gResolve)
 
 [[vk::binding(0, 1)]] Texture2DMS<float> sltMomentDepth;
 [[vk::binding(1, 1)]] SamplerState sltMomentSampler;

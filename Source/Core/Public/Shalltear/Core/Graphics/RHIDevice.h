@@ -46,6 +46,7 @@ namespace Shalltear::RHI {
 
 		std::span<const AdapterInfo> GetAdapters() const;
 		const AdapterInfo& GetSelectedAdapter() const;
+		DeviceCapabilities GetCapabilities() const;
 
 		u32 GetSupportedSampleCounts(Format format, TextureUsage usage) const;
 

@@ -5,13 +5,14 @@
 #pragma shalltear_cull off
 #pragma shalltear_topology line
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 
 struct ShalltearDebugLinePush {
 	float4x4 viewProjection;
-	uint64_t vertexAddress;
+	slt_addr vertexAddress;
 };
-[[vk::push_constant]] ShalltearDebugLinePush gDebugLines;
+SLT_PUSH_CONSTANT(ShalltearDebugLinePush, gDebugLines)
 
 #define SHALLTEAR_DEBUG_VERTEX_STRIDE 16
 
@@ -29,9 +30,9 @@ float ShalltearSrgbToLinearChannel(float c) {
 }
 
 VSOutput VSMain(uint vertexId : SV_VertexID) {
-	uint64_t address = gDebugLines.vertexAddress + uint64_t(vertexId) * SHALLTEAR_DEBUG_VERTEX_STRIDE;
-	float3 position = vk::RawBufferLoad<float3>(address, 4);
-	uint packed = vk::RawBufferLoad<uint>(address + 12, 4);
+	slt_addr address = ShalltearAddrAdd(gDebugLines.vertexAddress, vertexId * SHALLTEAR_DEBUG_VERTEX_STRIDE);
+	float3 position = ShalltearLoadF32x3(address);
+	uint packed = ShalltearLoadU32(ShalltearAddrAdd(address, 12u));
 
 	float4 srgb = float4(
 		float(packed & 0xFF) / 255.0,

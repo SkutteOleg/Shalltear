@@ -1,6 +1,8 @@
 #ifndef SHALLTEAR_DEPTH_RANGE_HLSLI
 #define SHALLTEAR_DEPTH_RANGE_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
+
 // must match GPUDepthRangePush in RenderSystem.cpp
 struct ShalltearDepthRangePush {
 	uint resultOffset;
@@ -10,7 +12,7 @@ struct ShalltearDepthRangePush {
 	uint height;
 	uint orthographic;
 };
-[[vk::push_constant]] ShalltearDepthRangePush gRange;
+SLT_PUSH_CONSTANT(ShalltearDepthRangePush, gRange)
 
 #ifdef SHALLTEAR_DEPTH_RANGE_MULTISAMPLED
 [[vk::binding(0, 0)]] Texture2DMS<float> gDepth;

@@ -3,6 +3,7 @@
 #include "Shalltear/Core/Types.h"
 
 #include <ctime>
+#include <span>
 
 namespace Shalltear::Platform {
 
@@ -19,5 +20,7 @@ namespace Shalltear::Platform {
 	void PrepareConsoleOutput();
 
 	void ToLocalTime(std::time_t time, std::tm& out);
+
+	bool RunProcessCapture(const str& executable, std::span<const str> arguments, str& outOutput, i32& outExitCode);
 
 } // namespace Shalltear::Platform

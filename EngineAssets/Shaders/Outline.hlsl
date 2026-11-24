@@ -2,6 +2,7 @@
 #pragma shalltear_depth off
 #pragma shalltear_cull off
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 
 [[vk::binding(0, 1)]] Texture2D<uint> sltOutlineMask;
@@ -13,13 +14,13 @@
 
 // must match GPUOutlinePush in RenderSystem.cpp
 struct ShalltearOutlinePush {
-	uint colors[4];
+	uint4 colors;
 	float width;
 	float hiddenOpacity;
 	uint pad0;
 	uint pad1;
 };
-[[vk::push_constant]] ShalltearOutlinePush gOutline;
+SLT_PUSH_CONSTANT(ShalltearOutlinePush, gOutline)
 
 float ShalltearOutlineSrgbToLinear(float c) {
 	if (gShalltearGammaColorSpace) {

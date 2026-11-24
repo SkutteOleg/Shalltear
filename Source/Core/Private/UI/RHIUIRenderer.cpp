@@ -181,6 +181,7 @@ namespace Shalltear::UI {
 		RHI::GraphicsPipelineDesc desc;
 		desc.vertexSpirv = {code->vertexSpirv.data(), code->vertexSpirv.size()};
 		desc.pixelSpirv = {code->pixelSpirv.data(), code->pixelSpirv.size()};
+		desc.bytecodeFormat = shader->bytecodeFormat;
 		desc.bindings = {shader->bindings.data(), shader->bindings.size()};
 		desc.pushConstantSize = shader->pushConstantSize;
 		desc.blend = shader->renderState.blend;

@@ -14,7 +14,7 @@ struct ShalltearSkyPush {
 	uint capturing;
 	float weight;
 };
-[[vk::push_constant]] ShalltearSkyPush gSky;
+SLT_PUSH_CONSTANT(ShalltearSkyPush, gSky)
 
 struct ShalltearSkyInput {
 	float3 directionWS;

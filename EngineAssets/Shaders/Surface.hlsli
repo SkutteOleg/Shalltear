@@ -98,7 +98,7 @@ float4x4 ShalltearDrawWorldToObject(ShalltearPerDraw draw) {
 }
 
 ShalltearSurfaceInput ShalltearBuildSurfaceInput(float4 positionCS, float3 positionWS, float3 normalWS, float4 tangentWS, float2 uv,
-												  float4 color, uint64_t drawAddress) {
+												  float4 color, slt_addr drawAddress) {
 	ShalltearSurfaceInput input;
 	input.positionWS = positionWS;
 	input.normalWS = normalize(normalWS);

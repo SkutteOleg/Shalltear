@@ -1,30 +1,31 @@
 #ifndef SHALLTEAR_PARTICLE_OUTPUT_HLSLI
 #define SHALLTEAR_PARTICLE_OUTPUT_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
 #include "ViewData.hlsli"
 
 struct SltParticleOutputFrame {
-	uint64_t lists;
-	uint64_t attributes;
+	slt_addr lists;
+	slt_addr attributes;
 	uint capacity;
 	uint list;
 	uint vertices;
 	uint frame;
-	uint64_t effect;
-	uint64_t order;
+	slt_addr effect;
+	slt_addr order;
 	uint pass;
 	uint particlesPerStrip;
 	uint value;
 	uint reserved;
 };
-[[vk::push_constant]] SltParticleOutputFrame sltParticleOutput;
+SLT_PUSH_CONSTANT(SltParticleOutputFrame, sltParticleOutput)
 
 static const uint SLT_PARTICLE_PASS_SHADOW = 2;
 bool SltParticleShadowPass() {
 	return sltParticleOutput.pass == SLT_PARTICLE_PASS_SHADOW;
 }
 
-uint64_t SltParticleEffectAddress() {
+slt_addr SltParticleEffectAddress() {
 	return sltParticleOutput.effect;
 }
 
@@ -37,11 +38,11 @@ uint SltParticleFrameIndex() {
 static const uint SLT_PARTICLE_OUTPUT_LISTS = 16;
 
 uint SltParticleOutputAt(uint slot) {
-	if (sltParticleOutput.order != 0) {
-		return vk::RawBufferLoad<uint>(sltParticleOutput.order + uint64_t(slot) * 4, 4);
+	if (ShalltearAddrValid(sltParticleOutput.order)) {
+		return ShalltearLoadU32(ShalltearAddrAdd(sltParticleOutput.order, slot * 4u));
 	}
-	uint64_t entry = uint64_t(sltParticleOutput.list) * sltParticleOutput.capacity + slot;
-	return vk::RawBufferLoad<uint>(sltParticleOutput.lists + SLT_PARTICLE_OUTPUT_LISTS + entry * 4, 4);
+	uint entry = sltParticleOutput.list * sltParticleOutput.capacity + slot;
+	return ShalltearLoadU32(ShalltearAddrAdd(sltParticleOutput.lists, SLT_PARTICLE_OUTPUT_LISTS + entry * 4u));
 }
 
 uint SltParticleOutputIndex(uint vertexId) {
@@ -66,13 +67,13 @@ uint SltParticleOutputCorner(uint vertexId) {
 }
 
 float SltParticleOutputLoad(uint attribute, uint index) {
-	uint64_t element = uint64_t(attribute) * sltParticleOutput.capacity + index;
-	return vk::RawBufferLoad<float>(sltParticleOutput.attributes + element * 4, 4);
+	uint element = attribute * sltParticleOutput.capacity + index;
+	return ShalltearLoadF32(ShalltearAddrAdd(sltParticleOutput.attributes, element * 4u));
 }
 
 uint SltParticleOutputStripWord(uint strip, uint field) {
-	uint64_t at = uint64_t(SLT_PARTICLE_OUTPUT_LISTS) + uint64_t(3) * sltParticleOutput.capacity * 4 + uint64_t(strip) * 24 + field;
-	return vk::RawBufferLoad<uint>(sltParticleOutput.lists + at, 4);
+	uint at = SLT_PARTICLE_OUTPUT_LISTS + 3u * sltParticleOutput.capacity * 4u + strip * 24u + field;
+	return ShalltearLoadU32(ShalltearAddrAdd(sltParticleOutput.lists, at));
 }
 
 uint SltParticleOutputPerStrip() {
@@ -99,8 +100,8 @@ uint SltParticleOutputStripIndex(uint strip, uint place) {
 }
 
 bool SltParticleOutputSegment(uint entry, out uint index) {
-	if (sltParticleOutput.order != 0) {
-		index = vk::RawBufferLoad<uint>(sltParticleOutput.order + uint64_t(entry) * 4, 4);
+	if (ShalltearAddrValid(sltParticleOutput.order)) {
+		index = ShalltearLoadU32(ShalltearAddrAdd(sltParticleOutput.order, entry * 4u));
 		return index < sltParticleOutput.capacity;
 	}
 	uint perStrip = SltParticleOutputPerStrip();

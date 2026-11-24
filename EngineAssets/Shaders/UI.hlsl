@@ -1,5 +1,6 @@
 // colors stay SRGB display encoded
 
+#include "ShalltearBufferAccess.hlsli"
 #include "Color.hlsli"
 
 #pragma shalltear_blend alpha
@@ -43,11 +44,33 @@ struct UIQuad {
 struct UIPush {
 	float2 viewportSize;
 	float2 originPx;
-	uint64_t quadAddress;
+	slt_addr quadAddress;
 	uint textureFlags;
 	uint passMode;
 };
-[[vk::push_constant]] UIPush gPush;
+SLT_PUSH_CONSTANT(UIPush, gPush)
+
+UIQuad ShalltearLoadUIQuad(uint quadIndex) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(gPush.quadAddress, quadIndex * UI_QUAD_STRIDE);
+	UIQuad q;
+	q.rect = ShalltearLoadF32x4(base);
+	q.uv = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+	q.color0 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+	q.color1 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 48u));
+	q.radii = ShalltearLoadF32x4(ShalltearAddrAdd(base, 64u));
+	q.clipRect = ShalltearLoadF32x4(ShalltearAddrAdd(base, 80u));
+	q.clipRadii = ShalltearLoadF32x4(ShalltearAddrAdd(base, 96u));
+	uint4 tail = ShalltearLoadU32x4(ShalltearAddrAdd(base, 112u));
+	q.softness = asfloat(tail.x);
+	q.flags = tail.y;
+	q.rotation = asfloat(tail.z);
+	q.pad0 = asfloat(tail.w);
+	return q;
+#else
+	return vk::RawBufferLoad<UIQuad>(gPush.quadAddress + uint64_t(quadIndex) * UI_QUAD_STRIDE, 4);
+#endif
+}
 
 [[vk::binding(1, 1)]] Texture2D sltUITexture;
 [[vk::binding(2, 1)]] SamplerState sltUISampler;
@@ -72,7 +95,7 @@ VSOutput VSMain(uint vertexId : SV_VertexID) {
 	uint quadIndex = vertexId / 6u;
 	uint cornerIndex = vertexId - quadIndex * 6u;
 
-	UIQuad quad = vk::RawBufferLoad<UIQuad>(gPush.quadAddress + uint64_t(quadIndex) * UI_QUAD_STRIDE, 4);
+	UIQuad quad = ShalltearLoadUIQuad(quadIndex);
 
 	float2 corner = float2(0.0, 0.0);
 	if (cornerIndex == 1u) {

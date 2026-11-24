@@ -13,13 +13,13 @@
 #define SHALLTEAR_ENVIRONMENT_PARAMS_OFFSET 144
 #define SHALLTEAR_ENVIRONMENT_FLAT_OFFSET 160
 
-float3 ShalltearLoadSH(uint64_t address, uint index) {
-	return vk::RawBufferLoad<float4>(address + SHALLTEAR_ENVIRONMENT_SH_OFFSET + uint64_t(index) * 16, 16).rgb;
+float3 ShalltearLoadSH(slt_addr address, uint index) {
+	return ShalltearLoadF32x4(ShalltearAddrAdd(address, SHALLTEAR_ENVIRONMENT_SH_OFFSET + index * 16u)).rgb;
 }
 
 // in order EvaluateBasis in EnvironmentIBL.cpp writes
 // unrolled because a looped form returns 0 after first term
-float3 ShalltearEvaluateSH(uint64_t address, float3 direction) {
+float3 ShalltearEvaluateSH(slt_addr address, float3 direction) {
 	float3 result = ShalltearLoadSH(address, 0) * 0.282095;
 	result += ShalltearLoadSH(address, 1) * (0.488603 * direction.y);
 	result += ShalltearLoadSH(address, 2) * (0.488603 * direction.z);
@@ -32,12 +32,12 @@ float3 ShalltearEvaluateSH(uint64_t address, float3 direction) {
 	return max(result, float3(0.0, 0.0, 0.0));
 }
 
-float4 ShalltearLoadEnvironmentParams(uint64_t address) {
-	return vk::RawBufferLoad<float4>(address + SHALLTEAR_ENVIRONMENT_PARAMS_OFFSET, 16);
+float4 ShalltearLoadEnvironmentParams(slt_addr address) {
+	return ShalltearLoadF32x4(ShalltearAddrAdd(address, SHALLTEAR_ENVIRONMENT_PARAMS_OFFSET));
 }
 
-float4 ShalltearLoadEnvironmentFlat(uint64_t address) {
-	return vk::RawBufferLoad<float4>(address + SHALLTEAR_ENVIRONMENT_FLAT_OFFSET, 16);
+float4 ShalltearLoadEnvironmentFlat(slt_addr address) {
+	return ShalltearLoadF32x4(ShalltearAddrAdd(address, SHALLTEAR_ENVIRONMENT_FLAT_OFFSET));
 }
 
 [[vk::binding(8, 0)]] TextureCubeArray sltReflectionProbes;
@@ -46,8 +46,8 @@ float4 ShalltearLoadEnvironmentFlat(uint64_t address) {
 
 #define SHALLTEAR_PROBE_BLEND_FRACTION 0.15
 
-float4 ShalltearLoadProbeField(uint64_t address, uint index, uint field) {
-	return vk::RawBufferLoad<float4>(address + uint64_t(index) * SHALLTEAR_PROBE_STRIDE + uint64_t(field) * 16, 16);
+float4 ShalltearLoadProbeField(slt_addr address, uint index, uint field) {
+	return ShalltearLoadF32x4(ShalltearAddrAdd(address, index * SHALLTEAR_PROBE_STRIDE + field * 16u));
 }
 
 float3 ShalltearBoxProject(float3 reflectionWS, float3 positionWS, float3 boxMin, float3 boxMax, float3 captureWS) {
@@ -91,7 +91,7 @@ float2 ShalltearEnvBRDFApprox(float perceptualRoughness, float NoV) {
 
 // occlusion applies only here
 float3 ShalltearIndirectDiffuse(ShalltearSurface surface, float3 normalWS, float3 positionWS) {
-	float3 irradiance = sltEnvironmentAddress != 0
+	float3 irradiance = ShalltearAddrValid(sltEnvironmentAddress)
 							? ShalltearEvaluateSH(sltEnvironmentAddress, normalWS)
 							: sltAmbientColor;
 	return ShalltearDiffuseColor(surface) * irradiance * surface.occlusion;
@@ -101,7 +101,7 @@ float3 ShalltearIndirectSpecular(ShalltearSurface surface, float3 reflectionWS, 
 	float perceptualRoughness = max(surface.roughness, SHALLTEAR_MIN_PERCEPTUAL_ROUGHNESS);
 	float3 prefiltered = sltAmbientColor;
 	float intensity = 1.0;
-	if (sltEnvironmentAddress != 0) {
+	if (ShalltearAddrValid(sltEnvironmentAddress)) {
 		float4 params = ShalltearLoadEnvironmentParams(sltEnvironmentAddress);
 		float4 flat = ShalltearLoadEnvironmentFlat(sltEnvironmentAddress);
 		prefiltered = flat.rgb;
@@ -117,7 +117,7 @@ float3 ShalltearIndirectSpecular(ShalltearSurface surface, float3 reflectionWS, 
 	}
 
 	uint probeCount = uint(sltProbeCount);
-	if (probeCount > 0 && sltProbeAddress != 0) {
+	if (probeCount > 0 && ShalltearAddrValid(sltProbeAddress)) {
 		uint bestSlot = 0;
 		uint secondSlot = 0;
 		float bestImportance = -1.0;

@@ -3,6 +3,8 @@
 #ifndef SHALLTEAR_COMMON_HLSLI
 #define SHALLTEAR_COMMON_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
+
 struct ShalltearVertex {
 	float3 position;
 	float u;
@@ -13,8 +15,24 @@ struct ShalltearVertex {
 };
 #define SHALLTEAR_VERTEX_STRIDE 52
 
-ShalltearVertex ShalltearLoadVertex(uint64_t vertexAddress, uint index) {
+ShalltearVertex ShalltearLoadVertex(slt_addr vertexAddress, uint index) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(vertexAddress, index * SHALLTEAR_VERTEX_STRIDE);
+	float4 a = ShalltearLoadF32x4(base);
+	float4 b = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+	float4 c = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+	uint col = ShalltearLoadU32(ShalltearAddrAdd(base, 48u));
+	ShalltearVertex vertex;
+	vertex.position = a.xyz;
+	vertex.u = a.w;
+	vertex.normal = b.xyz;
+	vertex.v = b.w;
+	vertex.tangent = c;
+	vertex.color = col;
+	return vertex;
+#else
 	return vk::RawBufferLoad<ShalltearVertex>(vertexAddress + uint64_t(index) * SHALLTEAR_VERTEX_STRIDE, 4);
+#endif
 }
 
 float4 ShalltearUnpackColor(uint packed) {
@@ -27,7 +45,7 @@ float4 ShalltearUnpackColor(uint packed) {
 
 // push block has only address of first instance's element
 struct ShalltearDrawHeader {
-	uint64_t drawAddress;
+	slt_addr drawAddress;
 	uint value;
 	uint reserved;
 };
@@ -41,7 +59,7 @@ struct ShalltearPerDraw {
 	float4 normalMatrix0;
 	float4 normalMatrix1;
 	float4 normalMatrix2;
-	uint64_t vertexAddress;
+	slt_addr vertexAddress;
 	float alphaClipThreshold;
 	// bit 0 receives shadows, bits 1-3 carry blend, bits 8-15 rendering layers
 	uint flags;
@@ -64,22 +82,38 @@ struct ShalltearPerDraw {
 [[vk::constant_id(SHALLTEAR_LOD_FADE_CONSTANT)]] const bool gShalltearLODFade = false;
 
 // passing block by value miscompiles in DXC
-ShalltearPerDraw ShalltearLoadPerDraw(uint64_t drawAddress) {
+ShalltearPerDraw ShalltearLoadPerDraw(slt_addr drawAddress) {
+#ifdef SHALLTEAR_WEBGPU
+	ShalltearPerDraw draw;
+	draw.world0 = ShalltearLoadF32x4(drawAddress);
+	draw.world1 = ShalltearLoadF32x4(ShalltearAddrAdd(drawAddress, 16u));
+	draw.world2 = ShalltearLoadF32x4(ShalltearAddrAdd(drawAddress, 32u));
+	draw.world3 = ShalltearLoadF32x4(ShalltearAddrAdd(drawAddress, 48u));
+	draw.normalMatrix0 = ShalltearLoadF32x4(ShalltearAddrAdd(drawAddress, 64u));
+	draw.normalMatrix1 = ShalltearLoadF32x4(ShalltearAddrAdd(drawAddress, 80u));
+	draw.normalMatrix2 = ShalltearLoadF32x4(ShalltearAddrAdd(drawAddress, 96u));
+	uint4 tail = ShalltearLoadU32x4(ShalltearAddrAdd(drawAddress, 112u));
+	draw.vertexAddress = ShalltearAddrFromWords(tail.x, tail.y);
+	draw.alphaClipThreshold = asfloat(tail.z);
+	draw.flags = tail.w;
+	return draw;
+#else
 	return vk::RawBufferLoad<ShalltearPerDraw>(drawAddress, 16);
+#endif
 }
 
-uint64_t ShalltearInstanceDrawAddress(uint64_t drawAddress, uint instance) {
-	return drawAddress + uint64_t(instance) * SHALLTEAR_PER_DRAW_STRIDE;
+slt_addr ShalltearInstanceDrawAddress(slt_addr drawAddress, uint instance) {
+	return ShalltearAddrAdd(drawAddress, instance * SHALLTEAR_PER_DRAW_STRIDE);
 }
 
 #define SHALLTEAR_ALPHA_CLIP_OFFSET 120
-float ShalltearLoadAlphaClipThreshold(uint64_t drawAddress) {
-	return vk::RawBufferLoad<float>(drawAddress + SHALLTEAR_ALPHA_CLIP_OFFSET, 4);
+float ShalltearLoadAlphaClipThreshold(slt_addr drawAddress) {
+	return ShalltearLoadF32(ShalltearAddrAdd(drawAddress, SHALLTEAR_ALPHA_CLIP_OFFSET));
 }
 
 #define SHALLTEAR_DRAW_FLAGS_OFFSET 124
-uint ShalltearLoadDrawFlags(uint64_t drawAddress) {
-	return vk::RawBufferLoad<uint>(drawAddress + SHALLTEAR_DRAW_FLAGS_OFFSET, 4);
+uint ShalltearLoadDrawFlags(slt_addr drawAddress) {
+	return ShalltearLoadU32(ShalltearAddrAdd(drawAddress, SHALLTEAR_DRAW_FLAGS_OFFSET));
 }
 
 void ShalltearClipLODFade(uint flags, float2 pixel) {
@@ -94,7 +128,7 @@ void ShalltearClipLODFade(uint flags, float2 pixel) {
 	clip((flags & SHALLTEAR_DRAW_FADE_ABOVE) != 0u ? threshold - (1.0 - keep) : keep - threshold);
 }
 
-uint ShalltearLoadDrawBlend(uint64_t drawAddress) {
+uint ShalltearLoadDrawBlend(slt_addr drawAddress) {
 	return (ShalltearLoadDrawFlags(drawAddress) >> SHALLTEAR_DRAW_BLEND_SHIFT) & SHALLTEAR_DRAW_BLEND_MASK;
 }
 
@@ -124,29 +158,29 @@ float3 ShalltearTransformNormal(float4 column0, float4 column1, float4 column2, 
 	float sltDirectionalLightCount;
 	float3 sltAmbientColor;
 	float sltPunctualLightCount;
-	uint64_t sltLightAddress;
-	uint64_t sltClusterAddress;
+	slt_addr sltLightAddress;
+	slt_addr sltClusterAddress;
 	float4 sltViewForwardRow;
 	uint3 sltClusterDims;
 	uint sltClusterPad;
 	float2 sltClusterTileScale; // pixels2tile
 	float sltClusterSliceScale;
 	float sltClusterSliceBias;
-	uint64_t sltShadowMapAddress;
+	slt_addr sltShadowMapAddress;
 	float sltShadowCascadeCount;
 	float sltShadowAtlasTexel;
 	float sltShadowPcfTaps;
 	float sltShadowFadeStart;
 	float sltShadowFadeEnd;
 	float sltTransparentReceivesShadows;
-	uint64_t sltEnvironmentAddress;
+	slt_addr sltEnvironmentAddress;
 	// SV_Position = pixel center. No 1/2 texel offset should be here
 	float2 sltRenderExtentInverse;
-	uint64_t sltProbeAddress;
+	slt_addr sltProbeAddress;
 	float sltProbeCount;
 	float sltFogLayerCount;
-	uint64_t sltViewDataAddress;
-	uint64_t sltDecalAddress;
+	slt_addr sltViewDataAddress;
+	slt_addr sltDecalAddress;
 	// positive exponent, negative exponent, bleed reduction
 	float4 sltShadowMoments;
 };
@@ -155,10 +189,10 @@ float3 ShalltearTransformNormal(float4 column0, float4 column1, float4 column2, 
 
 // 0 address reads 0, not losing the device
 float4 ShalltearLoadViewFloat4(uint offset) {
-	if (sltViewDataAddress == 0) {
+	if (!ShalltearAddrValid(sltViewDataAddress)) {
 		return float4(0.0, 0.0, 0.0, 0.0);
 	}
-	return vk::RawBufferLoad<float4>(sltViewDataAddress + offset, 16);
+	return ShalltearLoadF32x4(ShalltearAddrAdd(sltViewDataAddress, offset));
 }
 
 float4x4 ShalltearLoadViewMatrix(uint offset) {
@@ -176,10 +210,10 @@ float4 ShalltearProjectionParameters() { return ShalltearLoadViewFloat4(SHALLTEA
 float4 ShalltearScreenParameters() { return ShalltearLoadViewFloat4(SHALLTEAR_VIEW_DATA_SCREEN_PARAMS); }
 
 float ShalltearGetExposure() {
-	if (sltViewDataAddress == 0) {
+	if (!ShalltearAddrValid(sltViewDataAddress)) {
 		return 1.0;
 	}
-	return ShalltearLoadExposure(vk::RawBufferLoad<uint64_t>(sltViewDataAddress + SHALLTEAR_VIEW_DATA_EXPOSURE, 8));
+	return ShalltearLoadExposure(ShalltearLoadAddr(ShalltearAddrAdd(sltViewDataAddress, SHALLTEAR_VIEW_DATA_EXPOSURE)));
 }
 
 #define SHALLTEAR_HALF_MAX 65504.0

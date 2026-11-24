@@ -26,9 +26,37 @@ struct ShalltearDecal {
 #define SHALLTEAR_DECAL_STRIDE 128
 #define SHALLTEAR_DECAL_EVERY_LAYER 0x100u
 
+ShalltearDecal ShalltearLoadDecal(uint index) {
+#ifdef SHALLTEAR_WEBGPU
+	slt_addr base = ShalltearAddrAdd(sltDecalAddress, index * SHALLTEAR_DECAL_STRIDE);
+	ShalltearDecal decal;
+	decal.row0 = ShalltearLoadF32x4(base);
+	decal.row1 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 16u));
+	decal.row2 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 32u));
+	decal.uvScaleBias = ShalltearLoadF32x4(ShalltearAddrAdd(base, 48u));
+	decal.baseColor = ShalltearLoadF32x4(ShalltearAddrAdd(base, 64u));
+	float4 w5 = ShalltearLoadF32x4(ShalltearAddrAdd(base, 80u));
+	decal.emissive = w5.xyz;
+	decal.normalScale = w5.w;
+	uint4 w6 = ShalltearLoadU32x4(ShalltearAddrAdd(base, 96u));
+	decal.baseColorEntry = w6.x;
+	decal.normalEntry = w6.y;
+	decal.maskEntry = w6.z;
+	decal.emissiveEntry = w6.w;
+	uint4 w7 = ShalltearLoadU32x4(ShalltearAddrAdd(base, 112u));
+	decal.angleFadeScale = asfloat(w7.x);
+	decal.angleFadeBias = asfloat(w7.y);
+	decal.layers = w7.z;
+	decal.pad0 = w7.w;
+	return decal;
+#else
+	return vk::RawBufferLoad<ShalltearDecal>(sltDecalAddress + uint64_t(index) * SHALLTEAR_DECAL_STRIDE, 16);
+#endif
+}
+
 void ShalltearApplyDecals(ShalltearSurfaceInput input, inout ShalltearSurface surface, inout float3 normalWS, uint drawLayers,
 						  float3 positionDdx, float3 positionDdy) {
-	if (sltDecalAddress == 0) {
+	if (!ShalltearAddrValid(sltDecalAddress)) {
 		return;
 	}
 	uint2 entry = ShalltearClusterEntry(ShalltearClusterOf(input.positionSS, ShalltearViewDepth(input.positionWS)));
@@ -37,7 +65,7 @@ void ShalltearApplyDecals(ShalltearSurfaceInput input, inout ShalltearSurface su
 	float4 position = float4(input.positionWS, 1.0);
 	for (uint slot = 0; slot < decalCount; ++slot) {
 		uint index = ShalltearClusterLight(entry, lightCount + slot);
-		ShalltearDecal decal = vk::RawBufferLoad<ShalltearDecal>(sltDecalAddress + uint64_t(index) * SHALLTEAR_DECAL_STRIDE, 16);
+		ShalltearDecal decal = ShalltearLoadDecal(index);
 		if ((decal.layers & SHALLTEAR_DECAL_EVERY_LAYER) == 0 && (decal.layers & drawLayers & 0xFFu) == 0) {
 			continue;
 		}

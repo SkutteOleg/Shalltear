@@ -1,6 +1,8 @@
 #ifndef SHALLTEAR_VIEW_DATA_HLSLI
 #define SHALLTEAR_VIEW_DATA_HLSLI
 
+#include "ShalltearBufferAccess.hlsli"
+
 struct ShalltearViewData {
 	float4 view[4];
 	float4 inverseView[4];
@@ -12,7 +14,7 @@ struct ShalltearViewData {
 	float4 projectionParams;
 	// xy = target size in pixels, zw = projection half extents at unit depth
 	float4 screenParams;
-	uint64_t exposureAddress;
+	slt_addr exposureAddress;
 	float2 exposurePad;
 };
 
@@ -23,8 +25,8 @@ struct ShalltearViewData {
 
 float4x4 ShalltearViewDataMatrix(float4 c0, float4 c1, float4 c2, float4 c3) { return transpose(float4x4(c0, c1, c2, c3)); }
 
-float ShalltearLoadExposure(uint64_t exposureAddress) {
-	return exposureAddress != 0 ? vk::RawBufferLoad<float>(exposureAddress, 4) : 1.0;
+float ShalltearLoadExposure(slt_addr exposureAddress) {
+	return ShalltearAddrValid(exposureAddress) ? ShalltearLoadF32(exposureAddress) : 1.0;
 }
 
 float ShalltearGetExposure(ShalltearViewData view) { return ShalltearLoadExposure(view.exposureAddress); }

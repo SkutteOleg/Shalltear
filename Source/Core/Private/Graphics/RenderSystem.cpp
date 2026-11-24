@@ -1364,19 +1364,23 @@ namespace Shalltear {
 			return key;
 		}
 
-		bool ReadsInstanceIndex(std::span<const u8> spirv) {
+		bool ReadsInstanceIndex(std::span<const u8> bytecode, RHI::ShaderBytecodeFormat format) {
+			if (format == RHI::ShaderBytecodeFormat::WGSL) {
+				std::string_view text(reinterpret_cast<const char*>(bytecode.data()), bytecode.size());
+				return text.find("instance_index") != std::string_view::npos;
+			}
 			constexpr u32 OP_LOAD = 61;
 			constexpr u32 OP_DECORATE = 71;
 			constexpr u32 DECORATION_BUILT_IN = 11;
 			constexpr u32 BUILT_IN_INSTANCE_INDEX = 43;
 			constexpr size_t HEADER_WORDS = 5;
-			if (spirv.size() % 4 != 0 || spirv.size() / 4 <= HEADER_WORDS) {
+			if (bytecode.size() % 4 != 0 || bytecode.size() / 4 <= HEADER_WORDS) {
 				return false;
 			}
-			const size_t count = spirv.size() / 4;
+			const size_t count = bytecode.size() / 4;
 			auto word = [&](size_t at) {
 				u32 value = 0;
-				std::memcpy(&value, spirv.data() + at * 4, 4);
+				std::memcpy(&value, bytecode.data() + at * 4, 4);
 				return value;
 			};
 			u32 instanceIndex = 0;
@@ -1468,6 +1472,7 @@ namespace Shalltear {
 			if (kind == ShaderProgramKind::Compute) {
 				RHI::ComputePipelineDesc desc;
 				desc.spirv = {code->computeSpirv.data(), code->computeSpirv.size()};
+				desc.bytecodeFormat = shader->bytecodeFormat;
 				desc.bindings = {shader->bindings.data(), shader->bindings.size()};
 				desc.pushConstantSize = shader->pushConstantSize;
 				desc.debugName = shader->virtualPath.c_str();
@@ -1490,6 +1495,7 @@ namespace Shalltear {
 										   : valuePass ? blob(code->depthValuePixelSpirv)
 													   : blob(code->depthPixelSpirv))
 										: blob(code->pixelSpirv);
+			desc.bytecodeFormat = shader->bytecodeFormat;
 			RHI::SpecializationConstant constants[3];
 			u32 constantCount = 0;
 			if (lodFade) {
@@ -1519,7 +1525,7 @@ namespace Shalltear {
 			desc.samples = samples;
 			desc.debugName = shader->virtualPath.c_str();
 
-			return remember(state.device->CreateGraphicsPipeline(desc), ReadsInstanceIndex(desc.vertexSpirv));
+			return remember(state.device->CreateGraphicsPipeline(desc), ReadsInstanceIndex(desc.vertexSpirv, desc.bytecodeFormat));
 		}
 
 		void WriteShaderGlobals(RenderState& state, RHI::Device& device, RHI::TransientSetWriter& writer, const ShaderAsset& shader);
