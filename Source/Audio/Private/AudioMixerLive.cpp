@@ -697,27 +697,30 @@ namespace Shalltear {
 					continue;
 				}
 				const f32 linear = ToLinear(parameter.parameter, value);
+				bool sent = false;
 				switch (parameter.parameter) {
 				case AudioMixerParameter::Volume:
-					system.SetBusFader(parameter.bus, linear, frames);
+					sent = system.SetBusFader(parameter.bus, linear, frames);
 					break;
 				case AudioMixerParameter::Pitch:
-					system.SetBusPitch(parameter.bus, linear, frames);
+					sent = system.SetBusPitch(parameter.bus, linear, frames);
 					break;
 				case AudioMixerParameter::SendLevel:
 				case AudioMixerParameter::WetLevel:
-					system.SetBusRowLevel(parameter.bus, parameter.row, linear, frames);
+					sent = system.SetBusRowLevel(parameter.bus, parameter.row, linear, frames);
 					break;
 				case AudioMixerParameter::EffectParameter:
 					if (parameter.index == NO_EFFECT_PARAMETER) {
 						continue;
 					}
-					system.SetBusEffectParameter(parameter.bus, parameter.row, parameter.index,
-												 value < parameter.minimum ? parameter.minimum : (value > parameter.maximum ? parameter.maximum : value));
+					sent = system.SetBusEffectParameter(parameter.bus, parameter.row, parameter.index,
+														value < parameter.minimum ? parameter.minimum : (value > parameter.maximum ? parameter.maximum : value));
 					break;
 				}
-				parameter.sent = value;
-				parameter.everSent = true;
+				if (sent) {
+					parameter.sent = value;
+					parameter.everSent = true;
+				}
 			}
 		}
 

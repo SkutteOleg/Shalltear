@@ -56,6 +56,7 @@ namespace Shalltear {
 			void Close();
 
 			bool IsOpen() const { return _backend != nullptr; }
+			bool IsCallbackActive() const;
 			const AudioDeviceFormat& GetFormat() const { return _format; }
 
 			AudioDeviceEvents GetEvents() const;

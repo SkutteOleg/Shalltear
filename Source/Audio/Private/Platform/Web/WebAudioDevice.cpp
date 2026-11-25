@@ -1,5 +1,7 @@
 #include "Platform/AudioDevicePlatform.h"
 
+#include <emscripten.h>
+
 #include <algorithm>
 
 namespace Shalltear::AudioImpl::DevicePlatform {
@@ -24,6 +26,19 @@ namespace Shalltear::AudioImpl::DevicePlatform {
 	}
 
 	void UnlockFormat(ma_device&) {
+	}
+
+	bool IsCallbackActive(const ma_device& device) {
+		// clang-format off
+		return EM_ASM_INT({
+			var ma = window.miniaudio;
+			if (!ma || !ma.get_device_by_index) {
+				return 0;
+			}
+			var dev = ma.get_device_by_index($0);
+			return (dev && dev.webaudio && dev.webaudio.state === "running") ? 1 : 0;
+		}, device.webaudio.deviceIndex) != 0;
+		// clang-format on
 	}
 
 } // namespace Shalltear::AudioImpl::DevicePlatform

@@ -294,6 +294,9 @@ namespace Shalltear {
 			if (!JobSystem::SupportsBackgroundThreads()) {
 				_streamer.Pump();
 			}
+			if (_device.IsOpen() && !_device.IsCallbackActive()) {
+				_renderer.ApplyPendingCommands();
+			}
 			DrainEvents();
 			UpdateComposites();
 			UpdateGenerators();
@@ -353,9 +356,10 @@ namespace Shalltear {
 				_refusing = false;
 				return true;
 			}
-			if (!_device.IsOpen() || _preparing) {
+			if (!_device.IsOpen() || _preparing || !_device.IsCallbackActive()) {
 				_renderer.ApplyPendingCommands();
 				if (_renderer.GetCommands().TryPushAll(commands, count)) {
+					_refusing = false;
 					return true;
 				}
 			}
@@ -737,7 +741,7 @@ namespace Shalltear {
 			return true;
 		}
 
-		void AudioSystem::SetBusFader(AudioBus bus, f32 gain, u32 frames) {
+		bool AudioSystem::SetBusFader(AudioBus bus, f32 gain, u32 frames) {
 			if (AudioBusRecord* record = FindBus(bus)) {
 				AudioCommand command = BusCommand(AudioCommandKind::SetBusFader, bus);
 				command.value = gain;
@@ -745,27 +749,32 @@ namespace Shalltear {
 				if (Send(command)) {
 					record->fader = gain;
 					_busAudibilityDirty = true;
+					return true;
 				}
+				return false;
 			}
+			return true;
 		}
 
-		void AudioSystem::SetBusPitch(AudioBus bus, f32 pitch, u32 frames) {
+		bool AudioSystem::SetBusPitch(AudioBus bus, f32 pitch, u32 frames) {
 			if (FindBus(bus)) {
 				AudioCommand command = BusCommand(AudioCommandKind::SetBusPitch, bus);
 				command.value = pitch;
 				command.frames = frames;
-				Send(command);
+				return Send(command);
 			}
+			return true;
 		}
 
-		void AudioSystem::SetBusRowLevel(AudioBus bus, u32 row, f32 level, u32 frames) {
+		bool AudioSystem::SetBusRowLevel(AudioBus bus, u32 row, f32 level, u32 frames) {
 			if (FindBus(bus) && row < MAX_BUS_ROWS) {
 				AudioCommand command = BusCommand(AudioCommandKind::SetBusRowLevel, bus);
 				command.mode = static_cast<u8>(row);
 				command.value = level;
 				command.frames = frames;
-				Send(command);
+				return Send(command);
 			}
+			return true;
 		}
 
 		void AudioSystem::SetBusRowBypass(AudioBus bus, u32 row, bool bypass) {
@@ -795,14 +804,15 @@ namespace Shalltear {
 			return Send(command);
 		}
 
-		void AudioSystem::SetBusEffectParameter(AudioBus bus, u32 row, u32 index, f32 value) {
+		bool AudioSystem::SetBusEffectParameter(AudioBus bus, u32 row, u32 index, f32 value) {
 			if (FindBus(bus) && row < MAX_BUS_ROWS) {
 				AudioCommand command = BusCommand(AudioCommandKind::SetBusEffectParameter, bus);
 				command.mode = static_cast<u8>(row);
 				command.frames = index;
 				command.value = value;
-				Send(command);
+				return Send(command);
 			}
+			return true;
 		}
 
 		AudioEffectContext AudioSystem::MakeBusEffectContext(std::span<const f32> parameters) const {
@@ -1209,6 +1219,10 @@ namespace Shalltear {
 
 		void AudioSystem::FenceRenderThread() {
 			if (!_device.IsOpen()) {
+				return;
+			}
+			if (!_device.IsCallbackActive() || !JobSystem::SupportsBackgroundThreads()) {
+				_renderer.ApplyPendingCommands();
 				return;
 			}
 			AudioClockStamp stamp;

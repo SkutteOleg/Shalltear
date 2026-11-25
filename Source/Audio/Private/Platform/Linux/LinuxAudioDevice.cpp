@@ -19,4 +19,8 @@ namespace Shalltear::AudioImpl::DevicePlatform {
 	void UnlockFormat(ma_device&) {
 	}
 
+	bool IsCallbackActive(const ma_device&) {
+		return true;
+	}
+
 } // namespace Shalltear::AudioImpl::DevicePlatform

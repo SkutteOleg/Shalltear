@@ -23,4 +23,8 @@ namespace Shalltear::AudioImpl::DevicePlatform {
 		ma_mutex_unlock(&device.wasapi.rerouteLock);
 	}
 
+	bool IsCallbackActive(const ma_device&) {
+		return true;
+	}
+
 } // namespace Shalltear::AudioImpl::DevicePlatform

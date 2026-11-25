@@ -132,9 +132,9 @@ namespace Shalltear {
 
 			bool SetBusChain(AudioBus bus, const AudioBusRowDesc* rows, u32 count);
 
-			void SetBusFader(AudioBus bus, f32 gain, u32 frames);
-			void SetBusPitch(AudioBus bus, f32 pitch, u32 frames);
-			void SetBusRowLevel(AudioBus bus, u32 row, f32 level, u32 frames);
+			bool SetBusFader(AudioBus bus, f32 gain, u32 frames);
+			bool SetBusPitch(AudioBus bus, f32 pitch, u32 frames);
+			bool SetBusRowLevel(AudioBus bus, u32 row, f32 level, u32 frames);
 			void SetBusMute(AudioBus bus, bool mute);
 			void SetBusSolo(AudioBus bus, bool solo);
 			void SetBusClock(AudioBus bus, AudioBusClock clock, bool followTimeScale);
@@ -143,7 +143,7 @@ namespace Shalltear {
 			void SetBusBypassEffects(AudioBus bus, bool bypass);
 			bool SetBusRowEffect(AudioBus bus, u32 row, IAudioEffect* effect);
 
-			void SetBusEffectParameter(AudioBus bus, u32 row, u32 index, f32 value);
+			bool SetBusEffectParameter(AudioBus bus, u32 row, u32 index, f32 value);
 
 			AudioEffectContext MakeBusEffectContext(std::span<const f32> parameters) const;
 

@@ -15,4 +15,7 @@ namespace Shalltear::AudioImpl::DevicePlatform {
 	void LockFormat(ma_device& device);
 	void UnlockFormat(ma_device& device);
 
+	// false while a browser AudioContext is suspended and no render callback can run
+	bool IsCallbackActive(const ma_device& device);
+
 } // namespace Shalltear::AudioImpl::DevicePlatform

@@ -238,6 +238,13 @@ namespace Shalltear {
 			_format = {};
 		}
 
+		bool AudioDevice::IsCallbackActive() const {
+			if (!_backend || !_backend->deviceReady) {
+				return false;
+			}
+			return _backend->kind == AudioBackendKind::System ? DevicePlatform::IsCallbackActive(_backend->device) : true;
+		}
+
 		AudioDeviceEvents AudioDevice::GetEvents() const {
 			AudioDeviceEvents events;
 			if (_backend) {
