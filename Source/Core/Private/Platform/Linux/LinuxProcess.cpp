@@ -97,6 +97,10 @@ namespace Shalltear::Platform {
 		return true;
 	}
 
+	u32 GetMaxJobWorkerCount() {
+		return 0;
+	}
+
 	bool IsExternallyPaced() {
 		return false;
 	}

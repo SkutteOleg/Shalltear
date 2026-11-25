@@ -53,6 +53,11 @@ namespace Shalltear::Platform {
 #endif
 	}
 
+	u32 GetMaxJobWorkerCount() {
+		// cap Web Workers to avoid excessive per-worker stack overhead and stay within PTHREAD_POOL_SIZE
+		return 8;
+	}
+
 	bool IsExternallyPaced() {
 		return true;
 	}

@@ -311,32 +311,23 @@ namespace SimLib {
 
 } // namespace SimLib
 
-extern "C" {
-#if defined(_WIN32)
-__declspec(dllexport)
+#if defined(SIMLIB_EXPORT_DLL)
+#define SIMLIB_EXPORT __declspec(dllexport)
 #else
-__attribute__((visibility("default")))
+#define SIMLIB_EXPORT __attribute__((visibility("default")))
 #endif
-void SimLibTestFireAndClearRetained(int32_t ticks) {
+
+extern "C" {
+SIMLIB_EXPORT void SimLibTestFireAndClearRetained(int32_t ticks) {
 	SimLib::FireRetainedCallback(ticks);
 	SimLib::ClearRetainedCallback();
 }
 
-#if defined(_WIN32)
-__declspec(dllexport)
-#else
-__attribute__((visibility("default")))
-#endif
-int32_t SimLibTestGetDestroyedCount() {
+SIMLIB_EXPORT int32_t SimLibTestGetDestroyedCount() {
 	return SimLib::GetDestroyedCount();
 }
 
-#if defined(_WIN32)
-__declspec(dllexport)
-#else
-__attribute__((visibility("default")))
-#endif
-int32_t SimLibTestGetDestroyedOnMainCount() {
+SIMLIB_EXPORT int32_t SimLibTestGetDestroyedOnMainCount() {
 	return SimLib::GetDestroyedOnMainThreadCount();
 }
 }
@@ -501,7 +492,10 @@ TEST_F(CSharpUserHeadersTest, ZeroSourceLibraryBindingRoundTripsAndEmitsCppView)
 	std::ofstream(_project / "ThirdParty" / "SimLib" / "CMakeLists.txt", std::ios::binary)
 		<< "add_library(SimLib STATIC SimLib.cpp)\n"
 		<< "target_include_directories(SimLib PUBLIC \"${CMAKE_CURRENT_SOURCE_DIR}\")\n"
-		<< "target_compile_features(SimLib PUBLIC cxx_std_20)\n";
+		<< "target_compile_features(SimLib PUBLIC cxx_std_20)\n"
+		<< "if(WIN32)\n"
+		<< "\ttarget_compile_definitions(SimLib PRIVATE SIMLIB_EXPORT_DLL=1)\n"
+		<< "endif()\n";
 
 	std::ofstream(_project / "ExposurePolicy.json", std::ios::binary)
 		<< "{\n"

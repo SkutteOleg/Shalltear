@@ -24,6 +24,7 @@ namespace Shalltear::Platform {
 	bool RunProcessCapture(const str& executable, std::span<const str> arguments, str& outOutput, i32& outExitCode);
 
 	bool SupportsBackgroundThreads();
+	u32 GetMaxJobWorkerCount();
 
 	bool IsExternallyPaced();
 
