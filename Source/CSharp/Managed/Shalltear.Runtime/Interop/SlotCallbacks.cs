@@ -53,7 +53,7 @@ internal static unsafe class SlotCallbacks {
 		if (_text == null || _text.Length < size) {
 			_text = GC.AllocateUninitializedArray<byte>(size > TEXT_BYTES ? size : TEXT_BYTES, true);
 		}
-		results[0] = (ulong)(nint)Unsafe.AsPointer(ref MemoryMarshal.GetArrayDataReference(_text));
+		results[0] = (ulong)Unsafe.AsPointer(ref MemoryMarshal.GetArrayDataReference(_text));
 		results[1] = (ulong)Encoding.UTF8.GetBytes(value, _text);
 	}
 
@@ -78,10 +78,10 @@ internal static unsafe class SlotCallbacks {
 	internal static void KeepNatives<T>(ulong* results, T?[]? values)
 		where T : NativeObject {
 		int count = values?.Length ?? 0;
-		ulong* kept = (ulong*)KeepBytes(count * sizeof(ulong));
+		nint* kept = (nint*)KeepBytes(count * sizeof(nint));
 		for (int index = 0; index < count; ++index) {
 			T? item = values![index];
-			kept[index] = item is null ? 0UL : item.Pointer;
+			kept[index] = item is null ? 0 : (nint)(nuint)item.Pointer;
 		}
 		results[0] = (ulong)kept;
 		results[1] = (ulong)count;

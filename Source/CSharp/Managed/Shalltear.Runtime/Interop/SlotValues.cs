@@ -141,9 +141,9 @@ internal unsafe ref struct SlotList {
 		if (items.Length == 0) {
 			return list;
 		}
-		ulong* pointers = (ulong*)NativeMemory.Alloc((nuint)items.Length, sizeof(ulong));
+		nint* pointers = (nint*)NativeMemory.Alloc((nuint)items.Length, (nuint)sizeof(nint));
 		for (int index = 0; index < items.Length; ++index) {
-			pointers[index] = items[index] is null ? 0UL : items[index]!.Pointer;
+			pointers[index] = items[index] is null ? 0 : (nint)(nuint)items[index]!.Pointer;
 		}
 		list._data = pointers;
 		return list;
@@ -163,7 +163,7 @@ internal unsafe ref struct SlotList {
 		int left = bytes;
 		for (int index = 0; index < items.Length; ++index) {
 			int written = Encoding.UTF8.GetBytes(items[index] ?? "", new Span<byte>(text, left));
-			pairs[index * 2] = (ulong)(nint)text;
+			pairs[index * 2] = (ulong)text;
 			pairs[index * 2 + 1] = (ulong)written;
 			text += written;
 			left -= written;

@@ -31,7 +31,7 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 			if (_pointer == 0 || _createdEpoch != _epoch) {
 				throw new ObjectDisposedException(GetType().Name);
 			}
-			return (ulong)_pointer;
+			return (ulong)(nuint)_pointer;
 		}
 	}
 
@@ -65,7 +65,7 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 	public bool IsAlive => _pointer != 0 && _createdEpoch == _epoch;
 
 	/// <summary>Address of the C++ object (0 once disposed).</summary>
-	public ulong Address => _createdEpoch == _epoch ? (ulong)_pointer : 0;
+	public ulong Address => _createdEpoch == _epoch ? (ulong)(nuint)_pointer : 0;
 
 	internal static T? Wrap<T>(ulong pointer, bool owned, Func<nint, bool, T> make, object? owner)
 		where T : NativeObject {
@@ -104,7 +104,7 @@ public abstract unsafe class NativeObject : IDisposable, IEquatable<NativeObject
 
 	static void Free(nint pointer, delegate* unmanaged<ulong*, ulong*, int> release) {
 		ulong* slots = stackalloc ulong[1];
-		slots[0] = (ulong)pointer;
+		slots[0] = (ulong)(nuint)pointer;
 		release(slots, slots);
 	}
 
