@@ -21,7 +21,8 @@ namespace Shalltear {
 
 		static BuildStepStatus StageStep(BuildContext& context);
 		static bool RenderIndexHTML(const str& title, const str& jsFile, const str& wasmFile,
-									bool enableThreads, str& outHTML, bool hasManaged = false);
+									bool enableThreads, str& outHTML, bool hasManaged = false,
+									const str& customTemplatePath = {});
 	};
 
 } // namespace Shalltear

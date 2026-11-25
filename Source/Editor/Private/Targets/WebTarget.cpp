@@ -21,9 +21,173 @@ namespace Shalltear {
 
 		namespace fs = std::filesystem;
 
-		void AddIssue(Vector<BuildIssue>& out, BuildIssueSeverity severity, const str& profile, const char* key,
-					  str message) {
+		constexpr std::string_view HTMLTemplateKey = "htmlTemplate";
+
+		struct ResolvedHTMLTemplate {
+			bool configured = false;
+			bool valid = false;
+			bool isAbsolute = false;
+			bool isDirectory = false;
+			str templateFile;
+			str companionDir;
+			str error;
+		};
+
+		void AddIssue(Vector<BuildIssue>& out, BuildIssueSeverity severity, const str& profile,
+					  std::string_view key, str message) {
 			out.push_back(BuildIssue{severity, profile, str(key), std::move(message)});
+		}
+
+		fs::path UTF8Path(std::string_view text) {
+			return fs::path(std::u8string_view(reinterpret_cast<const char8_t*>(text.data()), text.size()));
+		}
+
+		str UTF8String(const fs::path& path) {
+			const std::u8string utf8 = path.generic_u8string();
+			return str(reinterpret_cast<const char*>(utf8.data()), utf8.size());
+		}
+
+		bool IsSameOrDescendant(const fs::path& ancestor, const fs::path& candidate) {
+			std::error_code ec;
+			fs::path cur = candidate;
+			while (!cur.empty()) {
+				if (fs::equivalent(cur, ancestor, ec) && !ec) {
+					return true;
+				}
+				ec.clear();
+				const fs::path parent = cur.parent_path();
+				if (parent == cur) {
+					break;
+				}
+				cur = parent;
+			}
+			return false;
+		}
+
+		ResolvedHTMLTemplate ResolveHTMLTemplate(const str& projectPath, const str& value) {
+			ResolvedHTMLTemplate result;
+			if (value.empty()) {
+				result.valid = true;
+				return result;
+			}
+			result.configured = true;
+			const str normalizedValue = Path(value).ToString();
+			result.isAbsolute = Path(normalizedValue).IsAbsolute();
+			if (!result.isAbsolute && projectPath.empty()) {
+				result.error = "cannot resolve relative htmlTemplate '" + value + "' without a project directory";
+				return result;
+			}
+
+			const fs::path candidate = result.isAbsolute
+										   ? UTF8Path(normalizedValue)
+										   : UTF8Path(Path(projectPath).ToString()) / UTF8Path(normalizedValue);
+			std::error_code ec;
+			if (fs::is_regular_file(candidate, ec) && !ec) {
+				const auto size = fs::file_size(candidate, ec);
+				if (ec || size == 0) {
+					result.error = "'" + value + "' is empty";
+					return result;
+				}
+				result.templateFile = UTF8String(candidate);
+				result.valid = true;
+				return result;
+			}
+			ec.clear();
+			if (fs::is_directory(candidate, ec) && !ec) {
+				result.isDirectory = true;
+				const fs::path indexFile = candidate / "index.html";
+				if (!fs::is_regular_file(indexFile, ec) || ec) {
+					result.error = "'" + value + "' does not contain an index.html file";
+					return result;
+				}
+				const auto size = fs::file_size(indexFile, ec);
+				if (ec || size == 0) {
+					result.error = "index.html in '" + value + "' is empty";
+					return result;
+				}
+				result.templateFile = UTF8String(indexFile);
+				result.companionDir = UTF8String(candidate);
+				result.valid = true;
+				return result;
+			}
+
+			result.error = "'" + value + "' is not a file or folder in this project";
+			return result;
+		}
+
+		bool IsProtectedWebOutput(const str& relativeGeneric, const str& jsFile, const str& wasmFile) {
+			const str lower = StringUtil::ToLower(relativeGeneric);
+			return lower == "index.html" || lower == StringUtil::ToLower(jsFile) ||
+				   lower == StringUtil::ToLower(wasmFile) || lower == "data/content.slpak";
+		}
+
+		bool CopyTemplateCompanions(BuildContext& context, const str& companionDir, const str& jsFile,
+									const str& wasmFile) {
+			std::error_code ec;
+			const fs::path sourceRoot = fs::weakly_canonical(UTF8Path(companionDir), ec);
+			if (ec) {
+				context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+								 "couldn't access HTML template folder '" + companionDir + "'");
+				return false;
+			}
+			const fs::path stagingRoot = fs::weakly_canonical(UTF8Path(context.stagingDir), ec);
+			if (ec) {
+				context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+								 "couldn't access Web staging folder '" + context.stagingDir + "'");
+				return false;
+			}
+			if (IsSameOrDescendant(sourceRoot, stagingRoot)) {
+				context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+								 "HTML template folder cannot contain the build output directory");
+				return false;
+			}
+
+			u32 copiedCount = 0;
+			fs::recursive_directory_iterator it(sourceRoot, fs::directory_options::skip_permission_denied, ec);
+			for (fs::recursive_directory_iterator end; !ec && it != end; it.increment(ec)) {
+				std::error_code entryEc;
+				if (!it->is_regular_file(entryEc) || entryEc) {
+					continue;
+				}
+				const fs::path relative = fs::relative(it->path(), sourceRoot, entryEc);
+				if (entryEc || relative.empty()) {
+					continue;
+				}
+				const str relStr = UTF8String(relative);
+				const str lowerRel = StringUtil::ToLower(relStr);
+				if (lowerRel == "index.html" || lowerRel.ends_with(".meta")) {
+					continue;
+				}
+				if (IsProtectedWebOutput(relStr, jsFile, wasmFile)) {
+					context.AddIssue(BuildIssueSeverity::Warning, HTMLTemplateKey,
+									 "skipping template file '" + relStr + "' because it conflicts with build output");
+					continue;
+				}
+				const fs::path dest = stagingRoot / relative;
+				fs::create_directories(dest.parent_path(), entryEc);
+				if (entryEc) {
+					context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+									 "couldn't create folder for template asset '" + relStr + "'");
+					return false;
+				}
+				fs::copy_file(it->path(), dest, fs::copy_options::overwrite_existing, entryEc);
+				if (entryEc) {
+					context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+									 "couldn't copy template asset '" + relStr + "'");
+					return false;
+				}
+				++copiedCount;
+			}
+			if (ec) {
+				context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+								 "error reading HTML template folder '" + companionDir + "'");
+				return false;
+			}
+			if (copiedCount > 0) {
+				context.Log(std::format("copied {} HTML template companion file(s) from '{}'", copiedCount,
+										companionDir));
+			}
+			return true;
 		}
 
 		bool ResolvedBool(const ResolvedProfile* profile, std::string_view key, bool fallback = false) {
@@ -327,9 +491,19 @@ namespace Shalltear {
 		aotCompile.help = "compile C# assemblies ahead of time to WebAssembly in Release builds for near-native script performance";
 		aotCompile.defaultValue = "true";
 		out.push_back(std::move(aotCompile));
+
+		BuildSettingDesc htmlTemplate;
+		htmlTemplate.key = str(HTMLTemplateKey);
+		htmlTemplate.type = BuildSettingType::Path;
+		htmlTemplate.merge = BuildMergePolicy::Replace;
+		htmlTemplate.label = "HTML Template";
+		htmlTemplate.help = "HTML file or template folder with index.html in this project "
+							"(tokens: {{TITLE}}, {{JS_FILE}}, {{WASM_FILE}}, {{THREADS_ENABLED}}, {{HAS_MANAGED}}), "
+							"empty = built-in template";
+		out.push_back(std::move(htmlTemplate));
 	}
 
-	void WebTarget::Validate(const str&, const ResolvedProfile& profile, Vector<BuildIssue>& out) const {
+	void WebTarget::Validate(const str& projectPath, const ResolvedProfile& profile, Vector<BuildIssue>& out) const {
 		const bool enableThreads = ResolvedBool(&profile, "enableThreads", false);
 		str root;
 		str source;
@@ -353,6 +527,16 @@ namespace Shalltear {
 		if (memMB < 32 || memMB > 2048) {
 			AddIssue(out, BuildIssueSeverity::Error, profile.name, "initialMemoryMB",
 					 "initialMemoryMB must be between 32 and 2048");
+		}
+		if (const ResolvedSetting* setting = profile.Find(HTMLTemplateKey); setting && !setting->value.empty()) {
+			const ResolvedHTMLTemplate resolved = ResolveHTMLTemplate(projectPath, setting->value);
+			if (resolved.isAbsolute) {
+				AddIssue(out, BuildIssueSeverity::Warning, profile.name, HTMLTemplateKey,
+						 "'" + setting->value + "' is an absolute path (only valid on 1 machine)");
+			}
+			if (!resolved.valid) {
+				AddIssue(out, BuildIssueSeverity::Error, profile.name, HTMLTemplateKey, resolved.error);
+			}
 		}
 	}
 
@@ -402,14 +586,30 @@ namespace Shalltear {
 	}
 
 	bool WebTarget::RenderIndexHTML(const str& title, const str& jsFile, const str& wasmFile,
-									bool enableThreads, str& outHTML, bool hasManaged) {
+									bool enableThreads, str& outHTML, bool hasManaged,
+									const str& customTemplatePath) {
 		Vector<ScriptProjectOps::TemplateToken> tokens{GetMemoryResource(MemTag::Editor)};
 		tokens.push_back({"TITLE", EscapeHTML(title.empty() ? str("Shalltear") : title)});
 		tokens.push_back({"JS_FILE", jsFile});
 		tokens.push_back({"WASM_FILE", wasmFile});
 		tokens.push_back({"THREADS_ENABLED", enableThreads ? "true" : "false"});
 		tokens.push_back({"HAS_MANAGED", hasManaged ? "true" : "false"});
-		return ScriptProjectOps::RenderTemplate("WebIndex.html", tokens, outHTML);
+		if (customTemplatePath.empty()) {
+			return ScriptProjectOps::RenderTemplate("WebIndex.html", tokens, outHTML);
+		}
+		const Path templatePath(customTemplatePath);
+		if (!FileSystem::Exists(templatePath) || FileSystem::IsDirectory(templatePath)) {
+			return false;
+		}
+		str text = FileSystem::ReadTextFile(templatePath, MemTag::Editor);
+		if (text.empty()) {
+			return false;
+		}
+		for (const ScriptProjectOps::TemplateToken& token : tokens) {
+			text = StringUtil::Replace(text, "{{" + token.name + "}}", token.value);
+		}
+		outHTML = std::move(text);
+		return true;
 	}
 
 	BuildStepStatus WebTarget::StageStep(BuildContext& context) {
@@ -419,8 +619,8 @@ namespace Shalltear {
 		const str jsFile = context.executableName + ".js";
 		const str wasmFile = context.executableName + ".wasm";
 		std::error_code ec;
-		if (!fs::is_regular_file(fs::path{context.stagingDir + "/" + jsFile}, ec) ||
-			!fs::is_regular_file(fs::path{context.stagingDir + "/" + wasmFile}, ec)) {
+		if (!fs::is_regular_file(UTF8Path(context.stagingDir + "/" + jsFile), ec) ||
+			!fs::is_regular_file(UTF8Path(context.stagingDir + "/" + wasmFile), ec)) {
 			context.AddIssue(BuildIssueSeverity::Error, "",
 							 "Web build did not produce '" + jsFile + "' and '" + wasmFile + "' in '" +
 								 context.stagingDir + "'");
@@ -434,16 +634,42 @@ namespace Shalltear {
 			productName = context.executableName;
 		}
 		const bool enableThreads = ResolvedBool(context.profile, "enableThreads", false);
-		const fs::path staleManaged = fs::path{context.stagingDir + "/Managed"};
+		const fs::path staleManaged = UTF8Path(context.stagingDir + "/Managed");
 		if (fs::exists(staleManaged, ec)) {
 			fs::remove_all(staleManaged, ec);
 		}
 		ec.clear();
 
+		str customTemplateValue;
+		if (const ResolvedSetting* setting = context.profile ? context.profile->Find(HTMLTemplateKey) : nullptr;
+			setting && !setting->value.empty()) {
+			customTemplateValue = setting->value;
+		}
+
+		ResolvedHTMLTemplate htmlTemplate;
+		if (!customTemplateValue.empty()) {
+			htmlTemplate = ResolveHTMLTemplate(context.projectRoot, customTemplateValue);
+			if (!htmlTemplate.valid) {
+				context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey, htmlTemplate.error);
+				return BuildStepStatus::Failed;
+			}
+			if (htmlTemplate.isDirectory) {
+				if (!CopyTemplateCompanions(context, htmlTemplate.companionDir, jsFile, wasmFile)) {
+					return BuildStepStatus::Failed;
+				}
+			}
+		}
+
 		str html;
-		if (!RenderIndexHTML(productName, jsFile, wasmFile, enableThreads, html, false)) {
-			context.AddIssue(BuildIssueSeverity::Error, "",
-							 "couldn't render EngineAssets/Templates/WebIndex.html.template (is engine:// mounted?)");
+		if (!RenderIndexHTML(productName, jsFile, wasmFile, enableThreads, html, false,
+							 htmlTemplate.configured ? htmlTemplate.templateFile : str{})) {
+			if (htmlTemplate.configured) {
+				context.AddIssue(BuildIssueSeverity::Error, HTMLTemplateKey,
+								 "couldn't render HTML template '" + customTemplateValue + "'");
+			} else {
+				context.AddIssue(BuildIssueSeverity::Error, "",
+								 "couldn't render EngineAssets/Templates/WebIndex.html.template (is engine:// mounted?)");
+			}
 			return BuildStepStatus::Failed;
 		}
 		const str indexPath = context.stagingDir + "/index.html";
@@ -451,7 +677,11 @@ namespace Shalltear {
 			context.AddIssue(BuildIssueSeverity::Error, "", "couldn't write '" + indexPath + "'");
 			return BuildStepStatus::Failed;
 		}
-		context.Log("staged Web entry page -> " + indexPath);
+		if (htmlTemplate.configured) {
+			context.Log("staged Web entry page from '" + customTemplateValue + "' -> " + indexPath);
+		} else {
+			context.Log("staged Web entry page -> " + indexPath);
+		}
 		return BuildStepStatus::Succeeded;
 	}
 
