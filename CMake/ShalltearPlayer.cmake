@@ -353,7 +353,7 @@ function(_shalltear_add_player_impl MODULE_NAME)
 			target_link_options(${playerTarget} PRIVATE
 				"-pthread"
 				"-sSHARED_MEMORY=1"
-				"-sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency")
+				"-sPTHREAD_POOL_SIZE=Math.min(navigator.hardwareConcurrency?navigator.hardwareConcurrency:4,8)*2+4")
 		endif()
 	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		set_target_properties(${playerTarget} PROPERTIES SUFFIX ".${CMAKE_SYSTEM_PROCESSOR}")

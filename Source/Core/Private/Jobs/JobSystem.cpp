@@ -2,6 +2,7 @@
 #include "Shalltear/Core/Assert.h"
 #include "Shalltear/Core/Log.h"
 #include "Shalltear/Core/Memory.h"
+#include "Shalltear/Core/Platform.h"
 
 #include "Module/EngineStateTable.h"
 #include "Platform/Process.h"
@@ -247,6 +248,11 @@ namespace Shalltear {
 				numThreads = 4;
 			}
 			workerCount = std::max(1u, numThreads - 1);
+#if defined(SLT_PLATFORM_WEB)
+			// cap Web Workers to avoid excessive per-worker stack overhead and stay within PTHREAD_POOL_SIZE
+			constexpr u32 WEB_MAX_JOB_WORKERS = 8;
+			workerCount = std::min(workerCount, WEB_MAX_JOB_WORKERS);
+#endif
 		}
 
 		_data->isRunning.store(true, std::memory_order_release);
